@@ -1,0 +1,2 @@
+# osrs-bingo
+osrs-bingo
