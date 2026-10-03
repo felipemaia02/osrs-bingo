@@ -12,7 +12,7 @@ This file defines the protocol that any AI agent must follow when working in thi
 3.  Read related documentation in docs/
 4.  Do NOT implement requirements absent from the spec
 5.  Create or review specs/features/<id>/plan.md
-6.  Create or review specs/features/<id>/tasks.md
+6.  Create or review specs/features/<id>/tasks/backend.md, frontend.md and integration.md as applicable
 7.  Implement one task at a time
 8.  Create or update corresponding tests
 9.  Run tests (pytest / npm test)
@@ -30,7 +30,7 @@ spec.md         ← defines expected behavior
    ↓
 plan.md         ← defines how it will be implemented
    ↓
-tasks.md        ← defines the implementation steps
+tasks/          ← defines backend, frontend and integration steps
    ↓
 code            ← executes what was specified
 ```
@@ -61,6 +61,7 @@ router → service → repository → MongoDB
 - `service.py` centralizes all domain logic.
 - `repository.py` contains only MongoDB access.
 - Do not create artificial layers when there is no meaningful business logic.
+- Follow clean code: functions do one thing, intention-revealing names, no magic numbers, no dead code, fail fast at boundaries.
 
 ## Frontend architectural pattern
 
@@ -71,6 +72,13 @@ Page → Feature → Hook → API Client → FastAPI
 - Do not make HTTP calls directly inside visual components.
 - Remote state via TanStack Query.
 - Zustand only for genuinely frontend global state (UI, preferences).
+- Follow clean code: one responsibility per component, intention-revealing names, no magic strings, no dead code.
+
+## Frontend UI conventions
+
+- **Icons**: use Material Icons (`@mui/icons-material`). Outlined for decorative, filled for active states.
+- **Theme**: Runescape aesthetic — dark brown panels, gold borders, parchment/gold text. Define RS color tokens in `tailwind.config.js`.
+- No generic Tailwind grays/whites for primary UI elements.
 
 ---
 
@@ -102,7 +110,7 @@ No feature must be implemented directly from it without a corresponding `spec.md
 2. Write spec.md (see template at specs/templates/specification.md)
 3. Wait for spec approval
 4. Write plan.md (see template at specs/templates/plan.md)
-5. Write tasks.md (see template at specs/templates/tasks.md)
+5. Write task lists under tasks/ (see templates at specs/templates/tasks/)
 6. Implement task by task
 7. Fill in acceptance.md
 ```

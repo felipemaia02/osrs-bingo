@@ -1,6 +1,9 @@
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
 from app.core.config import Settings
+from app.core.logging import get_logger, log_event
+
+logger = get_logger(__name__)
 
 
 class DatabaseClient:
@@ -11,14 +14,17 @@ class DatabaseClient:
         self._db_name: str = ""
 
     async def connect(self, settings: Settings) -> None:
+        log_event(logger, 20, "database_connecting", database=settings.mongodb_database)
         self._motor_client = AsyncIOMotorClient(settings.mongodb_url)
         self._db_name = settings.mongodb_database
         await self._motor_client.admin.command("ping")
+        log_event(logger, 20, "database_connected", database=self._db_name)
 
     async def disconnect(self) -> None:
         if self._motor_client is not None:
             self._motor_client.close()
             self._motor_client = None
+            log_event(logger, 20, "database_disconnected")
 
     @property
     def database(self) -> AsyncIOMotorDatabase:  # type: ignore[type-arg]

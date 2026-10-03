@@ -100,7 +100,10 @@ No feature is implemented without an approved spec.
 specs/features/<NNN>-<slug>/
 ├── spec.md        – what to build
 ├── plan.md        – how to build it
-├── tasks.md       – verifiable tasks
+├── tasks/         – backend, frontend and integration tasks
+│   ├── backend.md
+│   ├── frontend.md
+│   └── integration.md
 └── acceptance.md  – acceptance checklist
 ```
 

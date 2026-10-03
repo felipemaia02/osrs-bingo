@@ -1,9 +1,16 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+from app.core.logging import get_logger, log_event
+
+logger = get_logger(__name__)
+
 
 class AppException(Exception):
-    def __init__(self, status_code: int, detail: str) -> None:
+    def __init__(
+        self, status_code: int, detail: str, headers: dict[str, str] | None = None
+    ) -> None:
+        self.headers = headers
         self.status_code = status_code
         self.detail = detail
         super().__init__(detail)
@@ -25,4 +32,14 @@ class DomainValidationError(AppException):
 
 
 async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    log_event(
+        logger,
+        30,
+        "application_exception",
+        path=request.url.path,
+        status=exc.status_code,
+        detail=exc.detail,
+    )
+    return JSONResponse(
+        status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers
+    )

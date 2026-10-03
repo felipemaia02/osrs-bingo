@@ -1,9 +1,252 @@
 {
-    "home": {
-        "title": "OSRS Bingo",
-        "subtitle": "La plataforma está funcionando. Comienza desde una spec."
+    "event": {
+        "name": "Bingo de Verano"
+    },
+    "navigation": {
+        "primary": "Navegación principal",
+        "mobile": "Navegación móvil",
+        "board": "Tablero",
+        "events": "Eventos",
+        "team": "Equipo",
+        "submissions": "Envíos",
+        "ranking": "Clasificación",
+        "comingSoon": "Equipo, envíos y clasificación estarán disponibles en futuras funcionalidades."
+    },
+    "board": {
+        "eyebrow": "Progreso del evento",
+        "title": "Tablero del Bingo",
+        "description": "Sigue los objetivos, el progreso de las casillas y la puntuación actual en un solo lugar.",
+        "prototypeData": "Datos de prototipo",
+        "gridTitle": "Objetivos",
+        "tileCount": "{{count}} casillas",
+        "scrollHint": "Desliza horizontalmente para explorar el tablero completo.",
+        "scrollRegion": "Tablero de Bingo desplazable"
+    },
+    "tile": {
+        "completed": "Completada",
+        "inProgress": "En progreso",
+        "notStarted": "Sin iniciar",
+        "imageUnavailable": "Imagen no disponible",
+        "points": "{{count}} pts",
+        "progressLabel": "Progreso de {{name}}",
+        "progressValue": "{{current}} / {{required}}",
+        "tier": {
+            "Low": "Fácil",
+            "Mid": "Media",
+            "High": "Difícil"
+        }
+    },
+    "score": {
+        "title": "Resumen de puntuación",
+        "total": "Total",
+        "tiles": "Casillas",
+        "rowBonus": "Bono de fila",
+        "columnBonus": "Bono de columna",
+        "completedTiles": "{{completed}} de {{total}} completadas",
+        "completedRows_one": "{{count}} fila completada",
+        "completedRows_other": "{{count}} filas completadas",
+        "completedColumns_one": "{{count}} columna completada",
+        "completedColumns_other": "{{count}} columnas completadas"
+    },
+    "common": {
+        "loading": "Cargando…",
+        "saving": "Guardando…",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "close": "Cerrar",
+        "edit": "Editar",
+        "apiError": "El servicio no está disponible. Inténtalo de nuevo."
+    },
+    "events": {
+        "eyebrow": "Administración",
+        "title": "Eventos",
+        "description": "Crea y gestiona el ciclo de vida de los eventos de Bingo.",
+        "listTitle": "Lista de eventos",
+        "empty": "No se encontraron eventos.",
+        "status": {
+            "draft": "Borrador",
+            "active": "Activo",
+            "finished": "Finalizado"
+        },
+        "filter": {
+            "label": "Filtrar eventos",
+            "all": "Todos los estados",
+            "draft": "Borrador",
+            "active": "Activo",
+            "finished": "Finalizado"
+        },
+        "actions": {
+            "create": "Crear evento",
+            "activate": "Activar evento",
+            "finish": "Finalizar evento"
+        },
+        "form": {
+            "createTitle": "Crear evento",
+            "editTitle": "Editar evento",
+            "name": "Nombre",
+            "description": "Descripción",
+            "start": "Fecha y hora de inicio",
+            "end": "Fecha y hora de fin"
+        },
+        "schedule": {
+            "title": "Periodo del evento",
+            "invalidEnd": "El fin debe ser posterior al inicio.",
+            "quickDuration": "Duración rápida",
+            "day": "día",
+            "days": "días",
+            "duration": "Duración",
+            "durationValue": "{{days}} días",
+            "timezone": "Zona horaria local"
+        },
+        "feedback": {
+            "created": "Evento creado.",
+            "updated": "Evento actualizado.",
+            "activated": "Evento activado.",
+            "finished": "Evento finalizado."
+        },
+        "confirm": {
+            "activateTitle": "¿Activar evento?",
+            "finishTitle": "¿Finalizar evento?",
+            "activateMessage": "¿Activar {{name}}? Quedará disponible como evento activo.",
+            "finishMessage": "¿Finalizar {{name}}? Esta acción no se puede deshacer.",
+            "activate": "Activar",
+            "finish": "Finalizar"
+        },
+        "errors": {
+            "activeLimit": "Ya hay un evento activo. Finalízalo antes de activar este evento.",
+            "readOnly": "Solo se pueden editar eventos en borrador.",
+            "invalidTransition": "Este evento no permite ese cambio de estado.",
+            "notFound": "No se encontró el evento."
+        },
+        "selector": {
+            "label": "Evento actual",
+            "placeholder": "Selecciona un evento activo"
+        },
+        "publicEyebrow": "Eventos de la comunidad",
+        "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción."
+    },
+    "teams": {
+        "eyebrow": "Administración",
+        "title": "Equipos y jugadores",
+        "event": "Evento",
+        "selectEvent": "Selecciona un evento",
+        "teams": "Equipos",
+        "players": "Inscripciones al evento",
+        "teamName": "Nombre del equipo",
+        "playerName": "Nombre de OSRS",
+        "selectTeam": "Selecciona un equipo",
+        "create": "Crear",
+        "description": "Revisa las inscripciones y organiza a los participantes aprobados en equipos.",
+        "registrationHint": "Los jugadores solicitan inscripción desde la página de Eventos.",
+        "unassigned": "Sin equipo asignado",
+        "noPlayers": "Todavía no hay participantes aprobados.",
+        "noTeams": "No hay equipos en este evento.",
+        "pending": "Pendientes de aprobación",
+        "approved": "Participantes aprobados",
+        "noPending": "No hay solicitudes pendientes.",
+        "approveAll": "Aprobar todos los pendientes",
+        "approve": "Aprobar",
+        "approvePlayer": "Aprobar a {{name}}",
+        "remove": "Eliminar inscripción",
+        "removePlayer": "Eliminar a {{name}}",
+        "removeTitle": "¿Eliminar inscripción?",
+        "removeConfirmation": "¿Eliminar a {{name}} del evento? También se eliminará su asignación de equipo.",
+        "confirmRemoval": "Confirmar eliminación",
+        "assignmentFor": "Equipo de {{name}}",
+        "saveAssignment": "Guardar equipo",
+        "memberCount_one": "{{count}} miembro",
+        "memberCount_other": "{{count}} miembros",
+        "feedback": {
+            "assignmentUpdated": "Equipo actualizado.",
+            "teamCreated": "Equipo creado.",
+            "approved": "Inscripciones aprobadas.",
+            "removed": "Inscripción eliminada."
+        },
+        "errors": {
+            "duplicatePlayer": "Tú o este nombre de OSRS ya tenéis una inscripción en este evento.",
+            "duplicateTeam": "Ya existe un equipo con este nombre en este evento.",
+            "readOnly": "Los participantes solo pueden modificarse en eventos en borrador.",
+            "playerNotFound": "Inscripción no encontrada en este evento.",
+            "teamNotFound": "Equipo no encontrado en este evento.",
+            "invalidInput": "Introduce un nombre válido.",
+            "approvedOnly": "Solo las inscripciones aprobadas pueden recibir un equipo. Actualiza la lista.",
+            "pendingOnly": "Esta solicitud ya no está pendiente.",
+            "removed": "Esta inscripción ya fue eliminada."
+        }
     },
     "language": {
-        "label": "Idioma"
+        "label": "Idioma",
+        "en": "Inglés",
+        "pt": "Portugués",
+        "es": "Español"
+    },
+    "auth": {
+        "login": "Entrar con Discord",
+        "logout": "Salir",
+        "loginRequired": "Inicia sesión para continuar.",
+        "adminRequired": "Solo los administradores pueden gestionar participantes.",
+        "requestRejected": "No se pudo verificar esta solicitud. Recarga e inténtalo de nuevo.",
+        "loginFailed": "El inicio de sesión con Discord falló o caducó. Inténtalo de nuevo.",
+        "backToEvents": "Explorar eventos",
+        "loginEyebrow": "Bingo OSRS",
+        "loginTitle": "Únete a la aventura",
+        "loginDescription": "Inicia sesión para solicitar tu inscripción en un evento y seguir a tu equipo.",
+        "identityNotice": "Discord identifica tu cuenta. No necesitas ser administrador de un servidor de Discord para participar.",
+        "notConfigured": "El inicio de sesión con Discord aún no está disponible. Inténtalo más tarde.",
+        "retry": "Reintentar"
+    },
+    "registration": {
+        "loginToRegister": "Entra con Discord para inscribirte",
+        "formFor": "Inscribirse en {{name}}",
+        "approvalHint": "Un administrador revisará tu solicitud.",
+        "request": "Solicitar inscripción",
+        "status": {
+            "pending": "Inscripción pendiente de aprobación",
+            "approved": "Inscripción aprobada",
+            "removed": "Inscripción eliminada por un administrador"
+        }
+    },
+    "admin": {
+        "title": "Administración",
+        "sections": "Secciones de administración",
+        "overview": "Vista general",
+        "events": "Eventos",
+        "teams": "Equipos e inscripciones",
+        "administrators": "Administradores",
+        "ranking": "Comparación del evento",
+        "privateArea": "Área privada",
+        "description": "Gestiona el acceso a la aplicación y organiza tus eventos de Bingo.",
+        "eventsDescription": "Crea eventos y gestiona su ciclo de vida. Solo un evento puede estar activo.",
+        "teamsDescription": "Selecciona un evento para aprobar inscripciones y organizar equipos.",
+        "rolesDescription": "Selecciona los administradores de la aplicación. Esta configuración se aplica a todos los eventos.",
+        "rankingDescription": "Compara los equipos y las contribuciones de los jugadores de un evento.",
+        "rankingUnavailable": "La puntuación del evento aún no está disponible. La clasificación y las contribuciones aparecerán cuando las reglas y las actividades aceptadas estén definidas.",
+        "searchUsers": "Buscar usuarios registrados",
+        "search": "Buscar",
+        "noUsers": "No se encontraron usuarios. Aparecen después de su primer inicio de sesión.",
+        "role": "Rol en la aplicación",
+        "adminRole": "Administrador",
+        "playerRole": "Jugador",
+        "grant": "Conceder acceso de administrador",
+        "revoke": "Quitar acceso de administrador",
+        "grantTo": "Conceder acceso a {{name}}",
+        "revokeFrom": "Quitar acceso a {{name}}",
+        "confirmTitle": "¿Cambiar acceso de administrador?",
+        "grantMessage": "¿Conceder a {{name}} acceso de administrador a todos los eventos y ajustes?",
+        "revokeMessage": "¿Quitar el acceso de administrador de {{name}}? Sus inscripciones no cambiarán.",
+        "confirm": "Confirmar cambio",
+        "updated": "Acceso de administrador actualizado.",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "directoryCount": "{{count}} usuarios registrados",
+        "globalNotice": "Estos roles pertenecen a la aplicación y son independientes de Discord. No es necesario seleccionar un evento.",
+        "errors": {
+            "lastAdmin": "Debe permanecer al menos un administrador.",
+            "changed": "Los accesos cambiaron mientras editabas. Actualiza e inténtalo de nuevo.",
+            "notInitialized": "La administración aún no está inicializada. Contacta con el responsable.",
+            "userNotFound": "No se encontró este usuario.",
+            "rateLimit": "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo."
+        },
+        "discordIdentity": "Discord ID: {{id}}"
     }
 }

@@ -41,3 +41,11 @@ router → service → repository → MongoDB
 ## Configuration
 All settings via environment variables – see `.env.example`.
 Read by `app/core/config.py` using `pydantic-settings`.
+
+## Event lifecycle
+
+The `events` module is the first implemented domain boundary and follows `router → service → repository → MongoDB`. Event status changes only through explicit activation and finish actions.
+
+Only one event may be active. A partial unique MongoDB index on `status` for active documents protects concurrent activation, including legacy documents with old slot numbers. An administrator must explicitly finish the current event before activating another. Legacy databases with multiple active events require explicit operator resolution before the new index can be installed.
+
+Feature 003 supersedes temporary public administration: event/team mutations and participant administration require a Discord-authenticated administrator. See [authentication and registration](authentication.md) for configuration, session security, and role boundaries.

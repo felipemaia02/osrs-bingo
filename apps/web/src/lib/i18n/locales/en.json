@@ -1,9 +1,252 @@
 {
-    "home": {
-        "title": "OSRS Bingo",
-        "subtitle": "Platform is running. Start from a spec."
+    "event": {
+        "name": "Summer Bingo"
+    },
+    "navigation": {
+        "primary": "Primary navigation",
+        "mobile": "Mobile navigation",
+        "board": "Board",
+        "events": "Events",
+        "team": "Team",
+        "submissions": "Submissions",
+        "ranking": "Ranking",
+        "comingSoon": "Team, submissions, and ranking will become available in future features."
+    },
+    "board": {
+        "eyebrow": "Event progress",
+        "title": "Bingo board",
+        "description": "Track objectives, tile progress, and the current score in one place.",
+        "prototypeData": "Prototype data",
+        "gridTitle": "Objectives",
+        "tileCount": "{{count}} tiles",
+        "scrollHint": "Swipe horizontally to explore the complete board.",
+        "scrollRegion": "Scrollable Bingo board"
+    },
+    "tile": {
+        "completed": "Completed",
+        "inProgress": "In progress",
+        "notStarted": "Not started",
+        "imageUnavailable": "Image unavailable",
+        "points": "{{count}} pts",
+        "progressLabel": "Progress for {{name}}",
+        "progressValue": "{{current}} / {{required}}",
+        "tier": {
+            "Low": "Easy",
+            "Mid": "Medium",
+            "High": "Hard"
+        }
+    },
+    "score": {
+        "title": "Score summary",
+        "total": "Total",
+        "tiles": "Tiles",
+        "rowBonus": "Row bonus",
+        "columnBonus": "Column bonus",
+        "completedTiles": "{{completed}} of {{total}} completed",
+        "completedRows_one": "{{count}} completed row",
+        "completedRows_other": "{{count}} completed rows",
+        "completedColumns_one": "{{count}} completed column",
+        "completedColumns_other": "{{count}} completed columns"
+    },
+    "common": {
+        "loading": "Loading…",
+        "saving": "Saving…",
+        "save": "Save",
+        "cancel": "Cancel",
+        "close": "Close",
+        "edit": "Edit",
+        "apiError": "The service is unavailable. Try again."
+    },
+    "events": {
+        "eyebrow": "Administration",
+        "title": "Events",
+        "description": "Create and manage the lifecycle of Bingo events.",
+        "listTitle": "Event list",
+        "empty": "No events found.",
+        "status": {
+            "draft": "Draft",
+            "active": "Active",
+            "finished": "Finished"
+        },
+        "filter": {
+            "label": "Filter events",
+            "all": "All statuses",
+            "draft": "Draft",
+            "active": "Active",
+            "finished": "Finished"
+        },
+        "actions": {
+            "create": "Create event",
+            "activate": "Activate event",
+            "finish": "Finish event"
+        },
+        "form": {
+            "createTitle": "Create event",
+            "editTitle": "Edit event",
+            "name": "Name",
+            "description": "Description",
+            "start": "Start date and time",
+            "end": "End date and time"
+        },
+        "schedule": {
+            "title": "Event schedule",
+            "invalidEnd": "End must be later than start.",
+            "quickDuration": "Quick duration",
+            "day": "day",
+            "days": "days",
+            "duration": "Duration",
+            "durationValue": "{{days}} days",
+            "timezone": "Local timezone"
+        },
+        "feedback": {
+            "created": "Event created.",
+            "updated": "Event updated.",
+            "activated": "Event activated.",
+            "finished": "Event finished."
+        },
+        "confirm": {
+            "activateTitle": "Activate event?",
+            "finishTitle": "Finish event?",
+            "activateMessage": "Activate {{name}}? It will become available as an active event.",
+            "finishMessage": "Finish {{name}}? This action cannot be undone.",
+            "activate": "Activate",
+            "finish": "Finish"
+        },
+        "errors": {
+            "activeLimit": "Another event is already active. Finish it before activating this event.",
+            "readOnly": "Only draft events can be edited.",
+            "invalidTransition": "This event cannot perform that status change.",
+            "notFound": "The event was not found."
+        },
+        "selector": {
+            "label": "Current event",
+            "placeholder": "Select an active event"
+        },
+        "publicEyebrow": "Community events",
+        "publicDescription": "Discover Bingo events and follow your registration."
+    },
+    "teams": {
+        "eyebrow": "Administration",
+        "title": "Teams and players",
+        "event": "Event",
+        "selectEvent": "Select an event",
+        "teams": "Teams",
+        "players": "Event registrations",
+        "teamName": "Team name",
+        "playerName": "OSRS display name",
+        "selectTeam": "Select a team",
+        "create": "Create",
+        "description": "Review event registrations and organize approved participants into teams.",
+        "registrationHint": "Players request registration from the Events page.",
+        "unassigned": "No team assigned",
+        "noPlayers": "No approved participants yet.",
+        "noTeams": "No teams in this event.",
+        "pending": "Pending approval",
+        "approved": "Approved participants",
+        "noPending": "No pending requests.",
+        "approveAll": "Approve all pending",
+        "approve": "Approve",
+        "approvePlayer": "Approve {{name}}",
+        "remove": "Remove registration",
+        "removePlayer": "Remove {{name}}",
+        "removeTitle": "Remove registration?",
+        "removeConfirmation": "Remove {{name}} from the event? Their team assignment will also be cleared.",
+        "confirmRemoval": "Confirm removal",
+        "assignmentFor": "Team for {{name}}",
+        "saveAssignment": "Save team assignment",
+        "memberCount_one": "{{count}} member",
+        "memberCount_other": "{{count}} members",
+        "feedback": {
+            "assignmentUpdated": "Team assignment updated.",
+            "teamCreated": "Team created.",
+            "approved": "Registrations approved.",
+            "removed": "Registration removed."
+        },
+        "errors": {
+            "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
+            "duplicateTeam": "A team with this name already exists in this event.",
+            "readOnly": "Participants can only be changed in draft events.",
+            "playerNotFound": "Registration not found in this event.",
+            "teamNotFound": "Team not found in this event.",
+            "invalidInput": "Enter a valid name.",
+            "approvedOnly": "Only approved registrations can be assigned. Refresh the participant list.",
+            "pendingOnly": "This request is no longer pending.",
+            "removed": "This registration has already been removed."
+        }
     },
     "language": {
-        "label": "Language"
+        "label": "Language",
+        "en": "English",
+        "pt": "Portuguese",
+        "es": "Spanish"
+    },
+    "auth": {
+        "login": "Log in with Discord",
+        "logout": "Log out",
+        "loginRequired": "Log in to continue.",
+        "adminRequired": "Only administrators can manage participants.",
+        "requestRejected": "This request could not be verified. Reload and try again.",
+        "loginFailed": "Discord login failed or expired. Please try again.",
+        "backToEvents": "Explore events",
+        "loginEyebrow": "OSRS Bingo",
+        "loginTitle": "Join the adventure",
+        "loginDescription": "Sign in to request a place in an event and follow your team.",
+        "identityNotice": "Discord identifies your account. You do not need to be a Discord server administrator to participate.",
+        "notConfigured": "Discord login is not available yet. Please try again later.",
+        "retry": "Try again"
+    },
+    "registration": {
+        "loginToRegister": "Log in with Discord to register",
+        "formFor": "Register for {{name}}",
+        "approvalHint": "Your request will be reviewed by an administrator.",
+        "request": "Request registration",
+        "status": {
+            "pending": "Registration pending approval",
+            "approved": "Registration approved",
+            "removed": "Registration removed by an administrator"
+        }
+    },
+    "admin": {
+        "title": "Administration",
+        "sections": "Administration sections",
+        "overview": "Overview",
+        "events": "Events",
+        "teams": "Teams and registrations",
+        "administrators": "Administrators",
+        "ranking": "Event comparison",
+        "privateArea": "Private area",
+        "description": "Manage application access and organize your Bingo events.",
+        "eventsDescription": "Create events and manage their lifecycle. Only one event can be active.",
+        "teamsDescription": "Select an event to approve registrations and organize teams.",
+        "rolesDescription": "Choose application administrators. This setting applies to all events.",
+        "rankingDescription": "Compare teams and player contributions for a selected event.",
+        "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
+        "searchUsers": "Search registered users",
+        "search": "Search",
+        "noUsers": "No users found. Users appear here after their first login.",
+        "role": "Application role",
+        "adminRole": "Administrator",
+        "playerRole": "Player",
+        "grant": "Grant administrator access",
+        "revoke": "Remove administrator access",
+        "grantTo": "Grant access to {{name}}",
+        "revokeFrom": "Remove access from {{name}}",
+        "confirmTitle": "Change administrator access?",
+        "grantMessage": "Give {{name}} administrator access to all events and application settings?",
+        "revokeMessage": "Remove administrator access from {{name}}? This does not change their event registrations.",
+        "confirm": "Confirm change",
+        "updated": "Administrator access updated.",
+        "previous": "Previous",
+        "next": "Next",
+        "directoryCount": "{{count}} registered users",
+        "globalNotice": "These roles belong to this application and are independent of Discord server roles. No event selection is required.",
+        "errors": {
+            "lastAdmin": "At least one administrator must remain.",
+            "changed": "Administrator access changed while you were editing. Refresh and try again.",
+            "notInitialized": "Administration has not been initialized. Contact the application operator.",
+            "userNotFound": "This user was not found.",
+            "rateLimit": "Too many requests. Wait a moment and try again."
+        },
+        "discordIdentity": "Discord ID: {{id}}"
     }
 }

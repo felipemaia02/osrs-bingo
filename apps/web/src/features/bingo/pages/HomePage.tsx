@@ -1,16 +1,31 @@
 import { useTranslation } from 'react-i18next'
-import { LanguageSwitcher } from '../../../components/common/LanguageSwitcher'
+import { AppShell } from '../../../components/common/AppShell'
+import { BingoBoard } from '../components/BingoBoard'
 
 export function HomePage() {
-    const { t } = useTranslation()
+  const { t } = useTranslation()
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-center bg-gray-900 text-white">
-            <div className="absolute top-4 right-4">
-                <LanguageSwitcher />
+  return (
+    <AppShell>
+      <div className="mx-auto max-w-[96rem]">
+        <div className="mb-5">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-rs-gold">
+            {t('board.eyebrow')}
+          </p>
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="font-display text-2xl font-bold text-rs-text sm:text-3xl">
+                {t('board.title')}
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-rs-muted">{t('board.description')}</p>
             </div>
-            <h1 className="text-4xl font-bold tracking-tight">{t('home.title')}</h1>
-            <p className="mt-4 text-gray-400">{t('home.subtitle')}</p>
-        </main>
-    )
+            <p className="rounded-sm border border-rs-border/60 bg-rs-surface px-3 py-1.5 text-xs text-rs-muted">
+              {t('board.prototypeData')}
+            </p>
+          </div>
+        </div>
+        <BingoBoard />
+      </div>
+    </AppShell>
+  )
 }

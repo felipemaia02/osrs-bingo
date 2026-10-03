@@ -23,6 +23,12 @@ ruff check .
 mypy app/
 ```
 
+## Event API
+
+The API exposes event listing and detail publicly under `/events`. Creation, draft editing, activation, and finishing require a Discord-authenticated administrator. Players can request event registration; administrators approve requests and assign teams. See [Discord configuration and registration flow](../../docs/architecture/authentication.md).
+
+Only draft events are editable, dates never change status automatically, and at most one event may be active at a time.
+
 ## Structure
 
 ```

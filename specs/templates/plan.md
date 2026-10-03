@@ -19,6 +19,10 @@
 - Affected features: ...
 - New components: ...
 
+## Integration
+
+> API/frontend contract, generated types, cross-application flows and sequencing constraints.
+
 ## Data Model
 
 > New documents or fields. Embedding vs. referencing decision with justification.

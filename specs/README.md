@@ -9,20 +9,26 @@ specs/
 ├── templates/          – templates for creating new specs
 │   ├── specification.md
 │   ├── plan.md
-│   ├── tasks.md
+│   ├── tasks/
+│   │   ├── backend.md
+│   │   ├── frontend.md
+│   │   └── integration.md
 │   └── acceptance.md
 └── features/
     └── <NNN>-<slug>/   – one folder per feature
         ├── spec.md
         ├── plan.md
-        ├── tasks.md
+        ├── tasks/
+        │   ├── backend.md
+        │   ├── frontend.md
+        │   └── integration.md
         └── acceptance.md
 ```
 
 ## Source of truth hierarchy
 
 ```
-spec.md  →  plan.md  →  tasks.md  →  code
+spec.md  →  plan.md  →  tasks/  →  code  →  acceptance.md
 ```
 
 If code and spec diverge, **the spec prevails**.
@@ -33,7 +39,7 @@ If code and spec diverge, **the spec prevails**.
 2. Copy `specs/templates/specification.md` → `spec.md`
 3. Fill in and wait for approval
 4. Copy `specs/templates/plan.md` → `plan.md`
-5. Copy `specs/templates/tasks.md` → `tasks.md`
+5. Create `tasks/` from the applicable templates in `specs/templates/tasks/`
 6. Implement task by task
 7. Fill in `acceptance.md` from the template
 
@@ -41,3 +47,5 @@ If code and spec diverge, **the spec prevails**.
 
 Use three-digit sequential numbers: `001`, `002`, etc.
 Feature `000` is reserved for the project foundation.
+
+Feature `000` predates the split task format and keeps its historical `tasks.md`. New features must use `tasks/`.
