@@ -3,7 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.core.logging import get_logger, log_event
-from app.modules.auth.dependencies import require_admin
+from app.modules.auth.dependencies import AdminDependency, require_admin
+from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import (
     EventCreate,
@@ -20,7 +21,8 @@ logger = get_logger(__name__)
 
 def get_event_service(request: Request) -> EventService:
     repository = EventRepository(request.app.state.db_client.database)
-    return EventService(repository)
+    boards = BoardRepository(request.app.state.db_client.database)
+    return EventService(repository, boards)
 
 
 EventServiceDependency = Annotated[EventService, Depends(get_event_service)]
@@ -67,12 +69,12 @@ async def update_event(
     return await service.update(event_id, payload)
 
 
-@router.post(
-    "/{event_id}/activate", response_model=EventResponse, dependencies=[Depends(require_admin)]
-)
-async def activate_event(event_id: str, service: EventServiceDependency) -> EventResponse:
+@router.post("/{event_id}/activate", response_model=EventResponse)
+async def activate_event(
+    event_id: str, admin: AdminDependency, service: EventServiceDependency
+) -> EventResponse:
     log_event(logger, 20, "event_activation_requested", event_id=event_id)
-    return await service.activate(event_id)
+    return await service.activate(event_id, admin.id)
 
 
 @router.post(

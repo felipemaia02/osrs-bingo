@@ -16,6 +16,9 @@
         "eyebrow": "Event progress",
         "title": "Bingo board",
         "description": "Track objectives, tile progress, and the current score in one place.",
+        "eventDescription": "Official board for {{event}}.",
+        "noActiveEvent": "There is no active event to display.",
+        "unavailable": "The active event board is not available yet.",
         "prototypeData": "Prototype data",
         "gridTitle": "Objectives",
         "tileCount": "{{count}} tiles",
@@ -26,10 +29,13 @@
         "completed": "Completed",
         "inProgress": "In progress",
         "notStarted": "Not started",
+        "progressUnavailable": "Progress unavailable",
         "imageUnavailable": "Image unavailable",
         "points": "{{count}} pts",
         "progressLabel": "Progress for {{name}}",
         "progressValue": "{{current}} / {{required}}",
+        "requirementValue": "Requirement: {{required}}",
+        "imageSource": "Image source: OSRS Wiki",
         "tier": {
             "Low": "Easy",
             "Mid": "Medium",
@@ -116,7 +122,8 @@
             "activeLimit": "Another event is already active. Finish it before activating this event.",
             "readOnly": "Only draft events can be edited.",
             "invalidTransition": "This event cannot perform that status change.",
-            "notFound": "The event was not found."
+            "notFound": "The event was not found.",
+            "boardRequired": "Complete and save all 36 board positions before activating the event."
         },
         "selector": {
             "label": "Current event",
@@ -212,12 +219,16 @@
         "overview": "Overview",
         "events": "Events",
         "teams": "Teams and registrations",
+        "cards": "Card catalog",
+        "boards": "Event boards",
         "administrators": "Administrators",
         "ranking": "Event comparison",
         "privateArea": "Private area",
         "description": "Manage application access and organize your Bingo events.",
         "eventsDescription": "Create events and manage their lifecycle. Only one event can be active.",
         "teamsDescription": "Select an event to approve registrations and organize teams.",
+        "cardsDescription": "Manage reusable bosses, drops, points, difficulty, and card revisions.",
+        "boardsDescription": "Choose the 36 cards and their positions for each event.",
         "rolesDescription": "Choose application administrators. This setting applies to all events.",
         "rankingDescription": "Compare teams and player contributions for a selected event.",
         "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
@@ -248,5 +259,76 @@
             "rateLimit": "Too many requests. Wait a moment and try again."
         },
         "discordIdentity": "Discord ID: {{id}}"
+    },
+    "cards": {
+        "title": "Card catalog",
+        "description": "Cards are global and reusable. Publishing a change creates a new revision and never changes an existing event board.",
+        "importWorkbook": "Import approved workbook",
+        "create": "Create card",
+        "empty": "No cards are registered yet.",
+        "edit": "Edit {{name}}",
+        "retire": "Retire {{name}}",
+        "retireConfirm": "Retire {{name}} from new event boards? Existing boards keep their snapshot.",
+        "summary": "{{difficulty}} · {{score}} pts · requirement {{requirement}} · {{drops}} drops · revision {{revision}}",
+        "status": {
+            "active": "Active",
+            "retired": "Retired"
+        },
+        "kind": {
+            "boss": "Boss",
+            "boss_group": "Boss group",
+            "raid": "Raid",
+            "activity": "Activity",
+            "task": "Task"
+        },
+        "form": {
+            "createTitle": "Create catalog card",
+            "reviseTitle": "Publish a new card revision",
+            "slug": "Stable key",
+            "name": "Name",
+            "kind": "Card type",
+            "difficulty": "Difficulty",
+            "score": "Completion points",
+            "requirement": "Progress requirement",
+            "description": "Description",
+            "drops": "Accepted drops (one per line)",
+            "dropsPlaceholder": "Drop name | progress weight",
+            "wikiArticle": "OSRS Wiki article",
+            "resolveImage": "Find image",
+            "ruleNote": "Rule or verification note",
+            "changeReason": "Reason for this revision"
+        },
+        "feedback": {
+            "created": "Card created.",
+            "revised": "New card revision published.",
+            "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present."
+        },
+        "errors": {
+            "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
+            "drops": "Enter every drop as Name | positive weight.",
+            "changed": "This card changed while you were editing. Reload and try again.",
+            "slug": "This stable card key is already in use.",
+            "importConflict": "The workbook import found conflicting keys: {{slugs}}."
+        }
+    },
+    "boards": {
+        "title": "Event boards",
+        "description": "Select a draft event and assign one exact card revision to each of its 36 positions.",
+        "event": "Event",
+        "selectEvent": "Select an event",
+        "filled": "{{filled}} of {{total}} positions filled",
+        "save": "Save board",
+        "readOnly": "This published board is read-only.",
+        "noCards": "Import or create catalog cards before assembling a board.",
+        "gridLabel": "Event board editor",
+        "position": "Position {{position}}",
+        "emptyPosition": "Empty position",
+        "feedback": {
+            "saved": "Board saved with pinned card revisions."
+        },
+        "errors": {
+            "changed": "This board changed while you were editing. Reload and try again.",
+            "retired": "A selected card was retired. Replace it and save again."
+        }
     }
 }

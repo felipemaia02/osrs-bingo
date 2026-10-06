@@ -21,7 +21,7 @@ interface ScoreSummary {
 }
 
 function isTileComplete(tile: Tile): boolean {
-  return tile.progress >= tile.requirement
+  return tile.progress !== null && tile.progress >= tile.requirement
 }
 
 function countCompletedAxis(tiles: Tile[], axis: 'row' | 'col'): number {

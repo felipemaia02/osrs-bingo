@@ -1,18 +1,19 @@
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import { useTranslation } from 'react-i18next'
 import { Panel } from '../../../components/ui/Panel'
-import { MOCK_TILES } from '../data/tiles'
+import { MOCK_TILES, type Tile } from '../data/tiles'
 import { ScoreTally } from './ScoreTally'
 import { TileCard } from './TileCard'
 
 const GRID_SIZE = 6
 const GRID_POSITIONS = Array.from({ length: GRID_SIZE }, (_, index) => index + 1)
 
-function wikiImageUrl(wikiPage: string): string {
-  return `https://oldschool.runescape.wiki/w/Special:FilePath/${wikiPage.replace(/ /g, '_')}.png`
+interface BingoBoardProps {
+  tiles?: Tile[]
+  showScore?: boolean
 }
 
-export function BingoBoard() {
+export function BingoBoard({ tiles = MOCK_TILES, showScore = true }: BingoBoardProps) {
   const { t } = useTranslation()
 
   return (
@@ -29,7 +30,7 @@ export function BingoBoard() {
             </h2>
           </div>
           <span className="text-xs text-rs-muted">
-            {t('board.tileCount', { count: MOCK_TILES.length })}
+            {t('board.tileCount', { count: tiles.length })}
           </span>
         </div>
 
@@ -45,17 +46,16 @@ export function BingoBoard() {
           <div className="grid min-w-[62rem] grid-cols-6 gap-2 lg:min-w-0">
             {GRID_POSITIONS.flatMap((row) =>
               GRID_POSITIONS.map((col) => {
-                const tile = MOCK_TILES.find((item) => item.row === row && item.col === col)
+                const tile = tiles.find((item) => item.row === row && item.col === col)
                 if (!tile) return null
-                const imageUrl = tile.wikiPage ? wikiImageUrl(tile.wikiPage) : null
-                return <TileCard key={tile.id} tile={tile} imageUrl={imageUrl} />
+                return <TileCard key={tile.id} tile={tile} imageUrl={tile.imageUrl} />
               }),
             )}
           </div>
         </div>
       </Panel>
 
-      <ScoreTally tiles={MOCK_TILES} />
+      {showScore && <ScoreTally tiles={tiles} />}
     </div>
   )
 }

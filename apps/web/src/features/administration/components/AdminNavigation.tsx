@@ -7,6 +7,8 @@ export function AdminNavigation() {
     ['/admin', 'admin.overview'],
     ['/admin/events', 'admin.events'],
     ['/admin/teams', 'admin.teams'],
+    ['/admin/cards', 'admin.cards'],
+    ['/admin/boards', 'admin.boards'],
     ['/admin/administrators', 'admin.administrators'],
     ['/admin/ranking', 'admin.ranking'],
   ]

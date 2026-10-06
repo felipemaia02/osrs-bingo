@@ -4,6 +4,8 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined'
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
+import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
 import { AppShell } from '../../../components/common/AppShell'
 import { Panel } from '../../../components/ui/Panel'
 
@@ -21,6 +23,18 @@ export function AdminHomePage() {
       title: 'admin.teams',
       description: 'admin.teamsDescription',
       icon: <GroupsOutlinedIcon />,
+    },
+    {
+      to: '/admin/cards',
+      title: 'admin.cards',
+      description: 'admin.cardsDescription',
+      icon: <StyleOutlinedIcon />,
+    },
+    {
+      to: '/admin/boards',
+      title: 'admin.boards',
+      description: 'admin.boardsDescription',
+      icon: <GridViewOutlinedIcon />,
     },
     {
       to: '/admin/administrators',

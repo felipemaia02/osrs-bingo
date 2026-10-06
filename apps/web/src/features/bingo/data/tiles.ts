@@ -8,7 +8,9 @@ export interface Tile {
   tier: TileTier
   points: number
   requirement: number
-  progress: number
+  progress: number | null
+  imageUrl?: string | null
+  imageSourceUrl?: string | null
   wikiPage?: string // OSRS Wiki article title for thumbnail lookup
 }
 

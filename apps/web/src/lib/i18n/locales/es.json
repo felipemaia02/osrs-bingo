@@ -16,6 +16,9 @@
         "eyebrow": "Progreso del evento",
         "title": "Tablero del Bingo",
         "description": "Sigue los objetivos, el progreso de las casillas y la puntuación actual en un solo lugar.",
+        "eventDescription": "Tablero oficial de {{event}}.",
+        "noActiveEvent": "No hay un evento activo para mostrar.",
+        "unavailable": "El tablero del evento activo todavía no está disponible.",
         "prototypeData": "Datos de prototipo",
         "gridTitle": "Objetivos",
         "tileCount": "{{count}} casillas",
@@ -26,10 +29,13 @@
         "completed": "Completada",
         "inProgress": "En progreso",
         "notStarted": "Sin iniciar",
+        "progressUnavailable": "Progreso no disponible",
         "imageUnavailable": "Imagen no disponible",
         "points": "{{count}} pts",
         "progressLabel": "Progreso de {{name}}",
         "progressValue": "{{current}} / {{required}}",
+        "requirementValue": "Requisito: {{required}}",
+        "imageSource": "Fuente de la imagen: OSRS Wiki",
         "tier": {
             "Low": "Fácil",
             "Mid": "Media",
@@ -116,7 +122,8 @@
             "activeLimit": "Ya hay un evento activo. Finalízalo antes de activar este evento.",
             "readOnly": "Solo se pueden editar eventos en borrador.",
             "invalidTransition": "Este evento no permite ese cambio de estado.",
-            "notFound": "No se encontró el evento."
+            "notFound": "No se encontró el evento.",
+            "boardRequired": "Completa y guarda las 36 posiciones del tablero antes de activar el evento."
         },
         "selector": {
             "label": "Evento actual",
@@ -212,12 +219,16 @@
         "overview": "Vista general",
         "events": "Eventos",
         "teams": "Equipos e inscripciones",
+        "cards": "Catálogo de tarjetas",
+        "boards": "Tableros de eventos",
         "administrators": "Administradores",
         "ranking": "Comparación del evento",
         "privateArea": "Área privada",
         "description": "Gestiona el acceso a la aplicación y organiza tus eventos de Bingo.",
         "eventsDescription": "Crea eventos y gestiona su ciclo de vida. Solo un evento puede estar activo.",
         "teamsDescription": "Selecciona un evento para aprobar inscripciones y organizar equipos.",
+        "cardsDescription": "Gestiona jefes reutilizables, drops, puntos, dificultad y revisiones de tarjetas.",
+        "boardsDescription": "Elige las 36 tarjetas y sus posiciones para cada evento.",
         "rolesDescription": "Selecciona los administradores de la aplicación. Esta configuración se aplica a todos los eventos.",
         "rankingDescription": "Compara los equipos y las contribuciones de los jugadores de un evento.",
         "rankingUnavailable": "La puntuación del evento aún no está disponible. La clasificación y las contribuciones aparecerán cuando las reglas y las actividades aceptadas estén definidas.",
@@ -248,5 +259,71 @@
             "rateLimit": "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo."
         },
         "discordIdentity": "Discord ID: {{id}}"
+    },
+    "cards": {
+        "title": "Catálogo de tarjetas",
+        "description": "Las tarjetas son globales y reutilizables. Publicar un cambio crea una nueva revisión y nunca cambia un tablero existente.",
+        "importWorkbook": "Importar hoja aprobada",
+        "create": "Crear tarjeta",
+        "empty": "Todavía no hay tarjetas registradas.",
+        "edit": "Editar {{name}}",
+        "retire": "Retirar {{name}}",
+        "retireConfirm": "¿Retirar {{name}} de los tableros nuevos? Los tableros existentes conservan sus datos.",
+        "summary": "{{difficulty}} · {{score}} pts · requisito {{requirement}} · {{drops}} drops · revisión {{revision}}",
+        "status": { "active": "Activa", "retired": "Retirada" },
+        "kind": {
+            "boss": "Jefe",
+            "boss_group": "Grupo de jefes",
+            "raid": "Raid",
+            "activity": "Actividad",
+            "task": "Tarea"
+        },
+        "form": {
+            "createTitle": "Crear tarjeta del catálogo",
+            "reviseTitle": "Publicar una nueva revisión",
+            "slug": "Clave permanente",
+            "name": "Nombre",
+            "kind": "Tipo de tarjeta",
+            "difficulty": "Dificultad",
+            "score": "Puntos al completar",
+            "requirement": "Requisito de progreso",
+            "description": "Descripción",
+            "drops": "Drops aceptados (uno por línea)",
+            "dropsPlaceholder": "Nombre del drop | peso de progreso",
+            "wikiArticle": "Artículo de OSRS Wiki",
+            "resolveImage": "Buscar imagen",
+            "ruleNote": "Nota de regla o verificación",
+            "changeReason": "Motivo de esta revisión"
+        },
+        "feedback": {
+            "created": "Tarjeta creada.",
+            "revised": "Nueva revisión publicada.",
+            "imported": "Catálogo listo: {{imported}} importadas y {{existing}} ya existentes."
+        },
+        "errors": {
+            "wiki": "No se pudo resolver la imagen de Wiki. Revisa el artículo o conserva la alternativa.",
+            "drops": "Introduce cada drop como Nombre | peso positivo.",
+            "changed": "Esta tarjeta cambió durante la edición. Recarga e inténtalo de nuevo.",
+            "slug": "Esta clave permanente ya está en uso.",
+            "importConflict": "La importación encontró claves en conflicto: {{slugs}}."
+        }
+    },
+    "boards": {
+        "title": "Tableros de eventos",
+        "description": "Selecciona un evento en borrador y asigna una revisión exacta a cada una de las 36 posiciones.",
+        "event": "Evento",
+        "selectEvent": "Selecciona un evento",
+        "filled": "{{filled}} de {{total}} posiciones completas",
+        "save": "Guardar tablero",
+        "readOnly": "Este tablero publicado es de solo lectura.",
+        "noCards": "Importa o crea tarjetas antes de montar un tablero.",
+        "gridLabel": "Editor del tablero del evento",
+        "position": "Posición {{position}}",
+        "emptyPosition": "Posición vacía",
+        "feedback": { "saved": "Tablero guardado con las revisiones fijadas." },
+        "errors": {
+            "changed": "Este tablero cambió durante la edición. Recarga e inténtalo de nuevo.",
+            "retired": "Una tarjeta seleccionada fue retirada. Sustitúyela y guarda de nuevo."
+        }
     }
 }

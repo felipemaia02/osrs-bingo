@@ -1,5 +1,7 @@
 from app.core.exceptions import ConflictError, NotFoundError
 from app.core.logging import get_logger, log_event
+from app.modules.boards.repository import BoardRepository
+from app.modules.boards.service import BOARD_REQUIRED_DETAIL, is_publishable_board
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventCreate, EventResponse, EventStatus, EventUpdate
@@ -10,8 +12,9 @@ READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
 
 
 class EventService:
-    def __init__(self, repository: EventRepository) -> None:
+    def __init__(self, repository: EventRepository, boards: BoardRepository) -> None:
         self._repository = repository
+        self._boards = boards
 
     _logger = get_logger(__name__)
 
@@ -51,11 +54,15 @@ class EventService:
         log_event(self._logger, 20, "event_updated", event_id=event_id)
         return self._to_response(updated)
 
-    async def activate(self, event_id: str) -> EventResponse:
+    async def activate(self, event_id: str, actor_id: str = "system") -> EventResponse:
         event = await self._require_event(event_id)
         self._require_status(event, EventStatus.DRAFT)
+        board = await self._boards.get_by_event(event_id)
+        if not is_publishable_board(board):
+            raise ConflictError(BOARD_REQUIRED_DETAIL)
         activated, limit_reached = await self._repository.activate(event_id)
         if activated is not None:
+            await self._boards.publish(event_id, actor_id)
             log_event(self._logger, 20, "event_activated", event_id=event_id)
             return self._to_response(activated)
         if limit_reached:

@@ -21,14 +21,18 @@ const TIER_TONE: Record<TileTier, 'danger' | 'gold' | 'success'> = {
 export function TileCard({ tile, imageUrl }: TileCardProps) {
   const { t } = useTranslation()
   const [imageFailed, setImageFailed] = useState(false)
-  const isComplete = tile.progress >= tile.requirement
-  const isInProgress = tile.progress > 0 && !isComplete
+  const progress = tile.progress
+  const hasProgress = progress !== null
+  const isComplete = hasProgress && progress >= tile.requirement
+  const isInProgress = hasProgress && progress > 0 && !isComplete
   const showImage = Boolean(imageUrl) && !imageFailed
   const stateLabel = isComplete
     ? t('tile.completed')
     : isInProgress
       ? t('tile.inProgress')
-      : t('tile.notStarted')
+      : hasProgress
+        ? t('tile.notStarted')
+        : t('tile.progressUnavailable')
 
   return (
     <article
@@ -85,15 +89,33 @@ export function TileCard({ tile, imageUrl }: TileCardProps) {
               {t('tile.points', { count: tile.points })}
             </span>
           </div>
-          <ProgressBar
-            value={tile.progress}
-            max={tile.requirement}
-            label={t('tile.progressLabel', { name: tile.name })}
-            complete={isComplete}
-          />
-          <p className="mt-1.5 text-right text-[11px] tabular-nums text-rs-muted">
-            {t('tile.progressValue', { current: tile.progress, required: tile.requirement })}
-          </p>
+          {hasProgress ? (
+            <>
+              <ProgressBar
+                value={progress}
+                max={tile.requirement}
+                label={t('tile.progressLabel', { name: tile.name })}
+                complete={isComplete}
+              />
+              <p className="mt-1.5 text-right text-[11px] tabular-nums text-rs-muted">
+                {t('tile.progressValue', { current: progress, required: tile.requirement })}
+              </p>
+            </>
+          ) : (
+            <p className="mt-1.5 text-right text-[11px] tabular-nums text-rs-muted">
+              {t('tile.requirementValue', { required: tile.requirement })}
+            </p>
+          )}
+          {tile.imageSourceUrl && (
+            <a
+              href={tile.imageSourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-2 block truncate text-[10px] text-rs-gold hover:underline"
+            >
+              {t('tile.imageSource')}
+            </a>
+          )}
         </div>
       </div>
     </article>

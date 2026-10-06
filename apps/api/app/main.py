@@ -17,10 +17,14 @@ from app.database.mongodb import DatabaseClient
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.router import router as administration_router
 from app.modules.auth.router import router as auth_router
+from app.modules.boards.router import admin_router as admin_boards_router
+from app.modules.boards.router import public_router as public_boards_router
 from app.modules.events.router import router as events_router
 from app.modules.players.router import router as players_router
 from app.modules.security.middleware import RequestSafetyMiddleware
 from app.modules.teams.router import router as teams_router
+from app.modules.tiles.router import router as tiles_router
+from app.modules.tiles.router import wiki_router
 
 logger = get_logger(__name__)
 logging.getLogger("uvicorn.access").addFilter(OAuthAccessLogFilter())
@@ -100,6 +104,10 @@ app.include_router(auth_router)
 app.include_router(administration_router)
 app.include_router(teams_router)
 app.include_router(players_router)
+app.include_router(tiles_router)
+app.include_router(wiki_router)
+app.include_router(public_boards_router)
+app.include_router(admin_boards_router)
 
 
 @app.get("/health", tags=["infra"])

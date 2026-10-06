@@ -31,3 +31,18 @@ vi.mock('../src/features/administration/api/administrationApi', () => ({
   fetchUsers: vi.fn().mockResolvedValue({ items: [], total: 0, offset: 0, limit: 25 }),
   changeRole: vi.fn(),
 }))
+
+vi.mock('../src/features/cards/api/cardsApi', () => ({
+  fetchCards: vi.fn().mockResolvedValue([]),
+  createCard: vi.fn(),
+  createCardRevision: vi.fn(),
+  retireCard: vi.fn(),
+  importWorkbookCatalog: vi.fn(),
+  resolveWikiImage: vi.fn(),
+}))
+
+vi.mock('../src/features/boards/api/boardsApi', () => ({
+  fetchAdminBoard: vi.fn().mockResolvedValue(null),
+  fetchPublicBoard: vi.fn().mockResolvedValue(null),
+  saveBoard: vi.fn(),
+}))

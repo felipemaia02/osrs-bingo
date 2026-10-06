@@ -5,6 +5,7 @@ import pytest
 from bson import ObjectId
 
 from app.core.exceptions import ConflictError, NotFoundError
+from app.modules.boards.repository import BoardRepository
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventCreate, EventStatus, EventUpdate
@@ -36,8 +37,26 @@ def repository() -> AsyncMock:
 
 
 @pytest.fixture
-def service(repository: AsyncMock) -> EventService:
-    return EventService(repository)
+def boards() -> AsyncMock:
+    repository = AsyncMock(spec=BoardRepository)
+    repository.get_by_event.return_value = {
+        "positions": [
+            {
+                "position": position,
+                "card": {
+                    "card_id": f"card-{position}",
+                    "fallback_image_accepted": True,
+                },
+            }
+            for position in range(1, 37)
+        ]
+    }
+    return repository
+
+
+@pytest.fixture
+def service(repository: AsyncMock, boards: AsyncMock) -> EventService:
+    return EventService(repository, boards)
 
 
 async def test_create_normalizes_and_returns_draft(
@@ -70,7 +89,7 @@ async def test_active_event_cannot_be_edited(repository: AsyncMock, service: Eve
 
 
 async def test_activation_accepts_status_returned_as_string(
-    repository: AsyncMock, service: EventService
+    repository: AsyncMock, boards: AsyncMock, service: EventService
 ) -> None:
     draft = event_document()
     draft["status"] = "draft"  # MongoDB returns the persisted enum as a string.
@@ -82,6 +101,7 @@ async def test_activation_accepts_status_returned_as_string(
 
     assert result.status is EventStatus.ACTIVE
     repository.activate.assert_awaited_once_with("event-id")
+    boards.publish.assert_awaited_once_with("event-id", "system")
 
 
 async def test_activation_reports_active_limit(
@@ -92,6 +112,18 @@ async def test_activation_reports_active_limit(
 
     with pytest.raises(ConflictError, match="Active event limit"):
         await service.activate("event-id")
+
+
+async def test_activation_requires_complete_board(
+    repository: AsyncMock, boards: AsyncMock, service: EventService
+) -> None:
+    repository.get.return_value = event_document()
+    boards.get_by_event.return_value = {"positions": []}
+
+    with pytest.raises(ConflictError, match="36-card board"):
+        await service.activate("event-id")
+
+    repository.activate.assert_not_awaited()
 
 
 async def test_finish_requires_active_status(repository: AsyncMock, service: EventService) -> None:

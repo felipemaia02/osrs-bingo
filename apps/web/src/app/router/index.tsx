@@ -8,6 +8,8 @@ import { AdminRoute } from '../../features/administration/components/AdminRoute'
 import { AdministratorsPage } from '../../features/administration/pages/AdministratorsPage'
 import { AdminHomePage } from '../../features/administration/pages/AdminHomePage'
 import { AdminRankingPage } from '../../features/administration/pages/AdminRankingPage'
+import { BoardBuilderPage } from '../../features/boards/pages/BoardBuilderPage'
+import { CardCatalogPage } from '../../features/cards/pages/CardCatalogPage'
 
 export function AppRouter() {
   return (
@@ -20,6 +22,8 @@ export function AppRouter() {
         <Route index element={<AdminHomePage />} />
         <Route path="events" element={<EventsPage management />} />
         <Route path="teams" element={<TeamsPage />} />
+        <Route path="cards" element={<CardCatalogPage />} />
+        <Route path="boards" element={<BoardBuilderPage />} />
         <Route path="administrators" element={<AdministratorsPage />} />
         <Route path="ranking" element={<AdminRankingPage />} />
       </Route>

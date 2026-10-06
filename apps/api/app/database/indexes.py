@@ -50,6 +50,18 @@ class IndexManager:
             [("expires_at", 1)],
             {"name": "request_limits_ttl", "expireAfterSeconds": 0},
         ),
+        ("tile_cards", [("slug", 1)], {"name": "tile_cards_slug_unique", "unique": True}),
+        (
+            "tile_cards",
+            [("status", 1), ("revisions.0.name", 1)],
+            {"name": "tile_cards_status_name"},
+        ),
+        ("catalog_imports", [("imported_at", -1)], {"name": "catalog_imports_imported_at"}),
+        (
+            "event_boards",
+            [("event_id", 1)],
+            {"name": "event_boards_event_unique", "unique": True},
+        ),
     ]
 
     async def ensure_all(self, db: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
