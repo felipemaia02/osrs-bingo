@@ -37,7 +37,8 @@ def repositories() -> Iterator[tuple[AsyncMock, AsyncMock, AsyncMock]]:
     registration["status"] = "pending"
     players.get_for_user.return_value = None
     players.create.return_value = registration
-    players.list.return_value = [registration]
+    players.page.return_value = ([registration], 1)
+    players.counts.return_value = {"pending": 1, "unassigned": 0, "assigned": 0}
     players.update.return_value = {
         **registration,
         "status": "approved",
@@ -184,3 +185,67 @@ async def test_missing_session_untrusted_origin_and_forged_owner_rejected(
     response = await client.post(f"/events/{EVENT_ID}/players", json={"display_name": "Crab"})
     assert response.status_code == 401
     repositories[0].create.assert_not_awaited()
+
+
+async def test_paginated_roster_filters_and_counts(client: AsyncClient, repositories) -> None:
+    response = await client.get(
+        f"/events/{EVENT_ID}/players",
+        params={"group": "assigned", "search": "crab", "team_id": TEAM_ID, "offset": 25},
+    )
+    assert response.status_code == 200
+    assert response.json()["total"] == 1
+    assert response.json()["counts"] == {"pending": 1, "unassigned": 0, "assigned": 0}
+    repositories[0].page.assert_awaited_once_with(
+        EVENT_ID,
+        status="approved",
+        assigned=True,
+        search="crab",
+        team_id=TEAM_ID,
+        offset=25,
+        limit=25,
+    )
+    repositories[1].get.assert_awaited_once_with(EVENT_ID, TEAM_ID)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [{"limit": 101}, {"limit": 0}, {"offset": -1}, {"group": "removed"}, {"team_id": "bad"}],
+)
+async def test_invalid_pagination_rejected(client: AsyncClient, repositories, params) -> None:
+    response = await client.get(f"/events/{EVENT_ID}/players", params=params)
+    assert response.status_code == 422
+    repositories[0].page.assert_not_awaited()
+
+
+async def test_team_filter_rejects_team_from_another_event(
+    client: AsyncClient, repositories
+) -> None:
+    repositories[1].get.return_value = None
+    response = await client.get(f"/events/{EVENT_ID}/players", params={"team_id": TEAM_ID})
+    assert response.status_code == 404
+    repositories[0].page.assert_not_awaited()
+
+
+@pytest.mark.parametrize(
+    "group, expected_status, assigned",
+    [
+        ("pending", "pending", None),
+        ("unassigned", "approved", False),
+        ("assigned", "approved", True),
+        ("all", None, None),
+    ],
+)
+async def test_roster_group_semantics(
+    client: AsyncClient, repositories, group, expected_status, assigned
+) -> None:
+    response = await client.get(f"/events/{EVENT_ID}/players", params={"group": group})
+    assert response.status_code == 200
+    repositories[0].page.assert_awaited_once_with(
+        EVENT_ID,
+        status=expected_status,
+        assigned=assigned,
+        search="",
+        team_id=None,
+        offset=0,
+        limit=25,
+    )

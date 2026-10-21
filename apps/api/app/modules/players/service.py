@@ -4,7 +4,10 @@ from app.modules.events.schemas import EventStatus
 from app.modules.players.models import PlayerDocument
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
+    PlayerCounts,
     PlayerCreate,
+    PlayerListQuery,
+    PlayerListResponse,
     PlayerResponse,
     PlayerUpdate,
     RegistrationStatus,
@@ -31,9 +34,33 @@ class PlayerService:
             raise ConflictError("Registration already exists in this event")
         return self._to_response(document)
 
-    async def list(self, event_id: str) -> list[PlayerResponse]:
+    async def list(self, event_id: str, query: PlayerListQuery) -> PlayerListResponse:
         await self._require_event(event_id)
-        return [self._to_response(document) for document in await self._players.list(event_id)]
+        if query.team_id:
+            await self._require_team(event_id, query.team_id)
+        status = None
+        assigned = None
+        if query.group == "pending":
+            status = RegistrationStatus.PENDING
+        elif query.group in ("unassigned", "assigned"):
+            status = RegistrationStatus.APPROVED
+            assigned = query.group == "assigned"
+        documents, total = await self._players.page(
+            event_id,
+            status=status,
+            assigned=assigned,
+            search=query.search,
+            team_id=query.team_id,
+            offset=query.offset,
+            limit=query.limit,
+        )
+        return PlayerListResponse(
+            items=[self._to_response(document) for document in documents],
+            total=total,
+            offset=query.offset,
+            limit=query.limit,
+            counts=PlayerCounts(**await self._players.counts(event_id)),
+        )
 
     async def update(self, event_id: str, player_id: str, payload: PlayerUpdate) -> PlayerResponse:
         await self._require_draft_event(event_id)

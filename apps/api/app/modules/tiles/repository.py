@@ -84,9 +84,7 @@ class CardRepository:
         )
         return cast(CardDocument | None, document)
 
-    async def retire(
-        self, card_id: str, payload: CardRetire, actor_id: str
-    ) -> CardDocument | None:
+    async def retire(self, card_id: str, payload: CardRetire, actor_id: str) -> CardDocument | None:
         object_id = self._object_id(card_id)
         if object_id is None:
             return None

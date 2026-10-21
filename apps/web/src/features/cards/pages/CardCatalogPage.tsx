@@ -7,7 +7,9 @@ import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '../../../components/common/AppShell'
 import { Badge } from '../../../components/ui/Badge'
+import { FormModal } from '../../../components/ui/FormModal'
 import { Panel } from '../../../components/ui/Panel'
+import { CardRuleDetails } from '../components/CardRuleDetails'
 import { useCardMutations, useCards } from '../hooks/useCards'
 import type {
   AcceptedDrop,
@@ -49,26 +51,36 @@ const EMPTY_FORM: CardForm = {
   changeReason: '',
 }
 
-function parseDrops(value: string): AcceptedDrop[] {
+function dropKey(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+/**
+ * Parses "name | weight" lines. Drops already present in the revision being edited keep
+ * their stable key, aliases, verification note and counting restriction; the text form
+ * only edits names and weights, so it must not silently erase the rest.
+ */
+function parseDrops(value: string, previous: AcceptedDrop[] = []): AcceptedDrop[] {
+  const previousByName = new Map(previous.map((drop) => [drop.name.toLocaleLowerCase(), drop]))
   return value
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
       const [rawName, rawWeight] = line.split('|').map((part) => part.trim())
-      const key = rawName
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
+      const existing = previousByName.get(rawName.toLocaleLowerCase())
       return {
-        key,
+        key: existing?.key ?? dropKey(rawName),
         name: rawName,
         progress_weight: Number(rawWeight),
-        aliases: [],
-        verification_note: null,
-        counting_restriction: null,
+        aliases: existing?.aliases ?? [],
+        verification_note: existing?.verification_note ?? null,
+        counting_restriction: existing?.counting_restriction ?? null,
       }
     })
 }
@@ -99,6 +111,13 @@ export function CardCatalogPage() {
   const [form, setForm] = useState<CardForm>(EMPTY_FORM)
   const [feedback, setFeedback] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [showImport, setShowImport] = useState(false)
+
+  function closeForm() {
+    if (pending) return
+    setShowForm(false)
+    setFeedback(null)
+  }
   const pending =
     mutations.create.isPending || mutations.revise.isPending || mutations.resolveImage.isPending
 
@@ -133,7 +152,7 @@ export function CardCatalogPage() {
   async function submit(event: FormEvent) {
     event.preventDefault()
     setFeedback(null)
-    const drops = parseDrops(form.drops)
+    const drops = parseDrops(form.drops, editing?.revision.drops)
     if (drops.some((drop) => !drop.name || !drop.key || !(drop.progress_weight > 0))) {
       setFeedback(t('cards.errors.drops'))
       return
@@ -179,6 +198,7 @@ export function CardCatalogPage() {
     setFeedback(null)
     try {
       const result = await mutations.importWorkbook.mutateAsync()
+      if (result.usable) setShowImport(false)
       setFeedback(
         result.usable
           ? t('cards.feedback.imported', {
@@ -194,10 +214,22 @@ export function CardCatalogPage() {
 
   async function retire(card: CardSummary) {
     if (!window.confirm(t('cards.retireConfirm', { name: card.revision.name }))) return
-    await mutations.retire.mutateAsync({
-      cardId: card.id,
-      expectedRevision: card.current_revision,
-    })
+    setFeedback(null)
+    try {
+      await mutations.retire.mutateAsync({
+        cardId: card.id,
+        expectedRevision: card.current_revision,
+      })
+    } catch (error) {
+      const detail = error instanceof AxiosError ? error.response?.data?.detail : null
+      setFeedback(
+        t(
+          detail === 'Card changed while you were editing'
+            ? 'cards.errors.changed'
+            : 'common.apiError',
+        ),
+      )
+    }
   }
 
   return (
@@ -210,7 +242,10 @@ export function CardCatalogPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => void importWorkbook()}
+              onClick={() => {
+                setFeedback(null)
+                setShowImport(true)
+              }}
               disabled={mutations.importWorkbook.isPending}
               className="flex items-center gap-2 rounded-sm border border-rs-border px-3 py-2 text-sm text-rs-gold disabled:opacity-50"
             >
@@ -225,21 +260,61 @@ export function CardCatalogPage() {
             </button>
           </div>
         </div>
-        {feedback && (
+        {feedback && !showForm && !showImport && (
           <p role="status" className="rounded-sm border border-rs-border bg-rs-inset p-3 text-sm">
             {feedback}
           </p>
         )}
         {showForm && (
-          <CardEditor
-            form={form}
-            editing={editing}
-            pending={pending}
-            update={update}
-            resolveImage={resolveImage}
-            submit={submit}
-            close={() => setShowForm(false)}
-          />
+          <FormModal
+            title={t(editing ? 'cards.form.reviseTitle' : 'cards.form.createTitle')}
+            busy={pending}
+            onClose={closeForm}
+          >
+            {feedback && (
+              <p
+                role="alert"
+                className="mb-4 rounded-sm border border-rs-border bg-rs-inset p-3 text-sm"
+              >
+                {feedback}
+              </p>
+            )}
+            <CardEditor
+              form={form}
+              editing={editing}
+              pending={pending}
+              update={update}
+              resolveImage={resolveImage}
+              submit={submit}
+              close={closeForm}
+            />
+          </FormModal>
+        )}
+        {showImport && (
+          <FormModal
+            title={t('cards.importWorkbook')}
+            busy={mutations.importWorkbook.isPending}
+            onClose={() => {
+              if (!mutations.importWorkbook.isPending) {
+                setShowImport(false)
+                setFeedback(null)
+              }
+            }}
+          >
+            <p className="mb-5 text-sm text-rs-muted">{t('cards.importDescription')}</p>
+            {feedback && (
+              <p role="alert" className="mb-4 text-sm">
+                {feedback}
+              </p>
+            )}
+            <button
+              onClick={() => void importWorkbook()}
+              disabled={mutations.importWorkbook.isPending}
+              className="rounded-sm bg-rs-gold px-4 py-2 text-sm font-semibold text-rs-inset disabled:opacity-50"
+            >
+              {t(mutations.importWorkbook.isPending ? 'common.saving' : 'cards.importWorkbook')}
+            </button>
+          </FormModal>
         )}
         <Panel className="overflow-hidden">
           {cards.isLoading && <p className="p-5 text-rs-muted">{t('common.loading')}</p>}
@@ -275,6 +350,14 @@ export function CardCatalogPage() {
                       revision: card.current_revision,
                     })}
                   </p>
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-xs text-rs-gold hover:underline">
+                      {t('cards.rules.title')}
+                    </summary>
+                    <div className="mt-2 max-w-xl">
+                      <CardRuleDetails card={card.revision} />
+                    </div>
+                  </details>
                 </div>
                 {card.status === 'active' && (
                   <div className="flex gap-2">
@@ -317,11 +400,8 @@ function CardEditor({ form, editing, pending, update, resolveImage, submit, clos
   const { t } = useTranslation()
   const input = 'mt-1 w-full rounded-sm border border-rs-border bg-rs-inset p-2 text-rs-text'
   return (
-    <Panel className="p-5">
-      <h2 className="font-display text-lg text-rs-gold-bright">
-        {t(editing ? 'cards.form.reviseTitle' : 'cards.form.createTitle')}
-      </h2>
-      <form onSubmit={(event) => void submit(event)} className="mt-4 grid gap-4 md:grid-cols-2">
+    <form onSubmit={(event) => void submit(event)}>
+      <fieldset disabled={pending} className="grid min-w-0 gap-4 md:grid-cols-2">
         {!editing && (
           <label className="text-sm text-rs-muted">
             {t('cards.form.slug')}
@@ -467,7 +547,7 @@ function CardEditor({ form, editing, pending, update, resolveImage, submit, clos
             {t(pending ? 'common.saving' : 'common.save')}
           </button>
         </div>
-      </form>
-    </Panel>
+      </fieldset>
+    </form>
   )
 }

@@ -33,7 +33,7 @@ export function LoginPage() {
             <ShieldOutlinedIcon sx={{ fontSize: 36 }} aria-hidden="true" />
           </div>
           <p className="font-display text-xl font-bold tracking-[.12em] text-rs-gold-bright">
-            THUNDER CRABS
+            {t('brand.name')}
           </p>
           <p className="mt-2 text-xs uppercase tracking-[.2em] text-rs-muted">
             {t('auth.loginEyebrow')}

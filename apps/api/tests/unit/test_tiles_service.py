@@ -119,4 +119,3 @@ async def test_missing_card_cannot_receive_revision() -> None:
 
     with pytest.raises(NotFoundError):
         await CardService(repository).add_revision("missing", payload, ADMIN)
-

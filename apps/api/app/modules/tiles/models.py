@@ -17,4 +17,3 @@ class CardDocument(TypedDict, total=False):
     retired_by: str
     retired_at: datetime
     retirement_reason: str
-

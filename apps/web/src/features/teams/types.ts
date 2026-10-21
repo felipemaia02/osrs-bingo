@@ -26,3 +26,19 @@ export interface PlayerPayload {
 export interface PlayerAssignmentPayload {
   team_id: string | null
 }
+
+export type RosterGroup = 'pending' | 'unassigned' | 'assigned'
+export interface PlayerFilters {
+  group: RosterGroup
+  search: string
+  team_id?: string
+  offset: number
+  limit: number
+}
+export interface PlayerPage {
+  items: Player[]
+  total: number
+  offset: number
+  limit: number
+  counts: Record<RosterGroup, number>
+}

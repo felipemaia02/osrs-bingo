@@ -19,10 +19,10 @@ export function useTeams(eventId: string | null) {
   })
 }
 
-export function usePlayers(eventId: string | null) {
+export function usePlayers(eventId: string | null, filters: import('../types').PlayerFilters) {
   return useQuery({
-    queryKey: ['players', eventId],
-    queryFn: () => fetchPlayers(eventId!),
+    queryKey: ['players', eventId, filters],
+    queryFn: () => fetchPlayers(eventId!, filters),
     enabled: Boolean(eventId),
   })
 }

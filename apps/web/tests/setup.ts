@@ -17,7 +17,13 @@ vi.mock('../src/features/auth/api/authApi', () => ({
 }))
 vi.mock('../src/features/teams/api/teamsApi', () => ({
   fetchTeams: vi.fn().mockResolvedValue([]),
-  fetchPlayers: vi.fn().mockResolvedValue([]),
+  fetchPlayers: vi.fn().mockResolvedValue({
+    items: [],
+    total: 0,
+    offset: 0,
+    limit: 25,
+    counts: { pending: 0, unassigned: 0, assigned: 0 },
+  }),
   fetchOwnRegistration: vi.fn().mockResolvedValue(null),
   createPlayer: vi.fn(),
   createTeam: vi.fn(),

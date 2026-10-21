@@ -18,4 +18,3 @@ class BoardDocument(TypedDict, total=False):
     updated_at: datetime
     published_by: str
     published_at: datetime
-

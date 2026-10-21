@@ -79,6 +79,8 @@ Page → Feature → Hook → API Client → FastAPI
 - **Icons**: use Material Icons (`@mui/icons-material`). Outlined for decorative, filled for active states.
 - **Theme**: Runescape aesthetic — dark brown panels, gold borders, parchment/gold text. Define RS color tokens in `tailwind.config.js`.
 - No generic Tailwind grays/whites for primary UI elements.
+- **Create/edit forms**: use modals as the project default, keeping the originating list visible behind the overlay. Reuse `components/ui/FormModal.tsx` for new or revised form flows, including related image/drop controls and import forms. Show validation/API errors inside the modal, preserve inputs on failure, and close on successful save with list refresh and success feedback.
+- **Modal behavior**: provide a localized title and close control, trap/restore keyboard focus, support Escape while idle, lock background scrolling, and keep content usable on small screens. Disable duplicate submissions and dismissal while requests are pending. See `docs/architecture/frontend.md` for the full convention.
 
 ---
 

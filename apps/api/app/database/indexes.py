@@ -32,6 +32,11 @@ class IndexManager:
             [("event_id", 1), ("normalized_display_name", 1)],
             {"name": "players_event_normalized_name_unique", "unique": True},
         ),
+        (
+            "players",
+            [("event_id", 1), ("status", 1), ("normalized_display_name", 1), ("_id", 1)],
+            {"name": "players_event_status_name"},
+        ),
         ("players", [("event_id", 1), ("team_id", 1)], {"name": "players_event_team"}),
         (
             "players",

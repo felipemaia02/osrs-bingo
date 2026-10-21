@@ -94,4 +94,3 @@ async def test_regular_user_cannot_read_or_change_draft_board(
     ).status_code == 403
     services[1].get_admin.assert_not_awaited()
     services[1].save.assert_not_awaited()
-

@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.events.repository import EventRepository
@@ -8,6 +8,7 @@ from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
     ApprovalResponse,
     PlayerCreate,
+    PlayerListQuery,
     PlayerListResponse,
     PlayerResponse,
     PlayerUpdate,
@@ -44,9 +45,12 @@ async def own_registration(
 
 @router.get("", response_model=PlayerListResponse)
 async def list_players(
-    event_id: str, admin: AdminDependency, service: PlayerServiceDependency
+    event_id: str,
+    admin: AdminDependency,
+    service: PlayerServiceDependency,
+    query: Annotated[PlayerListQuery, Query()],
 ) -> PlayerListResponse:
-    return PlayerListResponse(items=await service.list(event_id))
+    return await service.list(event_id, query)
 
 
 @router.post("/approve-all", response_model=ApprovalResponse)

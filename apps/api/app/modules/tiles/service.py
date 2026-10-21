@@ -47,9 +47,7 @@ class CardService:
             raise ConflictError(CARD_REVISION_CONFLICT)
         return self._detail(document)
 
-    async def retire(
-        self, card_id: str, payload: CardRetire, actor: CurrentUser
-    ) -> CardDetail:
+    async def retire(self, card_id: str, payload: CardRetire, actor: CurrentUser) -> CardDetail:
         if await self._repository.get(card_id) is None:
             raise NotFoundError("Card")
         document = await self._repository.retire(card_id, payload, actor.id)

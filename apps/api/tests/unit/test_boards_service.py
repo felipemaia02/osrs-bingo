@@ -100,7 +100,60 @@ def repositories() -> tuple[AsyncMock, AsyncMock, AsyncMock]:
     events = AsyncMock(spec=EventRepository)
     events.get.return_value = event_document()
     cards.get.return_value = card_document()
+    boards.get_by_event.return_value = None
     return boards, cards, events
+
+
+def retired_card_document() -> CardDocument:
+    card = card_document()
+    card["status"] = CardStatus.RETIRED
+    return card
+
+
+async def test_retired_card_cannot_be_newly_selected(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    cards.get.return_value = retired_card_document()
+    service = BoardService(boards, cards, events)
+    payload = BoardSave(
+        expected_revision=0,
+        positions=[{"position": 1, "card_id": CARD_ID, "card_revision": 1}],
+    )
+
+    with pytest.raises(ConflictError):
+        await service.save(EVENT_ID, payload, ADMIN)
+    boards.save_draft.assert_not_called()
+
+
+async def test_retired_card_already_on_draft_board_can_be_saved_again(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    cards.get.return_value = retired_card_document()
+    boards.get_by_event.return_value = saved_board(
+        [
+            {
+                "position": 1,
+                "row": 1,
+                "column": 1,
+                "card": {"card_id": CARD_ID, "card_revision": 1},
+            }
+        ]
+    )
+    boards.save_draft.side_effect = lambda event_id, positions, revision, actor: saved_board(
+        [position.model_dump(mode="python") for position in positions]
+    )
+    service = BoardService(boards, cards, events)
+    payload = BoardSave(
+        expected_revision=1,
+        positions=[{"position": 7, "card_id": CARD_ID, "card_revision": 1}],
+    )
+
+    result = await service.save(EVENT_ID, payload, ADMIN)
+
+    assert result.positions[0].position == 7
+    assert result.positions[0].card.card_revision == 1
 
 
 async def test_save_pins_exact_card_revision_values(
@@ -172,4 +225,3 @@ def test_publishable_board_requires_every_unique_position_and_card() -> None:
     assert is_publishable_board({"positions": positions}) is True
     positions[-1]["card"] = positions[0]["card"]
     assert is_publishable_board({"positions": positions}) is False
-

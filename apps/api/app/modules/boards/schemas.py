@@ -75,4 +75,3 @@ class BoardResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     published_at: datetime | None = None
-

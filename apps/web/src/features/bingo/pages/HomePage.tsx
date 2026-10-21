@@ -3,15 +3,12 @@ import { AppShell } from '../../../components/common/AppShell'
 import { BingoBoard } from '../components/BingoBoard'
 import { usePublicBoard } from '../../boards/hooks/useBoards'
 import { useEvents } from '../../events/hooks/useEvents'
-import { useEventSelectionStore } from '../../events/store/eventSelectionStore'
-import type { Tile } from '../data/tiles'
+import type { Tile } from '../types'
 
 export function HomePage() {
   const { t } = useTranslation()
   const events = useEvents('active')
-  const selectedEventId = useEventSelectionStore((state) => state.selectedEventId)
-  const event =
-    events.data?.find((candidate) => candidate.id === selectedEventId) ?? events.data?.[0] ?? null
+  const event = events.data?.find((candidate) => candidate.status === 'active') ?? null
   const board = usePublicBoard(event?.id ?? null)
   const tiles: Tile[] =
     board.data?.positions.map((position) => ({
@@ -57,7 +54,7 @@ export function HomePage() {
         {event && !board.isLoading && !board.data && (
           <p className="text-rs-muted">{t('board.unavailable')}</p>
         )}
-        {board.data && <BingoBoard tiles={tiles} showScore={false} />}
+        {board.data && <BingoBoard tiles={tiles} />}
       </div>
     </AppShell>
   )

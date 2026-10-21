@@ -11,6 +11,7 @@ import { useSession } from '../../auth/hooks/useSession'
 import { EventRegistration } from '../../teams/components/EventRegistration'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from '../../../components/common/AppShell'
+import { FormModal } from '../../../components/ui/FormModal'
 import { Panel } from '../../../components/ui/Panel'
 import { EventScheduleFields } from '../components/EventScheduleFields'
 import { useEventMutations, useEvents } from '../hooks/useEvents'
@@ -51,6 +52,7 @@ export function EventsPage({ management = false }: { management?: boolean }) {
   const [form, setForm] = useState<EventFormState>(initialForm)
   const [feedback, setFeedback] = useState<string | null>(null)
   const [pendingTransition, setPendingTransition] = useState<PendingTransition | null>(null)
+  const [transitionError, setTransitionError] = useState<string | null>(null)
   const { data: events = [], isLoading, isError } = useEvents(filter === 'all' ? undefined : filter)
   const mutations = useEventMutations()
   const isSaving = mutations.createEvent.isPending || mutations.updateEvent.isPending
@@ -110,8 +112,19 @@ export function EventsPage({ management = false }: { management?: boolean }) {
     }
   }
 
+  function openTransition(pending: PendingTransition) {
+    setTransitionError(null)
+    setPendingTransition(pending)
+  }
+
+  function closeTransition() {
+    setTransitionError(null)
+    setPendingTransition(null)
+  }
+
   async function transition({ event, action }: PendingTransition) {
     setFeedback(null)
+    setTransitionError(null)
     try {
       if (action === 'activate') await mutations.activateEvent.mutateAsync(event.id)
       else await mutations.finishEvent.mutateAsync(event.id)
@@ -120,7 +133,7 @@ export function EventsPage({ management = false }: { management?: boolean }) {
       )
       setPendingTransition(null)
     } catch (error) {
-      setFeedback(errorMessage(error))
+      setTransitionError(errorMessage(error))
     }
   }
 
@@ -232,7 +245,7 @@ export function EventsPage({ management = false }: { management?: boolean }) {
                           <ActionButton
                             label={t('events.actions.activate')}
                             icon={<PlayArrowIcon fontSize="small" />}
-                            onClick={() => setPendingTransition({ event, action: 'activate' })}
+                            onClick={() => openTransition({ event, action: 'activate' })}
                           />
                         </>
                       )}
@@ -240,7 +253,7 @@ export function EventsPage({ management = false }: { management?: boolean }) {
                         <ActionButton
                           label={t('events.actions.finish')}
                           icon={<CheckCircleOutlinedIcon fontSize="small" />}
-                          onClick={() => setPendingTransition({ event, action: 'finish' })}
+                          onClick={() => openTransition({ event, action: 'finish' })}
                         />
                       )}
                     </div>
@@ -280,7 +293,8 @@ export function EventsPage({ management = false }: { management?: boolean }) {
           event={pendingTransition.event}
           action={pendingTransition.action}
           isPending={mutations.activateEvent.isPending || mutations.finishEvent.isPending}
-          onCancel={() => setPendingTransition(null)}
+          error={transitionError}
+          onCancel={closeTransition}
           onConfirm={() => void transition(pendingTransition)}
         />
       )}
@@ -417,35 +431,36 @@ function ConfirmationDialog({
   event,
   action,
   isPending,
+  error,
   onCancel,
   onConfirm,
 }: {
   event: BingoEvent
   action: 'activate' | 'finish'
   isPending: boolean
+  error: string | null
   onCancel: () => void
   onConfirm: () => void
 }) {
   const { t } = useTranslation()
   const isActivate = action === 'activate'
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-      role="presentation"
+    <FormModal
+      title={t(isActivate ? 'events.confirm.activateTitle' : 'events.confirm.finishTitle')}
+      busy={isPending}
+      size="sm"
+      onClose={onCancel}
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="transition-dialog-title"
-        className="w-full max-w-md rounded border border-rs-border bg-rs-surface p-5 shadow-rs-panel"
-      >
-        <h2
-          id="transition-dialog-title"
-          className="font-display text-lg font-bold text-rs-gold-bright"
-        >
-          {t(isActivate ? 'events.confirm.activateTitle' : 'events.confirm.finishTitle')}
-        </h2>
-        <p className="mt-3 text-sm text-rs-text">
+      <div>
+        {error && (
+          <p
+            role="alert"
+            className="mb-4 rounded-sm border border-rs-danger/60 bg-rs-inset p-3 text-sm text-rs-text"
+          >
+            {error}
+          </p>
+        )}
+        <p className="text-sm text-rs-text">
           {t(isActivate ? 'events.confirm.activateMessage' : 'events.confirm.finishMessage', {
             name: event.name,
           })}
@@ -474,7 +489,7 @@ function ConfirmationDialog({
             )}
           </button>
         </div>
-      </section>
-    </div>
+      </div>
+    </FormModal>
   )
 }

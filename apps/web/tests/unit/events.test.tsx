@@ -1,13 +1,13 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
 import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
-import { createEvent, fetchEvents } from '../../src/features/events/api/eventsApi'
-import { EventSelector } from '../../src/features/events/components/EventSelector'
+import { activateEvent, createEvent, fetchEvents } from '../../src/features/events/api/eventsApi'
+import { ActiveEventIndicator } from '../../src/features/events/components/ActiveEventIndicator'
 import { EventScheduleFields } from '../../src/features/events/components/EventScheduleFields'
 import { EventsPage } from '../../src/features/events/pages/EventsPage'
-import { useEventSelectionStore } from '../../src/features/events/store/eventSelectionStore'
 import type { BingoEvent } from '../../src/features/events/types'
 import { renderApp } from '../render'
 
@@ -26,7 +26,6 @@ describe('Events feature', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('en')
     vi.mocked(fetchEvents).mockResolvedValue([])
-    useEventSelectionStore.getState().clearSelection()
   })
 
   it('renders the empty management state and public event form', async () => {
@@ -77,22 +76,48 @@ describe('Events feature', () => {
     expect(onEndChange).toHaveBeenCalledWith(start.add(7, 'day'))
   })
 
-  it('persists an explicitly selected active event', async () => {
-    const user = userEvent.setup()
+  it('shows the active event automatically without a selector or stored preference', async () => {
+    localStorage.setItem(
+      'osrs-bingo-current-event',
+      JSON.stringify({ state: { selectedEventId: 'old-event' } }),
+    )
     vi.mocked(fetchEvents).mockResolvedValue([ACTIVE_EVENT])
-    renderApp(<EventSelector />)
-
-    await screen.findByRole('option', { name: 'Thunder Summer · Active' })
-    await user.selectOptions(screen.getByLabelText('Current event'), ACTIVE_EVENT.id)
-
-    expect(useEventSelectionStore.getState().selectedEventId).toBe(ACTIVE_EVENT.id)
-    expect(localStorage.getItem('osrs-bingo-current-event')).toContain(ACTIVE_EVENT.id)
+    renderApp(<ActiveEventIndicator />)
+    expect(await screen.findByText('Thunder Summer · Active')).toBeInTheDocument()
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+    localStorage.removeItem('osrs-bingo-current-event')
   })
 
-  it('clears a stored selection that is no longer active', async () => {
-    useEventSelectionStore.getState().selectEvent('finished-event')
-    renderApp(<EventSelector />)
+  it('shows an explicit empty state without an active event', async () => {
+    renderApp(<ActiveEventIndicator />)
+    expect(await screen.findByText('No active event')).toBeInTheDocument()
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+  })
 
-    await waitFor(() => expect(useEventSelectionStore.getState().selectedEventId).toBeNull())
+  it('keeps the activation dialog open and shows the error inside it', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetchEvents).mockResolvedValue([{ ...ACTIVE_EVENT, status: 'draft' }])
+    vi.mocked(activateEvent).mockRejectedValue(
+      new AxiosError('Conflict', '409', undefined, undefined, {
+        status: 409,
+        data: { detail: 'A complete valid 36-card board is required' },
+      } as never),
+    )
+    renderApp(<EventsPage management />, '/admin/events')
+
+    await user.click(await screen.findByRole('button', { name: 'Activate event' }))
+    const dialog = screen.getByRole('dialog', { name: 'Activate event?' })
+    await user.click(within(dialog).getByRole('button', { name: 'Activate' }))
+
+    expect(
+      await within(dialog).findByText(
+        'Complete and save all 36 board positions before activating the event.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getAllByText(/Complete and save all 36 board positions/)).toHaveLength(1)
+
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.queryByText(/Complete and save all 36 board positions/)).not.toBeInTheDocument()
   })
 })

@@ -43,4 +43,3 @@ async def save_board(
     service: BoardServiceDependency,
 ) -> BoardResponse:
     return await service.save(event_id, payload, admin)
-

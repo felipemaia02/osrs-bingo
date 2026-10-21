@@ -5,7 +5,7 @@ import TimelapseOutlinedIcon from '@mui/icons-material/TimelapseOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
 import { ProgressBar } from '../../../components/ui/ProgressBar'
-import type { Tile, TileTier } from '../data/tiles'
+import type { Tile, TileTier } from '../types'
 
 interface TileCardProps {
   tile: Tile

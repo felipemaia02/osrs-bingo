@@ -1,7 +1,4 @@
 {
-    "event": {
-        "name": "Summer Bingo"
-    },
     "navigation": {
         "primary": "Primary navigation",
         "mobile": "Mobile navigation",
@@ -41,18 +38,6 @@
             "Mid": "Medium",
             "High": "Hard"
         }
-    },
-    "score": {
-        "title": "Score summary",
-        "total": "Total",
-        "tiles": "Tiles",
-        "rowBonus": "Row bonus",
-        "columnBonus": "Column bonus",
-        "completedTiles": "{{completed}} of {{total}} completed",
-        "completedRows_one": "{{count}} completed row",
-        "completedRows_other": "{{count}} completed rows",
-        "completedColumns_one": "{{count}} completed column",
-        "completedColumns_other": "{{count}} completed columns"
     },
     "common": {
         "loading": "Loading…",
@@ -130,7 +115,8 @@
             "placeholder": "Select an active event"
         },
         "publicEyebrow": "Community events",
-        "publicDescription": "Discover Bingo events and follow your registration."
+        "publicDescription": "Discover Bingo events and follow your registration.",
+        "noActive": "No active event"
     },
     "teams": {
         "eyebrow": "Administration",
@@ -179,6 +165,29 @@
             "approvedOnly": "Only approved registrations can be assigned. Refresh the participant list.",
             "pendingOnly": "This request is no longer pending.",
             "removed": "This registration has already been removed."
+        },
+        "roster": {
+            "tabs": "Participants and teams",
+            "pending": "Pending",
+            "unassigned": "Unassigned",
+            "assigned": "Assigned",
+            "teams": "Teams",
+            "createTeam": "Create team",
+            "viewMembers": "View members of {{name}}",
+            "search": "Search OSRS name",
+            "searchAction": "Search",
+            "teamFilter": "Filter by team",
+            "allTeams": "All teams",
+            "pagination": "{{start}}–{{end}} of {{total}} participants",
+            "previous": "Previous",
+            "next": "Next",
+            "player": "Player",
+            "status": "Status",
+            "actions": "Actions",
+            "assignPlayer": "Change team for {{name}}",
+            "assign": "Change team",
+            "confirmAll": "Approve all {{count}} pending registrations in this event? This includes participants outside the current search and page.",
+            "confirmApprove": "Confirm approval"
         }
     },
     "language": {
@@ -309,11 +318,20 @@
             "changed": "This card changed while you were editing. Reload and try again.",
             "slug": "This stable card key is already in use.",
             "importConflict": "The workbook import found conflicting keys: {{slugs}}."
+        },
+        "importDescription": "Import the approved workbook cards into the reusable catalog. Existing matching cards are kept.",
+        "rules": {
+            "title": "Rules and accepted drops",
+            "completion": "{{score}} points when progress reaches {{requirement}}",
+            "progress_one": "+{{count}} progress",
+            "progress_other": "+{{count}} progress",
+            "verification": "Verification: {{note}}",
+            "restriction": "Counting limit: {{note}}"
         }
     },
     "boards": {
         "title": "Event boards",
-        "description": "Select a draft event and assign one exact card revision to each of its 36 positions.",
+        "description": "Drag cards from the catalog to build your board.",
         "event": "Event",
         "selectEvent": "Select an event",
         "filled": "{{filled}} of {{total}} positions filled",
@@ -329,6 +347,26 @@
         "errors": {
             "changed": "This board changed while you were editing. Reload and try again.",
             "retired": "A selected card was retired. Replace it and save again."
-        }
+        },
+        "catalog": "Card catalog",
+        "catalogHint": "Drag cards into the board, or click to add them.",
+        "search": "Search cards",
+        "manageCatalog": "Open card catalog",
+        "noResults": "No cards match your search.",
+        "addCard": "Add {{name}}",
+        "inBoard": "On board",
+        "required": "Requirement: {{count}}",
+        "chooseEvent": "Select an event to start assembling its board. The catalog is ready to browse.",
+        "assignHint": "Drag cards from the catalog, or select a card to remove it.",
+        "remove": "Remove card",
+        "dropZone": "Drag cards here",
+        "dropAlternative": "Or click a card in the catalog to add it.",
+        "addAll": "Add all",
+        "addAllHint": "Adds available cards from the entire catalog, up to 36.",
+        "selectedRules": "Rules for position {{position}}"
+    },
+    "brand": {
+        "name": "OSRS Bingo",
+        "tagline": "Community Bingo"
     }
 }

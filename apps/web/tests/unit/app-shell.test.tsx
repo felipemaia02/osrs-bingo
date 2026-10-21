@@ -22,6 +22,8 @@ describe('AppShell', () => {
       '/admin',
     )
     expect(screen.getByText('Board content')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'OSRS Bingo' })).toBeInTheDocument()
+    expect(screen.queryByText('THUNDER CRABS')).not.toBeInTheDocument()
   })
 
   it('updates application labels when the language changes', async () => {
@@ -31,6 +33,6 @@ describe('AppShell', () => {
     await user.click(screen.getByRole('button', { name: 'Portuguese' }))
 
     expect(screen.getAllByRole('link', { name: 'Tabuleiro' }).length).toBeGreaterThan(0)
-    expect(screen.getByText('Bingo de Verão')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'OSRS Bingo' })).toHaveAttribute('href', '/')
   })
 })

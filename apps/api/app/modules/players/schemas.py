@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -45,8 +46,26 @@ class PlayerResponse(PlayerFields):
     updated_at: datetime
 
 
+class PlayerListQuery(BaseModel):
+    group: Literal["all", "pending", "unassigned", "assigned"] = "all"
+    search: str = Field(default="", max_length=80)
+    team_id: str | None = Field(default=None, pattern=r"^[0-9a-fA-F]{24}$")
+    offset: int = Field(default=0, ge=0, le=1000000)
+    limit: int = Field(default=25, ge=1, le=100)
+
+
+class PlayerCounts(BaseModel):
+    pending: int = 0
+    unassigned: int = 0
+    assigned: int = 0
+
+
 class PlayerListResponse(BaseModel):
     items: list[PlayerResponse]
+    total: int
+    offset: int
+    limit: int
+    counts: PlayerCounts
 
 
 class ApprovalResponse(BaseModel):

@@ -89,4 +89,3 @@ class BoardRepository:
             return ObjectId(value)
         except (InvalidId, TypeError):
             return None
-

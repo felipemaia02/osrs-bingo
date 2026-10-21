@@ -57,6 +57,22 @@ The interface follows a restrained RuneScape-inspired system rather than reprodu
 
 Shared tokens are defined in `tailwind.config.js`. Reusable primitives live under `src/components/ui/`, while shared composites such as the application shell and language switcher live under `src/components/common/`.
 
+## Creation and editing dialogs
+
+Project convention established by the user on 2026-10-21: creation and editing forms open in a modal, with the originating list retained behind the overlay. Related fields and tools (such as drops, rules, image selection and import controls) stay within that dialog. Apply this default when creating or revising form flows; it does not silently change feature-specific business rules or migrate existing screens.
+
+Reuse `src/components/ui/FormModal.tsx`, built on the installed MUI Modal for portal rendering, focus trapping/restoration, and background scroll locking. Keep domain-specific form state, validation and mutations in the feature; the shared modal owns presentation and dismissal behavior.
+
+- Use a localized title, labeled close button and appropriate form actions.
+- Keep the dialog within the viewport with internal scrolling and usable controls from 320 px upward.
+- Support Escape and explicit cancellation while idle, restoring focus to the opening control when dismissed.
+- Display validation and API errors inside the modal and retain the entered values so the user can correct or retry.
+- Disable duplicate submission and dismissal while a save, import or image-resolution request is pending.
+- After successful save, close the editor, refresh the relevant list through TanStack Query, and show success feedback on the originating page. Keep import conflicts inside the dialog for review.
+- Test opening, cancellation/focus restoration, pending behavior, in-dialog errors and successful submission as applicable.
+
+The catalog creation/editing and workbook-import dialogs are the reference implementation. Specialized editors such as the event board retain their approved page layout unless their spec is explicitly revised.
+
 ## Icons
 
 Use `@mui/icons-material` as the only interface icon system:
@@ -74,11 +90,11 @@ The 6×6 Bingo board preserves a readable tile width inside a keyboard-focusable
 
 ## Bingo presentation boundary
 
-The current Bingo page presents static prototype data. Tile completion and score values are preserved only for prototype continuity; authoritative Bingo rules must move to the backend `modules/scoring/` module in a dedicated future feature.
+The Bingo page renders the active event's published board from the API (feature 007). The frontend calculates no score, completion or bonus: tile progress shows as unavailable until accepted activity and the backend `modules/scoring/` module (feature 006) exist. The original static prototype data and its frontend score summary were removed on 2026-10-21.
 
 ## Event state
 
-Event server state uses TanStack Query. The current event identifier is genuine frontend-global preference state and uses a persisted Zustand store. The stored identifier is always revalidated against the active-event API response; missing or finished selections are cleared without automatically choosing another event.
+Event server state uses TanStack Query. The header and public board automatically use the single active event returned by the API. There is no header selector or persisted current-event preference. Administrative event selectors remain independent and explicit. The platform identity is OSRS Bingo, not the team/season from the source workbook.
 
 The `/events` page owns event management. Components do not issue HTTP calls directly: typed functions under `features/events/api/` are wrapped by hooks under `features/events/hooks/`.
 
@@ -105,3 +121,7 @@ Discord session state is remote state in TanStack Query. The API client sends Ht
 ### Administration portal
 
 `/login` is the dedicated Discord entry point. `/admin` routes require an authenticated application administrator. Global user/role management lives at `/admin/administrators`; `/admin/events` and `/admin/teams` contain management controls removed from the public event page. Team/registration and ranking sections explicitly select an event independently of the public current-event selector. The ranking entry currently explains that scoring is unavailable; it does not display prototype points.
+
+### Participant roster
+
+Administration shows Pending, Unassigned, Assigned and Teams tabs. Participant rows are loaded in pages of 25 using server-side name search/group/team filters; query keys include the event and every filter. Counts are event-wide, while pagination totals reflect filters. Changing context resets pagination; removing the final row on a page returns to a valid page. Creating teams and assigning participants uses FormModal. Approval of all pending registrations requires confirmation and explicitly ignores search/page filters. Selected-user bulk actions are not implemented.

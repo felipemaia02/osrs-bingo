@@ -36,19 +36,17 @@ class BoardService:
             raise NotFoundError("Event")
         if event["status"] != EventStatus.DRAFT:
             raise ConflictError("Only draft event boards can be changed")
+        pinned = self._pinned_selections(await self._boards.get_by_event(event_id))
         positions: list[BoardPositionResponse] = []
         for selected in sorted(payload.positions, key=lambda item: item.position):
             card = await self._cards.get(selected.card_id)
             if card is None:
                 raise NotFoundError("Card")
-            if card["status"] != CardStatus.ACTIVE:
+            already_pinned = (selected.card_id, selected.card_revision) in pinned
+            if card["status"] != CardStatus.ACTIVE and not already_pinned:
                 raise ConflictError("Retired cards cannot be selected")
             revision_data = next(
-                (
-                    item
-                    for item in card["revisions"]
-                    if item["revision"] == selected.card_revision
-                ),
+                (item for item in card["revisions"] if item["revision"] == selected.card_revision),
                 None,
             )
             if revision_data is None:
@@ -91,6 +89,16 @@ class BoardService:
             raise NotFoundError("Board")
         return self._response(board)
 
+    @staticmethod
+    def _pinned_selections(board: BoardDocument | None) -> set[tuple[str, int]]:
+        """Card revisions already on the saved draft; retiring a card must not evict them."""
+        if board is None:
+            return set()
+        return {
+            (position["card"]["card_id"], position["card"]["card_revision"])
+            for position in board.get("positions", [])
+        }
+
     async def _require_board(self, event_id: str) -> BoardDocument:
         document = await self._boards.get_by_event(event_id)
         if document is None:
@@ -127,4 +135,3 @@ def is_publishable_board(document: BoardDocument | dict[str, Any] | None) -> boo
         or position.get("card", {}).get("fallback_image_accepted") is True
         for position in positions
     )
-

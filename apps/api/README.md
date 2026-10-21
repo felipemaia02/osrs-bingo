@@ -54,3 +54,15 @@ modules/<domain>/
 ```
 
 Only create a file when it has a real responsibility.
+
+### Paginated administrative registrations
+
+`GET /events/{event_id}/players` requires administrator access and accepts:
+
+- `group`: `all` (default), `pending`, `unassigned`, or `assigned`.
+- `search`: case-insensitive OSRS-name substring (maximum 80 characters).
+- `team_id`: optional same-event ObjectId.
+- `offset`: 0–1,000,000, default 0.
+- `limit`: 1–100, default 25.
+
+Response: `items`, filtered `total`, `offset`, `limit`, and event-wide `counts` (`pending`, `unassigned`, `assigned`). Removed registrations are excluded. Results use normalized name and ID ordering. Clients must paginate; an unfiltered request no longer returns an unbounded list. Counts/page reads are not a transactional snapshot.

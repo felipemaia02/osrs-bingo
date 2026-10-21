@@ -97,3 +97,54 @@ async def test_individual_approval_cannot_revive_removed_or_already_approved_rec
         "status": RegistrationStatus.PENDING,
     }
     assert update["$set"]["status"] == RegistrationStatus.APPROVED
+
+
+async def test_page_scopes_filters_escapes_search_and_bounds_database_cursor() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    collection.count_documents = AsyncMock(return_value=42)
+    cursor = collection.find.return_value.sort.return_value.skip.return_value.limit.return_value
+    cursor.__aiter__.return_value = []
+    event_id, team_id = str(ObjectId()), str(ObjectId())
+    result = await PlayerRepository(database).page(
+        event_id,
+        status=RegistrationStatus.APPROVED,
+        assigned=True,
+        search="  Crab.* ",
+        team_id=team_id,
+        offset=25,
+        limit=25,
+    )
+    query = collection.find.call_args.args[0]
+    assert query == {
+        "event_id": ObjectId(event_id),
+        "status": RegistrationStatus.APPROVED,
+        "team_id": ObjectId(team_id),
+        "normalized_display_name": {"$regex": r"crab\.\*"},
+    }
+    collection.count_documents.assert_awaited_once_with(query)
+    collection.find.return_value.sort.assert_called_once_with(
+        [("normalized_display_name", 1), ("_id", 1)]
+    )
+    collection.find.return_value.sort.return_value.skip.assert_called_once_with(25)
+    collection.find.return_value.sort.return_value.skip.return_value.limit.assert_called_once_with(
+        25
+    )
+    assert result == ([], 42)
+
+
+async def test_counts_are_event_scoped_and_exclude_removed() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    collection.count_documents = AsyncMock(side_effect=[3, 4, 5])
+    event_id = str(ObjectId())
+    assert await PlayerRepository(database).counts(event_id) == {
+        "pending": 3,
+        "unassigned": 4,
+        "assigned": 5,
+    }
+    queries = [call.args[0] for call in collection.count_documents.await_args_list]
+    assert all(query["event_id"] == ObjectId(event_id) for query in queries)
+    assert [query["status"] for query in queries] == ["pending", "approved", "approved"]
+    assert queries[1]["team_id"] is None
+    assert queries[2]["team_id"] == {"$ne": None}

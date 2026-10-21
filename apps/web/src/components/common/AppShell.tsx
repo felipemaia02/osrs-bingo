@@ -4,13 +4,12 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined'
 import MilitaryTechOutlinedIcon from '@mui/icons-material/MilitaryTechOutlined'
-import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { AdminNavigation } from '../../features/administration/components/AdminNavigation'
 import { useSession } from '../../features/auth/hooks/useSession'
 import { AuthControls } from '../../features/auth/components/AuthControls'
-import { EventSelector } from '../../features/events/components/EventSelector'
+import { ActiveEventIndicator } from '../../features/events/components/ActiveEventIndicator'
 import { LanguageSwitcher } from './LanguageSwitcher'
 
 interface AppShellProps {
@@ -79,19 +78,18 @@ export function AppShell({ children }: AppShellProps) {
     <div className="min-h-screen bg-rs-canvas text-rs-text">
       <header className="sticky top-0 z-30 border-b border-rs-border/60 bg-rs-surface/95 backdrop-blur">
         <div className="flex min-h-16 flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2 sm:flex-nowrap sm:py-0 md:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-sm border border-rs-border-strong bg-rs-inset text-rs-gold">
-              <ShieldOutlinedIcon fontSize="small" aria-hidden="true" />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate font-display text-sm font-bold tracking-[0.08em] text-rs-gold-bright sm:text-base">
-                THUNDER CRABS
-              </p>
-              <p className="truncate text-xs text-rs-muted">{t('event.name')}</p>
-            </div>
-          </div>
+          <Link
+            to="/"
+            className="shrink-0 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rs-gold"
+          >
+            <img
+              src="/branding/osrs-bingo-logo-v1.png"
+              alt={t('brand.name')}
+              className="h-12 w-auto object-contain sm:h-14"
+            />
+          </Link>
           <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
-            <EventSelector />
+            <ActiveEventIndicator />
             <LanguageSwitcher />
             <AuthControls />
           </div>

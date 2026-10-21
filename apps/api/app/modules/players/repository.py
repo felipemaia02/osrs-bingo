@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from builtins import list as builtin_list
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
@@ -56,14 +57,52 @@ class PlayerRepository:
             await self._collection.find_one({"_id": player_object_id, "event_id": event_object_id}),
         )
 
-    async def list(self, event_id: str) -> list[PlayerDocument]:
-        event_object_id = self._object_id(event_id)
-        if event_object_id is None:
-            return []
-        cursor = self._collection.find(
-            {"event_id": event_object_id, "status": {"$ne": RegistrationStatus.REMOVED}}
-        ).sort("display_name", 1)
-        return [document async for document in cursor]
+    async def page(
+        self,
+        event_id: str,
+        *,
+        status: RegistrationStatus | None,
+        assigned: bool | None,
+        search: str,
+        team_id: str | None,
+        offset: int,
+        limit: int,
+    ) -> tuple[builtin_list[PlayerDocument], int]:
+        query: dict[str, Any] = {
+            "event_id": self._object_id(event_id),
+            "status": status
+            if status
+            else {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]},
+        }
+        if assigned is not None:
+            query["team_id"] = {"$ne": None} if assigned else None
+        if team_id:
+            query["team_id"] = self._object_id(team_id)
+            if assigned is False:
+                query["_id"] = {"$exists": False}
+        if search.strip():
+            query["normalized_display_name"] = {"$regex": re.escape(self._normalize(search))}
+        total = await self._collection.count_documents(query)
+        cursor = (
+            self._collection.find(query)
+            .sort([("normalized_display_name", 1), ("_id", 1)])
+            .skip(offset)
+            .limit(limit)
+        )
+        return [document async for document in cursor], int(total)
+
+    async def counts(self, event_id: str) -> dict[str, int]:
+        base = {"event_id": self._object_id(event_id)}
+        pending = await self._collection.count_documents(
+            {**base, "status": RegistrationStatus.PENDING}
+        )
+        unassigned = await self._collection.count_documents(
+            {**base, "status": RegistrationStatus.APPROVED, "team_id": None}
+        )
+        assigned = await self._collection.count_documents(
+            {**base, "status": RegistrationStatus.APPROVED, "team_id": {"$ne": None}}
+        )
+        return {"pending": int(pending), "unassigned": int(unassigned), "assigned": int(assigned)}
 
     async def update(
         self, event_id: str, player_id: str, payload: PlayerUpdate

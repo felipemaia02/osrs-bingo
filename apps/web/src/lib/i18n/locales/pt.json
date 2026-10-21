@@ -1,7 +1,4 @@
 {
-    "event": {
-        "name": "Bingo de Verão"
-    },
     "navigation": {
         "primary": "Navegação principal",
         "mobile": "Navegação móvel",
@@ -41,18 +38,6 @@
             "Mid": "Médio",
             "High": "Difícil"
         }
-    },
-    "score": {
-        "title": "Resumo da pontuação",
-        "total": "Total",
-        "tiles": "Tiles",
-        "rowBonus": "Bônus de linha",
-        "columnBonus": "Bônus de coluna",
-        "completedTiles": "{{completed}} de {{total}} concluídos",
-        "completedRows_one": "{{count}} linha concluída",
-        "completedRows_other": "{{count}} linhas concluídas",
-        "completedColumns_one": "{{count}} coluna concluída",
-        "completedColumns_other": "{{count}} colunas concluídas"
     },
     "common": {
         "loading": "Carregando…",
@@ -130,7 +115,8 @@
             "placeholder": "Selecione um evento ativo"
         },
         "publicEyebrow": "Eventos da comunidade",
-        "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição."
+        "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição.",
+        "noActive": "Nenhum evento ativo"
     },
     "teams": {
         "eyebrow": "Administração",
@@ -179,6 +165,29 @@
             "approvedOnly": "Somente inscrições aprovadas podem receber um time. Atualize a lista.",
             "pendingOnly": "Esta solicitação não está mais pendente.",
             "removed": "Esta inscrição já foi removida."
+        },
+        "roster": {
+            "tabs": "Participantes e equipes",
+            "pending": "Pendentes",
+            "unassigned": "Sem equipe",
+            "assigned": "Com equipe",
+            "teams": "Equipes",
+            "createTeam": "Criar equipe",
+            "viewMembers": "Ver membros de {{name}}",
+            "search": "Buscar nome OSRS",
+            "searchAction": "Buscar",
+            "teamFilter": "Filtrar por equipe",
+            "allTeams": "Todas as equipes",
+            "pagination": "{{start}}–{{end}} de {{total}} participantes",
+            "previous": "Anterior",
+            "next": "Próxima",
+            "player": "Jogador",
+            "status": "Status",
+            "actions": "Ações",
+            "assignPlayer": "Alterar equipe de {{name}}",
+            "assign": "Alterar equipe",
+            "confirmAll": "Aprovar todas as {{count}} inscrições pendentes deste evento? Isso inclui participantes fora da busca e página atuais.",
+            "confirmApprove": "Confirmar aprovação"
         }
     },
     "language": {
@@ -270,7 +279,10 @@
         "retire": "Desativar {{name}}",
         "retireConfirm": "Desativar {{name}} para novos tabuleiros? Os tabuleiros existentes mantêm seus dados.",
         "summary": "{{difficulty}} · {{score}} pts · requisito {{requirement}} · {{drops}} drops · revisão {{revision}}",
-        "status": { "active": "Ativo", "retired": "Desativado" },
+        "status": {
+            "active": "Ativo",
+            "retired": "Desativado"
+        },
         "kind": {
             "boss": "Boss",
             "boss_group": "Grupo de bosses",
@@ -306,11 +318,20 @@
             "changed": "Este card mudou durante a edição. Recarregue e tente novamente.",
             "slug": "Esta chave permanente já está em uso.",
             "importConflict": "A importação encontrou chaves conflitantes: {{slugs}}."
+        },
+        "importDescription": "Importe os cards da planilha aprovada para o catálogo reutilizável. Cards existentes correspondentes são mantidos.",
+        "rules": {
+            "title": "Regras e drops aceitos",
+            "completion": "{{score}} pontos quando o progresso chegar a {{requirement}}",
+            "progress_one": "+{{count}} de progresso",
+            "progress_other": "+{{count}} de progresso",
+            "verification": "Verificação: {{note}}",
+            "restriction": "Limite de contagem: {{note}}"
         }
     },
     "boards": {
         "title": "Tabuleiros dos eventos",
-        "description": "Selecione um evento em rascunho e associe uma revisão exata de card a cada uma das 36 posições.",
+        "description": "Arraste cards do catálogo para montar o tabuleiro.",
         "event": "Evento",
         "selectEvent": "Selecione um evento",
         "filled": "{{filled}} de {{total}} posições preenchidas",
@@ -320,10 +341,32 @@
         "gridLabel": "Editor do tabuleiro do evento",
         "position": "Posição {{position}}",
         "emptyPosition": "Posição vazia",
-        "feedback": { "saved": "Tabuleiro salvo com as revisões fixadas." },
+        "feedback": {
+            "saved": "Tabuleiro salvo com as revisões fixadas."
+        },
         "errors": {
             "changed": "Este tabuleiro mudou durante a edição. Recarregue e tente novamente.",
             "retired": "Um card selecionado foi desativado. Substitua-o e salve novamente."
-        }
+        },
+        "catalog": "Catálogo de cards",
+        "catalogHint": "Arraste cards para o tabuleiro ou clique para adicionar.",
+        "search": "Buscar cards",
+        "manageCatalog": "Abrir catálogo de cards",
+        "noResults": "Nenhum card encontrado.",
+        "addCard": "Adicionar {{name}}",
+        "inBoard": "No tabuleiro",
+        "required": "Meta: {{count}}",
+        "chooseEvent": "Selecione um evento para montar o tabuleiro. O catálogo já está disponível para consulta.",
+        "assignHint": "Arraste cards do catálogo ou selecione um card para removê-lo.",
+        "remove": "Remover card",
+        "dropZone": "Arraste os cards para cá",
+        "dropAlternative": "Ou clique em um card do catálogo para adicionar.",
+        "addAll": "Adicionar todos",
+        "addAllHint": "Adiciona os cards disponíveis de todo o catálogo, até 36.",
+        "selectedRules": "Regras da posição {{position}}"
+    },
+    "brand": {
+        "name": "OSRS Bingo",
+        "tagline": "Bingo da comunidade"
     }
 }
