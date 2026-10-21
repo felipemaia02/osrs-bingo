@@ -12,15 +12,56 @@
     "board": {
         "eyebrow": "Event progress",
         "title": "Bingo board",
-        "description": "Track objectives, tile progress, and the current score in one place.",
-        "eventDescription": "Official board for {{event}}.",
+        "description": "Plan your hunt: open a tile to see which drops count and how much progress each one gives.",
+        "eventDescription": "Official board for {{event}}. Open a tile to see which drops count.",
         "noActiveEvent": "There is no active event to display.",
         "unavailable": "The active event board is not available yet.",
-        "prototypeData": "Prototype data",
         "gridTitle": "Objectives",
         "tileCount": "{{count}} tiles",
-        "scrollHint": "Swipe horizontally to explore the complete board.",
-        "scrollRegion": "Scrollable Bingo board"
+        "scrollRegion": "Scrollable Bingo board",
+        "row": "Row {{row}}",
+        "column": "Column {{column}}",
+        "rowShort": "{{row}}",
+        "columnShort": "{{column}}",
+        "match": {
+            "drop": "Counts: {{drop}}",
+            "tile": "Matches the tile name",
+            "none": "Does not match the search"
+        },
+        "search": {
+            "label": "Search tiles or drops",
+            "placeholder": "Search a drop or tile, e.g. jar",
+            "results_one": "{{count}} matching tile",
+            "results_other": "{{count}} matching tiles"
+        },
+        "filter": {
+            "label": "Difficulty",
+            "all": "All"
+        },
+        "view": {
+            "label": "Board layout",
+            "grid": "Grid view",
+            "list": "List view"
+        },
+        "context": {
+            "schedule": "{{start}} — {{end}}",
+            "startsIn": "Starts {{time}}",
+            "endsIn": "Ends {{time}}",
+            "endReached": "Scheduled end reached",
+            "notRegistered": "You are not registered in this event",
+            "pending": "Your registration is awaiting approval",
+            "removed": "You are not participating in this event",
+            "unassigned": "Approved, awaiting team assignment",
+            "team": "Your team: {{team}}"
+        },
+        "help": {
+            "title": "How tiles are completed",
+            "progress": "Each accepted drop adds its progress value to the tile for your team.",
+            "completion": "When your team's progress reaches the tile requirement, the team earns the tile points once.",
+            "excess": "Progress beyond the requirement does not award extra tile points.",
+            "bonuses": "Row, column and special bonuses are defined by the event rules.",
+            "details": "Select a tile to see its accepted drops, progress values and notes."
+        }
     },
     "tile": {
         "completed": "Completed",
@@ -37,7 +78,9 @@
             "Low": "Easy",
             "Mid": "Medium",
             "High": "Hard"
-        }
+        },
+        "label": "Row {{row}}, column {{column}}: {{name}}, {{tier}}, {{points}} points, {{state}}",
+        "progressPending": "Team progress will appear once drop submissions and scoring are available."
     },
     "common": {
         "loading": "Loading…",

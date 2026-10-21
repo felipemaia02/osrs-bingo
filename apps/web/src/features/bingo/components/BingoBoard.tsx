@@ -1,7 +1,5 @@
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import { useTranslation } from 'react-i18next'
-import { Panel } from '../../../components/ui/Panel'
-import type { Tile } from '../types'
+import type { Tile, TileMatch } from '../types'
 import { TileCard } from './TileCard'
 
 const GRID_SIZE = 6
@@ -9,40 +7,43 @@ const GRID_POSITIONS = Array.from({ length: GRID_SIZE }, (_, index) => index + 1
 
 interface BingoBoardProps {
   tiles: Tile[]
+  /** Per-tile match state while a search or filter is active; null when not filtering. */
+  matches?: Map<string, TileMatch> | null
+  onSelect?: (tile: Tile) => void
 }
 
-export function BingoBoard({ tiles }: BingoBoardProps) {
+/** Compact 6×6 grid with row/column labels. Positions never move when filtering. */
+export function BingoBoard({ tiles, matches = null, onSelect }: BingoBoardProps) {
   const { t } = useTranslation()
+  const axisLabel = 'flex items-center justify-center text-[11px] font-semibold text-rs-muted'
 
   return (
-    <Panel as="section" aria-labelledby="board-grid-title" className="min-w-0 overflow-hidden">
-      <div className="flex items-center justify-between gap-4 border-b border-rs-border/50 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <GridViewOutlinedIcon className="text-rs-gold" fontSize="small" aria-hidden="true" />
-          <h2 id="board-grid-title" className="font-display text-sm font-bold text-rs-gold-bright">
-            {t('board.gridTitle')}
-          </h2>
-        </div>
-        <span className="text-xs text-rs-muted">
-          {t('board.tileCount', { count: tiles.length })}
-        </span>
+    <div className="overflow-x-auto p-3 sm:p-4" tabIndex={0} aria-label={t('board.scrollRegion')}>
+      <div className="grid min-w-[52rem] grid-cols-[1.25rem_repeat(6,minmax(0,1fr))] gap-2 lg:min-w-0">
+        <span aria-hidden="true" />
+        {GRID_POSITIONS.map((col) => (
+          <span key={`col-${col}`} className={axisLabel} aria-hidden="true">
+            {t('board.columnShort', { column: col })}
+          </span>
+        ))}
+        {GRID_POSITIONS.map((row) => [
+          <span key={`row-${row}`} className={axisLabel} aria-hidden="true">
+            {t('board.rowShort', { row })}
+          </span>,
+          ...GRID_POSITIONS.map((col) => {
+            const tile = tiles.find((item) => item.row === row && item.col === col)
+            if (!tile) return <span key={`empty-${row}-${col}`} aria-hidden="true" />
+            return (
+              <TileCard
+                key={tile.id}
+                tile={tile}
+                match={matches?.get(tile.id)}
+                onSelect={onSelect}
+              />
+            )
+          }),
+        ])}
       </div>
-
-      <p className="border-b border-rs-border/40 bg-rs-inset/50 px-4 py-2 text-xs text-rs-muted sm:hidden">
-        {t('board.scrollHint')}
-      </p>
-
-      <div className="overflow-x-auto p-3 sm:p-4" tabIndex={0} aria-label={t('board.scrollRegion')}>
-        <div className="grid min-w-[62rem] grid-cols-6 gap-2 lg:min-w-0">
-          {GRID_POSITIONS.flatMap((row) =>
-            GRID_POSITIONS.map((col) => {
-              const tile = tiles.find((item) => item.row === row && item.col === col)
-              if (!tile) return null
-              return <TileCard key={tile.id} tile={tile} imageUrl={tile.imageUrl} />
-            }),
-          )}
-        </div>
-      </div>
-    </Panel>
+    </div>
   )
 }

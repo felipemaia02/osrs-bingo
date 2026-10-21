@@ -12,15 +12,56 @@
     "board": {
         "eyebrow": "Progresso do evento",
         "title": "Tabuleiro do Bingo",
-        "description": "Acompanhe objetivos, progresso dos tiles e a pontuação atual em um só lugar.",
-        "eventDescription": "Tabuleiro oficial de {{event}}.",
+        "description": "Planeje sua caçada: abra um tile para ver quais drops contam e quanto progresso cada um dá.",
+        "eventDescription": "Tabuleiro oficial de {{event}}. Abra um tile para ver quais drops contam.",
         "noActiveEvent": "Não há um evento ativo para exibir.",
         "unavailable": "O tabuleiro do evento ativo ainda não está disponível.",
-        "prototypeData": "Dados de protótipo",
         "gridTitle": "Objetivos",
         "tileCount": "{{count}} tiles",
-        "scrollHint": "Deslize horizontalmente para explorar o tabuleiro completo.",
-        "scrollRegion": "Tabuleiro de Bingo rolável"
+        "scrollRegion": "Tabuleiro de Bingo rolável",
+        "row": "Linha {{row}}",
+        "column": "Coluna {{column}}",
+        "rowShort": "{{row}}",
+        "columnShort": "{{column}}",
+        "match": {
+            "drop": "Conta: {{drop}}",
+            "tile": "Corresponde ao nome do tile",
+            "none": "Não corresponde à busca"
+        },
+        "search": {
+            "label": "Buscar tiles ou drops",
+            "placeholder": "Busque um drop ou tile, ex.: jar",
+            "results_one": "{{count}} tile encontrado",
+            "results_other": "{{count}} tiles encontrados"
+        },
+        "filter": {
+            "label": "Dificuldade",
+            "all": "Todos"
+        },
+        "view": {
+            "label": "Layout do tabuleiro",
+            "grid": "Visualização em grade",
+            "list": "Visualização em lista"
+        },
+        "context": {
+            "schedule": "{{start}} — {{end}}",
+            "startsIn": "Começa {{time}}",
+            "endsIn": "Termina {{time}}",
+            "endReached": "Fim programado atingido",
+            "notRegistered": "Você não está inscrito neste evento",
+            "pending": "Sua inscrição aguarda aprovação",
+            "removed": "Você não está participando deste evento",
+            "unassigned": "Aprovado, aguardando definição de time",
+            "team": "Seu time: {{team}}"
+        },
+        "help": {
+            "title": "Como os tiles são completados",
+            "progress": "Cada drop aceito soma seu valor de progresso ao tile do seu time.",
+            "completion": "Quando o progresso do time atinge o requisito do tile, o time ganha os pontos do tile uma única vez.",
+            "excess": "Progresso além do requisito não dá pontos extras de tile.",
+            "bonuses": "Bônus de linha, coluna e especiais são definidos pelas regras do evento.",
+            "details": "Selecione um tile para ver os drops aceitos, valores de progresso e observações."
+        }
     },
     "tile": {
         "completed": "Concluído",
@@ -37,7 +78,9 @@
             "Low": "Fácil",
             "Mid": "Médio",
             "High": "Difícil"
-        }
+        },
+        "label": "Linha {{row}}, coluna {{column}}: {{name}}, {{tier}}, {{points}} pontos, {{state}}",
+        "progressPending": "O progresso do time aparecerá quando o envio de drops e a pontuação estiverem disponíveis."
     },
     "common": {
         "loading": "Carregando…",

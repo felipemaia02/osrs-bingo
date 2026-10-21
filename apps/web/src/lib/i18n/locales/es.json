@@ -12,15 +12,56 @@
     "board": {
         "eyebrow": "Progreso del evento",
         "title": "Tablero del Bingo",
-        "description": "Sigue los objetivos, el progreso de las casillas y la puntuación actual en un solo lugar.",
-        "eventDescription": "Tablero oficial de {{event}}.",
+        "description": "Planifica tu caza: abre una casilla para ver qué drops cuentan y cuánto progreso da cada uno.",
+        "eventDescription": "Tablero oficial de {{event}}. Abre una casilla para ver qué drops cuentan.",
         "noActiveEvent": "No hay un evento activo para mostrar.",
         "unavailable": "El tablero del evento activo todavía no está disponible.",
-        "prototypeData": "Datos de prototipo",
         "gridTitle": "Objetivos",
         "tileCount": "{{count}} casillas",
-        "scrollHint": "Desliza horizontalmente para explorar el tablero completo.",
-        "scrollRegion": "Tablero de Bingo desplazable"
+        "scrollRegion": "Tablero de Bingo desplazable",
+        "row": "Fila {{row}}",
+        "column": "Columna {{column}}",
+        "rowShort": "{{row}}",
+        "columnShort": "{{column}}",
+        "match": {
+            "drop": "Cuenta: {{drop}}",
+            "tile": "Coincide con el nombre de la casilla",
+            "none": "No coincide con la búsqueda"
+        },
+        "search": {
+            "label": "Buscar casillas o drops",
+            "placeholder": "Busca un drop o casilla, p. ej. jar",
+            "results_one": "{{count}} casilla encontrada",
+            "results_other": "{{count}} casillas encontradas"
+        },
+        "filter": {
+            "label": "Dificultad",
+            "all": "Todas"
+        },
+        "view": {
+            "label": "Diseño del tablero",
+            "grid": "Vista de cuadrícula",
+            "list": "Vista de lista"
+        },
+        "context": {
+            "schedule": "{{start}} — {{end}}",
+            "startsIn": "Empieza {{time}}",
+            "endsIn": "Termina {{time}}",
+            "endReached": "Fin programado alcanzado",
+            "notRegistered": "No estás inscrito en este evento",
+            "pending": "Tu inscripción espera aprobación",
+            "removed": "No participas en este evento",
+            "unassigned": "Aprobado, esperando asignación de equipo",
+            "team": "Tu equipo: {{team}}"
+        },
+        "help": {
+            "title": "Cómo se completan las casillas",
+            "progress": "Cada drop aceptado suma su valor de progreso a la casilla de tu equipo.",
+            "completion": "Cuando el progreso del equipo alcanza el requisito, el equipo gana los puntos de la casilla una sola vez.",
+            "excess": "El progreso por encima del requisito no da puntos extra.",
+            "bonuses": "Los bonos de fila, columna y especiales los definen las reglas del evento.",
+            "details": "Selecciona una casilla para ver los drops aceptados, valores de progreso y notas."
+        }
     },
     "tile": {
         "completed": "Completada",
@@ -37,7 +78,9 @@
             "Low": "Fácil",
             "Mid": "Media",
             "High": "Difícil"
-        }
+        },
+        "label": "Fila {{row}}, columna {{column}}: {{name}}, {{tier}}, {{points}} puntos, {{state}}",
+        "progressPending": "El progreso del equipo aparecerá cuando el envío de drops y la puntuación estén disponibles."
     },
     "common": {
         "loading": "Cargando…",

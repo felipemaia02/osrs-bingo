@@ -92,6 +92,8 @@ The 6×6 Bingo board preserves a readable tile width inside a keyboard-focusable
 
 The Bingo page renders the active event's published board from the API (feature 007). The frontend calculates no score, completion or bonus: tile progress shows as unavailable until accepted activity and the backend `modules/scoring/` module (feature 006) exist. The original static prototype data and its frontend score summary were removed on 2026-10-21.
 
+Feature 009 makes the board a planning tool without adding any calculation. Tiles open a read-only details dialog (accepted drops as progress units, notes, Wiki attribution). Search matches tile names, drop names and aliases, ignoring case and accents, and the difficulty filter dims tiles without moving them. The header shows the schedule, the remaining time and only the viewer's own team. Two layouts are available: a labeled 6×6 grid, and a row-grouped list that is the default below the `sm` breakpoint. The layout choice is kept in `localStorage` (`osrs-bingo-board-view`) behind guarded access.
+
 ## Event state
 
 Event server state uses TanStack Query. The header and public board automatically use the single active event returned by the API. There is no header selector or persisted current-event preference. Administrative event selectors remain independent and explicit. The platform identity is OSRS Bingo, not the team/season from the source workbook.
