@@ -21,6 +21,10 @@ it('offers Discord login and public events without administrator controls', asyn
   expect(screen.getByRole('heading', { name: 'Join the adventure' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Explore events' })).toHaveAttribute('href', '/events')
   expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+  expect(screen.getByRole('group', { name: 'Language' })).toBeInTheDocument()
+  expect(screen.getByText(/Discord identifies your account/).closest('div')).toHaveClass(
+    'border-rs-info',
+  )
 })
 
 it('continues to events for an existing session', async () => {

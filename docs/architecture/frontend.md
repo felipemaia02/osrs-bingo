@@ -99,6 +99,7 @@ The board (3×3 to 6×6, feature 014; the mockups show 6×6) never compresses it
 | 5 | `/events`, `/admin/events` | none (design system) | **Done (feature 015)** | Tabs with counts, admin table/cards with per-status actions, FormModal, player cards with registration badges |
 | 6 | `/admin/cards` | none (design system) | **Done (feature 016)** | Local search and filters, desktop table with a fixed detail panel, mobile cards, retire via ConfirmDialog |
 | 7 | `/admin/administrators` | none (design system) | **Done (feature 017)** | Summary, search, table/cards with role badges and "You", pagination, ConfirmDialog with errors inside |
+| 8 | `/login` | none (design system) | **Done (feature 018)** | Shell brand bar with language control, branded panel, primary Discord button, info banner |
 
 [FUTURE] mockups are implemented only with their own features (submissions, scoring, ranking).
 
