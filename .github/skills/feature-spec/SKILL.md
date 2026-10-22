@@ -20,10 +20,11 @@ Creates a new `spec.md` or improves an existing one while preserving product int
 4. Keep the specification implementation-independent. Do not prescribe FastAPI classes, React components, MongoDB collections, or task ordering.
 5. Give every requirement and acceptance criterion a stable identifier.
 6. Confirm that each user-visible behavior is testable and that error, empty, permission, and boundary cases are addressed when relevant.
+7. For UI features, add a **Design reference** section naming the chosen mockup files in `docs/design/mockups/` (desktop and mobile) and the decision row in `docs/design/readme.md`. Describe the visible behavior the mockup requires in requirements; never copy example data from a mockup as if it were real. If the mockup changes behavior approved in an earlier spec, name that spec and requirement explicitly and list the change for user approval.
 
 ## Ambiguities and business rules
 
-Never infer a feature requirement directly from `docs/references/THUNDER_CRABS_SUMMER_BINGO_WORKBOOK_SPEC.md`. It is a domain reference, not an implementation spec.
+Never infer a feature requirement directly from `docs/references/THUNDER_CRABS_SUMMER_BINGO_WORKBOOK_SPEC.md`. It is a domain reference, not an implementation spec. The same applies to `docs/design/mockups/`: a mockup shows the chosen layout, but anything it implies beyond layout (new actions, data or rules) must be stated in the spec and approved. "[FUTURE]" mockup content is out of scope until its feature exists.
 
 - Fix only clear wording, structure, or formatting defects directly.
 - Present unresolved product decisions to the user before encoding them as requirements.

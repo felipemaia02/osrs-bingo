@@ -18,7 +18,8 @@ Read `AGENTS.md`, `spec.md`, `plan.md`, every file under `tasks/`, and the exist
 3. Run frontend tests, ESLint, Prettier check, TypeScript typecheck and production build when the feature has frontend scope.
 4. Execute the integration checks in `tasks/integration.md`, including API/UI contract and error flows.
 5. Validate Docker or required runtime infrastructure when the spec includes it.
-6. Record exact evidence and any environment limitation in `acceptance.md`.
+6. For UI features, compare the result with each referenced mockup in `docs/design/mockups/` at 1440 px and 390 px: sections and order, controls, copy, badges, states (empty, loading, error, selected, filtered), sizes and tokens from `docs/design/design-system.md`. Record every deviation and its reason. A visual check not actually performed in a browser must be reported as not performed.
+7. Record exact evidence and any environment limitation in `acceptance.md`.
 
 ## Rules
 

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Board — option A, desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.p{background:#d4ad53;border-color:#d4ad53;color:#15110e;font-weight:600}
+.btn.on{border-color:#d4ad53;color:#f1d487;background:#2d2119}
+.btn.ic{padding:0;width:40px}
+.fv{outline:2px solid #f1d487;outline-offset:2px}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bM{color:#f1d487;border-color:#a88647;background:#2a2112}
+.bH{color:#efaaa0;border-color:#b45b4e;background:#2b1714}
+.bF{color:#a9cde2;border-color:#668ca3;background:#13202a}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.inp{font:inherit;font-size:14px;min-height:40px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+.hd{height:64px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid #705a39;background:#19120e}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #705a39;border-radius:3px;color:#ead9b7;text-decoration:none;font-size:13px}
+.lg{font:inherit;font-size:12px;font-weight:600;min-width:36px;min-height:32px;background:transparent;border:1px solid transparent;color:#aa9a7c;border-radius:3px;cursor:pointer}
+.lg.on{background:#d4ad53;color:#15110e}
+.av{width:24px;height:24px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.sb{width:240px;flex:none;border-right:1px solid rgba(112,90,57,.55);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.sg{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aa9a7c;font-weight:600;padding:14px 12px 6px}
+.nv{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:3px;color:#ead9b7;text-decoration:none;border:1px solid transparent;font-size:14px}
+.nv.on{background:#2d2119;border-color:#a88647;color:#f1d487;font-weight:600}
+.nv.off{color:#9a8b70;cursor:not-allowed}
+.nv .bd{margin-left:auto}
+.tm-e{width:22px;height:22px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#ead9b7;flex:none}
+.seg{display:inline-flex;border:1px solid #705a39;border-radius:3px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;min-height:38px;padding:0 12px;background:#19120e;border:0;border-right:1px solid #705a39;color:#ead9b7;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button.on{background:#2d2119;color:#f1d487;font-weight:600;box-shadow:inset 0 -2px 0 #d4ad53}
+.tile{font:inherit;text-align:left;display:flex;flex-direction:column;gap:6px;padding:7px;background:#211914;border:1px solid #705a39;border-radius:4px;color:#ead9b7;cursor:pointer;min-height:138px;position:relative;min-width:0}
+.tile.dim{opacity:.38}
+.tile.hit{border-color:#f1d487;box-shadow:inset 0 0 0 1px #f1d487}
+.tile.sel{outline:2px solid #f1d487;outline-offset:3px}
+.ti{height:56px;display:flex;align-items:center;justify-content:center;background:#19120e;border-radius:3px;position:relative;overflow:hidden}
+.ti img{max-width:100%;max-height:100%;object-fit:contain}
+.tb{position:absolute;top:4px;left:4px}
+.fb{display:flex;flex-direction:column;align-items:center;gap:1px;color:#a88647;font-family:Cinzel,Georgia,serif;font-weight:700;font-size:12px}
+.tn{font-weight:600;font-size:13px;line-height:1.25;min-height:32px;overflow:hidden}
+.tmeta{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-top:auto}
+.hitc{display:flex;align-items:center;gap:3px;font-size:11px;font-weight:600;background:#f1d487;color:#15110e;padding:2px 5px;border-radius:2px;line-height:1.3}
+.hitc .ms{font-size:14px}
+.lbl{font-size:12px;font-weight:600;color:#aa9a7c;text-align:center}
+.dr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border-bottom:1px solid rgba(112,90,57,.45)}
+.dr.m{background:#2d2119;box-shadow:inset 3px 0 0 #f1d487}
+.wt{font-size:12px;font-weight:600;color:#f1d487;white-space:nowrap}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 1360px; display: flex; flex-direction: column">
+  <header class="hd">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px">
+      <a href="#" class="pill"><span class="ms" aria-hidden="true">event</span>Autumn Bingo 2026<span class="bd bE">Active</span></a>
+      <div role="group" aria-label="Language" style="display: flex; align-items: center; gap: 2px"><span class="ms mut" aria-hidden="true">translate</span><button class="lg on" type="button" aria-pressed="true">EN</button><button class="lg" type="button">PT</button><button class="lg" type="button">ES</button></div>
+      <button class="btn" type="button" style="min-height: 36px"><span class="av">F</span>felps_<span class="ms" aria-hidden="true">expand_more</span></button>
+    </div>
+  </header>
+  <div style="display: flex; flex: 1; min-height: 0">
+    <nav class="sb" aria-label="Main">
+      <div class="sg">Play</div>
+      <a class="nv on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">grid_view</span>Board</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">calendar_month</span>Events</a>
+      <span class="nv off" aria-disabled="true"><span class="ms" aria-hidden="true">upload_file</span>My submissions<span class="bd bN">Soon</span></span>
+      <div class="sg">Administration</div>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">space_dashboard</span>Overview</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">event_note</span>Events</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">groups</span>Teams and registrations</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">style</span>Card catalog</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">view_module</span>Event boards</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">shield_person</span>Administrators</a>
+      <span class="nv off" aria-disabled="true"><span class="ms" aria-hidden="true">leaderboard</span>Ranking<span class="bd bN">Soon</span></span>
+    </nav>
+    <main style="flex: 1; min-width: 0; padding: 28px 32px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span class="eb">Active event</span>
+          <h1 class="h1" style="font-size: 34px">Autumn Bingo 2026</h1>
+          <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: center; font-size: 14px">
+            <span style="display: inline-flex; gap: 6px; align-items: center"><span class="ms mut" aria-hidden="true">schedule</span>Oct 22, 2026, 1:45 AM → Nov 5, 2026, 1:45 AM</span>
+            <span style="display: inline-flex; gap: 6px; align-items: center; font-weight: 600"><span class="ms mut" aria-hidden="true">hourglass_top</span>Ends in 13 d 22 h</span>
+          </div>
+        </div>
+        <div class="pn" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px">
+          <span class="tm-e" style="background: #2f5592; width: 34px; height: 34px; font-size: 13px">SA</span>
+          <div style="display: flex; flex-direction: column"><span class="mut" style="font-size: 12px">Your team</span><strong>Saradomin</strong></div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid #668ca3; background: #13202a; border-radius: 4px; color: #cfe2ee">
+        <span class="ms" aria-hidden="true">info</span>
+        <span><strong>Progress unavailable.</strong> Drop submissions don't exist yet — for now, use search to find where each drop counts.</span>
+      </div>
+      <div class="pn" style="display: flex; align-items: center; gap: 12px; padding: 12px; flex-wrap: wrap">
+        <label style="flex: 1; min-width: 280px; position: relative; display: flex; align-items: center">
+          <span class="ms mut" aria-hidden="true" style="position: absolute; left: 10px">search</span>
+          <span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Where does my drop count?</span>
+          <input class="inp fv" type="search" value="claw" placeholder="Where does my drop count? e.g. jar, claw, Vorkath" style="padding-left: 38px">
+        </label>
+        <div class="seg" role="group" aria-label="Difficulty"><button class="on" type="button" aria-pressed="true">All</button><button type="button">Easy</button><button type="button">Medium</button><button type="button">Hard</button></div>
+        <div class="seg" role="group" aria-label="View"><button class="on" type="button" aria-pressed="true" aria-label="Grid"><span class="ms f" aria-hidden="true">grid_view</span></button><button type="button" aria-label="List"><span class="ms" aria-hidden="true">view_list</span></button></div>
+        <button class="btn" type="button"><span class="ms" aria-hidden="true">help</span>How tiles are completed</button>
+        <div role="status" style="width: 100%; font-size: 13px; display: flex; gap: 6px; align-items: center"><span class="ms" aria-hidden="true" style="font-size: 18px; color: #f1d487">filter_center_focus</span><strong>5 tiles accept “claw”</strong><span class="mut">— the other 31 stay in place, dimmed.</span></div>
+      </div>
+      <div style="display: flex; gap: 24px; align-items: flex-start">
+        <section aria-label="6 by 6 board" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: grid; grid-template-columns: 20px repeat(6, minmax(0, 1fr)); gap: 8px">
+            <span></span>
+            <sc-for list="{{cols}}" as="c" hint-placeholder-count="6"><span class="lbl">{{c}}</span></sc-for>
+          </div>
+          <sc-for list="{{rows}}" as="row" hint-placeholder-count="6">
+            <div style="display: grid; grid-template-columns: 20px repeat(6, minmax(0, 1fr)); gap: 8px; align-items: stretch">
+              <span class="lbl" style="align-self: center">{{row.n}}</span>
+              <sc-for list="{{row.tiles}}" as="t" hint-placeholder-count="6">
+                <button class="tile {{t.cls}}" type="button" aria-label="{{t.aria}}">
+                  <span class="ti">
+                    <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{t.img}}" alt=""></sc-if>
+                    <sc-if value="{{t.noImg}}" hint-placeholder-val="{{false}}"><span class="fb"><span class="ms" aria-hidden="true">shield</span>{{t.ini}}</span></sc-if>
+                    <span class="bd b{{t.d}} tb">{{t.diff}}</span>
+                  </span>
+                  <span class="tn">{{t.name}}</span>
+                  <sc-if value="{{t.hit}}" hint-placeholder-val="{{false}}"><span class="hitc"><span class="ms" aria-hidden="true">search</span>{{t.hit}}</span></sc-if>
+                  <span class="tmeta"><span class="mut">Req. {{t.req}}</span><strong>{{t.pts}} pts</strong></span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+          <p class="mut" style="margin: 6px 0 0 28px; font-size: 12px">Images: <a href="#">OSRS Wiki</a> (CC BY-NC-SA 3.0). Without an image, the tile shows a shield with initials.</p>
+        </section>
+        <aside class="pn" aria-label="Tile detail" style="width: 340px; flex: none; display: flex; flex-direction: column; overflow: hidden">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #705a39">
+            <span class="eb" style="font-size: 11px">Row 1 · Column 3</span>
+            <button class="btn ic" type="button" aria-label="Close detail" style="min-height: 32px; width: 32px"><span class="ms" aria-hidden="true">close</span></button>
+          </div>
+          <div style="height: 150px; background: #19120e; display: flex; align-items: center; justify-content: center"><img src="../assets/alchemical-hydra.png" alt="Alchemical Hydra" style="height: 140px"></div>
+          <div style="padding: 14px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <h2 class="cz" style="margin: 0; font-size: 22px; color: #f1d487">Alchemical Hydra</h2>
+              <div style="display: flex; gap: 6px"><span class="bd bH">Hard</span><span class="bd bN">20 pts</span><span class="bd bN">Boss</span></div>
+            </div>
+            <div style="background: #19120e; border: 1px solid rgba(112,90,57,.6); border-radius: 3px; padding: 10px 12px; font-size: 13px">
+              Completes when progress reaches <strong>6</strong>. Worth <strong>20 pts only once</strong> — extra progress gives no points.
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px"><span class="ms mut" aria-hidden="true">hourglass_disabled</span><span class="mut">Your team's progress: unavailable</span></div>
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px"><strong style="font-size: 13px">Accepted drops (6)</strong><span class="mut" style="font-size: 12px">weight = progress</span></div>
+              <div style="border: 1px solid rgba(112,90,57,.6); border-radius: 3px">
+                <div class="dr"><span>Brimstone Ring Piece</span><span class="wt">+1 progress</span></div>
+                <div class="dr"><span>Hydra's Tail</span><span class="wt">+2 progress</span></div>
+                <div class="dr"><span>Hydra's Leather</span><span class="wt">+2 progress</span></div>
+                <div class="dr m"><span style="display: flex; align-items: center; gap: 6px"><span class="ms" aria-hidden="true" style="font-size: 16px; color: #f1d487">search</span><strong>Hydra's Claw</strong></span><span class="wt">+3 progress</span></div>
+                <div class="dr"><span>Jar of Chemicals</span><span class="wt">+3 progress</span></div>
+                <div class="dr" style="border-bottom: 0"><span>Ikkle Hydra</span><span class="wt">+3 progress</span></div>
+              </div>
+            </div>
+            <a href="#" style="font-size: 12px; display: inline-flex; align-items: center; gap: 4px">Image: OSRS Wiki — Alchemical Hydra<span class="ms" aria-hidden="true" style="font-size: 14px">open_in_new</span></a>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1360}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const RAW = "Abyssal Sire|M|10|5|../assets/abyssal-sire.png;Araxxor|H|20|12|../assets/araxxor.png;Alchemical Hydra|H|20|6|../assets/alchemical-hydra.png;Armoured Zombies|E|5|8|../assets/armoured-zombies.png;Barrows|E|5|12|../assets/barrows.png;Cerberus|H|20|6|../assets/cerberus.png;Chambers of Xeric|H|20|4|../assets/chambers-of-xeric.png;DT2 Bosses|H|20|12|../assets/dt2-bosses.png;Dagannoth Kings|M|10|15|../assets/dagannoth-kings.png;Demonic Gorillas|M|10|10|../assets/demonic-gorillas.png;Doom of Mokhaiotl|H|20|3|../assets/doom-of-mokhaiotl.png;Gauntlet|M|10|6|../assets/gauntlet.png;God Wars Dungeon|H|20|18|;Grotesque Guardians|M|10|8|;Guardians of the Rift|E|5|10|;Hueycoatl|E|5|8|;Mad Angel|E|5|6|;Maggot King|H|20|2|;Medium Boots|M|10|5|;Moons of Peril|E|5|8|;Mortimer|M|10|15|;Phantom Muspah|M|10|5|;Royal Titans|E|5|10|;Scurrius|E|5|10|;Skilling Tools|E|5|10|;Tempoross|E|5|10|;Theatre of Blood|H|20|4|;Thieving|M|10|3|;Tombs of Amascut|H|20|4|;Tormented Demons|M|10|3|;Vorkath|M|10|8|;Wilderness Trio|H|20|10|;Wintertodt|E|5|1|;Yama|H|20|3|;Zalcano|M|10|1|;Zulrah|M|10|6|";
+    const DN = { E: 'Easy', M: 'Medium', H: 'Hard' };
+    const HIT = { 'Alchemical Hydra': "Hydra's Claw +3", 'Chambers of Xeric': 'Dragon Claws +2', 'Mortimer': "Drake's Claw +2", 'Tormented Demons': 'Burning Claw +1', 'Wilderness Trio': 'Claws of Callisto +1' };
+    const list = RAW.split(';').map((s, i) => {
+      const p = s.split('|');
+      const hit = HIT[p[0]] || '';
+      const ini = p[0].split(' ').filter((w) => /^[A-Z0-9]/.test(w)).map((w) => w[0]).join('').slice(0, 3);
+      const row = Math.floor(i / 6) + 1, col = (i % 6) + 1;
+      return { name: p[0], d: p[1], diff: DN[p[1]], pts: p[2], req: p[3], img: p[4], hasImg: !!p[4], noImg: !p[4], ini, hit,
+        cls: (hit ? 'hit' : 'dim') + (p[0] === 'Alchemical Hydra' ? ' sel' : ''),
+        aria: p[0] + ', row ' + row + ' column ' + col + ', ' + DN[p[1]] + ', ' + p[2] + ' points' + (hit ? ', matches search: ' + hit : '') };
+    });
+    const rows = [1, 2, 3, 4, 5, 6].map((n) => ({ n, tiles: list.slice((n - 1) * 6, n * 6) }));
+    return { cols: [1, 2, 3, 4, 5, 6], rows };
+  }
+}
+</script>
+</body>
+</html>

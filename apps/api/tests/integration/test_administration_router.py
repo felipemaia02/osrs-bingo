@@ -19,7 +19,9 @@ def services() -> Iterator[tuple[AsyncMock, AsyncMock]]:
         id="actor", discord_id="111", username="Admin", is_admin=True
     )
     user = DirectoryUser(id="target", discord_id="222", username="Player", is_admin=False)
-    administration.directory.return_value = UserDirectory(items=[user], total=1, offset=0, limit=25)
+    administration.directory.return_value = UserDirectory(
+        items=[user], total=1, offset=0, limit=25, admin_count=1
+    )
     administration.change_role.return_value = user.model_copy(update={"is_admin": True})
 
     async def auth_override():
@@ -43,6 +45,7 @@ async def test_admin_directory_and_role_contract(
     response = await client.get("/admin/users?search=Crab&limit=10")
     assert response.status_code == 200
     services[1].directory.assert_awaited_once_with("Crab", 0, 10)
+    assert response.json()["admin_count"] == 1
     response = await client.patch(
         "/admin/users/target/role",
         json={"is_admin": True},

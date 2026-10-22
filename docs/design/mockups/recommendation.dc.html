@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Implementation recommendation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.5;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;display:inline-block;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.mut{color:#aa9a7c}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bF{color:#a9cde2;border-color:#668ca3;background:#13202a}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.bW{color:#f1d487;border-color:#a88647;background:#2a2112}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;font-weight:600;color:#aa9a7c;text-align:left;padding:10px 14px;border-bottom:1px solid #705a39;background:#19120e;letter-spacing:.04em}
+td{padding:14px;border-bottom:1px solid rgba(112,90,57,.45);vertical-align:top;font-size:14px}
+.n{font-family:Cinzel,Georgia,serif;font-weight:700;font-size:26px;color:#f1d487;line-height:1}
+.n.f{color:#a9cde2}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 980px; padding: 48px 56px; display: flex; flex-direction: column; gap: 22px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span class="eb">Recommendation</span>
+    <h1 class="cz" style="margin: 0; font-size: 38px; color: #f1d487">What to build first</h1>
+    <span class="mut" style="font-size: 15px">Ordered to deliver value to players early, fix the only business-rule risk found, and leave room for what comes next.</span>
+  </div>
+  <div style="background: #211914; border: 1px solid #705a39; border-radius: 4px; overflow: hidden">
+    <table>
+      <thead><tr><th style="width: 60px">#</th><th style="width: 200px">Screen</th><th style="width: 260px">Combination</th><th>Why</th><th style="width: 110px">Effort</th></tr></thead>
+      <tbody>
+        <tr><td><span class="n">1</span></td><td><strong>App shell</strong></td><td>4A · grouped sidebar</td><td>Removes the duplicated admin tab row and <strong>takes “Ranking” out of the player menu</strong> — today everyone sees it, but ranking is admin-only.</td><td><span class="bd bE">Low</span></td></tr>
+        <tr><td><span class="n">2</span></td><td><strong>Board /</strong></td><td>1A on desktop + 1B mini-map on mobile</td><td>The fixed panel answers “where does my drop count?” without a modal. The mini-map keeps the 6×6 shape on mobile. It's the same structure as the [FUTURE] preview, so progress can be added later without rebuilding the screen.</td><td><span class="bd bW">Medium</span></td></tr>
+        <tr><td><span class="n">3</span></td><td><strong>/admin/teams</strong></td><td>3A · table with bulk actions</td><td>Fits what already exists (tabs, search, 25-per-page pagination, “Approve all” confirmation) and speeds up registration day. The 3B board can become the “Teams” tab later.</td><td><span class="bd bE">Low</span></td></tr>
+        <tr><td><span class="n">4</span></td><td><strong>/admin/boards</strong></td><td>2A on desktop + 2B “position first” flow on mobile</td><td>Keeps the drag and drop admins already use and solves mobile, where dragging doesn't work. Difficulty counts and visible empty slots help avoid activating an incomplete board.</td><td><span class="bd bW">Medium</span></td></tr>
+        <tr style="background: rgba(19,32,42,.5)"><td><span class="n f">5</span></td><td><strong>Event rules</strong> <span class="bd bF">FUTURE</span></td><td>Rules modal</td><td>Must exist <strong>before</strong> any scoring: row/column bonuses are per event and can only be set in draft.</td><td><span class="bd bE">Low</span></td></tr>
+        <tr style="background: rgba(19,32,42,.5)"><td><span class="n f">6</span></td><td><strong>Submissions</strong> <span class="bd bF">FUTURE</span></td><td>Review queue + unrecognized drops + My submissions</td><td>Arrive together with the DropTracker integration. An exceptions-only queue keeps admin work small.</td><td><span class="bd bN">High</span></td></tr>
+        <tr style="background: rgba(19,32,42,.5)"><td><span class="n f">7</span></td><td><strong>Progress and ranking</strong> <span class="bd bF">FUTURE</span></td><td>My team's board → private ranking</td><td>Only make sense with real scores computed on the server. Ranking comes last because it depends on everything above.</td><td><span class="bd bW">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

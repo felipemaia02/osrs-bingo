@@ -16,6 +16,7 @@
 - [ ] Loading state implemented
 - [ ] Error state implemented
 - [ ] Empty state implemented
+- [ ] Matches the referenced mockups at 1440 px and 390 px (sections, controls, copy, states, sizes); deviations listed below with reasons
 
 ## Quality
 
@@ -23,4 +24,5 @@
 - [ ] `mypy app/` clean (API)
 - [ ] `npm run lint` clean (Web)
 - [ ] `npm run typecheck` clean (Web)
+- [ ] `npm run build` succeeds (Web)
 - [ ] No unrelated changes included

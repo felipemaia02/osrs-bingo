@@ -111,3 +111,18 @@ async def test_directory_search_treats_regex_input_as_literal_and_bounds_results
         25
     )
     assert users == [{"username": "Crab.*"}] and total == 1
+
+
+async def test_directory_reports_the_number_of_administrators() -> None:
+    service, repository = role_service()
+    repository.roles.return_value = {"admin_ids": ["111", "333"], "revision": 4}
+    repository.directory.return_value = (
+        [{"_id": ObjectId(TARGET_ID), "discord_id": "222", "username": "Player"}],
+        1,
+    )
+
+    result = await service.directory("", 0, 1)
+
+    assert result.admin_count == 2
+    assert result.total == 1
+    assert result.items[0].is_admin is False

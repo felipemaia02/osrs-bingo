@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>[FUTURE] Event rules</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.p{background:#d4ad53;border-color:#d4ad53;color:#15110e;font-weight:600}
+.btn.ic{padding:0;width:40px}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.inp{font:inherit;font-size:14px;min-height:40px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+.hd{height:64px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid #705a39;background:#19120e}
+.sb{width:240px;flex:none;border-right:1px solid rgba(112,90,57,.55);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.nv{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:3px;color:#ead9b7;text-decoration:none;border:1px solid transparent;font-size:14px}
+.nv.on{background:#2d2119;border-color:#a88647;color:#f1d487;font-weight:600}
+.ev{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid rgba(112,90,57,.45)}
+.cat{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;border-bottom:1px solid rgba(112,90,57,.45);font:inherit;background:transparent;border-left:0;border-right:0;border-top:0;color:#ead9b7;width:100%;text-align:left;cursor:pointer}
+.it{display:grid;grid-template-columns:1fr 88px 150px;gap:10px;align-items:center;padding:6px 12px;font-size:13px;border-bottom:1px solid rgba(112,90,57,.3)}
+.it input[type=number]{min-height:34px;font-size:13px;padding:0 8px;text-align:right}
+.ck{display:flex;align-items:center;gap:6px;font-size:12px}
+.ck input{width:16px;height:16px;accent-color:#d4ad53}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 1060px; display: flex; flex-direction: column">
+  <header class="hd">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+  </header>
+  <div style="display: flex; flex: 1; min-height: 0">
+    <nav class="sb" aria-label="Main">
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">space_dashboard</span>Overview</a>
+      <a class="nv on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">event_note</span>Events</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">groups</span>Teams and registrations</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">view_module</span>Event boards</a>
+    </nav>
+    <main style="flex: 1; min-width: 0; padding: 24px 32px; display: flex; flex-direction: column; gap: 14px">
+      <div><span class="eb">Administration</span><h1 class="h1" style="font-size: 30px">Events</h1></div>
+      <div class="pn">
+        <div class="ev"><span class="ms" aria-hidden="true" style="color: #d4ad53">event</span><strong>Autumn Bingo 2026</strong><span class="bd bE">Active</span><span class="mut">Oct 22 → Nov 5, 2026</span><span style="margin-left: auto" class="mut">Read-only</span></div>
+        <div class="ev"><span class="ms" aria-hidden="true" style="color: #d4ad53">event</span><strong>Winter Bingo 2026</strong><span class="bd bN">Draft</span><span class="mut">Dec 10 → Dec 24, 2026</span><span style="margin-left: auto; display: flex; gap: 8px"><button class="btn" type="button">Edit</button><button class="btn" type="button" style="border-color: #d4ad53; color: #f1d487">Rules</button></span></div>
+        <div class="ev" style="border-bottom: 0"><span class="ms" aria-hidden="true" style="color: #aa9a7c">event</span><strong>test123</strong><span class="bd bN">Finished</span></div>
+      </div>
+    </main>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(10, 7, 5, .72)"></div>
+  <section role="dialog" aria-modal="true" aria-labelledby="rl-t" style="position: absolute; left: 50%; top: 40px; margin-left: -460px; width: 920px; height: 980px; background: #211914; border: 1px solid #a88647; border-radius: 6px; display: flex; flex-direction: column; overflow: hidden">
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 12px 22px; border-bottom: 1px solid #705a39">
+      <div><span class="eb" style="font-size: 11px">Winter Bingo 2026 · Draft · <span style="color: #a9cde2">[FUTURE]</span></span><h2 id="rl-t" class="cz" style="margin: 2px 0 0; font-size: 22px; color: #f1d487">Event rules</h2></div>
+      <button class="btn ic" type="button" aria-label="Close"><span class="ms" aria-hidden="true">close</span></button>
+    </div>
+    <div style="padding: 16px 22px; display: flex; flex-direction: column; gap: 18px; flex: 1; overflow: hidden">
+      <fieldset style="border: 1px solid #705a39; border-radius: 4px; padding: 14px 16px; margin: 0; display: flex; flex-direction: column; gap: 10px">
+        <legend class="eb" style="padding: 0 6px">Row and column bonuses</legend>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+          <label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 600">Per completed row (points)</span><input class="inp" type="number" min="0" placeholder="Set this event's value"></label>
+          <label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 600">Per completed column (points)</span><input class="inp" type="number" min="0" placeholder="Set this event's value" style="outline: 2px solid #f1d487; outline-offset: 2px"></label>
+        </div>
+        <span class="mut" style="font-size: 12px">No default value: each event sets its own. A row or column counts once all 6 of its tiles are complete.</span>
+      </fieldset>
+      <fieldset style="border: 1px solid #705a39; border-radius: 4px; padding: 0; margin: 0; display: flex; flex-direction: column">
+        <legend class="eb" style="padding: 0 6px; margin-left: 10px">Special bonuses per team</legend>
+        <div style="display: flex; gap: 8px; align-items: center; padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #705a39" class="mut"><span class="ms" aria-hidden="true" style="font-size: 18px">info</span>Each category is capped at <strong style="color: #ead9b7">20 points per team</strong>. A drop can count toward a tile and a bonus at the same time.</div>
+        <button class="cat" type="button" aria-expanded="true"><span class="ms" aria-hidden="true">expand_less</span><strong style="flex: 1">Nex</strong><span class="mut" style="font-size: 12px">7 items · cap 20</span></button>
+        <div style="background: #19120e">
+          <div class="it mut" style="font-size: 12px; font-weight: 600"><span>Item</span><span style="text-align: right">Value</span><span>Counting</span></div>
+          <div class="it"><span>Zaryte vambraces</span><input class="inp" type="number" value="3" aria-label="Value of Zaryte vambraces"><label class="ck"><input type="checkbox">1× per team</label></div>
+          <div class="it"><span>Nihil horn</span><input class="inp" type="number" value="3" aria-label="Value of Nihil horn"><label class="ck"><input type="checkbox">1× per team</label></div>
+          <div class="it"><span>Torva full helm · platebody · platelegs</span><input class="inp" type="number" value="3" aria-label="Value of Torva pieces"><label class="ck"><input type="checkbox">1× per team</label></div>
+          <div class="it"><span>Ancient hilt</span><input class="inp" type="number" value="5" aria-label="Value of Ancient hilt"><label class="ck"><input type="checkbox">1× per team</label></div>
+          <div class="it" style="border-bottom: 0"><span>Nexling <span class="bd bN">pet</span></span><input class="inp" type="number" value="5" aria-label="Value of Nexling"><label class="ck"><input type="checkbox" checked>1× per team</label></div>
+        </div>
+        <button class="cat" type="button" aria-expanded="false"><span class="ms" aria-hidden="true">expand_more</span><strong style="flex: 1">Nightmare</strong><span class="mut" style="font-size: 12px">10 items · cap 20</span></button>
+        <button class="cat" type="button" aria-expanded="false"><span class="ms" aria-hidden="true">expand_more</span><strong style="flex: 1">MegaRares</strong><span class="mut" style="font-size: 12px">Twisted Bow, Scythe of Vitur, Tumeken's Shadow · cap 20</span></button>
+        <button class="cat" type="button" aria-expanded="false"><span class="ms" aria-hidden="true">expand_more</span><strong style="flex: 1">Jar/Pet</strong><span class="mut" style="font-size: 12px">2 items · some count once per team · cap 20</span></button>
+        <button class="cat" type="button" aria-expanded="false"><span class="ms" aria-hidden="true">expand_more</span><strong style="flex: 1">Fortis Colosseum</strong><span class="mut" style="font-size: 12px">6 items · cap 20</span></button>
+        <button class="cat" type="button" aria-expanded="false" style="border-bottom: 0"><span class="ms" aria-hidden="true">expand_more</span><strong style="flex: 1">Corporeal Beast</strong><span class="mut" style="font-size: 12px">5 items · cap 20</span></button>
+      </fieldset>
+      <div style="display: flex; gap: 8px; font-size: 13px; padding: 10px 12px; border: 1px dashed #705a39; border-radius: 4px"><span class="ms mut" aria-hidden="true">calculate</span><span>Official team score = <strong>tiles</strong> + <strong>rows</strong> + <strong>columns</strong> + <strong>specials</strong>. Individual contribution is a separate metric and isn't included here.</span></div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; padding: 12px 22px 16px; border-top: 1px solid #705a39">
+      <span class="mut" style="font-size: 12px; display: inline-flex; align-items: center; gap: 4px"><span class="ms" aria-hidden="true" style="font-size: 16px">lock_open</span>Editable until the event is activated</span>
+      <span style="margin-left: auto; display: flex; gap: 8px"><button class="btn" type="button">Close</button><button class="btn p" type="button">Save rules</button></span>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1060}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@ This file defines the protocol that any AI agent must follow when working in thi
 ```
 1.  Read AGENTS.md (this file)
 2.  Read the feature spec at specs/features/<id>/spec.md
-3.  Read related documentation in docs/
+3.  Read related documentation in docs/ (for any UI work, start with docs/design/)
 4.  Do NOT implement requirements absent from the spec
 5.  Create or review specs/features/<id>/plan.md
 6.  Create or review specs/features/<id>/tasks/backend.md, frontend.md and integration.md as applicable
@@ -76,9 +76,13 @@ Page → Feature → Hook → API Client → FastAPI
 
 ## Frontend UI conventions
 
-- **Icons**: use Material Icons (`@mui/icons-material`). Outlined for decorative, filled for active states.
-- **Theme**: Runescape aesthetic — dark brown panels, gold borders, parchment/gold text. Define RS color tokens in `tailwind.config.js`.
-- No generic Tailwind grays/whites for primary UI elements.
+- **Design source of truth**: `docs/design/`. The chosen layouts and their order are in `docs/design/readme.md`; tokens, sizes, states and shared patterns are in `docs/design/design-system.md`; each screen's structure and copy are in `docs/design/mockups/`. When a page is built or rebuilt, follow its mockup **faithfully** on desktop (1440 px) and mobile (390 px): same sections, order, controls, copy, states and sizes.
+- **Mockups are references, not code**: never copy their inline styles or template syntax. Implement with Tailwind `rs-*` tokens and shared components.
+- **Layout changes need a spec**: adopting a mockup that changes approved behavior (for example, a dialog becoming a side panel, or a new bulk action) requires a feature spec that cites the mockup and the earlier spec it revises. Business rules in `docs/design/readme.md` always win over a mockup; record any conflict in the plan's `Open Questions`.
+- **Deviations**: if a mockup can't be followed exactly (missing data, accessibility, an unavailable feature), record the deviation and its reason in the feature's `acceptance.md`. Never invent data to fill a mockup; "[FUTURE]" content stays out until its feature exists.
+- **Icons**: use Material Icons (`@mui/icons-material`), mapping the mockups' Material Symbols names directly (`grid_view` → `GridView`). Outlined for neutral, filled for active/selected. `shield_person` → `AdminPanelSettings`.
+- **Theme**: Runescape aesthetic — dark brown panels, gold borders, parchment/gold text. All colors come from the `rs-*` tokens in `tailwind.config.js`, which must match `docs/design/design-system.md`.
+- No generic Tailwind grays/whites for primary UI elements. Difficulty badges always carry text (Easy = success, Medium = gold, Hard = danger).
 - **Create/edit forms**: use modals as the project default, keeping the originating list visible behind the overlay. Reuse `components/ui/FormModal.tsx` for new or revised form flows, including related image/drop controls and import forms. Show validation/API errors inside the modal, preserve inputs on failure, and close on successful save with list refresh and success feedback.
 - **Modal behavior**: provide a localized title and close control, trap/restore keyboard focus, support Escape while idle, lock background scrolling, and keep content usable on small screens. Disable duplicate submissions and dismissal while requests are pending. See `docs/architecture/frontend.md` for the full convention.
 

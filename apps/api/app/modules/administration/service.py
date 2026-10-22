@@ -23,6 +23,7 @@ class AdministrationService:
             total=total,
             offset=offset,
             limit=limit,
+            admin_count=len(roles["admin_ids"]),
         )
 
     async def change_role(self, actor: CurrentUser, user_id: str, is_admin: bool) -> DirectoryUser:

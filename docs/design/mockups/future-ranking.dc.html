@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>[FUTURE] Private admin ranking</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bF{color:#a9cde2;border-color:#668ca3;background:#13202a}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.bW{color:#f1d487;border-color:#a88647;background:#2a2112}
+.inp{font:inherit;font-size:14px;min-height:40px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+select.inp{appearance:none;padding-right:36px}
+.hd{height:64px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid #705a39;background:#19120e}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #705a39;border-radius:3px;color:#ead9b7;text-decoration:none;font-size:13px}
+.av{width:24px;height:24px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.sb{width:240px;flex:none;border-right:1px solid rgba(112,90,57,.55);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.sg{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aa9a7c;font-weight:600;padding:14px 12px 6px}
+.nv{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:3px;color:#ead9b7;text-decoration:none;border:1px solid transparent;font-size:14px}
+.nv.on{background:#2d2119;border-color:#a88647;color:#f1d487;font-weight:600}
+.nv .bd{margin-left:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;font-weight:600;color:#aa9a7c;text-align:right;padding:10px 14px;border-bottom:1px solid #705a39;background:#19120e;white-space:nowrap}
+th:first-child,th:nth-child(2){text-align:left}
+td{padding:12px 14px;border-bottom:1px solid rgba(112,90,57,.45);text-align:right;font-variant-numeric:tabular-nums}
+td:first-child,td:nth-child(2){text-align:left}
+.pos{font-family:Cinzel,Georgia,serif;font-weight:700;font-size:20px;color:#f1d487}
+.em{width:28px;height:28px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#ead9b7;flex:none}
+.stk{display:flex;height:14px;border-radius:2px;overflow:hidden;background:#19120e;gap:2px}
+.s1{background:#d4ad53}.s2{background:#a88647}.s3{background:#668ca3}.s4{background:#ead9b7}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:0}
+.ct{display:grid;grid-template-columns:1fr 120px 70px;gap:10px;align-items:center;padding:8px 14px;border-bottom:1px solid rgba(102,140,163,.35);font-size:13px}
+.ct .bar{height:6px;background:#13202a;border-radius:3px;overflow:hidden}
+.ct .bar span{display:block;height:100%;background:#668ca3}
+.fut{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9cde2;background:#13202a;border:1px solid #668ca3;padding:2px 8px;border-radius:2px}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 1060px; display: flex; flex-direction: column">
+  <header class="hd">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px">
+      <a href="#" class="pill"><span class="ms" aria-hidden="true">event</span>Autumn Bingo 2026<span class="bd bE">Active</span></a>
+      <button class="btn" type="button" style="min-height: 36px"><span class="av">F</span>felps_<span class="ms" aria-hidden="true">expand_more</span></button>
+    </div>
+  </header>
+  <div style="display: flex; flex: 1; min-height: 0">
+    <nav class="sb" aria-label="Main">
+      <div class="sg">Administration</div>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">space_dashboard</span>Overview</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">fact_check</span>Drop review<span class="bd bW">6</span></a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">groups</span>Teams and registrations</a>
+      <a class="nv on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">leaderboard</span>Ranking</a>
+    </nav>
+    <main style="flex: 1; min-width: 0; padding: 22px 28px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span class="eb">Administration · private</span>
+          <h1 class="h1" style="font-size: 30px">Ranking</h1>
+          <span class="mut" style="display: inline-flex; align-items: center; gap: 6px"><span class="ms" aria-hidden="true" style="font-size: 18px">visibility_off</span>Only administrators see this screen. Players only see their own team.</span>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: flex-end">
+          <span class="fut">[FUTURE] example values</span>
+          <label style="display: flex; flex-direction: column; gap: 4px; width: 280px">
+            <span style="font-size: 13px; font-weight: 600">Event</span>
+            <span style="position: relative; display: flex; align-items: center"><select class="inp"><option>Autumn Bingo 2026 · Active</option></select><span class="ms" aria-hidden="true" style="position: absolute; right: 10px; pointer-events: none">expand_more</span></span>
+          </label>
+        </div>
+      </div>
+      <section class="pn" aria-labelledby="rk-t">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #705a39">
+          <h2 id="rk-t" class="cz" style="margin: 0; font-size: 18px; color: #f1d487">Official team scores</h2>
+          <span class="mut" style="font-size: 12px; display: flex; gap: 12px"><span><span class="sw s1"></span>Tiles</span><span><span class="sw s2"></span>Rows</span><span><span class="sw s3"></span>Columns</span><span><span class="sw s4"></span>Specials</span></span>
+        </div>
+        <table>
+          <thead><tr><th style="width: 90px">Position</th><th>Team</th><th>Tiles</th><th>Rows</th><th>Columns</th><th>Specials</th><th style="width: 280px; text-align: left">Breakdown</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pos">1st</span></td><td><span style="display: flex; align-items: center; gap: 10px"><span class="em" style="background: #2f5592">SA</span><strong>Saradomin</strong></span></td><td>125</td><td>25</td><td>0</td><td>17</td><td><div class="stk" aria-hidden="true"><span class="s1" style="width: 74.9%"></span><span class="s2" style="width: 15%"></span><span class="s4" style="width: 10.1%"></span></div></td><td><strong style="font-size: 18px; color: #f1d487">167</strong></td></tr>
+            <tr style="background: rgba(45,33,25,.6)"><td><span class="pos">2nd</span> <span class="bd bW">tie</span></td><td><span style="display: flex; align-items: center; gap: 10px"><span class="em" style="background: #8e2f2b">ZA</span><strong>Zamorak</strong></span></td><td>105</td><td>0</td><td>30</td><td>7</td><td><div class="stk" aria-hidden="true" style="width: 85%"><span class="s1" style="width: 74%"></span><span class="s3" style="width: 21%"></span><span class="s4" style="width: 5%"></span></div></td><td><strong style="font-size: 18px; color: #f1d487">142</strong></td></tr>
+            <tr style="background: rgba(45,33,25,.6)"><td><span class="pos">2nd</span> <span class="bd bW">tie</span></td><td><span style="display: flex; align-items: center; gap: 10px"><span class="em" style="background: #3d6b38">GU</span><strong>Guthix</strong></span></td><td>110</td><td>25</td><td>0</td><td>7</td><td><div class="stk" aria-hidden="true" style="width: 85%"><span class="s1" style="width: 77.5%"></span><span class="s2" style="width: 17.6%"></span><span class="s4" style="width: 4.9%"></span></div></td><td><strong style="font-size: 18px; color: #f1d487">142</strong></td></tr>
+            <tr><td><span class="pos">4th</span></td><td><span style="display: flex; align-items: center; gap: 10px"><span class="em" style="background: #5c4a8a">BA</span><strong>Bandos</strong></span></td><td>85</td><td>0</td><td>0</td><td>13</td><td><div class="stk" aria-hidden="true" style="width: 59%"><span class="s1" style="width: 86.7%"></span><span class="s4" style="width: 13.3%"></span></div></td><td><strong style="font-size: 18px; color: #f1d487">98</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="mut" style="padding: 10px 14px; font-size: 12px; display: flex; gap: 6px; align-items: center"><span class="ms" aria-hidden="true" style="font-size: 16px">info</span>Ties share the position and there is no tiebreaker; the next position is skipped (1st, 2nd, 2nd, 4th).</div>
+      </section>
+      <section aria-labelledby="ct-t" style="border: 1px dashed #668ca3; border-radius: 4px; background: #121a20">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid rgba(102,140,163,.5); gap: 12px">
+          <div style="display: flex; align-items: center; gap: 10px"><span class="ms" aria-hidden="true" style="color: #a9cde2">person</span><div><h2 id="ct-t" style="margin: 0; font-size: 16px; color: #cfe2ee">Individual contribution</h2><span style="font-size: 12px; color: #a9cde2">Separate metric · fractional · <strong>does not add</strong> to the team score</span></div></div>
+          <div role="group" aria-label="Team" style="display: flex; gap: 6px"><button class="btn" type="button" aria-pressed="true" style="min-height: 34px; font-size: 13px; border-color: #a9cde2; color: #cfe2ee">Saradomin</button><button class="btn" type="button" style="min-height: 34px; font-size: 13px">Zamorak</button><button class="btn" type="button" style="min-height: 34px; font-size: 13px">Guthix</button><button class="btn" type="button" style="min-height: 34px; font-size: 13px">Bandos</button></div>
+        </div>
+        <div class="ct" style="font-size: 12px; font-weight: 600; color: #a9cde2"><span>Player</span><span></span><span style="text-align: right">Contribution</span></div>
+        <div class="ct"><span>felps_</span><span class="bar"><span style="width: 100%"></span></span><span style="text-align: right; font-variant-numeric: tabular-nums">3.25</span></div>
+        <div class="ct"><span>Holy Hal</span><span class="bar"><span style="width: 77%"></span></span><span style="text-align: right; font-variant-numeric: tabular-nums">2.50</span></div>
+        <div class="ct"><span>Prayer Pete</span><span class="bar"><span style="width: 38%"></span></span><span style="text-align: right; font-variant-numeric: tabular-nums">1.25</span></div>
+        <div class="ct"><span>Blessed Bia</span><span class="bar"><span style="width: 38%"></span></span><span style="text-align: right; font-variant-numeric: tabular-nums">1.25</span></div>
+        <div class="ct"><span>Monk Mateus</span><span class="bar"><span style="width: 23%"></span></span><span style="text-align: right; font-variant-numeric: tabular-nums">0.75</span></div>
+        <div class="ct" style="border-bottom: 0"><span>White Knight Kai</span><span class="bar"><span style="width: 0%"></span></span><span style="text-align: right; font-variant-numeric: tabular-nums">0</span></div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1060}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

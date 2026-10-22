@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Board — option B, mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.ic{padding:0;width:44px}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bM{color:#f1d487;border-color:#a88647;background:#2a2112}
+.bH{color:#efaaa0;border-color:#b45b4e;background:#2b1714}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.inp{font:inherit;font-size:16px;min-height:44px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+.mh{height:56px;display:flex;align-items:center;gap:8px;padding:0 12px 0 16px;border-bottom:1px solid #705a39;background:#19120e}
+.av{width:28px;height:28px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.chip{font:inherit;font-size:13px;min-height:36px;padding:0 12px;border:1px solid #705a39;border-radius:18px;background:#19120e;color:#ead9b7;cursor:pointer}
+.chip.on{background:#2d2119;border-color:#d4ad53;color:#f1d487;font-weight:600}
+.mm{font:inherit;height:46px;min-width:0;border:1px solid #705a39;border-radius:3px;background:#211914;color:#ead9b7;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;padding:0;font-size:11px;font-weight:700;line-height:1.1}
+.mm .dl{font-size:10px;font-weight:600}
+.mm.dim{opacity:.35}
+.mm.hit{background:#f1d487;color:#15110e;border-color:#f1d487}
+.mm.hit .dl{color:#15110e}
+.mm.cur{outline:2px solid #f1d487;outline-offset:2px}
+.cE{color:#b5d699}.cM{color:#f1d487}.cH{color:#efaaa0}
+.lbl{font-size:11px;font-weight:600;color:#aa9a7c;text-align:center}
+.rh{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:#19120e;border:1px solid #705a39;border-radius:3px}
+.li{font:inherit;text-align:left;width:100%;display:flex;align-items:center;gap:12px;min-height:66px;padding:8px 10px;background:#211914;border:1px solid #705a39;border-radius:4px;color:#ead9b7;cursor:pointer}
+.li.dim{opacity:.38}
+.li.hit{border-color:#f1d487;box-shadow:inset 0 0 0 1px #f1d487}
+.lt{width:52px;height:48px;flex:none;background:#19120e;border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.lt img{max-width:100%;max-height:100%;object-fit:contain}
+.fb{display:flex;flex-direction:column;align-items:center;color:#a88647;font-family:Cinzel,Georgia,serif;font-weight:700;font-size:11px}
+.fb .ms{font-size:18px}
+.pos{font-size:11px;color:#aa9a7c;font-weight:600;font-variant-numeric:tabular-nums;min-width:30px;text-align:center}
+.bb{position:absolute;left:0;right:0;bottom:0;height:68px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #705a39;background:#19120e}
+.bi{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:#aa9a7c;text-decoration:none}
+.bi.on{color:#f1d487;font-weight:600}
+.bi.off{color:#9a8b70}
+</style>
+</helmet>
+<div class="r" style="width: 390px; height: 1560px">
+  <header class="mh">
+    <img src="../assets/logo-shield.png" alt="" style="width: 25px; height: 32px">
+    <span class="cz" style="font-size: 16px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    <span class="bd bE" style="margin-left: 6px">Active</span>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 4px">
+      <button class="btn" type="button" aria-label="Language: English" style="min-height: 40px; padding: 0 8px; font-size: 13px"><span class="ms" aria-hidden="true">translate</span>EN</button>
+      <button class="btn ic" type="button" aria-label="felps_ account" style="border-color: transparent; background: transparent"><span class="av">F</span></button>
+    </div>
+  </header>
+  <main style="padding: 14px 16px 90px; display: flex; flex-direction: column; gap: 12px">
+    <div class="pn" style="padding: 12px; display: flex; flex-direction: column; gap: 8px">
+      <h1 class="h1" style="font-size: 21px">Autumn Bingo 2026</h1>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; font-size: 12px">
+        <div style="display: flex; flex-direction: column"><span class="mut">Ends in</span><strong style="font-size: 15px; color: #f1d487">13 d 22 h</strong></div>
+        <div style="display: flex; flex-direction: column"><span class="mut">Your team</span><span style="display: flex; align-items: center; gap: 6px; font-weight: 600"><span style="width: 20px; height: 20px; border-radius: 3px; background: #2f5592; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">SA</span>Saradomin</span></div>
+      </div>
+      <span class="mut" style="font-size: 12px; display: flex; align-items: center; gap: 4px"><span class="ms" aria-hidden="true" style="font-size: 16px">hourglass_disabled</span>Progress unavailable for now</span>
+    </div>
+    <label style="position: relative; display: flex; align-items: center">
+      <span class="ms mut" aria-hidden="true" style="position: absolute; left: 10px">search</span>
+      <span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Where does my drop count?</span>
+      <input class="inp" type="search" value="jar" style="padding-left: 38px">
+    </label>
+    <div role="group" aria-label="Difficulty" style="display: flex; gap: 6px"><button class="chip on" type="button" aria-pressed="true">All</button><button class="chip" type="button">Easy</button><button class="chip" type="button">Medium</button><button class="chip" type="button">Hard</button></div>
+    <section class="pn" aria-label="Board mini-map" style="padding: 10px; display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><strong style="font-size: 13px">6×6 map</strong><span style="font-size: 12px"><strong>7</strong> <span class="mut">accept “jar”</span></span></div>
+      <div style="display: grid; grid-template-columns: 14px repeat(6, minmax(0, 1fr)); gap: 4px">
+        <span></span>
+        <sc-for list="{{cols}}" as="c" hint-placeholder-count="6"><span class="lbl">{{c}}</span></sc-for>
+      </div>
+      <sc-for list="{{rows}}" as="row" hint-placeholder-count="6">
+        <div style="display: grid; grid-template-columns: 14px repeat(6, minmax(0, 1fr)); gap: 4px">
+          <span class="lbl" style="align-self: center">{{row.n}}</span>
+          <sc-for list="{{row.tiles}}" as="t" hint-placeholder-count="6">
+            <button class="mm {{t.mcls}}" type="button" aria-label="{{t.aria}}"><span>{{t.ini}}</span><span class="dl c{{t.d}}">{{t.dl}}</span></button>
+          </sc-for>
+        </div>
+      </sc-for>
+      <span class="mut" style="font-size: 11px">E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list.</span>
+    </section>
+    <sc-for list="{{listRows}}" as="row" hint-placeholder-count="2">
+      <section style="display: flex; flex-direction: column; gap: 6px">
+        <div class="rh"><h2 class="cz" style="margin: 0; font-size: 15px; color: #f1d487">Row {{row.n}}</h2><span class="mut" style="font-size: 12px">{{row.summary}}</span></div>
+        <sc-for list="{{row.tiles}}" as="t" hint-placeholder-count="6">
+          <button class="li {{t.cls}}" type="button" aria-label="{{t.aria}}">
+            <span class="pos">C{{t.col}}</span>
+            <span class="lt">
+              <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{t.img}}" alt=""></sc-if>
+              <sc-if value="{{t.noImg}}" hint-placeholder-val="{{false}}"><span class="fb"><span class="ms" aria-hidden="true">shield</span>{{t.ini}}</span></sc-if>
+            </span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+              <span style="font-weight: 600">{{t.name}}</span>
+              <span style="display: flex; gap: 6px; align-items: center"><span class="bd b{{t.d}}">{{t.diff}}</span><span class="mut" style="font-size: 12px">{{t.pts}} pts · Req. {{t.req}}</span></span>
+              <sc-if value="{{t.hit}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #f1d487; font-weight: 600">↳ {{t.hit}}</span></sc-if>
+            </span>
+            <span class="ms mut" aria-hidden="true">chevron_right</span>
+          </button>
+        </sc-for>
+      </section>
+    </sc-for>
+  </main>
+  <nav class="bb" aria-label="Main">
+    <a class="bi on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">grid_view</span>Board</a>
+    <a class="bi" href="#"><span class="ms" aria-hidden="true">calendar_month</span>Events</a>
+    <span class="bi off" aria-disabled="true"><span class="ms" aria-hidden="true">upload_file</span>Submissions · soon</span>
+    <a class="bi" href="#"><span class="ms" aria-hidden="true">admin_panel_settings</span>Admin</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1560}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const RAW = "Abyssal Sire|M|10|5|../assets/abyssal-sire.png;Araxxor|H|20|12|../assets/araxxor.png;Alchemical Hydra|H|20|6|../assets/alchemical-hydra.png;Armoured Zombies|E|5|8|../assets/armoured-zombies.png;Barrows|E|5|12|../assets/barrows.png;Cerberus|H|20|6|../assets/cerberus.png;Chambers of Xeric|H|20|4|../assets/chambers-of-xeric.png;DT2 Bosses|H|20|12|../assets/dt2-bosses.png;Dagannoth Kings|M|10|15|../assets/dagannoth-kings.png;Demonic Gorillas|M|10|10|../assets/demonic-gorillas.png;Doom of Mokhaiotl|H|20|3|../assets/doom-of-mokhaiotl.png;Gauntlet|M|10|6|../assets/gauntlet.png;God Wars Dungeon|H|20|18|;Grotesque Guardians|M|10|8|;Guardians of the Rift|E|5|10|;Hueycoatl|E|5|8|;Mad Angel|E|5|6|;Maggot King|H|20|2|;Medium Boots|M|10|5|;Moons of Peril|E|5|8|;Mortimer|M|10|15|;Phantom Muspah|M|10|5|;Royal Titans|E|5|10|;Scurrius|E|5|10|;Skilling Tools|E|5|10|;Tempoross|E|5|10|;Theatre of Blood|H|20|4|;Thieving|M|10|3|;Tombs of Amascut|H|20|4|;Tormented Demons|M|10|3|;Vorkath|M|10|8|;Wilderness Trio|H|20|10|;Wintertodt|E|5|1|;Yama|H|20|3|;Zalcano|M|10|1|;Zulrah|M|10|6|";
+    const DN = { E: 'Easy', M: 'Medium', H: 'Hard' };
+    const DL = { E: 'E', M: 'M', H: 'H' };
+    const HIT = { 'Araxxor': 'Jar of Venom +3', 'Alchemical Hydra': 'Jar of Chemicals +3', 'Cerberus': 'Jar of Souls +2', 'Grotesque Guardians': 'Jar of Stone +3', 'Mad Angel': 'Jar of Light +2', 'Vorkath': 'Jar of Decay +3', 'Zulrah': 'Jar of Swamp +2' };
+    const list = RAW.split(';').map((s, i) => {
+      const p = s.split('|');
+      const hit = HIT[p[0]] || '';
+      const ini = p[0].split(' ').filter((w) => /^[A-Z0-9]/.test(w)).map((w) => w[0]).join('').slice(0, 3);
+      const row = Math.floor(i / 6) + 1, col = (i % 6) + 1;
+      return { name: p[0], d: p[1], dl: DL[p[1]], diff: DN[p[1]], pts: p[2], req: p[3], img: p[4], hasImg: !!p[4], noImg: !p[4], ini, hit, col,
+        cls: hit ? 'hit' : 'dim', mcls: (hit ? 'hit' : 'dim') + (row === 3 && col === 2 ? ' cur' : ''),
+        aria: p[0] + ', row ' + row + ' column ' + col + ', ' + DN[p[1]] + (hit ? ', matches: ' + hit : '') };
+    });
+    const rows = [1, 2, 3, 4, 5, 6].map((n) => ({ n, tiles: list.slice((n - 1) * 6, n * 6) }));
+    const listRows = [3, 4].map((n) => {
+      const tiles = list.slice((n - 1) * 6, n * 6);
+      const h = tiles.filter((t) => t.hit).length;
+      return { n, tiles, summary: h ? h + ' of 6 match the search' : 'none match the search' };
+    });
+    return { cols: [1, 2, 3, 4, 5, 6], rows, listRows };
+  }
+}
+</script>
+</body>
+</html>

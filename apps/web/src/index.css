@@ -21,7 +21,9 @@
     min-height: 100vh;
     margin: 0;
     background-color: #15110e;
-    background-image: radial-gradient(circle at 20% 0%, rgb(112 90 57 / 9%), transparent 28rem);
+    /* docs/design/design-system.md: body text is Inter 14 px with line-height 1.45. */
+    font-size: 14px;
+    line-height: 1.45;
   }
 
   button,
@@ -31,7 +33,7 @@
 
   :focus-visible {
     outline: 2px solid #f1d487;
-    outline-offset: 3px;
+    outline-offset: 2px;
   }
 }
 

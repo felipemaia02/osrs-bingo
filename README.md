@@ -28,7 +28,7 @@ osrs-bingo/
 │   ├── api/     – Modular Monolith (FastAPI)
 │   └── web/     – SPA (React)
 ├── specs/       – Spec-Driven Development
-├── docs/        – Architecture, ADRs and references
+├── docs/        – Architecture, ADRs, design (layout v2) and references
 ├── infra/       – Infrastructure (future)
 ├── scripts/     – Utility scripts
 └── .github/     – CI/CD
@@ -109,6 +109,12 @@ specs/features/<NNN>-<slug>/
 
 Read `AGENTS.md` before implementing anything.
 See templates at `specs/templates/`.
+
+---
+
+## Design
+
+The interface follows the layout v2 design in `docs/design/`: chosen layouts and their order in `readme.md`, tokens and shared patterns in `design-system.md`, and one mockup per screen in `mockups/`. Screens are migrated one at a time, each through its own spec.
 
 ---
 

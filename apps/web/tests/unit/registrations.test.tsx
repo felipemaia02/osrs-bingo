@@ -104,10 +104,9 @@ it('requires login and prevents participant administration', async () => {
   expect(
     await screen.findByText('Only administrators can manage participants.'),
   ).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: 'Log in with Discord' })).toHaveAttribute(
-    'href',
-    '/login',
-  )
+  for (const link of screen.getAllByRole('link', { name: 'Log in with Discord' })) {
+    expect(link).toHaveAttribute('href', '/login')
+  }
   expect(api.fetchPlayers).not.toHaveBeenCalled()
 })
 
@@ -201,7 +200,8 @@ it('shows approval conflicts without assigning a team', async () => {
 
 it('clears privileged UI after logout', async () => {
   const user = await openAdministration()
-  await user.click(screen.getByRole('button', { name: 'Log out' }))
+  await user.click(screen.getAllByRole('button', { name: /account$/ })[0])
+  await user.click(await screen.findByRole('menuitem', { name: 'Log out' }))
   await waitFor(() => expect(logout).toHaveBeenCalled())
   expect(
     await screen.findByText('Only administrators can manage participants.'),
@@ -231,7 +231,11 @@ it('keeps participant queries scoped to the selected administrative event', asyn
   const user = userEvent.setup()
   renderApp(<TeamsPage />, '/teams')
   await screen.findByRole('option', { name: 'Winter Bingo · Draft' })
-  expect(api.fetchPlayers).not.toHaveBeenCalled()
+  // The shell only reads draft-event counts (limit 1); no roster page loads before selection.
+  expect(api.fetchPlayers).not.toHaveBeenCalledWith(
+    expect.anything(),
+    expect.objectContaining({ limit: 25 }),
+  )
   await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
   await screen.findByText('Thunder Crab')
   await user.selectOptions(screen.getByLabelText('Event'), other.id)

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New feature suggestions</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.5;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;display:inline-block;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.mut{color:#aa9a7c}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.cd{background:#211914;border:1px dashed #a88647;border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.cd h2{font-family:Cinzel,Georgia,serif;font-size:19px;color:#f1d487;margin:0}
+.ck{display:flex;align-items:center;gap:8px;font-size:13px;padding:6px 10px;background:#19120e;border-radius:3px}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 980px; padding: 48px 56px; display: flex; flex-direction: column; gap: 22px">
+  <div style="display: flex; flex-direction: column; gap: 6px">
+    <span class="eb">Outside the described scope</span>
+    <h1 class="cz" style="margin: 0; font-size: 38px; color: #f1d487">New feature suggestions</h1>
+    <span class="mut" style="font-size: 15px">None of these appear in the screens above as if they already existed. They're here for you to decide.</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+    <article class="cd">
+      <div style="display: flex; align-items: center; gap: 10px"><span class="ms" aria-hidden="true" style="color: #d4ad53">checklist</span><h2>Pre-activation checklist</h2></div>
+      <p style="margin: 0">Since the board and teams freeze on activation, the “Activate event” confirmation would show what's still missing. Block or just warn — your call.</p>
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span class="ck"><span class="ms" aria-hidden="true" style="color: #b5d699; font-size: 18px">check_circle</span>36 of 36 positions filled</span>
+        <span class="ck"><span class="ms" aria-hidden="true" style="color: #efaaa0; font-size: 18px">error</span>4 pending requests</span>
+        <span class="ck"><span class="ms" aria-hidden="true" style="color: #efaaa0; font-size: 18px">error</span>3 approved players without a team</span>
+      </div>
+      <span class="bd bN" style="align-self: flex-start">Screen: /admin/events</span>
+    </article>
+    <article class="cd">
+      <div style="display: flex; align-items: center; gap: 10px"><span class="ms" aria-hidden="true" style="color: #d4ad53">visibility</span><h2>View as player</h2></div>
+      <p style="margin: 0">A button in the board builder that opens the draft board exactly as players will see it (search, filters, images with fallback) before activation.</p>
+      <span class="bd bN" style="align-self: flex-start">Screen: /admin/boards</span>
+    </article>
+    <article class="cd">
+      <div style="display: flex; align-items: center; gap: 10px"><span class="ms" aria-hidden="true" style="color: #d4ad53">history</span><h2>Visible role history</h2></div>
+      <p style="margin: 0">Administrator changes are already recorded; what's missing is a list showing who granted or revoked access, and when.</p>
+      <span class="bd bN" style="align-self: flex-start">Screen: /admin/administrators</span>
+    </article>
+    <article class="cd">
+      <div style="display: flex; align-items: center; gap: 10px"><span class="ms" aria-hidden="true" style="color: #d4ad53">keyboard</span><h2>Review queue shortcuts</h2></div>
+      <p style="margin: 0">J/K to navigate, A to accept, R to reject (opens the reason), X to select. They already appear in the queue preview; they only work while focus is inside the queue, so they don't clash with screen readers.</p>
+      <span class="bd bN" style="align-self: flex-start">Screen: review queue [FUTURE]</span>
+    </article>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

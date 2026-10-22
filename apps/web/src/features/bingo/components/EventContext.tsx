@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import { useTranslation } from 'react-i18next'
+import { useNow } from '../../../hooks/useNow'
+import { DAY_MS, HOUR_MS, MINUTE_MS } from '../../../lib/time/duration'
 import { useSession } from '../../auth/hooks/useSession'
 import type { BingoEvent } from '../../events/types'
 import { useOwnRegistration, useTeams } from '../../teams/hooks/useTeams'
-
-const MINUTE_MS = 60_000
-const HOUR_MS = 60 * MINUTE_MS
-const DAY_MS = 24 * HOUR_MS
 
 /** Largest whole unit (days, hours, minutes) for a localized "in 3 days" phrase. */
 function relativeTime(ms: number, language: string): string {
@@ -16,15 +13,6 @@ function relativeTime(ms: number, language: string): string {
   if (ms >= DAY_MS) return format.format(Math.floor(ms / DAY_MS), 'day')
   if (ms >= HOUR_MS) return format.format(Math.floor(ms / HOUR_MS), 'hour')
   return format.format(Math.max(1, Math.ceil(ms / MINUTE_MS)), 'minute')
-}
-
-function useNow(): number {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), MINUTE_MS)
-    return () => window.clearInterval(timer)
-  }, [])
-  return now
 }
 
 export function EventContext({ event }: { event: BingoEvent }) {

@@ -9,24 +9,22 @@ React 18 · TypeScript 5 · Vite · TanStack Query v5 · React Router v6 · Tail
 src/
 ├── app/
 │   ├── router/         – application routes
-│   └── providers/      – global providers (Query, future auth)
-├── features/           – features by domain
-│   ├── auth/
-│   ├── bingo/
-│   ├── board/
-│   ├── teams/
-│   ├── submissions/
-│   ├── leaderboard/
-│   └── admin/
+│   └── providers/      – global providers (Query, date localization)
+├── features/           – features by domain (api/, hooks/, components/, pages/ inside each)
+│   ├── administration/ – portal overview, administrators, ranking entry, admin route guard
+│   ├── auth/           – Discord session, login page, auth controls
+│   ├── bingo/          – public board page, tiles, search/filter helpers
+│   ├── boards/         – event board builder
+│   ├── cards/          – global card catalog
+│   ├── events/         – events list/management, active-event indicator
+│   └── teams/          – registrations, roster and teams
 ├── components/
-│   ├── ui/             – primitives (Button, Input, Card...)
-│   └── common/         – reusable composites (LanguageSwitcher...)
-├── hooks/              – generic hooks
+│   ├── ui/             – primitives (Panel, Badge, ProgressBar, FormModal, DateTimeField)
+│   └── common/         – shared composites (AppShell, LanguageSwitcher)
 ├── lib/
 │   ├── api/            – central HTTP client
 │   └── i18n/           – i18next config and locales (en, pt, es)
-├── services/           – domain-level API calls
-└── types/              – shared types and OpenAPI-generated types
+└── types/              – shared types
 ```
 
 ## State
@@ -46,16 +44,17 @@ All application-controlled labels must use translation keys. Event names, team n
 
 ## Visual system
 
-The interface follows a restrained RuneScape-inspired system rather than reproducing the legacy game client or applying a generic dashboard theme.
+The visual source of truth is `docs/design/` (layout v2, chosen on 2026-10-22):
 
-- Dark warm canvas and surfaces establish hierarchy.
-- Gold is reserved for identity, active state, progress, and high-value emphasis.
-- Parchment-toned text replaces generic Tailwind whites and grays.
-- `Cinzel` is limited to short display headings; `Inter` and system fallbacks serve interface content.
-- Corners remain compact and decoration stays secondary to information.
-- Texture and motion are subtle; reduced-motion preferences are respected globally.
+- `docs/design/readme.md` — chosen layout per screen, implementation order and the business rules every screen must respect.
+- `docs/design/design-system.md` — color tokens, typography, sizes, focus and selection states, badge tones and shared patterns.
+- `docs/design/mockups/` — one mockup per screen (desktop 1440 px, mobile 390 px). They are references for structure, copy and states, not code to copy.
 
-Shared tokens are defined in `tailwind.config.js`. Reusable primitives live under `src/components/ui/`, while shared composites such as the application shell and language switcher live under `src/components/common/`.
+Every page that is built or rebuilt follows its mockup faithfully. Until a screen is migrated, it keeps its current look; migration happens one screen at a time, each through its own spec (see "Layout v2 migration" below).
+
+Principles that stay the same: a restrained RuneScape-inspired look rather than the game client or a generic dashboard; gold reserved for identity, active state and emphasis; parchment text instead of generic whites and grays; `Cinzel` only for short headings and the wordmark, `Inter` for everything else; compact corners; subtle motion that respects reduced-motion preferences.
+
+Tokens live in `tailwind.config.js` (`rs-*`) and must match `design-system.md`. Reusable primitives live under `src/components/ui/`; shared composites such as the application shell live under `src/components/common/`. Update these shared pieces to the v2 look instead of creating parallel versions.
 
 ## Creation and editing dialogs
 
@@ -77,6 +76,7 @@ The catalog creation/editing and workbook-import dialogs are the reference imple
 
 Use `@mui/icons-material` as the only interface icon system:
 
+- the mockups use Material Symbols names; map them directly to MUI components (`grid_view` → `GridView` / `GridViewOutlined`). `shield_person` has no MUI equivalent: use `AdminPanelSettings`;
 - outlined variants for neutral, inactive, or decorative states;
 - filled variants for active, selected, or completed states;
 - icons inside icon-only buttons require an accessible label and tooltip;
@@ -84,9 +84,20 @@ Use `@mui/icons-material` as the only interface icon system:
 
 ## Responsive layout
 
-The application shell uses persistent side navigation on desktop and compact bottom navigation on mobile. Content must remain usable from 320 px upward.
+Content must remain usable from 320 px upward, with touch targets of at least 44 px on mobile. Desktop uses a persistent sidebar; mobile uses a header, an event bar and a bottom bar (shell 4A in `docs/design/`).
 
-The 6×6 Bingo board preserves a readable tile width inside a keyboard-focusable horizontal scroll region on narrow screens. It must not compress all six columns into a phone viewport.
+The 6×6 board never compresses six readable columns into a phone viewport: on mobile it is shown as a row-grouped list, with the 6×6 mini-map from mockup 1B above it once the board v2 is implemented.
+
+## Layout v2 migration
+
+| Order | Screen | Mockups | Current state | Target |
+|---|---|---|---|---|
+| 1 | App shell | `shell-a-desktop`, `shell-a-mobile` | **Done (feature 010)** | Grouped sidebar (Play / Administration), no admin tab row, Ranking only inside Administration, event pill with countdown, EN/PT/ES segmented control, account menu; mobile event bar and bottom bar with Admin for administrators; administration overview with real counts |
+| 2 | Board `/` | `board-a-desktop`, `board-b-mobile` | Feature 009: grid/list, toolbar, tile details in a modal | 6×6 grid with a fixed tile detail panel on desktop, "Progress unavailable" info banner, "Your team" card; mobile row list plus a 6×6 mini-map |
+| 3 | `/admin/teams` | `teams-a-desktop`, `teams-a-mobile` | Tabs, table rows, single approve, approve-all with confirmation | Table with multi-select and "Approve selected" (revises the deferral in feature 003) |
+| 4 | `/admin/boards` | `boards-a-desktop`, `boards-b-mobile` | Drag and drop, catalog, add all | Desktop 2A with difficulty counts and visible empty slots; mobile "position first" flow |
+
+[FUTURE] mockups are implemented only with their own features (submissions, scoring, ranking).
 
 ## Bingo presentation boundary
 
@@ -122,8 +133,8 @@ Discord session state is remote state in TanStack Query. The API client sends Ht
 
 ### Administration portal
 
-`/login` is the dedicated Discord entry point. `/admin` routes require an authenticated application administrator. Global user/role management lives at `/admin/administrators`; `/admin/events` and `/admin/teams` contain management controls removed from the public event page. Team/registration and ranking sections explicitly select an event independently of the public current-event selector. The ranking entry currently explains that scoring is unavailable; it does not display prototype points.
+`/login` is the dedicated Discord entry point. `/admin` routes require an authenticated application administrator. Global user/role management lives at `/admin/administrators`; `/admin/events` and `/admin/teams` contain management controls removed from the public event page. Team/registration and ranking sections explicitly select an event. Since feature 010, administration navigation lives only in the shell's Administration group (no separate tab row). Ranking is shown there disabled ("Soon"), never to players. The `/admin/ranking` route still explains that scoring is unavailable and displays no points.
 
 ### Participant roster
 
-Administration shows Pending, Unassigned, Assigned and Teams tabs. Participant rows are loaded in pages of 25 using server-side name search/group/team filters; query keys include the event and every filter. Counts are event-wide, while pagination totals reflect filters. Changing context resets pagination; removing the final row on a page returns to a valid page. Creating teams and assigning participants uses FormModal. Approval of all pending registrations requires confirmation and explicitly ignores search/page filters. Selected-user bulk actions are not implemented.
+Administration shows Pending, Unassigned, Assigned and Teams tabs. Participant rows are loaded in pages of 25 using server-side name search/group/team filters; query keys include the event and every filter. Counts are event-wide, while pagination totals reflect filters. Changing context resets pagination; removing the final row on a page returns to a valid page. Creating teams and assigning participants uses FormModal. Approval of all pending registrations requires confirmation and explicitly ignores search/page filters. Selected-user bulk actions are not implemented yet; the teams 3A layout (see "Layout v2 migration") introduces them through a new spec.

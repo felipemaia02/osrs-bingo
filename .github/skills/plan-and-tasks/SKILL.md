@@ -32,7 +32,7 @@ Required sections:
 - **Summary** — one paragraph technical overview
 - **Architecture Impact** — list new modules, changed boundaries
 - **Backend Changes** — affected modules, new endpoints, services, repositories
-- **Frontend Changes** — affected pages, components, hooks
+- **Frontend Changes** — affected pages, components, hooks, and the mockups in `docs/design/mockups/` they follow
 - **Data Model** — new documents or fields; justify embedding vs. referencing
 - **API Changes** — table with method, path, description
 - **Security Considerations** — auth, authorization, input validation
@@ -55,6 +55,7 @@ Rules:
 - Use `BE-`, `FE-`, and `IN-` identifiers in the corresponding files
 - Keep tests and quality checks in the same area as the code they validate
 - Put final acceptance validation only in `tasks/integration.md`
+- For UI work, each frontend task names the mockup file(s) it implements and the shared components it reuses or updates; include a task that adds any **new** tokens from `docs/design/design-system.md` before the screens that need them
 
 ### 4. Validate coverage
 

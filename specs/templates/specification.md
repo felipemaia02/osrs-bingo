@@ -39,6 +39,13 @@
 
 - EC-001: ...
 
+## Design Reference
+
+> UI features only. Name the chosen mockups in `docs/design/mockups/` (desktop and mobile), the decision row in `docs/design/readme.md`, and any earlier spec whose approved behavior the layout changes.
+
+- Mockups: `docs/design/mockups/<screen>-<option>-desktop.dc.html`, `...-mobile.dc.html`
+- Revises: <feature id and requirement, or "none">
+
 ## Out of Scope
 
 - What this feature explicitly **does not** do.

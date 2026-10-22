@@ -1,6 +1,6 @@
 ---
 name: frontend-dev
-description: 'Implement frontend tasks in React + TypeScript + Tailwind. Use when: implementing a frontend task, creating components, pages or hooks, writing TypeScript/TSX code, adding UI, using Material Icons, applying Runescape theme, running npm test, running eslint or tsc.'
+description: 'Implement frontend tasks in React + TypeScript + Tailwind following the layout v2 design in docs/design. Use when: implementing a frontend task, creating components, pages or hooks, writing TypeScript/TSX code, adding UI, matching a mockup, using Material Icons, applying the Runescape theme, running npm test, running eslint or tsc.'
 ---
 
 # Frontend Development
@@ -18,56 +18,58 @@ Page → Feature → Hook → API Client → FastAPI
 | Page | `features/<name>/pages/` | Route entry point, composes features |
 | Feature | `features/<name>/components/` | Domain-specific UI blocks |
 | Hook | `features/<name>/hooks/` | Data fetching and local state |
-| API Client | `lib/api/` | HTTP calls — never inside components |
+| API Client | `features/<name>/api/` (shared client in `lib/api/`) | HTTP calls — never inside components |
 
 - Remote state via **TanStack Query** (`useQuery`, `useMutation`)
-- Global UI state (theme, language, sidebar) via **Zustand** only
+- Genuinely global UI state via **Zustand** only; per-device view preferences may use guarded `localStorage`
 - Do NOT make HTTP calls directly inside components
 
-## Visual Theme — Runescape
+## Visual Design — layout v2
 
-The UI must evoke the classic RuneScape aesthetic while remaining functional and accessible.
+The visual source of truth is `docs/design/`. Read it before touching any UI:
 
-### Color Palette
+| File | What it gives you |
+|------|-------------------|
+| `docs/design/readme.md` | Chosen layout per screen, implementation order, business rules every screen must respect |
+| `docs/design/design-system.md` | Color tokens, typography, sizes, focus/selection states, badge tones, shared patterns, shell layout |
+| `docs/design/mockups/<screen>-<option>-<desktop\|mobile>.dc.html` | Exact structure, copy and states of each screen at 1440 px and 390 px |
 
-| Token | Usage | Reference |
-|-------|-------|-----------|
-| `rs-brown-dark` | Panel backgrounds, borders | `#3d2b1f` |
-| `rs-brown-mid` | Secondary panels, headers | `#5c3d28` |
-| `rs-gold` | Headings, highlights, active states | `#c8a84b` |
-| `rs-gold-light` | Hover, glow effects | `#f0d080` |
-| `rs-parchment` | Body text background | `#f5e6c8` |
-| `rs-text` | Primary text | `#ffe4a0` |
-| `rs-text-muted` | Secondary text | `#a89060` |
-| `rs-red` | Danger, health | `#8b0000` |
-| `rs-green` | Success, prayer | `#2d5a1b` |
+Mockups are **references, not code**. Their inline styles and `<sc-for>`/`<sc-if>`/`{{...}}` syntax must never be copied. Translate them to Tailwind `rs-*` tokens and shared components.
 
-Define these in `tailwind.config.js` under `theme.extend.colors`.
+### Fidelity rules
+
+- Same sections, in the same order, with the same controls, copy (through i18n keys in en/pt/es), badges and states as the mockup, on desktop and mobile.
+- Sizes from `design-system.md`: 40 px controls on desktop and 44 px on mobile, 64/56 px headers, 240 px sidebar, 2/3/4 px radii, 16 px input text on mobile.
+- Example data in a mockup is not real data. Render real API data; never hardcode names, counts or progress from a mockup. Content marked "[FUTURE]" stays out until its feature exists.
+- If something can't match (missing data, accessibility), keep the closest faithful version and record the deviation in `acceptance.md`.
+
+### Tokens
+
+Use only the `rs-*` colors in `tailwind.config.js`; they must match the table in `design-system.md` (add the tokens marked **new** there when a screen needs them). Never use generic Tailwind grays or whites for primary UI.
+
+- Badge tones: success, gold, danger, danger-outline, info, neutral. Difficulty is fixed: Easy → success, Medium → gold, Hard → danger, always with text.
+- Focus: 2 px `rs-gold-bright` outline, offset 2 px, on every interactive element.
+- Filtered-out items are dimmed (opacity ~.38), never hidden or reordered.
 
 ### Typography
 
-- Headings: `font-serif` with letter-spacing — mimics the RS interface font
-- Body: clean sans-serif for readability
-- Use `text-rs-gold` for section titles
-
-### Components Style
-
-- Panels: dark brown background, gold border (`border border-rs-gold/40`), slight inner shadow
-- Buttons: brown base, gold border, gold text; hover glows gold
-- Tables: alternating row tints using `rs-brown-mid` / `rs-brown-dark`
-- Inputs: dark background, gold border on focus
+- `font-display` (Cinzel) only for short headings and the wordmark; `font-sans` (Inter) for everything else.
+- Eyebrow, H1, card title and meta sizes are listed in `design-system.md`.
 
 ### Icons — Material Icons
 
-Use **Material Icons** for all UI icons. Import via the `@mui/icons-material` package.
+Use `@mui/icons-material`. Mockups use Material Symbols names; map them directly (`grid_view` → `GridView`/`GridViewOutlined`). `shield_person` → `AdminPanelSettings`.
 
 ```tsx
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 ```
 
-- Prefer outlined variants for decorative icons
-- Use filled variants for active/selected states
-- Keep icon size consistent: `fontSize="small"` inside compact UI, `fontSize="medium"` as default
+- Outlined variants for neutral states, filled variants for active/selected states.
+- Icon-only buttons need an accessible label and a tooltip.
+
+### Shared components
+
+Reuse and update `AppShell`, `Panel`, `Badge`, `FormModal`, `TileCard`, `BingoBoard` and the other components under `src/components/` and `src/features/*/components/` to the v2 look. Do not create parallel versions of an existing component.
 
 ## Clean Code Rules
 
@@ -87,19 +89,19 @@ Check `specs/features/<id>/tasks/frontend.md` for the task and linked requiremen
 
 ### 2. Read the spec
 
-Confirm expected behavior and UI requirements in `specs/features/<id>/spec.md`.
+Confirm expected behavior and UI requirements in `specs/features/<id>/spec.md`, including which mockup files it follows.
 
 ### 3. Implement in layer order
 
-1. API client function in `lib/api/`
+1. API client function in `features/<name>/api/` (shared HTTP client in `lib/api/`)
 2. Custom hook wrapping TanStack Query
 3. Feature component(s)
 4. Page composition (if new route)
 5. Route registration if needed
 
-### 4. Apply Runescape theme
+### 4. Match the design
 
-Every new component must follow the visual theme defined above.
+Open the screen's mockups (desktop and mobile) listed in the spec. List every visible section, control, label and state, and implement each one with `rs-*` tokens and shared components. Compare the result with the mockup at 1440 px and 390 px before moving on.
 Do not use generic Tailwind grays/whites for primary UI elements.
 
 ### 5. Write tests
@@ -116,6 +118,7 @@ npm test
 npm run lint
 npm run format:check
 npm run typecheck
+npm run build
 ```
 
 All checks must pass before marking the task done.

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>App shell — option B, desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.bW{color:#f1d487;border-color:#a88647;background:#2a2112}
+.lg{font:inherit;font-size:12px;font-weight:600;min-width:36px;min-height:32px;background:transparent;border:1px solid transparent;color:#aa9a7c;border-radius:3px;cursor:pointer}
+.lg.on{background:#d4ad53;color:#15110e}
+.av{width:24px;height:24px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.tn{font:inherit;display:inline-flex;align-items:center;gap:8px;height:64px;padding:0 14px;color:#ead9b7;text-decoration:none;border:0;border-bottom:3px solid transparent;background:transparent;font-size:14px;cursor:pointer}
+.tn.on{color:#f1d487;border-bottom-color:#d4ad53;font-weight:600}
+.tn.off{color:#9a8b70;cursor:not-allowed}
+.dd{position:absolute;z-index:3;background:#211914;border:1px solid #a88647;border-radius:4px;box-shadow:0 14px 30px rgba(0,0,0,.55);padding:6px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;width:520px}
+.di{display:flex;gap:10px;padding:10px;border-radius:3px;color:#ead9b7;text-decoration:none;align-items:flex-start}
+.di.fo{background:#2d2119;outline:2px solid #f1d487;outline-offset:-2px}
+.di.off{color:#9a8b70}
+.cd{display:flex;flex-direction:column;gap:10px;padding:18px;text-decoration:none;color:#ead9b7;min-height:150px}
+.cd h2{font-family:Cinzel,Georgia,serif;font-size:18px;color:#f1d487;margin:0}
+.cd .st{margin-top:auto;display:flex;gap:6px;flex-wrap:wrap}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 900px; display: flex; flex-direction: column">
+  <header style="height: 64px; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-bottom: 1px solid #705a39; background: #19120e">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: 24px">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+    <nav aria-label="Main" style="display: flex; align-items: center">
+      <a class="tn" href="#"><span class="ms" aria-hidden="true">grid_view</span>Board</a>
+      <a class="tn" href="#"><span class="ms" aria-hidden="true">calendar_month</span>Events</a>
+      <span class="tn off" aria-disabled="true"><span class="ms" aria-hidden="true">upload_file</span>My submissions <span class="bd bN">Soon</span></span>
+      <button class="tn on" type="button" aria-expanded="true" aria-haspopup="true"><span class="ms f" aria-hidden="true">admin_panel_settings</span>Administration<span class="bd bW">4</span><span class="ms" aria-hidden="true">expand_less</span></button>
+    </nav>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px">
+      <div role="group" aria-label="Language" style="display: flex; align-items: center; gap: 2px"><span class="ms mut" aria-hidden="true">translate</span><button class="lg on" type="button" aria-pressed="true">EN</button><button class="lg" type="button">PT</button><button class="lg" type="button">ES</button></div>
+      <button class="btn" type="button" style="min-height: 36px"><span class="av">F</span>felps_<span class="ms" aria-hidden="true">expand_more</span></button>
+    </div>
+  </header>
+  <div style="display: flex; align-items: center; gap: 16px; padding: 0 24px; height: 48px; background: #211914; border-bottom: 1px solid rgba(112,90,57,.7); font-size: 13px">
+    <span class="ms" aria-hidden="true" style="color: #d4ad53">event</span>
+    <strong>Autumn Bingo 2026</strong><span class="bd bE">Active</span>
+    <span class="mut">Oct 22 → Nov 5, 2026</span>
+    <span style="display: inline-flex; align-items: center; gap: 4px"><span class="ms mut" aria-hidden="true" style="font-size: 18px">hourglass_top</span>Ends in <strong>13 d 22 h</strong></span>
+    <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px"><span class="mut">Your team</span><span style="width: 22px; height: 22px; border-radius: 3px; background: #2f5592; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">SA</span><strong>Saradomin</strong></span>
+  </div>
+  <div class="dd" role="menu" aria-label="Administration" style="left: 430px; top: 60px">
+    <a class="di fo" role="menuitem" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">space_dashboard</span><span><strong>Overview</strong><br><span class="mut" style="font-size: 12px">Summary of every area</span></span></a>
+    <a class="di" role="menuitem" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">event_note</span><span><strong>Events</strong><br><span class="mut" style="font-size: 12px">Create, activate, finish</span></span></a>
+    <a class="di" role="menuitem" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">groups</span><span><strong>Teams and registrations</strong> <span class="bd bW">4</span><br><span class="mut" style="font-size: 12px">Requests and teams</span></span></a>
+    <a class="di" role="menuitem" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">style</span><span><strong>Card catalog</strong><br><span class="mut" style="font-size: 12px">Bosses, drops and revisions</span></span></a>
+    <a class="di" role="menuitem" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">view_module</span><span><strong>Event boards</strong><br><span class="mut" style="font-size: 12px">Build the 36 tiles</span></span></a>
+    <a class="di" role="menuitem" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">shield_person</span><span><strong>Administrators</strong><br><span class="mut" style="font-size: 12px">App roles</span></span></a>
+    <span class="di off" role="menuitem" aria-disabled="true"><span class="ms" aria-hidden="true">leaderboard</span><span><strong>Ranking</strong> <span class="bd bN">Soon</span><br><span style="font-size: 12px">Admins only</span></span></span>
+  </div>
+  <main style="padding: 28px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1280px; width: 100%; margin: 0 auto">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <span class="eb">Private area</span>
+      <h1 class="h1" style="font-size: 32px">Administration</h1>
+      <span class="mut">Manage application access and organize your Bingo events.</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px">
+      <a class="pn cd" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">event_note</span><h2>Events</h2><span class="mut" style="font-size: 13px">Create, activate and finish. Only one can be active.</span><span class="st"><span class="bd bE">1 active</span><span class="bd bN">1 draft</span><span class="bd bN">2 finished</span></span></a>
+      <a class="pn cd" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">groups</span><h2>Teams and registrations</h2><span class="mut" style="font-size: 13px">Approve requests and build teams for the draft event.</span><span class="st"><span class="bd bW">4 pending</span><span class="bd bN">3 unassigned</span></span></a>
+      <a class="pn cd" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">style</span><h2>Card catalog</h2><span class="mut" style="font-size: 13px">Bosses, drops, progress weights and revisions.</span><span class="st"><span class="bd bN">36 active</span><span class="bd bN">1 retired</span></span></a>
+      <a class="pn cd" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">view_module</span><h2>Event boards</h2><span class="mut" style="font-size: 13px">Choose the 36 cards and their positions for each event.</span><span class="st"><span class="bd bN">Winter 2026 · 30/36</span></span></a>
+      <a class="pn cd" href="#"><span class="ms" aria-hidden="true" style="color: #d4ad53">shield_person</span><h2>Administrators</h2><span class="mut" style="font-size: 13px">App roles, independent of Discord.</span><span class="st"><span class="bd bN">1 administrator</span></span></a>
+      <div class="pn cd" aria-disabled="true" style="border-style: dashed; opacity: .75"><span class="ms" aria-hidden="true" style="color: #aa9a7c">leaderboard</span><h2 style="color: #aa9a7c">Ranking</h2><span class="mut" style="font-size: 13px">Compare teams and contributions. Not available yet.</span><span class="st"><span class="bd bN">Soon</span></span></div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

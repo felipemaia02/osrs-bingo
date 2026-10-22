@@ -1,11 +1,34 @@
+import { useState } from 'react'
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { ThemedMenu, ThemedMenuItem } from '../../../components/ui/ThemedMenu'
 import { useLogout, useSession } from '../hooks/useSession'
 
-export function AuthControls() {
+function Avatar({ name, compact }: { name: string; compact: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`inline-flex shrink-0 items-center justify-center rounded-full border border-rs-border-strong bg-rs-raised font-bold text-rs-gold-bright ${
+        compact ? 'size-7 text-xs' : 'size-6 text-[11px]'
+      }`}
+    >
+      {name.charAt(0).toUpperCase()}
+    </span>
+  )
+}
+
+/**
+ * Account control: avatar (and username on desktop) opening a menu with "Log out",
+ * or a "Log in" link for anonymous visitors.
+ */
+export function AuthControls({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation()
   const session = useSession()
   const logout = useLogout()
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+
   if (session.isLoading) return <span className="text-xs text-rs-muted">{t('common.loading')}</span>
   if (session.isError)
     return (
@@ -17,22 +40,55 @@ export function AuthControls() {
     return (
       <Link
         to="/login"
-        className="rounded-sm border border-rs-border px-3 py-2 text-xs text-rs-gold"
+        className={`inline-flex items-center rounded-[3px] border border-rs-border bg-rs-surface px-3.5 text-sm text-rs-text hover:border-rs-border-strong ${
+          compact ? 'min-h-10' : 'min-h-9'
+        }`}
       >
         {t('auth.login')}
       </Link>
     )
+
+  const { username } = session.data
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-rs-muted">
-      <span>{session.data.username}</span>
+    <>
       <button
-        onClick={() => logout.mutate()}
-        disabled={logout.isPending}
-        className="rounded-sm border border-rs-border px-2 py-1 disabled:opacity-50"
+        type="button"
+        onClick={(event) => setAnchor(event.currentTarget)}
+        aria-haspopup="menu"
+        aria-expanded={anchor !== null}
+        aria-controls={anchor ? 'account-menu' : undefined}
+        aria-label={t('shell.account', { name: username })}
+        className={
+          compact
+            ? 'inline-flex size-11 items-center justify-center rounded-[3px]'
+            : 'inline-flex min-h-9 items-center gap-2 rounded-[3px] border border-rs-border bg-rs-surface px-3.5 text-sm text-rs-text hover:border-rs-border-strong'
+        }
       >
-        {t('auth.logout')}
+        <Avatar name={username} compact={compact} />
+        {!compact && (
+          <>
+            <span className="max-w-40 truncate">{username}</span>
+            <ExpandMoreOutlinedIcon fontSize="small" aria-hidden="true" />
+          </>
+        )}
       </button>
-      {logout.isError && <span role="alert">{t('common.apiError')}</span>}
-    </div>
+      <ThemedMenu id="account-menu" anchorEl={anchor} onClose={() => setAnchor(null)}>
+        <ThemedMenuItem
+          disabled={logout.isPending}
+          onClick={() => {
+            setAnchor(null)
+            logout.mutate()
+          }}
+        >
+          <LogoutOutlinedIcon fontSize="small" aria-hidden="true" />
+          {t('auth.logout')}
+        </ThemedMenuItem>
+      </ThemedMenu>
+      {logout.isError && (
+        <span role="alert" className="text-xs text-rs-muted">
+          {t('common.apiError')}
+        </span>
+      )}
+    </>
   )
 }

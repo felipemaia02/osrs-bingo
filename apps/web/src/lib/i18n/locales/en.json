@@ -1,415 +1,437 @@
 {
-    "navigation": {
-        "primary": "Primary navigation",
-        "mobile": "Mobile navigation",
-        "board": "Board",
-        "events": "Events",
-        "team": "Team",
-        "submissions": "Submissions",
-        "ranking": "Ranking",
-        "comingSoon": "Team, submissions, and ranking will become available in future features."
+  "navigation": {
+    "primary": "Primary navigation",
+    "mobile": "Mobile navigation",
+    "board": "Board",
+    "events": "Events",
+    "team": "Team",
+    "play": "Play",
+    "mySubmissions": "My submissions"
+  },
+  "board": {
+    "eyebrow": "Event progress",
+    "title": "Bingo board",
+    "description": "Plan your hunt: open a tile to see which drops count and how much progress each one gives.",
+    "eventDescription": "Official board for {{event}}. Open a tile to see which drops count.",
+    "noActiveEvent": "There is no active event to display.",
+    "unavailable": "The active event board is not available yet.",
+    "gridTitle": "Objectives",
+    "tileCount": "{{count}} tiles",
+    "scrollRegion": "Scrollable Bingo board",
+    "row": "Row {{row}}",
+    "column": "Column {{column}}",
+    "rowShort": "{{row}}",
+    "columnShort": "{{column}}",
+    "match": {
+      "drop": "Counts: {{drop}}",
+      "tile": "Matches the tile name",
+      "none": "Does not match the search"
     },
-    "board": {
-        "eyebrow": "Event progress",
-        "title": "Bingo board",
-        "description": "Plan your hunt: open a tile to see which drops count and how much progress each one gives.",
-        "eventDescription": "Official board for {{event}}. Open a tile to see which drops count.",
-        "noActiveEvent": "There is no active event to display.",
-        "unavailable": "The active event board is not available yet.",
-        "gridTitle": "Objectives",
-        "tileCount": "{{count}} tiles",
-        "scrollRegion": "Scrollable Bingo board",
-        "row": "Row {{row}}",
-        "column": "Column {{column}}",
-        "rowShort": "{{row}}",
-        "columnShort": "{{column}}",
-        "match": {
-            "drop": "Counts: {{drop}}",
-            "tile": "Matches the tile name",
-            "none": "Does not match the search"
-        },
-        "search": {
-            "label": "Search tiles or drops",
-            "placeholder": "Search a drop or tile, e.g. jar",
-            "results_one": "{{count}} matching tile",
-            "results_other": "{{count}} matching tiles"
-        },
-        "filter": {
-            "label": "Difficulty",
-            "all": "All"
-        },
-        "view": {
-            "label": "Board layout",
-            "grid": "Grid view",
-            "list": "List view"
-        },
-        "context": {
-            "schedule": "{{start}} — {{end}}",
-            "startsIn": "Starts {{time}}",
-            "endsIn": "Ends {{time}}",
-            "endReached": "Scheduled end reached",
-            "notRegistered": "You are not registered in this event",
-            "pending": "Your registration is awaiting approval",
-            "removed": "You are not participating in this event",
-            "unassigned": "Approved, awaiting team assignment",
-            "team": "Your team: {{team}}"
-        },
-        "help": {
-            "title": "How tiles are completed",
-            "progress": "Each accepted drop adds its progress value to the tile for your team.",
-            "completion": "When your team's progress reaches the tile requirement, the team earns the tile points once.",
-            "excess": "Progress beyond the requirement does not award extra tile points.",
-            "bonuses": "Row, column and special bonuses are defined by the event rules.",
-            "details": "Select a tile to see its accepted drops, progress values and notes."
-        }
+    "search": {
+      "label": "Search tiles or drops",
+      "placeholder": "Search a drop or tile, e.g. jar",
+      "results_one": "{{count}} matching tile",
+      "results_other": "{{count}} matching tiles"
     },
-    "tile": {
-        "completed": "Completed",
-        "inProgress": "In progress",
-        "notStarted": "Not started",
-        "progressUnavailable": "Progress unavailable",
-        "imageUnavailable": "Image unavailable",
-        "points": "{{count}} pts",
-        "progressLabel": "Progress for {{name}}",
-        "progressValue": "{{current}} / {{required}}",
-        "requirementValue": "Requirement: {{required}}",
-        "imageSource": "Image source: OSRS Wiki",
-        "tier": {
-            "Low": "Easy",
-            "Mid": "Medium",
-            "High": "Hard"
-        },
-        "label": "Row {{row}}, column {{column}}: {{name}}, {{tier}}, {{points}} points, {{state}}",
-        "progressPending": "Team progress will appear once drop submissions and scoring are available."
+    "filter": {
+      "label": "Difficulty",
+      "all": "All"
     },
-    "common": {
-        "loading": "Loading…",
-        "saving": "Saving…",
-        "save": "Save",
-        "cancel": "Cancel",
-        "close": "Close",
-        "edit": "Edit",
-        "apiError": "The service is unavailable. Try again."
+    "view": {
+      "label": "Board layout",
+      "grid": "Grid view",
+      "list": "List view"
     },
-    "events": {
-        "eyebrow": "Administration",
-        "title": "Events",
-        "description": "Create and manage the lifecycle of Bingo events.",
-        "listTitle": "Event list",
-        "empty": "No events found.",
-        "status": {
-            "draft": "Draft",
-            "active": "Active",
-            "finished": "Finished"
-        },
-        "filter": {
-            "label": "Filter events",
-            "all": "All statuses",
-            "draft": "Draft",
-            "active": "Active",
-            "finished": "Finished"
-        },
-        "actions": {
-            "create": "Create event",
-            "activate": "Activate event",
-            "finish": "Finish event"
-        },
-        "form": {
-            "createTitle": "Create event",
-            "editTitle": "Edit event",
-            "name": "Name",
-            "description": "Description",
-            "start": "Start date and time",
-            "end": "End date and time"
-        },
-        "schedule": {
-            "title": "Event schedule",
-            "invalidEnd": "End must be later than start.",
-            "quickDuration": "Quick duration",
-            "day": "day",
-            "days": "days",
-            "duration": "Duration",
-            "durationValue": "{{days}} days",
-            "timezone": "Local timezone"
-        },
-        "feedback": {
-            "created": "Event created.",
-            "updated": "Event updated.",
-            "activated": "Event activated.",
-            "finished": "Event finished."
-        },
-        "confirm": {
-            "activateTitle": "Activate event?",
-            "finishTitle": "Finish event?",
-            "activateMessage": "Activate {{name}}? It will become available as an active event.",
-            "finishMessage": "Finish {{name}}? This action cannot be undone.",
-            "activate": "Activate",
-            "finish": "Finish"
-        },
-        "errors": {
-            "activeLimit": "Another event is already active. Finish it before activating this event.",
-            "readOnly": "Only draft events can be edited.",
-            "invalidTransition": "This event cannot perform that status change.",
-            "notFound": "The event was not found.",
-            "boardRequired": "Complete and save all 36 board positions before activating the event."
-        },
-        "selector": {
-            "label": "Current event",
-            "placeholder": "Select an active event"
-        },
-        "publicEyebrow": "Community events",
-        "publicDescription": "Discover Bingo events and follow your registration.",
-        "noActive": "No active event"
+    "context": {
+      "schedule": "{{start}} — {{end}}",
+      "startsIn": "Starts {{time}}",
+      "endsIn": "Ends {{time}}",
+      "endReached": "Scheduled end reached",
+      "notRegistered": "You are not registered in this event",
+      "pending": "Your registration is awaiting approval",
+      "removed": "You are not participating in this event",
+      "unassigned": "Approved, awaiting team assignment",
+      "team": "Your team: {{team}}"
     },
-    "teams": {
-        "eyebrow": "Administration",
-        "title": "Teams and players",
-        "event": "Event",
-        "selectEvent": "Select an event",
-        "teams": "Teams",
-        "players": "Event registrations",
-        "teamName": "Team name",
-        "playerName": "OSRS display name",
-        "selectTeam": "Select a team",
-        "create": "Create",
-        "description": "Review event registrations and organize approved participants into teams.",
-        "registrationHint": "Players request registration from the Events page.",
-        "unassigned": "No team assigned",
-        "noPlayers": "No approved participants yet.",
-        "noTeams": "No teams in this event.",
-        "pending": "Pending approval",
-        "approved": "Approved participants",
-        "noPending": "No pending requests.",
-        "approveAll": "Approve all pending",
-        "approve": "Approve",
-        "approvePlayer": "Approve {{name}}",
-        "remove": "Remove registration",
-        "removePlayer": "Remove {{name}}",
-        "removeTitle": "Remove registration?",
-        "removeConfirmation": "Remove {{name}} from the event? Their team assignment will also be cleared.",
-        "confirmRemoval": "Confirm removal",
-        "assignmentFor": "Team for {{name}}",
-        "saveAssignment": "Save team assignment",
-        "memberCount_one": "{{count}} member",
-        "memberCount_other": "{{count}} members",
-        "feedback": {
-            "assignmentUpdated": "Team assignment updated.",
-            "teamCreated": "Team created.",
-            "approved": "Registrations approved.",
-            "removed": "Registration removed."
-        },
-        "errors": {
-            "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
-            "duplicateTeam": "A team with this name already exists in this event.",
-            "readOnly": "Participants can only be changed in draft events.",
-            "playerNotFound": "Registration not found in this event.",
-            "teamNotFound": "Team not found in this event.",
-            "invalidInput": "Enter a valid name.",
-            "approvedOnly": "Only approved registrations can be assigned. Refresh the participant list.",
-            "pendingOnly": "This request is no longer pending.",
-            "removed": "This registration has already been removed."
-        },
-        "roster": {
-            "tabs": "Participants and teams",
-            "pending": "Pending",
-            "unassigned": "Unassigned",
-            "assigned": "Assigned",
-            "teams": "Teams",
-            "createTeam": "Create team",
-            "viewMembers": "View members of {{name}}",
-            "search": "Search OSRS name",
-            "searchAction": "Search",
-            "teamFilter": "Filter by team",
-            "allTeams": "All teams",
-            "pagination": "{{start}}–{{end}} of {{total}} participants",
-            "previous": "Previous",
-            "next": "Next",
-            "player": "Player",
-            "status": "Status",
-            "actions": "Actions",
-            "assignPlayer": "Change team for {{name}}",
-            "assign": "Change team",
-            "confirmAll": "Approve all {{count}} pending registrations in this event? This includes participants outside the current search and page.",
-            "confirmApprove": "Confirm approval"
-        }
-    },
-    "language": {
-        "label": "Language",
-        "en": "English",
-        "pt": "Portuguese",
-        "es": "Spanish"
-    },
-    "auth": {
-        "login": "Log in with Discord",
-        "logout": "Log out",
-        "loginRequired": "Log in to continue.",
-        "adminRequired": "Only administrators can manage participants.",
-        "requestRejected": "This request could not be verified. Reload and try again.",
-        "loginFailed": "Discord login failed or expired. Please try again.",
-        "backToEvents": "Explore events",
-        "loginEyebrow": "OSRS Bingo",
-        "loginTitle": "Join the adventure",
-        "loginDescription": "Sign in to request a place in an event and follow your team.",
-        "identityNotice": "Discord identifies your account. You do not need to be a Discord server administrator to participate.",
-        "notConfigured": "Discord login is not available yet. Please try again later.",
-        "retry": "Try again"
-    },
-    "registration": {
-        "loginToRegister": "Log in with Discord to register",
-        "formFor": "Register for {{name}}",
-        "approvalHint": "Your request will be reviewed by an administrator.",
-        "request": "Request registration",
-        "status": {
-            "pending": "Registration pending approval",
-            "approved": "Registration approved",
-            "removed": "Registration removed by an administrator"
-        }
-    },
-    "admin": {
-        "title": "Administration",
-        "sections": "Administration sections",
-        "overview": "Overview",
-        "events": "Events",
-        "teams": "Teams and registrations",
-        "cards": "Card catalog",
-        "boards": "Event boards",
-        "administrators": "Administrators",
-        "ranking": "Event comparison",
-        "privateArea": "Private area",
-        "description": "Manage application access and organize your Bingo events.",
-        "eventsDescription": "Create events and manage their lifecycle. Only one event can be active.",
-        "teamsDescription": "Select an event to approve registrations and organize teams.",
-        "cardsDescription": "Manage reusable bosses, drops, points, difficulty, and card revisions.",
-        "boardsDescription": "Choose the 36 cards and their positions for each event.",
-        "rolesDescription": "Choose application administrators. This setting applies to all events.",
-        "rankingDescription": "Compare teams and player contributions for a selected event.",
-        "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
-        "searchUsers": "Search registered users",
-        "search": "Search",
-        "noUsers": "No users found. Users appear here after their first login.",
-        "role": "Application role",
-        "adminRole": "Administrator",
-        "playerRole": "Player",
-        "grant": "Grant administrator access",
-        "revoke": "Remove administrator access",
-        "grantTo": "Grant access to {{name}}",
-        "revokeFrom": "Remove access from {{name}}",
-        "confirmTitle": "Change administrator access?",
-        "grantMessage": "Give {{name}} administrator access to all events and application settings?",
-        "revokeMessage": "Remove administrator access from {{name}}? This does not change their event registrations.",
-        "confirm": "Confirm change",
-        "updated": "Administrator access updated.",
-        "previous": "Previous",
-        "next": "Next",
-        "directoryCount": "{{count}} registered users",
-        "globalNotice": "These roles belong to this application and are independent of Discord server roles. No event selection is required.",
-        "errors": {
-            "lastAdmin": "At least one administrator must remain.",
-            "changed": "Administrator access changed while you were editing. Refresh and try again.",
-            "notInitialized": "Administration has not been initialized. Contact the application operator.",
-            "userNotFound": "This user was not found.",
-            "rateLimit": "Too many requests. Wait a moment and try again."
-        },
-        "discordIdentity": "Discord ID: {{id}}"
-    },
-    "cards": {
-        "title": "Card catalog",
-        "description": "Cards are global and reusable. Publishing a change creates a new revision and never changes an existing event board.",
-        "importWorkbook": "Import approved workbook",
-        "create": "Create card",
-        "empty": "No cards are registered yet.",
-        "edit": "Edit {{name}}",
-        "retire": "Retire {{name}}",
-        "retireConfirm": "Retire {{name}} from new event boards? Existing boards keep their snapshot.",
-        "summary": "{{difficulty}} · {{score}} pts · requirement {{requirement}} · {{drops}} drops · revision {{revision}}",
-        "status": {
-            "active": "Active",
-            "retired": "Retired"
-        },
-        "kind": {
-            "boss": "Boss",
-            "boss_group": "Boss group",
-            "raid": "Raid",
-            "activity": "Activity",
-            "task": "Task"
-        },
-        "form": {
-            "createTitle": "Create catalog card",
-            "reviseTitle": "Publish a new card revision",
-            "slug": "Stable key",
-            "name": "Name",
-            "kind": "Card type",
-            "difficulty": "Difficulty",
-            "score": "Completion points",
-            "requirement": "Progress requirement",
-            "description": "Description",
-            "drops": "Accepted drops (one per line)",
-            "dropsPlaceholder": "Drop name | progress weight",
-            "wikiArticle": "OSRS Wiki article",
-            "resolveImage": "Find image",
-            "ruleNote": "Rule or verification note",
-            "changeReason": "Reason for this revision"
-        },
-        "feedback": {
-            "created": "Card created.",
-            "revised": "New card revision published.",
-            "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present."
-        },
-        "errors": {
-            "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
-            "drops": "Enter every drop as Name | positive weight.",
-            "changed": "This card changed while you were editing. Reload and try again.",
-            "slug": "This stable card key is already in use.",
-            "importConflict": "The workbook import found conflicting keys: {{slugs}}."
-        },
-        "importDescription": "Import the approved workbook cards into the reusable catalog. Existing matching cards are kept.",
-        "rules": {
-            "title": "Rules and accepted drops",
-            "completion": "{{score}} points when progress reaches {{requirement}}",
-            "progress_one": "+{{count}} progress",
-            "progress_other": "+{{count}} progress",
-            "verification": "Verification: {{note}}",
-            "restriction": "Counting limit: {{note}}"
-        }
-    },
-    "boards": {
-        "title": "Event boards",
-        "description": "Drag cards from the catalog to build your board.",
-        "event": "Event",
-        "selectEvent": "Select an event",
-        "filled": "{{filled}} of {{total}} positions filled",
-        "save": "Save board",
-        "readOnly": "This published board is read-only.",
-        "noCards": "Import or create catalog cards before assembling a board.",
-        "gridLabel": "Event board editor",
-        "position": "Position {{position}}",
-        "emptyPosition": "Empty position",
-        "feedback": {
-            "saved": "Board saved with pinned card revisions."
-        },
-        "errors": {
-            "changed": "This board changed while you were editing. Reload and try again.",
-            "retired": "A selected card was retired. Replace it and save again."
-        },
-        "catalog": "Card catalog",
-        "catalogHint": "Drag cards into the board, or click to add them.",
-        "search": "Search cards",
-        "manageCatalog": "Open card catalog",
-        "noResults": "No cards match your search.",
-        "addCard": "Add {{name}}",
-        "inBoard": "On board",
-        "required": "Requirement: {{count}}",
-        "chooseEvent": "Select an event to start assembling its board. The catalog is ready to browse.",
-        "assignHint": "Drag cards from the catalog, or select a card to remove it.",
-        "remove": "Remove card",
-        "dropZone": "Drag cards here",
-        "dropAlternative": "Or click a card in the catalog to add it.",
-        "addAll": "Add all",
-        "addAllHint": "Adds available cards from the entire catalog, up to 36.",
-        "selectedRules": "Rules for position {{position}}"
-    },
-    "brand": {
-        "name": "OSRS Bingo",
-        "tagline": "Community Bingo"
+    "help": {
+      "title": "How tiles are completed",
+      "progress": "Each accepted drop adds its progress value to the tile for your team.",
+      "completion": "When your team's progress reaches the tile requirement, the team earns the tile points once.",
+      "excess": "Progress beyond the requirement does not award extra tile points.",
+      "bonuses": "Row, column and special bonuses are defined by the event rules.",
+      "details": "Select a tile to see its accepted drops, progress values and notes."
     }
+  },
+  "tile": {
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "notStarted": "Not started",
+    "progressUnavailable": "Progress unavailable",
+    "imageUnavailable": "Image unavailable",
+    "points": "{{count}} pts",
+    "progressLabel": "Progress for {{name}}",
+    "progressValue": "{{current}} / {{required}}",
+    "requirementValue": "Requirement: {{required}}",
+    "imageSource": "Image source: OSRS Wiki",
+    "tier": {
+      "Low": "Easy",
+      "Mid": "Medium",
+      "High": "Hard"
+    },
+    "label": "Row {{row}}, column {{column}}: {{name}}, {{tier}}, {{points}} points, {{state}}",
+    "progressPending": "Team progress will appear once drop submissions and scoring are available."
+  },
+  "common": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "edit": "Edit",
+    "apiError": "The service is unavailable. Try again."
+  },
+  "events": {
+    "eyebrow": "Administration",
+    "title": "Events",
+    "description": "Create and manage the lifecycle of Bingo events.",
+    "listTitle": "Event list",
+    "empty": "No events found.",
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "finished": "Finished"
+    },
+    "filter": {
+      "label": "Filter events",
+      "all": "All statuses",
+      "draft": "Draft",
+      "active": "Active",
+      "finished": "Finished"
+    },
+    "actions": {
+      "create": "Create event",
+      "activate": "Activate event",
+      "finish": "Finish event"
+    },
+    "form": {
+      "createTitle": "Create event",
+      "editTitle": "Edit event",
+      "name": "Name",
+      "description": "Description",
+      "start": "Start date and time",
+      "end": "End date and time"
+    },
+    "schedule": {
+      "title": "Event schedule",
+      "invalidEnd": "End must be later than start.",
+      "quickDuration": "Quick duration",
+      "day": "day",
+      "days": "days",
+      "duration": "Duration",
+      "durationValue": "{{days}} days",
+      "timezone": "Local timezone"
+    },
+    "feedback": {
+      "created": "Event created.",
+      "updated": "Event updated.",
+      "activated": "Event activated.",
+      "finished": "Event finished."
+    },
+    "confirm": {
+      "activateTitle": "Activate event?",
+      "finishTitle": "Finish event?",
+      "activateMessage": "Activate {{name}}? It will become available as an active event.",
+      "finishMessage": "Finish {{name}}? This action cannot be undone.",
+      "activate": "Activate",
+      "finish": "Finish"
+    },
+    "errors": {
+      "activeLimit": "Another event is already active. Finish it before activating this event.",
+      "readOnly": "Only draft events can be edited.",
+      "invalidTransition": "This event cannot perform that status change.",
+      "notFound": "The event was not found.",
+      "boardRequired": "Complete and save all 36 board positions before activating the event."
+    },
+    "publicEyebrow": "Community events",
+    "publicDescription": "Discover Bingo events and follow your registration."
+  },
+  "teams": {
+    "eyebrow": "Administration",
+    "title": "Teams and players",
+    "event": "Event",
+    "selectEvent": "Select an event",
+    "teams": "Teams",
+    "players": "Event registrations",
+    "teamName": "Team name",
+    "playerName": "OSRS display name",
+    "selectTeam": "Select a team",
+    "create": "Create",
+    "description": "Review event registrations and organize approved participants into teams.",
+    "registrationHint": "Players request registration from the Events page.",
+    "unassigned": "No team assigned",
+    "noPlayers": "No approved participants yet.",
+    "noTeams": "No teams in this event.",
+    "pending": "Pending approval",
+    "approved": "Approved participants",
+    "noPending": "No pending requests.",
+    "approveAll": "Approve all pending",
+    "approve": "Approve",
+    "approvePlayer": "Approve {{name}}",
+    "remove": "Remove registration",
+    "removePlayer": "Remove {{name}}",
+    "removeTitle": "Remove registration?",
+    "removeConfirmation": "Remove {{name}} from the event? Their team assignment will also be cleared.",
+    "confirmRemoval": "Confirm removal",
+    "assignmentFor": "Team for {{name}}",
+    "saveAssignment": "Save team assignment",
+    "memberCount_one": "{{count}} member",
+    "memberCount_other": "{{count}} members",
+    "feedback": {
+      "assignmentUpdated": "Team assignment updated.",
+      "teamCreated": "Team created.",
+      "approved": "Registrations approved.",
+      "removed": "Registration removed."
+    },
+    "errors": {
+      "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
+      "duplicateTeam": "A team with this name already exists in this event.",
+      "readOnly": "Participants can only be changed in draft events.",
+      "playerNotFound": "Registration not found in this event.",
+      "teamNotFound": "Team not found in this event.",
+      "invalidInput": "Enter a valid name.",
+      "approvedOnly": "Only approved registrations can be assigned. Refresh the participant list.",
+      "pendingOnly": "This request is no longer pending.",
+      "removed": "This registration has already been removed."
+    },
+    "roster": {
+      "tabs": "Participants and teams",
+      "pending": "Pending",
+      "unassigned": "Unassigned",
+      "assigned": "Assigned",
+      "teams": "Teams",
+      "createTeam": "Create team",
+      "viewMembers": "View members of {{name}}",
+      "search": "Search OSRS name",
+      "searchAction": "Search",
+      "teamFilter": "Filter by team",
+      "allTeams": "All teams",
+      "pagination": "{{start}}–{{end}} of {{total}} participants",
+      "previous": "Previous",
+      "next": "Next",
+      "player": "Player",
+      "status": "Status",
+      "actions": "Actions",
+      "assignPlayer": "Change team for {{name}}",
+      "assign": "Change team",
+      "confirmAll": "Approve all {{count}} pending registrations in this event? This includes participants outside the current search and page.",
+      "confirmApprove": "Confirm approval"
+    }
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "pt": "Portuguese",
+    "es": "Spanish",
+    "current": "Language: {{language}}"
+  },
+  "auth": {
+    "login": "Log in with Discord",
+    "logout": "Log out",
+    "loginRequired": "Log in to continue.",
+    "adminRequired": "Only administrators can manage participants.",
+    "requestRejected": "This request could not be verified. Reload and try again.",
+    "loginFailed": "Discord login failed or expired. Please try again.",
+    "backToEvents": "Explore events",
+    "loginEyebrow": "OSRS Bingo",
+    "loginTitle": "Join the adventure",
+    "loginDescription": "Sign in to request a place in an event and follow your team.",
+    "identityNotice": "Discord identifies your account. You do not need to be a Discord server administrator to participate.",
+    "notConfigured": "Discord login is not available yet. Please try again later.",
+    "retry": "Try again"
+  },
+  "registration": {
+    "loginToRegister": "Log in with Discord to register",
+    "formFor": "Register for {{name}}",
+    "approvalHint": "Your request will be reviewed by an administrator.",
+    "request": "Request registration",
+    "status": {
+      "pending": "Registration pending approval",
+      "approved": "Registration approved",
+      "removed": "Registration removed by an administrator"
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "sections": "Administration sections",
+    "overview": "Overview",
+    "events": "Events",
+    "teams": "Teams and registrations",
+    "cards": "Card catalog",
+    "boards": "Event boards",
+    "administrators": "Administrators",
+    "ranking": "Ranking",
+    "privateArea": "Private area",
+    "description": "Manage application access and organize your Bingo events.",
+    "eventsDescription": "Create, activate and finish. Only one can be active.",
+    "teamsDescription": "Approve requests and build teams for the draft event.",
+    "cardsDescription": "Bosses, drops, progress weights and revisions.",
+    "boardsDescription": "Choose the 36 cards and their positions for each event.",
+    "rolesDescription": "App roles, independent of Discord.",
+    "rankingDescription": "Compare teams and contributions. Not available yet.",
+    "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
+    "searchUsers": "Search registered users",
+    "search": "Search",
+    "noUsers": "No users found. Users appear here after their first login.",
+    "role": "Application role",
+    "adminRole": "Administrator",
+    "playerRole": "Player",
+    "grant": "Grant administrator access",
+    "revoke": "Remove administrator access",
+    "grantTo": "Grant access to {{name}}",
+    "revokeFrom": "Remove access from {{name}}",
+    "confirmTitle": "Change administrator access?",
+    "grantMessage": "Give {{name}} administrator access to all events and application settings?",
+    "revokeMessage": "Remove administrator access from {{name}}? This does not change their event registrations.",
+    "confirm": "Confirm change",
+    "updated": "Administrator access updated.",
+    "previous": "Previous",
+    "next": "Next",
+    "directoryCount": "{{count}} registered users",
+    "globalNotice": "These roles belong to this application and are independent of Discord server roles. No event selection is required.",
+    "errors": {
+      "lastAdmin": "At least one administrator must remain.",
+      "changed": "Administrator access changed while you were editing. Refresh and try again.",
+      "notInitialized": "Administration has not been initialized. Contact the application operator.",
+      "userNotFound": "This user was not found.",
+      "rateLimit": "Too many requests. Wait a moment and try again."
+    },
+    "discordIdentity": "Discord ID: {{id}}",
+    "overviewStatus": {
+      "active": "{{count}} active",
+      "draft": "{{count}} draft",
+      "finished": "{{count}} finished",
+      "pending": "{{count}} pending",
+      "unassigned": "{{count}} unassigned",
+      "cardsActive": "{{count}} active",
+      "retired": "{{count}} retired",
+      "administrators_one": "{{count}} administrator",
+      "administrators_other": "{{count}} administrators"
+    }
+  },
+  "cards": {
+    "title": "Card catalog",
+    "description": "Cards are global and reusable. Publishing a change creates a new revision and never changes an existing event board.",
+    "importWorkbook": "Import approved workbook",
+    "create": "Create card",
+    "empty": "No cards are registered yet.",
+    "edit": "Edit {{name}}",
+    "retire": "Retire {{name}}",
+    "retireConfirm": "Retire {{name}} from new event boards? Existing boards keep their snapshot.",
+    "summary": "{{difficulty}} · {{score}} pts · requirement {{requirement}} · {{drops}} drops · revision {{revision}}",
+    "status": {
+      "active": "Active",
+      "retired": "Retired"
+    },
+    "kind": {
+      "boss": "Boss",
+      "boss_group": "Boss group",
+      "raid": "Raid",
+      "activity": "Activity",
+      "task": "Task"
+    },
+    "form": {
+      "createTitle": "Create catalog card",
+      "reviseTitle": "Publish a new card revision",
+      "slug": "Stable key",
+      "name": "Name",
+      "kind": "Card type",
+      "difficulty": "Difficulty",
+      "score": "Completion points",
+      "requirement": "Progress requirement",
+      "description": "Description",
+      "drops": "Accepted drops (one per line)",
+      "dropsPlaceholder": "Drop name | progress weight",
+      "wikiArticle": "OSRS Wiki article",
+      "resolveImage": "Find image",
+      "ruleNote": "Rule or verification note",
+      "changeReason": "Reason for this revision"
+    },
+    "feedback": {
+      "created": "Card created.",
+      "revised": "New card revision published.",
+      "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present."
+    },
+    "errors": {
+      "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
+      "drops": "Enter every drop as Name | positive weight.",
+      "changed": "This card changed while you were editing. Reload and try again.",
+      "slug": "This stable card key is already in use.",
+      "importConflict": "The workbook import found conflicting keys: {{slugs}}."
+    },
+    "importDescription": "Import the approved workbook cards into the reusable catalog. Existing matching cards are kept.",
+    "rules": {
+      "title": "Rules and accepted drops",
+      "completion": "{{score}} points when progress reaches {{requirement}}",
+      "progress_one": "+{{count}} progress",
+      "progress_other": "+{{count}} progress",
+      "verification": "Verification: {{note}}",
+      "restriction": "Counting limit: {{note}}"
+    }
+  },
+  "boards": {
+    "title": "Event boards",
+    "description": "Drag cards from the catalog to build your board.",
+    "event": "Event",
+    "selectEvent": "Select an event",
+    "filled": "{{filled}} of {{total}} positions filled",
+    "save": "Save board",
+    "readOnly": "This published board is read-only.",
+    "noCards": "Import or create catalog cards before assembling a board.",
+    "gridLabel": "Event board editor",
+    "position": "Position {{position}}",
+    "emptyPosition": "Empty position",
+    "feedback": {
+      "saved": "Board saved with pinned card revisions."
+    },
+    "errors": {
+      "changed": "This board changed while you were editing. Reload and try again.",
+      "retired": "A selected card was retired. Replace it and save again."
+    },
+    "catalog": "Card catalog",
+    "catalogHint": "Drag cards into the board, or click to add them.",
+    "search": "Search cards",
+    "manageCatalog": "Open card catalog",
+    "noResults": "No cards match your search.",
+    "addCard": "Add {{name}}",
+    "inBoard": "On board",
+    "required": "Requirement: {{count}}",
+    "chooseEvent": "Select an event to start assembling its board. The catalog is ready to browse.",
+    "assignHint": "Drag cards from the catalog, or select a card to remove it.",
+    "remove": "Remove card",
+    "dropZone": "Drag cards here",
+    "dropAlternative": "Or click a card in the catalog to add it.",
+    "addAll": "Add all",
+    "addAllHint": "Adds available cards from the entire catalog, up to 36.",
+    "selectedRules": "Rules for position {{position}}"
+  },
+  "brand": {
+    "name": "OSRS Bingo",
+    "tagline": "Community Bingo"
+  },
+  "shell": {
+    "home": "OSRS Bingo — home",
+    "main": "Main content",
+    "soon": "Soon",
+    "submissionsSoon": "Submissions · soon",
+    "adminTab": "Admin",
+    "account": "{{name}} account",
+    "event": {
+      "none": "No active event",
+      "label": "Active event: {{name}}",
+      "daysHours": "{{days}} d {{hours}} h",
+      "hoursMinutes": "{{hours}} h {{minutes}} min",
+      "startsIn": "Starts in {{time}}",
+      "ended": "Scheduled end reached"
+    }
+  }
 }

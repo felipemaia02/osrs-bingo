@@ -13,6 +13,7 @@ class UserDirectory(BaseModel):
     total: int
     offset: int
     limit: int
+    admin_count: int
 
 
 class RoleUpdate(BaseModel):

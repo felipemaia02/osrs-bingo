@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Board builder — option B, mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.p{background:#d4ad53;border-color:#d4ad53;color:#15110e;font-weight:600}
+.btn.ic{padding:0;width:44px}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bM{color:#f1d487;border-color:#a88647;background:#2a2112}
+.bH{color:#efaaa0;border-color:#b45b4e;background:#2b1714}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.inp{font:inherit;font-size:16px;min-height:44px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+.mh{height:56px;display:flex;align-items:center;gap:8px;padding:0 12px 0 16px;border-bottom:1px solid #705a39;background:#19120e}
+.av{width:28px;height:28px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.mm{font:inherit;height:48px;min-width:0;border:1px solid #705a39;border-radius:3px;background:#211914;color:#ead9b7;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:11px;font-weight:700;line-height:1.15}
+.mm .dl{font-size:10px;font-weight:600}
+.mm.empty{background:#19120e;border-style:dashed;border-color:#a88647;color:#aa9a7c}
+.mm.cur{background:#f1d487;color:#15110e;border-color:#f1d487;outline:2px solid #f1d487;outline-offset:2px}
+.cE{color:#b5d699}.cM{color:#f1d487}.cH{color:#efaaa0}
+.lbl{font-size:11px;font-weight:600;color:#aa9a7c;text-align:center}
+.ci{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(112,90,57,.45);min-height:60px}
+.ci.sel{background:#2d2119;box-shadow:inset 3px 0 0 #f1d487;align-items:flex-start}
+.ct{width:44px;height:40px;flex:none;background:#19120e;border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#a88647}
+.ct img{max-width:100%;max-height:100%}
+.bb{position:absolute;left:0;right:0;bottom:0;height:68px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #705a39;background:#19120e}
+.bi{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11px;color:#aa9a7c;text-decoration:none}
+.bi.on{color:#f1d487;font-weight:600}
+.bi.off{color:#9a8b70}
+</style>
+</helmet>
+<div class="r" style="width: 390px; height: 1500px">
+  <header class="mh">
+    <img src="../assets/logo-shield.png" alt="" style="width: 25px; height: 32px">
+    <span class="cz" style="font-size: 16px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 4px">
+      <button class="btn" type="button" aria-label="Language: English" style="min-height: 40px; padding: 0 8px; font-size: 13px"><span class="ms" aria-hidden="true">translate</span>EN</button>
+      <button class="btn ic" type="button" aria-label="felps_ account" style="border-color: transparent; background: transparent"><span class="av">F</span></button>
+    </div>
+  </header>
+  <main style="padding: 12px 16px 90px; display: flex; flex-direction: column; gap: 12px">
+    <a href="#" style="display: inline-flex; align-items: center; gap: 2px; font-size: 13px; min-height: 32px; text-decoration: none"><span class="ms" aria-hidden="true" style="font-size: 18px">chevron_left</span>Administration</a>
+    <div style="display: flex; justify-content: space-between; align-items: flex-end">
+      <div><span class="eb">Winter Bingo 2026</span><h1 class="h1" style="font-size: 22px">Build board</h1></div>
+      <span class="bd bN">Draft · 30/36</span>
+    </div>
+    <section class="pn" aria-label="Choose a position" style="padding: 10px; display: flex; flex-direction: column; gap: 5px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><strong style="font-size: 13px">1. Choose a position</strong><span class="mut" style="font-size: 12px">6 empty</span></div>
+      <div style="display: grid; grid-template-columns: 14px repeat(6, minmax(0, 1fr)); gap: 4px"><span></span><sc-for list="{{cols}}" as="c" hint-placeholder-count="6"><span class="lbl">{{c}}</span></sc-for></div>
+      <sc-for list="{{rows}}" as="row" hint-placeholder-count="6">
+        <div style="display: grid; grid-template-columns: 14px repeat(6, minmax(0, 1fr)); gap: 4px">
+          <span class="lbl" style="align-self: center">{{row.n}}</span>
+          <sc-for list="{{row.slots}}" as="s" hint-placeholder-count="6">
+            <button class="mm {{s.cls}}" type="button" aria-label="{{s.aria}}"><span>{{s.top}}</span><span class="dl c{{s.d}}">{{s.bottom}}</span></button>
+          </sc-for>
+        </div>
+      </sc-for>
+      <span class="mut" style="font-size: 11px">Dashed = empty · E/M/H = difficulty · tap a filled cell to swap or remove it.</span>
+    </section>
+    <section class="pn" aria-label="Choose a card" style="display: flex; flex-direction: column; overflow: hidden">
+      <div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #705a39">
+        <strong style="font-size: 13px">2. Choose the card for <span style="color: #f1d487">2·5</span></strong>
+        <label style="position: relative; display: flex; align-items: center"><span class="ms mut" aria-hidden="true" style="position: absolute; left: 10px">search</span><span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search card or drop</span><input class="inp" type="search" placeholder="Search card or drop" style="padding-left: 38px"></label>
+      </div>
+      <div class="ci sel">
+        <span class="ct"><img src="../assets/doom-of-mokhaiotl.png" alt=""></span>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+          <div><strong>Doom of Mokhaiotl</strong><br><span class="bd bH">Hard</span> <span class="mut" style="font-size: 12px">20 pts · req. 3</span></div>
+          <span style="font-size: 12px">Avernic Treads <strong style="color: #f1d487">+2</strong> · Eye of Ayak <strong style="color: #f1d487">+1</strong> · Mokhaiotl Cloth <strong style="color: #f1d487">+1</strong> · Dom <strong style="color: #f1d487">+1</strong></span>
+          <button class="btn p" type="button" style="width: 100%"><span class="ms" aria-hidden="true">check</span>Place on 2·5</button>
+        </div>
+      </div>
+      <div class="ci"><span class="ct"><span class="ms" aria-hidden="true">shield</span></span><span style="flex: 1"><strong>Guardians of the Rift</strong><br><span class="bd bE">Easy</span> <span class="mut" style="font-size: 12px">5 pts · req. 10</span></span><span class="ms mut" aria-hidden="true">expand_more</span></div>
+      <div class="ci"><span class="ct"><span class="ms" aria-hidden="true">shield</span></span><span style="flex: 1"><strong>Scurrius</strong><br><span class="bd bE">Easy</span> <span class="mut" style="font-size: 12px">5 pts · req. 10</span></span><span class="ms mut" aria-hidden="true">expand_more</span></div>
+      <div class="ci"><span class="ct"><span class="ms" aria-hidden="true">shield</span></span><span style="flex: 1"><strong>Skilling Tools</strong><br><span class="bd bE">Easy</span> <span class="mut" style="font-size: 12px">5 pts · req. 10</span></span><span class="ms mut" aria-hidden="true">expand_more</span></div>
+      <div class="ci"><span class="ct"><span class="ms" aria-hidden="true">shield</span></span><span style="flex: 1"><strong>Thieving</strong><br><span class="bd bM">Medium</span> <span class="mut" style="font-size: 12px">10 pts · req. 3</span></span><span class="ms mut" aria-hidden="true">expand_more</span></div>
+      <div class="ci" style="border-bottom: 0"><span class="ct"><span class="ms" aria-hidden="true">shield</span></span><span style="flex: 1"><strong>Zulrah</strong><br><span class="bd bM">Medium</span> <span class="mut" style="font-size: 12px">10 pts · req. 6</span></span><span class="ms mut" aria-hidden="true">expand_more</span></div>
+    </section>
+  </main>
+  <nav class="bb" aria-label="Main">
+    <a class="bi" href="#"><span class="ms" aria-hidden="true">grid_view</span>Board</a>
+    <a class="bi" href="#"><span class="ms" aria-hidden="true">calendar_month</span>Events</a>
+    <span class="bi off" aria-disabled="true"><span class="ms" aria-hidden="true">upload_file</span>Submissions · soon</span>
+    <a class="bi on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">admin_panel_settings</span>Admin</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const RAW = "Abyssal Sire|M;Araxxor|H;Alchemical Hydra|H;Armoured Zombies|E;Barrows|E;Cerberus|H;Chambers of Xeric|H;DT2 Bosses|H;Dagannoth Kings|M;Demonic Gorillas|M;Doom of Mokhaiotl|H;Gauntlet|M;God Wars Dungeon|H;Grotesque Guardians|M;Guardians of the Rift|E;Hueycoatl|E;Mad Angel|E;Maggot King|H;Medium Boots|M;Moons of Peril|E;Mortimer|M;Phantom Muspah|M;Royal Titans|E;Scurrius|E;Skilling Tools|E;Tempoross|E;Theatre of Blood|H;Thieving|M;Tombs of Amascut|H;Tormented Demons|M;Vorkath|M;Wilderness Trio|H;Wintertodt|E;Yama|H;Zalcano|M;Zulrah|M";
+    const DN = { E: 'Easy', M: 'Medium', H: 'Hard' };
+    const DL = { E: 'E', M: 'M', H: 'H' };
+    const EMPTY = { 14: 1, 23: 1, 24: 1, 27: 1, 35: 1 };
+    const CUR = 10;
+    const slots = RAW.split(';').map((s, i) => {
+      const p = s.split('|');
+      const pos = (Math.floor(i / 6) + 1) + '·' + ((i % 6) + 1);
+      const ini = p[0].split(' ').filter((w) => /^[A-Z0-9]/.test(w)).map((w) => w[0]).join('').slice(0, 3);
+      if (i === CUR) return { cls: 'cur', top: pos, bottom: 'here', d: 'N', aria: 'Position ' + pos + ' selected' };
+      if (EMPTY[i]) return { cls: 'empty', top: '+', bottom: pos, d: 'N', aria: 'Position ' + pos + ' empty' };
+      return { cls: '', top: ini, bottom: DL[p[1]], d: p[1], aria: 'Position ' + pos + ': ' + p[0] + ', ' + DN[p[1]] };
+    });
+    return { cols: [1, 2, 3, 4, 5, 6], rows: [1, 2, 3, 4, 5, 6].map((n) => ({ n, slots: slots.slice((n - 1) * 6, n * 6) })) };
+  }
+}
+</script>
+</body>
+</html>

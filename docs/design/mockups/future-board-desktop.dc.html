@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>[FUTURE] Board with team progress — desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.sm{min-height:34px;padding:0 10px;font-size:13px}
+.btn.on{border-color:#d4ad53;color:#15110e;background:#d4ad53;font-weight:600}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bM{color:#f1d487;border-color:#a88647;background:#2a2112}
+.bH{color:#efaaa0;border-color:#b45b4e;background:#2b1714}
+.bF{color:#a9cde2;border-color:#668ca3;background:#13202a}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.bS{color:#15110e;border-color:#6f984f;background:#8fbb6c}
+.inp{font:inherit;font-size:14px;min-height:40px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+.hd{height:64px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid #705a39;background:#19120e}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #705a39;border-radius:3px;color:#ead9b7;text-decoration:none;font-size:13px}
+.lg{font:inherit;font-size:12px;font-weight:600;min-width:36px;min-height:32px;background:transparent;border:1px solid transparent;color:#aa9a7c;border-radius:3px;cursor:pointer}
+.lg.on{background:#d4ad53;color:#15110e}
+.av{width:24px;height:24px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.sb{width:240px;flex:none;border-right:1px solid rgba(112,90,57,.55);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.sg{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aa9a7c;font-weight:600;padding:14px 12px 6px}
+.nv{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:3px;color:#ead9b7;text-decoration:none;border:1px solid transparent;font-size:14px}
+.nv.on{background:#2d2119;border-color:#a88647;color:#f1d487;font-weight:600}
+.nv .bd{margin-left:auto}
+.lbl{font-size:12px;font-weight:600;color:#aa9a7c;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
+.lbl.ok{color:#b5d699}
+.tile{font:inherit;text-align:left;display:flex;flex-direction:column;gap:5px;padding:7px;background:#211914;border:1px solid #705a39;border-radius:4px;color:#ead9b7;cursor:pointer;height:128px;position:relative;min-width:0}
+.tile.done{background:#1b2214;border-color:#6f984f}
+.tile.near{border-color:#f1d487;box-shadow:inset 0 0 0 1px #f1d487}
+.tile.pv{border-style:dashed;border-color:#668ca3}
+.tile.dim{opacity:.38}
+.tile.sel{outline:2px solid #f1d487;outline-offset:3px}
+.ti{height:44px;display:flex;align-items:center;justify-content:center;background:#19120e;border-radius:3px;position:relative;overflow:hidden}
+.ti img{max-width:100%;max-height:100%;object-fit:contain}
+.fb{display:flex;align-items:center;gap:3px;color:#a88647;font-family:Cinzel,Georgia,serif;font-weight:700;font-size:12px}
+.st{position:absolute;top:3px;right:3px}
+.tn{font-weight:600;font-size:12px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:6px;background:#19120e;border-radius:3px;overflow:hidden;border:1px solid rgba(112,90,57,.6)}
+.bar span{display:block;height:100%;background:#d4ad53}
+.tile.done .bar span{background:#6f984f}
+.pg{display:flex;justify-content:space-between;font-size:11px;font-variant-numeric:tabular-nums}
+.sr{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(112,90,57,.4);font-size:13px}
+.cap{display:grid;grid-template-columns:1fr 90px 44px;align-items:center;gap:8px;font-size:12px;padding:3px 0}
+.fut{position:absolute;z-index:2;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9cde2;background:#13202a;border:1px solid #668ca3;padding:2px 8px;border-radius:2px}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 1420px; display: flex; flex-direction: column">
+  <header class="hd">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px">
+      <a href="#" class="pill"><span class="ms" aria-hidden="true">event</span>Autumn Bingo 2026<span class="bd bE">Active</span></a>
+      <div role="group" aria-label="Language" style="display: flex; align-items: center; gap: 2px"><span class="ms mut" aria-hidden="true">translate</span><button class="lg on" type="button" aria-pressed="true">EN</button><button class="lg" type="button">PT</button><button class="lg" type="button">ES</button></div>
+      <button class="btn" type="button" style="min-height: 36px"><span class="av">F</span>felps_<span class="ms" aria-hidden="true">expand_more</span></button>
+    </div>
+  </header>
+  <div style="display: flex; flex: 1; min-height: 0">
+    <nav class="sb" aria-label="Main">
+      <div class="sg">Play</div>
+      <a class="nv on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">grid_view</span>Board</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">calendar_month</span>Events</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">upload_file</span>My submissions<span class="bd bF">2 pending</span></a>
+    </nav>
+    <main style="flex: 1; min-width: 0; padding: 22px 28px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid #668ca3; background: #13202a; border-radius: 4px; color: #cfe2ee; font-size: 13px">
+        <span class="ms f" aria-hidden="true">science</span>
+        <span><strong>[FUTURE] Layout preview.</strong> Every number on this screen is an <strong>example</strong> — progress and scoring don't exist in the app yet.</span>
+      </div>
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 20px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <span class="eb">Active event · Your team</span>
+          <h1 class="h1" style="font-size: 30px">Autumn Bingo 2026</h1>
+          <span style="font-size: 13px" class="mut">Ends in 6 d 3 h · you only see the progress of <strong style="color: #ead9b7">Saradomin</strong></span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center">
+          <span class="mut" style="font-size: 13px">Highlight:</span>
+          <div role="group" aria-label="Highlight tiles" style="display: flex; gap: 6px">
+            <button class="btn sm" type="button">All</button>
+            <button class="btn sm on" type="button" aria-pressed="true"><span class="ms f" aria-hidden="true" style="font-size: 16px">bolt</span>Close to complete (5)</button>
+            <button class="btn sm" type="button"><span class="ms" aria-hidden="true" style="font-size: 16px">check_circle</span>Completed (12)</button>
+            <button class="btn sm" type="button"><span class="ms" aria-hidden="true" style="font-size: 16px">photo_camera</span>Screenshot pending (2)</button>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: flex-start">
+        <section aria-label="Board with your team's progress" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; position: relative">
+          <span class="fut" style="right: 0; top: -2px">Example values</span>
+          <div style="display: grid; grid-template-columns: 34px repeat(6, minmax(0, 1fr)); gap: 7px"><span></span><sc-for list="{{cols}}" as="c" hint-placeholder-count="6"><span class="lbl">{{c}}</span></sc-for></div>
+          <sc-for list="{{rows}}" as="row" hint-placeholder-count="6">
+            <div style="display: grid; grid-template-columns: 34px repeat(6, minmax(0, 1fr)); gap: 7px">
+              <span class="lbl {{row.cls}}" style="justify-content: center">{{row.n}}<sc-if value="{{row.done}}" hint-placeholder-val="{{false}}"><span class="ms f" aria-label="Row complete" style="font-size: 18px">verified</span></sc-if></span>
+              <sc-for list="{{row.tiles}}" as="t" hint-placeholder-count="6">
+                <button class="tile {{t.cls}}" type="button" aria-label="{{t.aria}}">
+                  <span class="ti">
+                    <sc-if value="{{t.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{t.img}}" alt=""></sc-if>
+                    <sc-if value="{{t.noImg}}" hint-placeholder-val="{{false}}"><span class="fb"><span class="ms" aria-hidden="true" style="font-size: 16px">shield</span>{{t.ini}}</span></sc-if>
+                    <sc-if value="{{t.isDone}}" hint-placeholder-val="{{false}}"><span class="bd bS st"><span class="ms f" aria-hidden="true" style="font-size: 13px">check</span>+{{t.pts}}</span></sc-if>
+                    <sc-if value="{{t.isPv}}" hint-placeholder-val="{{false}}"><span class="bd bF st"><span class="ms" aria-hidden="true" style="font-size: 13px">photo_camera</span>screenshot</span></sc-if>
+                    <sc-if value="{{t.isNear}}" hint-placeholder-val="{{false}}"><span class="bd bM st"><span class="ms f" aria-hidden="true" style="font-size: 13px">bolt</span>close</span></sc-if>
+                  </span>
+                  <span class="tn">{{t.name}}</span>
+                  <span class="bar" aria-hidden="true"><span style="width: {{t.pct}}"></span></span>
+                  <span class="pg"><span>{{t.prog}}</span><span class="mut">{{t.right}}</span></span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="display: grid; grid-template-columns: 34px repeat(6, minmax(0, 1fr)); gap: 7px; font-size: 11px" class="mut"><span></span><sc-for list="{{colFill}}" as="c" hint-placeholder-count="6"><span style="text-align: center">column {{c}}</span></sc-for></div>
+          <div style="display: flex; gap: 16px; font-size: 12px; margin-left: 41px; flex-wrap: wrap" class="mut">
+            <span style="display: inline-flex; gap: 4px; align-items: center"><span class="bd bS"><span class="ms f" aria-hidden="true" style="font-size: 13px">check</span>+pts</span> complete</span>
+            <span style="display: inline-flex; gap: 4px; align-items: center"><span class="bd bM"><span class="ms f" aria-hidden="true" style="font-size: 13px">bolt</span>close</span> 60%+ of the requirement</span>
+            <span style="display: inline-flex; gap: 4px; align-items: center"><span class="bd bF"><span class="ms" aria-hidden="true" style="font-size: 13px">photo_camera</span>screenshot</span> drops only count after pre-verification</span>
+            <span style="display: inline-flex; gap: 4px; align-items: center"><span class="ms f" aria-hidden="true" style="font-size: 16px; color: #b5d699">verified</span> row/column complete</span>
+          </div>
+        </section>
+        <aside style="width: 340px; flex: none; display: flex; flex-direction: column; gap: 12px">
+          <section class="pn" aria-label="Your team's score" style="padding: 14px; display: flex; flex-direction: column; gap: 8px; position: relative">
+            <span class="fut" style="right: 10px; top: -10px">[FUTURE] example</span>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span style="width: 36px; height: 36px; border-radius: 3px; background: #2f5592; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center">SA</span>
+              <div style="flex: 1"><span class="mut" style="font-size: 12px">Official team score</span><br><strong>Saradomin</strong></div>
+              <span class="cz" style="font-size: 34px; font-weight: 700; color: #f1d487; line-height: 1">167</span>
+            </div>
+            <div>
+              <div class="sr"><span>Completed tiles <span class="mut">(12 of 36)</span></span><strong>125</strong></div>
+              <div class="sr"><span>Completed rows <span class="mut">(1 × 25, event value)</span></span><strong>25</strong></div>
+              <div class="sr"><span>Completed columns <span class="mut">(0 × 30, event value)</span></span><strong>0</strong></div>
+              <div class="sr" style="border-bottom: 0"><span>Special bonuses <span class="mut">(cap 20 each)</span></span><strong>17</strong></div>
+            </div>
+            <div style="border-top: 1px solid #705a39; padding-top: 8px; display: flex; flex-direction: column">
+              <div class="cap"><span>MegaRares</span><span class="bar"><span style="width: 50%"></span></span><span style="text-align: right">10/20</span></div>
+              <div class="cap"><span>Jar/Pet</span><span class="bar"><span style="width: 20%"></span></span><span style="text-align: right">4/20</span></div>
+              <div class="cap"><span>Nex</span><span class="bar"><span style="width: 15%"></span></span><span style="text-align: right">3/20</span></div>
+              <div class="cap mut"><span>Nightmare · Fortis · Corp</span><span class="bar"><span style="width: 0%"></span></span><span style="text-align: right">0/20</span></div>
+            </div>
+          </section>
+          <section class="pn" aria-label="Pre-verification pending" style="padding: 12px; display: flex; gap: 10px; border-color: #668ca3; background: #13202a">
+            <span class="ms" aria-hidden="true" style="color: #a9cde2">photo_camera</span>
+            <div style="font-size: 13px; color: #cfe2ee"><strong>2 tiles awaiting a screenshot</strong><br>Chambers of Xeric and Theatre of Blood: drops only start counting after an admin approves the initial screenshot.<br><a href="#" style="color: #a9cde2">Send it in My submissions</a></div>
+          </section>
+          <section class="pn" aria-label="Detail: Vorkath" style="padding: 14px; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: center"><span class="eb" style="font-size: 11px">Row 6 · Column 1</span><span class="bd bM"><span class="ms f" aria-hidden="true" style="font-size: 13px">bolt</span>close</span></div>
+            <h2 class="cz" style="margin: 0; font-size: 20px; color: #f1d487">Vorkath</h2>
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <div style="display: flex; justify-content: space-between; font-size: 13px"><strong>6 of 8 progress</strong><span class="mut">worth 10 pts once</span></div>
+              <span class="bar" style="height: 8px"><span style="width: 75%"></span></span>
+            </div>
+            <div style="font-size: 13px">
+              <div class="sr"><span>Vorkath's Head × 2</span><strong style="color: #f1d487">+2</strong></div>
+              <div class="sr" style="border-bottom: 0"><span>Dragonbone Necklace × 2</span><strong style="color: #f1d487">+4</strong></div>
+            </div>
+            <div style="background: #19120e; border: 1px solid rgba(112,90,57,.6); border-radius: 3px; padding: 10px; font-size: 13px">
+              <strong>2 to go.</strong> Any of these completes it: Dragonbone Necklace (+2), Jar of Decay (+3), Vorki (+3), Draconic or Skeletal Visage (+4).
+              <span class="mut" style="display: block; margin-top: 4px">Vorki and Jar of Decay also count toward the Jar/Pet bonus.</span>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1420}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const RAW = "Abyssal Sire|M|10|5|../assets/abyssal-sire.png;Araxxor|H|20|12|../assets/araxxor.png;Alchemical Hydra|H|20|6|../assets/alchemical-hydra.png;Armoured Zombies|E|5|8|../assets/armoured-zombies.png;Barrows|E|5|12|../assets/barrows.png;Cerberus|H|20|6|../assets/cerberus.png;Chambers of Xeric|H|20|4|../assets/chambers-of-xeric.png;DT2 Bosses|H|20|12|../assets/dt2-bosses.png;Dagannoth Kings|M|10|15|../assets/dagannoth-kings.png;Demonic Gorillas|M|10|10|../assets/demonic-gorillas.png;Doom of Mokhaiotl|H|20|3|../assets/doom-of-mokhaiotl.png;Gauntlet|M|10|6|../assets/gauntlet.png;God Wars Dungeon|H|20|18|;Grotesque Guardians|M|10|8|;Guardians of the Rift|E|5|10|;Hueycoatl|E|5|8|;Mad Angel|E|5|6|;Maggot King|H|20|2|;Medium Boots|M|10|5|;Moons of Peril|E|5|8|;Mortimer|M|10|15|;Phantom Muspah|M|10|5|;Royal Titans|E|5|10|;Scurrius|E|5|10|;Skilling Tools|E|5|10|;Tempoross|E|5|10|;Theatre of Blood|H|20|4|;Thieving|M|10|3|;Tombs of Amascut|H|20|4|;Tormented Demons|M|10|3|;Vorkath|M|10|8|;Wilderness Trio|H|20|10|;Wintertodt|E|5|1|;Yama|H|20|3|;Zalcano|M|10|1|;Zulrah|M|10|6|";
+    const PROG = { 0: 5, 1: 12, 2: 7, 3: 8, 4: 14, 5: 6, 7: 3, 8: 4, 9: 2, 10: 1, 11: 6, 12: 5, 13: 6, 14: 3, 15: 8, 16: 1, 18: 4, 19: 2, 20: 12, 21: 1, 22: 8, 23: 10, 24: 4, 25: 2, 27: 1, 28: 1, 29: 3, 30: 6, 31: 2, 32: 1, 33: 0, 34: 1, 35: 2 };
+    const PV = { 6: 1, 26: 1 };
+    const list = RAW.split(';').map((s, i) => {
+      const p = s.split('|');
+      const req = +p[3], pts = +p[2];
+      const prog = PROG[i] || 0;
+      const isPv = !!PV[i];
+      const isDone = !isPv && prog >= req;
+      const isNear = !isPv && !isDone && prog / req >= 0.6;
+      const row = Math.floor(i / 6) + 1, col = (i % 6) + 1;
+      const ini = p[0].split(' ').filter((w) => /^[A-Z0-9]/.test(w)).map((w) => w[0]).join('').slice(0, 3);
+      const cls = (isDone ? 'done ' : '') + (isNear ? 'near ' : '') + (isPv ? 'pv ' : '') + (isNear ? '' : 'dim') + (p[0] === 'Vorkath' ? ' sel' : '');
+      const right = isPv ? 'awaiting screenshot' : (isDone ? (prog > req ? 'extra not scored' : 'complete') : pts + ' pts');
+      return { name: p[0], img: p[4], hasImg: !!p[4], noImg: !p[4], ini, pts, isDone, isNear, isPv, cls, right,
+        prog: isPv ? '— / ' + req : Math.min(prog, 99) + ' / ' + req,
+        pct: isPv ? '0%' : Math.min(100, Math.round(prog / req * 100)) + '%',
+        aria: p[0] + ', row ' + row + ' column ' + col + ', example progress ' + prog + ' of ' + req + (isDone ? ', complete' : '') + (isNear ? ', close to complete' : '') + (isPv ? ', awaiting pre-verification screenshot' : '') };
+    });
+    const rows = [1, 2, 3, 4, 5, 6].map((n) => {
+      const tiles = list.slice((n - 1) * 6, n * 6);
+      const done = tiles.every((t) => t.isDone);
+      return { n, tiles, done, cls: done ? 'ok' : '' };
+    });
+    const colFill = [1, 2, 3, 4, 5, 6].map((c) => list.filter((t, i) => i % 6 === c - 1 && t.isDone).length + '/6');
+    return { cols: [1, 2, 3, 4, 5, 6], rows, colFill };
+  }
+}
+</script>
+</body>
+</html>

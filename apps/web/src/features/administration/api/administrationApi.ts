@@ -6,6 +6,7 @@ export interface UserDirectory {
   total: number
   offset: number
   limit: number
+  admin_count: number
 }
 
 export const fetchUsers = async (search: string, offset: number, limit: number) =>

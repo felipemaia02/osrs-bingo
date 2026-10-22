@@ -34,7 +34,9 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
 }))
 
 vi.mock('../src/features/administration/api/administrationApi', () => ({
-  fetchUsers: vi.fn().mockResolvedValue({ items: [], total: 0, offset: 0, limit: 25 }),
+  fetchUsers: vi
+    .fn()
+    .mockResolvedValue({ items: [], total: 0, offset: 0, limit: 25, admin_count: 1 }),
   changeRole: vi.fn(),
 }))
 

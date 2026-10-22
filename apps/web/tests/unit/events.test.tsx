@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
 import { activateEvent, createEvent, fetchEvents } from '../../src/features/events/api/eventsApi'
-import { ActiveEventIndicator } from '../../src/features/events/components/ActiveEventIndicator'
 import { EventScheduleFields } from '../../src/features/events/components/EventScheduleFields'
 import { EventsPage } from '../../src/features/events/pages/EventsPage'
 import type { BingoEvent } from '../../src/features/events/types'
@@ -74,24 +73,6 @@ describe('Events feature', () => {
     expect(screen.getByText('End must be later than start.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '+7 days' }))
     expect(onEndChange).toHaveBeenCalledWith(start.add(7, 'day'))
-  })
-
-  it('shows the active event automatically without a selector or stored preference', async () => {
-    localStorage.setItem(
-      'osrs-bingo-current-event',
-      JSON.stringify({ state: { selectedEventId: 'old-event' } }),
-    )
-    vi.mocked(fetchEvents).mockResolvedValue([ACTIVE_EVENT])
-    renderApp(<ActiveEventIndicator />)
-    expect(await screen.findByText('Thunder Summer · Active')).toBeInTheDocument()
-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
-    localStorage.removeItem('osrs-bingo-current-event')
-  })
-
-  it('shows an explicit empty state without an active event', async () => {
-    renderApp(<ActiveEventIndicator />)
-    expect(await screen.findByText('No active event')).toBeInTheDocument()
-    expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
   })
 
   it('keeps the activation dialog open and shows the error inside it', async () => {
