@@ -14,7 +14,7 @@ Web platform for managing Bingo events for **Old School RuneScape (OSRS)**.
 | Tests | pytest / pytest-asyncio (API) |
 | Quality | Ruff, MyPy (API) · ESLint, Prettier, tsc (Web) |
 | CI | GitHub Actions (separate pipelines per app) |
-| Infra | Docker Compose (local) |
+| Infra | Docker Compose (local), Railway (production — see `docs/deployment/railway.md`) |
 
 ---
 
