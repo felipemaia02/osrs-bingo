@@ -385,7 +385,6 @@
     "updated": "Acesso de administrador atualizado.",
     "previous": "Anterior",
     "next": "Próxima",
-    "directoryCount": "{{count}} usuários cadastrados",
     "globalNotice": "Estes acessos pertencem à aplicação e são independentes dos cargos do Discord. Não é necessário selecionar um evento.",
     "errors": {
       "lastAdmin": "É necessário manter pelo menos um administrador.",
@@ -405,7 +404,21 @@
       "retired": "{{count}} retirado",
       "administrators_one": "{{count}} administrador",
       "administrators_other": "{{count}} administradores"
-    }
+    },
+    "you": "Você",
+    "grantShort": "Conceder acesso",
+    "revokeShort": "Remover acesso",
+    "searchPlaceholder": "Buscar por nome de usuário",
+    "adminCount_one": "{{count}} administrador",
+    "adminCount_other": "{{count}} administradores",
+    "showing": "Mostrando {{from}}–{{to}} de {{total}}",
+    "table": {
+      "user": "Usuário",
+      "discord": "ID do Discord",
+      "action": "Ação"
+    },
+    "directoryCount_one": "{{count}} usuário registrado",
+    "directoryCount_other": "{{count}} usuários registrados"
   },
   "cards": {
     "title": "Catálogo de cards",

@@ -385,7 +385,6 @@
     "updated": "Administrator access updated.",
     "previous": "Previous",
     "next": "Next",
-    "directoryCount": "{{count}} registered users",
     "globalNotice": "These roles belong to this application and are independent of Discord server roles. No event selection is required.",
     "errors": {
       "lastAdmin": "At least one administrator must remain.",
@@ -405,7 +404,21 @@
       "retired": "{{count}} retired",
       "administrators_one": "{{count}} administrator",
       "administrators_other": "{{count}} administrators"
-    }
+    },
+    "you": "You",
+    "grantShort": "Grant access",
+    "revokeShort": "Remove access",
+    "searchPlaceholder": "Search by username",
+    "adminCount_one": "{{count}} administrator",
+    "adminCount_other": "{{count}} administrators",
+    "showing": "Showing {{from}}–{{to}} of {{total}}",
+    "table": {
+      "user": "User",
+      "discord": "Discord ID",
+      "action": "Action"
+    },
+    "directoryCount_one": "{{count}} registered user",
+    "directoryCount_other": "{{count}} registered users"
   },
   "cards": {
     "title": "Card catalog",

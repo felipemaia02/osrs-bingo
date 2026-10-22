@@ -3,21 +3,9 @@ import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
+import { Avatar } from '../../../components/ui/Avatar'
 import { ThemedMenu, ThemedMenuItem } from '../../../components/ui/ThemedMenu'
 import { useLogout, useSession } from '../hooks/useSession'
-
-function Avatar({ name, compact }: { name: string; compact: boolean }) {
-  return (
-    <span
-      aria-hidden="true"
-      className={`inline-flex shrink-0 items-center justify-center rounded-full border border-rs-border-strong bg-rs-raised font-bold text-rs-gold-bright ${
-        compact ? 'size-7 text-xs' : 'size-6 text-[11px]'
-      }`}
-    >
-      {name.charAt(0).toUpperCase()}
-    </span>
-  )
-}
 
 /**
  * Account control: avatar (and username on desktop) opening a menu with "Log out",
@@ -64,7 +52,7 @@ export function AuthControls({ compact = false }: { compact?: boolean }) {
             : 'inline-flex min-h-9 items-center gap-2 rounded-[3px] border border-rs-border bg-rs-surface px-3.5 text-sm text-rs-text hover:border-rs-border-strong'
         }
       >
-        <Avatar name={username} compact={compact} />
+        <Avatar name={username} size={compact ? 'md' : 'sm'} />
         {!compact && (
           <>
             <span className="max-w-40 truncate">{username}</span>

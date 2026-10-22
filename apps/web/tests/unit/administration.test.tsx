@@ -89,7 +89,9 @@ it('keeps event management out of the public event listing even for admins', asy
 
 it('redirects the former team-management route to the protected portal', async () => {
   renderApp(<AppRouter />, '/teams')
-  expect(await screen.findByRole('heading', { name: 'Teams and registrations', level: 1 })).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', { name: 'Teams and registrations', level: 1 }),
+  ).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Teams and registrations' })).toHaveAttribute(
     'aria-current',
     'page',
@@ -139,11 +141,16 @@ it('shows the last-administrator conflict without changing the role', async () =
   })
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/admin/administrators')
-  await user.click(await screen.findByRole('button', { name: 'Remove access from Administrator' }))
-  await user.click(
-    within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm change' }),
-  )
-  expect(await screen.findByText('At least one administrator must remain.')).toBeInTheDocument()
+  expect(await screen.findByText('1 registered user · 1 administrator')).toBeInTheDocument()
+  expect(screen.getByText('You')).toBeInTheDocument()
+  expect(screen.getByText('Showing 1–1 of 1')).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Remove access from Administrator' }))
+  const dialog = screen.getByRole('dialog', { name: 'Change administrator access?' })
+  await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }))
+  expect(
+    await within(dialog).findByText('At least one administrator must remain.'),
+  ).toBeInTheDocument()
+  await user.click(within(dialog).getByRole('button', { name: 'Cancel' }))
   expect(
     await screen.findByRole('button', { name: 'Remove access from Administrator' }),
   ).toBeInTheDocument()

@@ -385,7 +385,6 @@
     "updated": "Acceso de administrador actualizado.",
     "previous": "Anterior",
     "next": "Siguiente",
-    "directoryCount": "{{count}} usuarios registrados",
     "globalNotice": "Estos roles pertenecen a la aplicación y son independientes de Discord. No es necesario seleccionar un evento.",
     "errors": {
       "lastAdmin": "Debe permanecer al menos un administrador.",
@@ -405,7 +404,21 @@
       "retired": "{{count}} retirada",
       "administrators_one": "{{count}} administrador",
       "administrators_other": "{{count}} administradores"
-    }
+    },
+    "you": "Tú",
+    "grantShort": "Dar acceso",
+    "revokeShort": "Quitar acceso",
+    "searchPlaceholder": "Buscar por nombre de usuario",
+    "adminCount_one": "{{count}} administrador",
+    "adminCount_other": "{{count}} administradores",
+    "showing": "Mostrando {{from}}–{{to}} de {{total}}",
+    "table": {
+      "user": "Usuario",
+      "discord": "ID de Discord",
+      "action": "Acción"
+    },
+    "directoryCount_one": "{{count}} usuario registrado",
+    "directoryCount_other": "{{count}} usuarios registrados"
   },
   "cards": {
     "title": "Catálogo de tarjetas",
