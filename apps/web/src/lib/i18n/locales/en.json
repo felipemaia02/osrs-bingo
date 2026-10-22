@@ -411,12 +411,11 @@
     "title": "Card catalog",
     "description": "Cards are global and reusable. Publishing a change creates a new revision and never changes an existing event board.",
     "importWorkbook": "Import approved workbook",
-    "create": "Create card",
+    "create": "New card",
     "empty": "No cards are registered yet.",
     "edit": "Edit {{name}}",
     "retire": "Retire {{name}}",
     "retireConfirm": "Retire {{name}} from new event boards? Existing boards keep their snapshot.",
-    "summary": "{{difficulty}} · {{score}} pts · requirement {{requirement}} · {{drops}} drops · revision {{revision}}",
     "status": {
       "active": "Active",
       "retired": "Retired"
@@ -443,12 +442,14 @@
       "wikiArticle": "OSRS Wiki article",
       "resolveImage": "Find image",
       "ruleNote": "Rule or verification note",
-      "changeReason": "Reason for this revision"
+      "changeReason": "Reason for this revision",
+      "fallbackImage": "No image: the fallback shield will be used."
     },
     "feedback": {
       "created": "Card created.",
       "revised": "New card revision published.",
-      "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present."
+      "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present.",
+      "retired": "{{name}} retired."
     },
     "errors": {
       "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
@@ -465,6 +466,49 @@
       "progress_other": "+{{count}} progress",
       "verification": "Verification: {{note}}",
       "restriction": "Counting limit: {{note}}"
+    },
+    "retireShort": "Retire",
+    "retireTitle": "Retire card?",
+    "noResults": "No cards match these filters.",
+    "rowLabel": "{{name}}: show details",
+    "revisionShort": "rev. {{revision}}",
+    "results_one": "{{count}} card",
+    "results_other": "{{count}} cards",
+    "mobileSummary_one": "{{score}} pts · req. {{requirement}} · {{count}} drop · rev. {{revision}}",
+    "mobileSummary_other": "{{score}} pts · req. {{requirement}} · {{count}} drops · rev. {{revision}}",
+    "search": {
+      "label": "Search cards or drops",
+      "placeholder": "Search card or drop"
+    },
+    "filter": {
+      "status": "Card status",
+      "difficulty": "Difficulty",
+      "active": "Active ({{count}})",
+      "retired": "Retired ({{count}})",
+      "all": "All ({{count}})",
+      "allDifficulties": "All"
+    },
+    "table": {
+      "card": "Card",
+      "points": "Points",
+      "requirement": "Req.",
+      "drops": "Drops",
+      "revision": "Revision",
+      "actions": "Actions"
+    },
+    "panel": {
+      "label": "Card details",
+      "prompt": "Select a card to see its rules, revision and image source.",
+      "close": "Close card details",
+      "revision": "Revision",
+      "source": "Source",
+      "key": "Stable key",
+      "image": "Image:",
+      "noImage": "No Wiki image: the fallback shield is shown."
+    },
+    "source": {
+      "workbook": "Approved workbook",
+      "admin": "Administrator"
     }
   },
   "boards": {

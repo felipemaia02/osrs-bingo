@@ -10,36 +10,39 @@ type RuleFields = Pick<
 export function CardRuleDetails({ card }: { card: RuleFields }) {
   const { t } = useTranslation()
   return (
-    <div className="space-y-3 text-sm">
-      <p className="text-rs-text">
+    <div className="flex flex-col gap-2 text-[13px]">
+      <p className="m-0 font-semibold">
         {t('cards.rules.completion', {
           score: card.tile_score,
           requirement: card.completion_requirement,
         })}
       </p>
-      <ul className="divide-y divide-rs-border/30 rounded-sm border border-rs-border/40">
-        {card.drops.map((drop) => (
-          <li key={drop.key} className="px-3 py-2">
+      <ul className="m-0 list-none rounded-[3px] border border-rs-border/45 bg-rs-inset p-0">
+        {card.drops.map((drop, index) => (
+          <li
+            key={drop.key}
+            className={`px-3 py-2 ${index < card.drops.length - 1 ? 'border-b border-rs-border/35' : ''}`}
+          >
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-rs-text">{drop.name}</span>
-              <span className="shrink-0 text-xs tabular-nums text-rs-gold">
+              <span>{drop.name}</span>
+              <span className="shrink-0 text-xs font-semibold tabular-nums text-rs-gold-bright">
                 {t('cards.rules.progress', { count: drop.progress_weight })}
               </span>
             </div>
             {drop.verification_note && (
-              <p className="mt-1 text-xs text-rs-muted">
+              <p className="mb-0 mt-1 text-xs text-rs-muted">
                 {t('cards.rules.verification', { note: drop.verification_note })}
               </p>
             )}
             {drop.counting_restriction && (
-              <p className="mt-1 text-xs text-rs-muted">
+              <p className="mb-0 mt-1 text-xs text-rs-muted">
                 {t('cards.rules.restriction', { note: drop.counting_restriction })}
               </p>
             )}
           </li>
         ))}
       </ul>
-      {card.rule_note && <p className="text-xs text-rs-muted">{card.rule_note}</p>}
+      {card.rule_note && <p className="m-0 text-xs text-rs-muted">{card.rule_note}</p>}
     </div>
   )
 }

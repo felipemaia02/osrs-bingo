@@ -411,12 +411,11 @@
     "title": "Catálogo de tarjetas",
     "description": "Las tarjetas son globales y reutilizables. Publicar un cambio crea una nueva revisión y nunca cambia un tablero existente.",
     "importWorkbook": "Importar hoja aprobada",
-    "create": "Crear tarjeta",
+    "create": "Nueva carta",
     "empty": "Todavía no hay tarjetas registradas.",
     "edit": "Editar {{name}}",
     "retire": "Retirar {{name}}",
     "retireConfirm": "¿Retirar {{name}} de los tableros nuevos? Los tableros existentes conservan sus datos.",
-    "summary": "{{difficulty}} · {{score}} pts · requisito {{requirement}} · {{drops}} drops · revisión {{revision}}",
     "status": {
       "active": "Activa",
       "retired": "Retirada"
@@ -443,12 +442,14 @@
       "wikiArticle": "Artículo de OSRS Wiki",
       "resolveImage": "Buscar imagen",
       "ruleNote": "Nota de regla o verificación",
-      "changeReason": "Motivo de esta revisión"
+      "changeReason": "Motivo de esta revisión",
+      "fallbackImage": "Sin imagen: se usará el escudo por defecto."
     },
     "feedback": {
       "created": "Tarjeta creada.",
       "revised": "Nueva revisión publicada.",
-      "imported": "Catálogo listo: {{imported}} importadas y {{existing}} ya existentes."
+      "imported": "Catálogo listo: {{imported}} importadas y {{existing}} ya existentes.",
+      "retired": "{{name}} retirada."
     },
     "errors": {
       "wiki": "No se pudo resolver la imagen de Wiki. Revisa el artículo o conserva la alternativa.",
@@ -465,6 +466,49 @@
       "progress_other": "+{{count}} de progreso",
       "verification": "Verificación: {{note}}",
       "restriction": "Límite de conteo: {{note}}"
+    },
+    "retireShort": "Retirar",
+    "retireTitle": "¿Retirar carta?",
+    "noResults": "Ninguna carta coincide con estos filtros.",
+    "rowLabel": "{{name}}: ver detalles",
+    "revisionShort": "rev. {{revision}}",
+    "results_one": "{{count}} carta",
+    "results_other": "{{count}} cartas",
+    "mobileSummary_one": "{{score}} pts · req. {{requirement}} · {{count}} drop · rev. {{revision}}",
+    "mobileSummary_other": "{{score}} pts · req. {{requirement}} · {{count}} drops · rev. {{revision}}",
+    "search": {
+      "label": "Buscar cartas o drops",
+      "placeholder": "Buscar carta o drop"
+    },
+    "filter": {
+      "status": "Estado de la carta",
+      "difficulty": "Dificultad",
+      "active": "Activas ({{count}})",
+      "retired": "Retiradas ({{count}})",
+      "all": "Todas ({{count}})",
+      "allDifficulties": "Todas"
+    },
+    "table": {
+      "card": "Carta",
+      "points": "Puntos",
+      "requirement": "Req.",
+      "drops": "Drops",
+      "revision": "Revisión",
+      "actions": "Acciones"
+    },
+    "panel": {
+      "label": "Detalles de la carta",
+      "prompt": "Selecciona una carta para ver sus reglas, revisión y origen de la imagen.",
+      "close": "Cerrar detalles de la carta",
+      "revision": "Revisión",
+      "source": "Origen",
+      "key": "Clave estable",
+      "image": "Imagen:",
+      "noImage": "Sin imagen de la Wiki: se muestra el escudo por defecto."
+    },
+    "source": {
+      "workbook": "Hoja aprobada",
+      "admin": "Administrador"
     }
   },
   "boards": {

@@ -1,553 +1,214 @@
-import { useState, type FormEvent } from 'react'
-import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined'
-import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import { useState } from 'react'
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
+import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined'
-import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
-import { Badge } from '../../../components/ui/Badge'
-import { FormModal } from '../../../components/ui/FormModal'
-import { Panel } from '../../../components/ui/Panel'
-import { CardRuleDetails } from '../components/CardRuleDetails'
+import { Button } from '../../../components/ui/Button'
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { useIsDesktop } from '../../../hooks/useIsDesktop'
+import { cardErrorKey } from '../cardForm'
+import { CardCatalogCards, CardCatalogTable } from '../components/CardCatalogList'
+import { CardCatalogToolbar } from '../components/CardCatalogToolbar'
+import { CardDetailPanel } from '../components/CardDetailPanel'
+import { CardEditorModal } from '../components/CardEditorModal'
+import { WorkbookImportModal } from '../components/WorkbookImportModal'
+import { useCatalogView } from '../hooks/useCatalogView'
 import { useCardMutations, useCards } from '../hooks/useCards'
-import type {
-  AcceptedDrop,
-  CardCreatePayload,
-  CardDifficulty,
-  CardKind,
-  CardRevisionPayload,
-  CardSummary,
-  WikiImage,
-} from '../types'
+import type { CardSummary } from '../types'
 
-interface CardForm {
-  slug: string
-  name: string
-  description: string
-  kind: CardKind
-  difficulty: CardDifficulty
-  tileScore: string
-  requirement: string
-  drops: string
-  wikiArticle: string
-  wikiImage: WikiImage | null
-  ruleNote: string
-  changeReason: string
-}
-
-const EMPTY_FORM: CardForm = {
-  slug: '',
-  name: '',
-  description: '',
-  kind: 'boss',
-  difficulty: 'Low',
-  tileScore: '5',
-  requirement: '1',
-  drops: '',
-  wikiArticle: '',
-  wikiImage: null,
-  ruleNote: '',
-  changeReason: '',
-}
-
-function dropKey(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-}
-
-/**
- * Parses "name | weight" lines. Drops already present in the revision being edited keep
- * their stable key, aliases, verification note and counting restriction; the text form
- * only edits names and weights, so it must not silently erase the rest.
- */
-function parseDrops(value: string, previous: AcceptedDrop[] = []): AcceptedDrop[] {
-  const previousByName = new Map(previous.map((drop) => [drop.name.toLocaleLowerCase(), drop]))
-  return value
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [rawName, rawWeight] = line.split('|').map((part) => part.trim())
-      const existing = previousByName.get(rawName.toLocaleLowerCase())
-      return {
-        key: existing?.key ?? dropKey(rawName),
-        name: rawName,
-        progress_weight: Number(rawWeight),
-        aliases: existing?.aliases ?? [],
-        verification_note: existing?.verification_note ?? null,
-        counting_restriction: existing?.counting_restriction ?? null,
-      }
-    })
-}
-
-function cardToForm(card: CardSummary): CardForm {
-  const revision = card.revision
-  return {
-    slug: card.slug,
-    name: revision.name,
-    description: revision.description ?? '',
-    kind: revision.kind,
-    difficulty: revision.difficulty,
-    tileScore: String(revision.tile_score),
-    requirement: String(revision.completion_requirement),
-    drops: revision.drops.map((drop) => `${drop.name} | ${drop.progress_weight}`).join('\n'),
-    wikiArticle: revision.wiki_image?.article_title ?? revision.name,
-    wikiImage: revision.wiki_image,
-    ruleNote: revision.rule_note ?? '',
-    changeReason: '',
-  }
-}
-
+/** Layout v2 card catalog (no mockup; design system + board/builder/teams v2 patterns). */
 export function CardCatalogPage() {
   const { t } = useTranslation()
+  const isDesktop = useIsDesktop()
   const cards = useCards(true)
-  const mutations = useCardMutations()
-  const [editing, setEditing] = useState<CardSummary | null>(null)
-  const [form, setForm] = useState<CardForm>(EMPTY_FORM)
+  const view = useCatalogView(cards.data ?? [])
+  const { retire } = useCardMutations()
+  const [editor, setEditor] = useState<{ card: CardSummary | null } | null>(null)
+  const [importing, setImporting] = useState(false)
+  const [retiring, setRetiring] = useState<CardSummary | null>(null)
+  const [retireError, setRetireError] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<string | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [showImport, setShowImport] = useState(false)
 
-  function closeForm() {
-    if (pending) return
-    setShowForm(false)
+  function openEditor(card: CardSummary | null) {
     setFeedback(null)
-  }
-  const pending =
-    mutations.create.isPending || mutations.revise.isPending || mutations.resolveImage.isPending
-
-  function update<K extends keyof CardForm>(key: K, value: CardForm[K]) {
-    setForm((current) => ({ ...current, [key]: value }))
+    setEditor({ card })
   }
 
-  function openCreate() {
-    setEditing(null)
-    setForm(EMPTY_FORM)
+  function openRetire(card: CardSummary) {
     setFeedback(null)
-    setShowForm(true)
+    setRetireError(null)
+    setRetiring(card)
   }
 
-  function openEdit(card: CardSummary) {
-    setEditing(card)
-    setForm(cardToForm(card))
-    setFeedback(null)
-    setShowForm(true)
-  }
-
-  async function resolveImage() {
-    if (!form.wikiArticle.trim()) return
-    setFeedback(null)
+  async function confirmRetire() {
+    if (!retiring) return
+    setRetireError(null)
     try {
-      update('wikiImage', await mutations.resolveImage.mutateAsync(form.wikiArticle.trim()))
-    } catch {
-      setFeedback(t('cards.errors.wiki'))
-    }
-  }
-
-  async function submit(event: FormEvent) {
-    event.preventDefault()
-    setFeedback(null)
-    const drops = parseDrops(form.drops, editing?.revision.drops)
-    if (drops.some((drop) => !drop.name || !drop.key || !(drop.progress_weight > 0))) {
-      setFeedback(t('cards.errors.drops'))
-      return
-    }
-    const revision: CardRevisionPayload = {
-      name: form.name,
-      description: form.description || null,
-      kind: form.kind,
-      difficulty: form.difficulty,
-      tile_score: Number(form.tileScore),
-      completion_requirement: Number(form.requirement),
-      drops,
-      wiki_image: form.wikiImage,
-      fallback_image_accepted: !form.wikiImage,
-      rule_note: form.ruleNote || null,
-      change_reason: form.changeReason,
-    }
-    try {
-      if (editing) {
-        await mutations.revise.mutateAsync({
-          cardId: editing.id,
-          expectedRevision: editing.current_revision,
-          payload: revision,
-        })
-      } else {
-        await mutations.create.mutateAsync({ ...revision, slug: form.slug } as CardCreatePayload)
-      }
-      setShowForm(false)
-      setFeedback(t(editing ? 'cards.feedback.revised' : 'cards.feedback.created'))
+      await retire.mutateAsync({ cardId: retiring.id, expectedRevision: retiring.current_revision })
+      setFeedback(t('cards.feedback.retired', { name: retiring.revision.name }))
+      setRetiring(null)
     } catch (error) {
-      const detail = error instanceof AxiosError ? error.response?.data?.detail : null
-      setFeedback(
-        detail === 'Card changed while you were editing'
-          ? t('cards.errors.changed')
-          : detail === 'Card slug already exists'
-            ? t('cards.errors.slug')
-            : t('common.apiError'),
-      )
+      setRetireError(t(cardErrorKey(error)))
     }
   }
 
-  async function importWorkbook() {
-    setFeedback(null)
-    try {
-      const result = await mutations.importWorkbook.mutateAsync()
-      if (result.usable) setShowImport(false)
-      setFeedback(
-        result.usable
-          ? t('cards.feedback.imported', {
-              imported: result.imported_cards,
-              existing: result.existing_cards,
-            })
-          : t('cards.errors.importConflict', { slugs: result.conflicting_slugs.join(', ') }),
-      )
-    } catch {
-      setFeedback(t('common.apiError'))
-    }
-  }
-
-  async function retire(card: CardSummary) {
-    if (!window.confirm(t('cards.retireConfirm', { name: card.revision.name }))) return
-    setFeedback(null)
-    try {
-      await mutations.retire.mutateAsync({
-        cardId: card.id,
-        expectedRevision: card.current_revision,
-      })
-    } catch (error) {
-      const detail = error instanceof AxiosError ? error.response?.data?.detail : null
-      setFeedback(
-        t(
-          detail === 'Card changed while you were editing'
-            ? 'cards.errors.changed'
-            : 'common.apiError',
-        ),
-      )
-    }
-  }
+  const actions = (
+    <div className={`flex gap-2 ${isDesktop ? '' : 'w-full'}`}>
+      <Button
+        className={isDesktop ? '' : 'flex-1'}
+        onClick={() => {
+          setFeedback(null)
+          setImporting(true)
+        }}
+      >
+        <FileUploadOutlinedIcon fontSize="small" aria-hidden="true" />
+        {t('cards.importWorkbook')}
+      </Button>
+      <Button
+        variant="primary"
+        className={isDesktop ? '' : 'flex-1'}
+        onClick={() => openEditor(null)}
+      >
+        <AddOutlinedIcon fontSize="small" aria-hidden="true" />
+        {t('cards.create')}
+      </Button>
+    </div>
+  )
+  const empty = (
+    <p className="m-0 rounded border border-rs-border bg-rs-surface p-8 text-center text-rs-muted">
+      {t(cards.data?.length ? 'cards.noResults' : 'cards.empty')}
+    </p>
+  )
 
   return (
-    <AppShell>
-      <div className="mx-auto max-w-6xl space-y-5">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="font-display text-2xl font-bold text-rs-text">{t('cards.title')}</h1>
-            <p className="mt-2 max-w-3xl text-sm text-rs-muted">{t('cards.description')}</p>
+    <AppShell desktopPadding="md:px-8 md:pt-6">
+      <div className="flex flex-col gap-3 md:gap-4">
+        {isDesktop ? (
+          <div className="flex items-end justify-between gap-5">
+            <div className="flex max-w-3xl flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-[.18em] text-rs-gold">
+                {t('admin.title')}
+              </span>
+              <h1 className="m-0 font-display text-[30px] font-bold leading-[1.15] text-rs-gold-bright">
+                {t('cards.title')}
+              </h1>
+              <span className="text-rs-muted">{t('cards.description')}</span>
+            </div>
+            {actions}
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => {
-                setFeedback(null)
-                setShowImport(true)
-              }}
-              disabled={mutations.importWorkbook.isPending}
-              className="flex items-center gap-2 rounded-sm border border-rs-border px-3 py-2 text-sm text-rs-gold disabled:opacity-50"
+        ) : (
+          <>
+            <Link
+              to="/admin"
+              className="inline-flex min-h-8 items-center gap-0.5 self-start text-[13px] text-rs-gold-bright"
             >
-              <FileUploadOutlinedIcon fontSize="small" aria-hidden="true" />
-              {t('cards.importWorkbook')}
-            </button>
-            <button
-              onClick={openCreate}
-              className="rounded-sm bg-rs-gold px-4 py-2 text-sm font-semibold text-rs-inset"
-            >
-              {t('cards.create')}
-            </button>
-          </div>
-        </div>
-        {feedback && !showForm && !showImport && (
-          <p role="status" className="rounded-sm border border-rs-border bg-rs-inset p-3 text-sm">
+              <ChevronLeftOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
+              {t('admin.title')}
+            </Link>
+            <h1 className="m-0 font-display text-[23px] font-bold leading-[1.15] text-rs-gold-bright">
+              {t('cards.title')}
+            </h1>
+            {actions}
+          </>
+        )}
+        {feedback && (
+          <p role="status" className="m-0 text-sm">
             {feedback}
           </p>
         )}
-        {showForm && (
-          <FormModal
-            title={t(editing ? 'cards.form.reviseTitle' : 'cards.form.createTitle')}
-            busy={pending}
-            onClose={closeForm}
-          >
-            {feedback && (
-              <p
-                role="alert"
-                className="mb-4 rounded-sm border border-rs-border bg-rs-inset p-3 text-sm"
-              >
-                {feedback}
-              </p>
-            )}
-            <CardEditor
-              form={form}
-              editing={editing}
-              pending={pending}
-              update={update}
-              resolveImage={resolveImage}
-              submit={submit}
-              close={closeForm}
+        {cards.isLoading ? (
+          <p role="status" className="text-rs-muted">
+            {t('common.loading')}
+          </p>
+        ) : cards.isError ? (
+          <p role="alert">{t('common.apiError')}</p>
+        ) : (
+          <>
+            <CardCatalogToolbar
+              query={view.query}
+              onQueryChange={view.setQuery}
+              status={view.status}
+              onStatusChange={view.setStatus}
+              difficulty={view.difficulty}
+              onDifficultyChange={view.setDifficulty}
+              counts={view.counts}
+              resultCount={view.visible.length}
+              mobile={!isDesktop}
             />
-          </FormModal>
-        )}
-        {showImport && (
-          <FormModal
-            title={t('cards.importWorkbook')}
-            busy={mutations.importWorkbook.isPending}
-            onClose={() => {
-              if (!mutations.importWorkbook.isPending) {
-                setShowImport(false)
-                setFeedback(null)
-              }
-            }}
-          >
-            <p className="mb-5 text-sm text-rs-muted">{t('cards.importDescription')}</p>
-            {feedback && (
-              <p role="alert" className="mb-4 text-sm">
-                {feedback}
-              </p>
-            )}
-            <button
-              onClick={() => void importWorkbook()}
-              disabled={mutations.importWorkbook.isPending}
-              className="rounded-sm bg-rs-gold px-4 py-2 text-sm font-semibold text-rs-inset disabled:opacity-50"
-            >
-              {t(mutations.importWorkbook.isPending ? 'common.saving' : 'cards.importWorkbook')}
-            </button>
-          </FormModal>
-        )}
-        <Panel className="overflow-hidden">
-          {cards.isLoading && <p className="p-5 text-rs-muted">{t('common.loading')}</p>}
-          {cards.isError && <p className="p-5 text-rs-muted">{t('common.apiError')}</p>}
-          {cards.data && !cards.data.length && (
-            <p className="p-5 text-rs-muted">{t('cards.empty')}</p>
-          )}
-          <ul className="divide-y divide-rs-border/40">
-            {cards.data?.map((card) => (
-              <li key={card.id} className="flex flex-wrap items-center gap-4 p-4">
-                <div className="size-16 overflow-hidden rounded-sm border border-rs-border bg-rs-inset">
-                  {card.revision.wiki_image && (
-                    <img
-                      src={card.revision.wiki_image.image_url}
-                      alt=""
-                      className="size-full object-contain"
-                    />
+            {isDesktop ? (
+              <div className="flex items-start gap-5">
+                <div className="min-w-0 flex-1">
+                  {view.visible.length ? (
+                    <div className="overflow-hidden rounded border border-rs-border bg-rs-surface">
+                      <CardCatalogTable
+                        cards={view.visible}
+                        selectedId={view.selected?.id ?? null}
+                        onSelect={(card) => view.setSelectedId(card.id)}
+                        onEdit={openEditor}
+                        onRetire={openRetire}
+                      />
+                    </div>
+                  ) : (
+                    empty
                   )}
                 </div>
-                <div className="min-w-52 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="font-semibold text-rs-text">{card.revision.name}</h2>
-                    <Badge tone={card.status === 'active' ? 'success' : 'danger'}>
-                      {t(`cards.status.${card.status}`)}
-                    </Badge>
-                  </div>
-                  <p className="mt-1 text-xs text-rs-muted">
-                    {t('cards.summary', {
-                      difficulty: t(`tile.tier.${card.revision.difficulty}`),
-                      score: card.revision.tile_score,
-                      requirement: card.revision.completion_requirement,
-                      drops: card.revision.drops.length,
-                      revision: card.current_revision,
-                    })}
-                  </p>
-                  <details className="mt-2">
-                    <summary className="cursor-pointer text-xs text-rs-gold hover:underline">
-                      {t('cards.rules.title')}
-                    </summary>
-                    <div className="mt-2 max-w-xl">
-                      <CardRuleDetails card={card.revision} />
-                    </div>
-                  </details>
-                </div>
-                {card.status === 'active' && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openEdit(card)}
-                      aria-label={t('cards.edit', { name: card.revision.name })}
-                      className="rounded-sm border border-rs-border p-2 text-rs-gold"
-                    >
-                      <EditOutlinedIcon fontSize="small" aria-hidden="true" />
-                    </button>
-                    <button
-                      onClick={() => void retire(card)}
-                      aria-label={t('cards.retire', { name: card.revision.name })}
-                      className="rounded-sm border border-rs-border p-2 text-rs-danger"
-                    >
-                      <ArchiveOutlinedIcon fontSize="small" aria-hidden="true" />
-                    </button>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
-    </AppShell>
-  )
-}
-
-interface EditorProps {
-  form: CardForm
-  editing: CardSummary | null
-  pending: boolean
-  update: <K extends keyof CardForm>(key: K, value: CardForm[K]) => void
-  resolveImage: () => Promise<void>
-  submit: (event: FormEvent) => Promise<void>
-  close: () => void
-}
-
-function CardEditor({ form, editing, pending, update, resolveImage, submit, close }: EditorProps) {
-  const { t } = useTranslation()
-  const input = 'mt-1 w-full rounded-sm border border-rs-border bg-rs-inset p-2 text-rs-text'
-  return (
-    <form onSubmit={(event) => void submit(event)}>
-      <fieldset disabled={pending} className="grid min-w-0 gap-4 md:grid-cols-2">
-        {!editing && (
-          <label className="text-sm text-rs-muted">
-            {t('cards.form.slug')}
-            <input
-              required
-              pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              value={form.slug}
-              onChange={(event) => update('slug', event.target.value)}
-              className={input}
-            />
-          </label>
+                <CardDetailPanel card={view.selected} onClose={() => view.setSelectedId(null)} />
+              </div>
+            ) : view.visible.length ? (
+              <CardCatalogCards cards={view.visible} onEdit={openEditor} onRetire={openRetire} />
+            ) : (
+              empty
+            )}
+            {cards.data?.some((card) => card.revision.wiki_image) && (
+              <p className="m-0 text-xs text-rs-muted">
+                {t('board.attribution.prefix')}{' '}
+                <a
+                  href="https://oldschool.runescape.wiki/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-rs-gold-bright hover:text-rs-gold-hover"
+                >
+                  OSRS Wiki
+                </a>
+                . {t('board.attribution.fallback')}
+              </p>
+            )}
+          </>
         )}
-        <label className="text-sm text-rs-muted">
-          {t('cards.form.name')}
-          <input
-            required
-            value={form.name}
-            onChange={(event) => update('name', event.target.value)}
-            className={input}
-          />
-        </label>
-        <label className="text-sm text-rs-muted">
-          {t('cards.form.kind')}
-          <select
-            value={form.kind}
-            onChange={(event) => update('kind', event.target.value as CardKind)}
-            className={input}
-          >
-            {(['boss', 'boss_group', 'raid', 'activity', 'task'] as const).map((kind) => (
-              <option key={kind} value={kind}>
-                {t(`cards.kind.${kind}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm text-rs-muted">
-          {t('cards.form.difficulty')}
-          <select
-            value={form.difficulty}
-            onChange={(event) => update('difficulty', event.target.value as CardDifficulty)}
-            className={input}
-          >
-            {(['Low', 'Mid', 'High'] as const).map((difficulty) => (
-              <option key={difficulty}>{difficulty}</option>
-            ))}
-          </select>
-        </label>
-        <label className="text-sm text-rs-muted">
-          {t('cards.form.score')}
-          <input
-            required
-            type="number"
-            min="0"
-            step="0.5"
-            value={form.tileScore}
-            onChange={(event) => update('tileScore', event.target.value)}
-            className={input}
-          />
-        </label>
-        <label className="text-sm text-rs-muted">
-          {t('cards.form.requirement')}
-          <input
-            required
-            type="number"
-            min="0.1"
-            step="0.1"
-            value={form.requirement}
-            onChange={(event) => update('requirement', event.target.value)}
-            className={input}
-          />
-        </label>
-        <label className="text-sm text-rs-muted md:col-span-2">
-          {t('cards.form.description')}
-          <textarea
-            value={form.description}
-            onChange={(event) => update('description', event.target.value)}
-            className={input}
-          />
-        </label>
-        <label className="text-sm text-rs-muted md:col-span-2">
-          {t('cards.form.drops')}
-          <textarea
-            required
-            rows={5}
-            value={form.drops}
-            onChange={(event) => update('drops', event.target.value)}
-            placeholder={t('cards.form.dropsPlaceholder')}
-            className={input}
-          />
-        </label>
-        <div className="md:col-span-2">
-          <label className="text-sm text-rs-muted">
-            {t('cards.form.wikiArticle')}
-            <div className="mt-1 flex gap-2">
-              <input
-                value={form.wikiArticle}
-                onChange={(event) => update('wikiArticle', event.target.value)}
-                className="min-w-0 flex-1 rounded-sm border border-rs-border bg-rs-inset p-2 text-rs-text"
-              />
-              <button
-                type="button"
-                disabled={pending || !form.wikiArticle.trim()}
-                onClick={() => void resolveImage()}
-                className="flex items-center gap-2 rounded-sm border border-rs-border px-3 text-sm text-rs-gold disabled:opacity-50"
-              >
-                <AddPhotoAlternateOutlinedIcon fontSize="small" aria-hidden="true" />
-                {t('cards.form.resolveImage')}
-              </button>
-            </div>
-          </label>
-          {form.wikiImage && (
-            <div className="mt-3 flex items-center gap-3 text-xs text-rs-muted">
-              <img src={form.wikiImage.image_url} alt="" className="size-16 object-contain" />
-              <span>{form.wikiImage.file_name}</span>
-            </div>
-          )}
-        </div>
-        <label className="text-sm text-rs-muted md:col-span-2">
-          {t('cards.form.ruleNote')}
-          <textarea
-            value={form.ruleNote}
-            onChange={(event) => update('ruleNote', event.target.value)}
-            className={input}
-          />
-        </label>
-        <label className="text-sm text-rs-muted md:col-span-2">
-          {t('cards.form.changeReason')}
-          <input
-            required
-            value={form.changeReason}
-            onChange={(event) => update('changeReason', event.target.value)}
-            className={input}
-          />
-        </label>
-        <div className="flex justify-end gap-3 md:col-span-2">
-          <button type="button" onClick={close} className="px-3 py-2 text-sm text-rs-muted">
-            {t('common.cancel')}
-          </button>
-          <button
-            disabled={pending}
-            className="rounded-sm bg-rs-gold px-4 py-2 text-sm font-semibold text-rs-inset disabled:opacity-50"
-          >
-            {t(pending ? 'common.saving' : 'common.save')}
-          </button>
-        </div>
-      </fieldset>
-    </form>
+      </div>
+      {editor && (
+        <CardEditorModal
+          card={editor.card}
+          onSaved={(key) => {
+            setEditor(null)
+            setFeedback(t(key))
+          }}
+          onClose={() => setEditor(null)}
+        />
+      )}
+      {importing && (
+        <WorkbookImportModal
+          onImported={(message) => {
+            setImporting(false)
+            setFeedback(message)
+          }}
+          onClose={() => setImporting(false)}
+        />
+      )}
+      {retiring && (
+        <ConfirmDialog
+          title={t('cards.retireTitle')}
+          message={t('cards.retireConfirm', { name: retiring.revision.name })}
+          confirmLabel={t('cards.retireShort')}
+          danger
+          busy={retire.isPending}
+          error={retireError}
+          onConfirm={() => void confirmRetire()}
+          onClose={() => setRetiring(null)}
+        />
+      )}
+    </AppShell>
   )
 }

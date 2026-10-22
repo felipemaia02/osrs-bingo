@@ -494,7 +494,7 @@ describe('board builder v2', () => {
 it('opens creation in a modal and restores focus on Escape without saving', async () => {
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/admin/cards')
-  const trigger = await screen.findByRole('button', { name: 'Create card' })
+  const trigger = await screen.findByRole('button', { name: 'New card' })
   await user.click(trigger)
   const dialog = screen.getByRole('dialog', { name: 'Create catalog card' })
   expect(within(dialog).getByLabelText('Stable key')).toBeInTheDocument()
@@ -556,10 +556,13 @@ it('shows drop weights as progress and the tile score only on completion', async
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/admin/cards')
 
-  await user.click(await screen.findByText('Rules and accepted drops'))
+  await user.click(await screen.findByRole('row', { name: 'Grotesque Guardians: show details' }))
 
-  expect(screen.getByText('10 points when progress reaches 8')).toBeInTheDocument()
-  const drop = screen.getByText('Granite Maul').closest('li')!
+  const panel = screen.getByRole('complementary', { name: 'Card details' })
+  expect(within(panel).getByText('10 points when progress reaches 8')).toBeInTheDocument()
+  expect(within(panel).getByText('rev. 1 · Initial')).toBeInTheDocument()
+  expect(within(panel).getByText('Administrator')).toBeInTheDocument()
+  const drop = within(panel).getByText('Granite Maul').closest('li')!
   expect(within(drop).getByText('+1 progress')).toBeInTheDocument()
   expect(within(drop).queryByText(/points/)).not.toBeInTheDocument()
 })
@@ -663,16 +666,87 @@ it('keeps the editor usable when the Wiki image cannot be resolved', async () =>
   expect(within(dialog).getByLabelText('Name')).toHaveValue('Vorkath')
 })
 
-it('retires a card after confirmation and reports failures', async () => {
-  const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
+it('retires a card after confirmation and reports failures inside the dialog', async () => {
   vi.mocked(retireCard).mockRejectedValueOnce(new Error('offline'))
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/admin/cards')
 
   await user.click(await screen.findByRole('button', { name: 'Retire Vorkath' }))
+  const dialog = screen.getByRole('dialog', { name: 'Retire card?' })
+  expect(retireCard).not.toHaveBeenCalled()
+  await user.click(within(dialog).getByRole('button', { name: 'Retire' }))
 
-  expect(confirm).toHaveBeenCalled()
   expect(vi.mocked(retireCard).mock.calls[0][0]).toEqual({ cardId: CARD.id, expectedRevision: 1 })
-  expect(await screen.findByText('The service is unavailable. Try again.')).toBeInTheDocument()
-  confirm.mockRestore()
+  expect(
+    await within(dialog).findByText('The service is unavailable. Try again.'),
+  ).toBeInTheDocument()
+})
+
+describe('card catalog v2', () => {
+  const HYDRA: typeof CARD = {
+    ...CARD,
+    id: '66d000000000000000000021',
+    slug: 'alchemical-hydra',
+    revision: {
+      ...CARD.revision,
+      name: 'Alchemical Hydra',
+      difficulty: 'High',
+      drops: [{ ...CARD.revision.drops[0], key: 'claw', name: "Hydra's Claw", aliases: ['claw'] }],
+    },
+  }
+  const BARROWS: typeof CARD = {
+    ...CARD,
+    id: '66d000000000000000000022',
+    slug: 'barrows',
+    revision: { ...CARD.revision, name: 'Barrows', difficulty: 'Low' },
+  }
+  const RETIRED: typeof CARD = {
+    ...CARD,
+    id: '66d000000000000000000023',
+    slug: 'kq',
+    status: 'retired',
+    revision: { ...CARD.revision, name: 'Kalphite Queen', difficulty: 'Mid' },
+  }
+
+  beforeEach(() => {
+    vi.mocked(fetchCards).mockResolvedValue([CARD, HYDRA, BARROWS, RETIRED])
+  })
+
+  it('filters by status, difficulty and drop name without new requests', async () => {
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/cards')
+    const status = await screen.findByRole('group', { name: 'Card status' })
+    expect(screen.getByText('3 cards')).toBeInTheDocument()
+    expect(screen.queryByText('Kalphite Queen')).toBeNull()
+    const calls = vi.mocked(fetchCards).mock.calls.length
+
+    await user.click(within(status).getByRole('button', { name: 'Retired (1)' }))
+    expect(screen.getByText('Kalphite Queen')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Retire Kalphite Queen' })).toBeNull()
+
+    await user.click(within(status).getByRole('button', { name: 'All (4)' }))
+    await user.click(
+      within(screen.getByRole('group', { name: 'Difficulty' })).getByRole('button', {
+        name: 'Hard',
+      }),
+    )
+    expect(screen.getByText('2 cards')).toBeInTheDocument()
+
+    await user.type(screen.getByRole('searchbox', { name: 'Search cards or drops' }), 'CLAW')
+    expect(screen.getByText('1 card')).toBeInTheDocument()
+    expect(screen.getByText('Alchemical Hydra')).toBeInTheDocument()
+
+    await user.type(screen.getByRole('searchbox', { name: 'Search cards or drops' }), 'zzz')
+    expect(screen.getByText('No cards match these filters.')).toBeInTheDocument()
+    expect(vi.mocked(fetchCards).mock.calls.length).toBe(calls)
+  })
+
+  it('shows easy, medium and hard labels in the editor', async () => {
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/cards')
+    await user.click(await screen.findByRole('button', { name: 'New card' }))
+    const dialog = screen.getByRole('dialog', { name: 'Create catalog card' })
+    expect(within(dialog).getByRole('option', { name: 'Easy' })).toHaveValue('Low')
+    expect(within(dialog).getByRole('option', { name: 'Hard' })).toHaveValue('High')
+  })
 })
