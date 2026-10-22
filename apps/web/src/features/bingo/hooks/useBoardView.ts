@@ -2,8 +2,7 @@ import { useState } from 'react'
 import type { BoardView } from '../types'
 
 const STORAGE_KEY = 'osrs-bingo-board-view'
-/** Matches Tailwind's `sm` breakpoint: below it the list view is the default. */
-const SMALL_SCREEN_QUERY = '(max-width: 639px)'
+const DEFAULT_VIEW: BoardView = 'grid'
 
 function readStoredView(): BoardView | null {
   try {
@@ -14,15 +13,9 @@ function readStoredView(): BoardView | null {
   }
 }
 
-function defaultView(): BoardView {
-  const small =
-    typeof window.matchMedia === 'function' && window.matchMedia(SMALL_SCREEN_QUERY).matches
-  return small ? 'list' : 'grid'
-}
-
-/** Grid/list preference remembered on this device; storage failures fall back silently. */
+/** Desktop grid/list preference remembered on this device; storage failures fall back silently. */
 export function useBoardView(): [BoardView, (view: BoardView) => void] {
-  const [view, setView] = useState<BoardView>(() => readStoredView() ?? defaultView())
+  const [view, setView] = useState<BoardView>(() => readStoredView() ?? DEFAULT_VIEW)
 
   function changeView(next: BoardView) {
     setView(next)

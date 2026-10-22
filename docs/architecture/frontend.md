@@ -93,7 +93,7 @@ The 6×6 board never compresses six readable columns into a phone viewport: on m
 | Order | Screen | Mockups | Current state | Target |
 |---|---|---|---|---|
 | 1 | App shell | `shell-a-desktop`, `shell-a-mobile` | **Done (feature 010)** | Grouped sidebar (Play / Administration), no admin tab row, Ranking only inside Administration, event pill with countdown, EN/PT/ES segmented control, account menu; mobile event bar and bottom bar with Admin for administrators; administration overview with real counts |
-| 2 | Board `/` | `board-a-desktop`, `board-b-mobile` | Feature 009: grid/list, toolbar, tile details in a modal | 6×6 grid with a fixed tile detail panel on desktop, "Progress unavailable" info banner, "Your team" card; mobile row list plus a 6×6 mini-map |
+| 2 | Board `/` | `board-a-desktop`, `board-b-mobile` | **Done (feature 011)** | 6×6 grid with a fixed tile detail panel on desktop, "Progress unavailable" info banner, "Your team" card; mobile row list plus a 6×6 mini-map |
 | 3 | `/admin/teams` | `teams-a-desktop`, `teams-a-mobile` | Tabs, table rows, single approve, approve-all with confirmation | Table with multi-select and "Approve selected" (revises the deferral in feature 003) |
 | 4 | `/admin/boards` | `boards-a-desktop`, `boards-b-mobile` | Drag and drop, catalog, add all | Desktop 2A with difficulty counts and visible empty slots; mobile "position first" flow |
 
@@ -103,7 +103,11 @@ The 6×6 board never compresses six readable columns into a phone viewport: on m
 
 The Bingo page renders the active event's published board from the API (feature 007). The frontend calculates no score, completion or bonus: tile progress shows as unavailable until accepted activity and the backend `modules/scoring/` module (feature 006) exist. The original static prototype data and its frontend score summary were removed on 2026-10-21.
 
-Feature 009 makes the board a planning tool without adding any calculation. Tiles open a read-only details dialog (accepted drops as progress units, notes, Wiki attribution). Search matches tile names, drop names and aliases, ignoring case and accents, and the difficulty filter dims tiles without moving them. The header shows the schedule, the remaining time and only the viewer's own team. Two layouts are available: a labeled 6×6 grid, and a row-grouped list that is the default below the `sm` breakpoint. The layout choice is kept in `localStorage` (`osrs-bingo-board-view`) behind guarded access.
+Features 009 and 011 make the board a planning tool without any calculation. Search matches tile names, drop names and aliases, ignoring case and accents. The difficulty filter dims tiles without moving them. Only the viewer's own team is shown.
+
+- **Desktop** (`board-a-desktop`): an event header with a "Your team" card, a "Progress unavailable" info banner, a toolbar (search, difficulty and view segmented controls, help modal, result line), a labeled 6×6 grid or the row list, and a fixed detail panel with drops as progress units. The panel starts with a prompt until a tile is selected.
+- **Mobile** (`board-b-mobile`): a summary card, the search field and difficulty chips, a 6×6 mini-map (tap to scroll to a tile), the row list, and tile details in a modal.
+- The layout is chosen with `useIsDesktop` (the `md` breakpoint), so only one renders. The desktop grid/list choice is kept in `localStorage` (`osrs-bingo-board-view`) behind guarded access.
 
 ## Event state
 

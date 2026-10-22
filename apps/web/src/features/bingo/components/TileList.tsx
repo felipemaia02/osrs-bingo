@@ -1,41 +1,58 @@
-import { useState } from 'react'
-import ImageNotSupportedOutlinedIcon from '@mui/icons-material/ImageNotSupportedOutlined'
+import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
-import type { Tile, TileMatch } from '../types'
+import { tileListItemId } from '../boardTiles'
+import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
+import type { Tile, TileMatch } from '../types'
+import { TileImage } from './TileImage'
 
 const ROWS = [1, 2, 3, 4, 5, 6]
 
 interface TileListProps {
   tiles: Tile[]
-  matches?: Map<string, TileMatch> | null
+  matches: Map<string, TileMatch> | null
+  selectedId?: string | null
   onSelect: (tile: Tile) => void
 }
 
-/** Row-grouped list for narrow screens: same tiles and order as the grid, no horizontal scroll. */
-export function TileList({ tiles, matches = null, onSelect }: TileListProps) {
+/** Row-grouped list (board-b-mobile); also the desktop list view. Never reorders tiles. */
+export function TileList({ tiles, matches, selectedId = null, onSelect }: TileListProps) {
   const { t } = useTranslation()
   return (
-    <div className="space-y-4 p-3 sm:p-4">
+    <div className="flex flex-col gap-3">
       {ROWS.map((row) => {
         const rowTiles = tiles.filter((tile) => tile.row === row).sort((a, b) => a.col - b.col)
         if (!rowTiles.length) return null
+        const hits = matches
+          ? rowTiles.filter((tile) => matches.get(tile.id)?.matches).length
+          : null
         return (
-          <section key={row} aria-labelledby={`board-row-${row}`}>
-            <h3
-              id={`board-row-${row}`}
-              className="mb-2 text-xs font-semibold uppercase tracking-wider text-rs-muted"
-            >
-              {t('board.row', { row })}
-            </h3>
-            <ul className="space-y-1.5">
-              {rowTiles.map((tile) => (
-                <li key={tile.id}>
-                  <TileRow tile={tile} match={matches?.get(tile.id)} onSelect={onSelect} />
-                </li>
-              ))}
-            </ul>
+          <section key={row} aria-labelledby={`board-row-${row}`} className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between gap-2 rounded-[3px] border border-rs-border bg-rs-inset px-3 py-2">
+              <h2
+                id={`board-row-${row}`}
+                className="m-0 font-display text-[15px] text-rs-gold-bright"
+              >
+                {t('board.row', { row })}
+              </h2>
+              {hits !== null && (
+                <span className="text-xs text-rs-muted">
+                  {hits > 0
+                    ? t('board.rowSummary.some', { count: hits, total: rowTiles.length })
+                    : t('board.rowSummary.none')}
+                </span>
+              )}
+            </div>
+            {rowTiles.map((tile) => (
+              <TileRow
+                key={tile.id}
+                tile={tile}
+                match={matches?.get(tile.id)}
+                selected={tile.id === selectedId}
+                onSelect={onSelect}
+              />
+            ))}
           </section>
         )
       })}
@@ -43,76 +60,55 @@ export function TileList({ tiles, matches = null, onSelect }: TileListProps) {
   )
 }
 
-function TileRow({
-  tile,
-  match,
-  onSelect,
-}: {
+interface TileRowProps {
   tile: Tile
   match?: TileMatch
+  selected: boolean
   onSelect: (tile: Tile) => void
-}) {
+}
+
+function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
   const { t } = useTranslation()
-  const [imageFailed, setImageFailed] = useState(false)
+  const label = useTileLabel(tile, match)
   const dimmed = match !== undefined && !match.matches
   const highlighted = match !== undefined && match.matches
-  const matchLabel = highlighted
-    ? match.matchedDrop
-      ? t('board.match.drop', { drop: match.matchedDrop })
-      : t('board.match.tile')
-    : dimmed
-      ? t('board.match.none')
-      : null
-  const baseLabel = t('tile.label', {
-    row: tile.row,
-    column: tile.col,
-    name: tile.name,
-    tier: t(`tile.tier.${tile.tier}`),
-    points: tile.points,
-    state: t('tile.progressUnavailable'),
-  })
+  const hit = highlighted ? match.matchedDrop : null
 
   return (
     <button
+      id={tileListItemId(tile)}
       type="button"
       onClick={() => onSelect(tile)}
-      aria-label={matchLabel ? `${baseLabel}. ${matchLabel}` : baseLabel}
-      className={`flex w-full items-center gap-3 rounded-sm border bg-rs-raised p-2 text-left transition-opacity focus-visible:outline focus-visible:outline-2 focus-visible:outline-rs-gold ${
-        highlighted ? 'border-rs-gold ring-1 ring-rs-gold' : 'border-rs-border/60'
-      } ${dimmed ? 'opacity-35' : ''}`}
+      aria-label={label}
+      aria-pressed={selected}
+      className={`flex min-h-[66px] w-full scroll-mt-24 items-center gap-3 rounded border bg-rs-surface px-2.5 py-2 text-left text-rs-text transition-opacity ${
+        highlighted
+          ? 'border-rs-gold-bright shadow-[inset_0_0_0_1px_theme(colors.rs.gold-bright)]'
+          : 'border-rs-border'
+      } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright' : ''}`}
     >
-      <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-rs-inset">
-        {tile.imageUrl && !imageFailed ? (
-          <img
-            src={tile.imageUrl}
-            alt=""
-            loading="lazy"
-            onError={() => setImageFailed(true)}
-            className="size-full object-contain p-1"
-          />
-        ) : (
-          <ImageNotSupportedOutlinedIcon
-            fontSize="small"
-            className="text-rs-muted"
-            aria-hidden="true"
-          />
-        )}
+      <span className="min-w-[30px] text-center text-[11px] font-semibold tabular-nums text-rs-muted">
+        {t('board.columnShort', { column: tile.col })}
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-rs-text">{tile.name}</span>
-        <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-rs-muted">
+      <TileImage tile={tile} className="h-12 w-[52px] shrink-0" />
+      <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
+        <span className="font-semibold">{tile.name}</span>
+        <span className="flex items-center gap-1.5">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
-          <span className="font-semibold text-rs-gold-bright">
-            {t('tile.points', { count: tile.points })}
+          <span className="text-xs text-rs-muted">
+            {t('board.pointsAndRequirement', {
+              points: tile.points,
+              requirement: tile.requirement,
+            })}
           </span>
-          <span>{t('tile.requirementValue', { required: tile.requirement })}</span>
         </span>
-        {highlighted && (
-          <span className="mt-0.5 block truncate text-[11px] font-semibold text-rs-gold-bright">
-            {matchLabel}
+        {hit && (
+          <span className="text-xs font-semibold text-rs-gold-bright">
+            ↳ {hit.name} +{hit.progressWeight}
           </span>
         )}
       </span>
+      <ChevronRightOutlinedIcon className="text-rs-muted" aria-hidden="true" />
     </button>
   )
 }

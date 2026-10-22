@@ -64,7 +64,7 @@ Cinzel only for short headings and the "OSRS / Bingo" wordmark. Everything else 
 | Segmented control | buttons min-height 38 px | chips min-height 36–40 px, fully rounded |
 | Nav item | min-height 40 px, gap 12 px | list rows min-height 56 px |
 | Tab | min-height 44 px, 2 px bottom indicator | chips |
-| Main content padding | 28 px 32–40 px | 12–16 px, bottom 90 px (clears the bottom bar) |
+| Main content padding | per screen, from its mockup: overview 28/40 px, board 28/32 px, teams 24/32 px, board builder 24/28 px (`AppShell` `desktopPadding`) | 12–16 px, bottom 90 px (clears the bottom bar) |
 
 Radius: badges 2 px, controls 3 px, panels/cards/tiles 4 px, chips fully rounded. Avatars are circles with a `border-strong` ring.
 

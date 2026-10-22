@@ -1,4 +1,4 @@
-import type { AcceptedDrop } from '../cards/types'
+import type { AcceptedDrop, CardKind } from '../cards/types'
 
 export type TileTier = 'Low' | 'Mid' | 'High'
 
@@ -9,10 +9,10 @@ export interface Tile {
   row: number
   col: number
   name: string
+  kind: CardKind
   tier: TileTier
   points: number
   requirement: number
-  progress: number | null
   drops: AcceptedDrop[]
   ruleNote: string | null
   imageUrl?: string | null
@@ -23,10 +23,15 @@ export interface Tile {
 export type BoardView = 'grid' | 'list'
 export type TierFilter = TileTier | 'all'
 
+export interface MatchedDrop {
+  name: string
+  progressWeight: number
+}
+
 /** How a tile relates to the current search and difficulty filter. */
 export interface TileMatch {
   /** True when the tile passes both the search and the difficulty filter. */
   matches: boolean
-  /** Name of the accepted drop that matched the search, when the tile name itself did not. */
-  matchedDrop: string | null
+  /** The accepted drop that matched the search, when the tile name itself did not. */
+  matchedDrop: MatchedDrop | null
 }

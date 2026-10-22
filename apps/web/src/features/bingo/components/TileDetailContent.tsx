@@ -1,0 +1,115 @@
+import HourglassDisabledOutlinedIcon from '@mui/icons-material/HourglassDisabledOutlined'
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import { Trans, useTranslation } from 'react-i18next'
+import { Badge } from '../../../components/ui/Badge'
+import { TIER_TONE } from '../tierTone'
+import type { Tile, TileMatch } from '../types'
+import { TileImage } from './TileImage'
+
+interface TileDetailContentProps {
+  tile: Tile
+  match?: TileMatch
+  /** The dialog already shows the name as its title. */
+  showName: boolean
+}
+
+/** Read-only tile rules (board-a-desktop detail panel). Drop weights are progress, never points. */
+export function TileDetailContent({ tile, match, showName }: TileDetailContentProps) {
+  const { t } = useTranslation()
+  const highlighted = match?.matches ? match.matchedDrop?.name : undefined
+
+  return (
+    <>
+      <TileImage tile={tile} className="h-[150px] w-full rounded-none" large />
+      <div className="flex flex-col gap-3 p-3.5">
+        <div className="flex flex-col gap-1.5">
+          {showName && (
+            <h2 className="m-0 font-display text-[22px] text-rs-gold-bright">{tile.name}</h2>
+          )}
+          <div className="flex flex-wrap gap-1.5">
+            <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
+            <Badge tone="neutral">{t('tile.points', { count: tile.points })}</Badge>
+            <Badge tone="neutral">{t(`cards.kind.${tile.kind}`)}</Badge>
+          </div>
+        </div>
+        <p className="m-0 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5 text-[13px]">
+          <Trans
+            i18nKey="board.panel.completes"
+            values={{ requirement: tile.requirement, points: tile.points }}
+            components={{ strong: <strong /> }}
+          />
+        </p>
+        <p className="m-0 flex items-center gap-2 text-[13px]">
+          <HourglassDisabledOutlinedIcon
+            fontSize="small"
+            className="text-rs-muted"
+            aria-hidden="true"
+          />
+          <span className="text-rs-muted">{t('board.panel.teamProgress')}</span>
+        </p>
+        <div>
+          <div className="mb-1 flex items-baseline justify-between">
+            <strong className="text-[13px]">
+              {t('board.panel.drops', { count: tile.drops.length })}
+            </strong>
+            <span className="text-xs text-rs-muted">{t('board.panel.weightHint')}</span>
+          </div>
+          <ul className="m-0 list-none rounded-[3px] border border-rs-border/60 p-0">
+            {tile.drops.map((drop) => {
+              const matched = drop.name === highlighted
+              return (
+                <li
+                  key={drop.key}
+                  className={`border-b border-rs-border/45 px-2.5 py-[9px] last:border-b-0 ${
+                    matched
+                      ? 'bg-rs-raised shadow-[inset_3px_0_0_theme(colors.rs.gold-bright)]'
+                      : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="flex items-center gap-1.5">
+                      {matched && (
+                        <SearchOutlinedIcon
+                          sx={{ fontSize: 16 }}
+                          className="text-rs-gold-bright"
+                          aria-hidden="true"
+                        />
+                      )}
+                      {matched ? <strong>{drop.name}</strong> : drop.name}
+                    </span>
+                    <span className="whitespace-nowrap text-xs font-semibold text-rs-gold-bright">
+                      {t('cards.rules.progress', { count: drop.progress_weight })}
+                    </span>
+                  </div>
+                  {drop.verification_note && (
+                    <p className="m-0 mt-1 text-xs text-rs-muted">
+                      {t('cards.rules.verification', { note: drop.verification_note })}
+                    </p>
+                  )}
+                  {drop.counting_restriction && (
+                    <p className="m-0 mt-1 text-xs text-rs-muted">
+                      {t('cards.rules.restriction', { note: drop.counting_restriction })}
+                    </p>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+        {tile.ruleNote && <p className="m-0 text-xs text-rs-muted">{tile.ruleNote}</p>}
+        {tile.imageSourceUrl && (
+          <a
+            href={tile.imageSourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-rs-gold-bright hover:text-rs-gold-hover"
+          >
+            {t('board.panel.imageSource', { name: tile.name })}
+            <OpenInNewOutlinedIcon sx={{ fontSize: 14 }} aria-hidden="true" />
+          </a>
+        )}
+      </div>
+    </>
+  )
+}

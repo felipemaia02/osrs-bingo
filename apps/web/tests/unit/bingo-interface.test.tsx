@@ -1,14 +1,17 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
 import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
 import type { BoardCardSnapshot, EventBoard } from '../../src/features/boards/types'
-import { boardToTiles, isFiltering, matchTile } from '../../src/features/bingo/boardTiles'
-import { TileCard } from '../../src/features/bingo/components/TileCard'
+import {
+  boardToTiles,
+  isFiltering,
+  matchTile,
+  tileInitials,
+} from '../../src/features/bingo/boardTiles'
 import { HomePage } from '../../src/features/bingo/pages/HomePage'
-import type { Tile } from '../../src/features/bingo/types'
 import type { AcceptedDrop } from '../../src/features/cards/types'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
@@ -16,6 +19,7 @@ import { fetchOwnRegistration, fetchTeams } from '../../src/features/teams/api/t
 import { renderApp } from '../render'
 
 const DAY_MS = 24 * 60 * 60 * 1000
+const HOUR_MS = 60 * 60 * 1000
 
 function drop(name: string, weight: number, aliases: string[] = []): AcceptedDrop {
   return {
@@ -56,6 +60,7 @@ function snapshot(index: number, overrides: Partial<BoardCardSnapshot> = {}): Bo
 const SPECIAL: Record<number, Partial<BoardCardSnapshot>> = {
   1: {
     name: 'Grotesque Guardians',
+    kind: 'boss_group',
     difficulty: 'Mid',
     tile_score: 10,
     completion_requirement: 8,
@@ -71,7 +76,13 @@ const SPECIAL: Record<number, Partial<BoardCardSnapshot>> = {
     tile_score: 20,
     drops: [drop('Stone jar', 2, ['Jar of Stone'])],
   },
-  3: { name: 'Raids', difficulty: 'High', tile_score: 20, drops: [drop("Tumeken's shadow", 4)] },
+  3: {
+    name: 'Alchemical Hydra',
+    difficulty: 'High',
+    tile_score: 20,
+    completion_requirement: 6,
+    drops: [drop("Hydra's Claw", 3), drop("Tumeken's shadow", 4)],
+  },
 }
 
 function makeBoard(): EventBoard {
@@ -94,37 +105,46 @@ function makeBoard(): EventBoard {
 
 const EVENT: BingoEvent = {
   id: 'event-1',
-  name: 'Summer Bingo',
+  name: 'Autumn Bingo 2026',
   description: null,
   status: 'active',
   start_at: new Date(Date.now() - DAY_MS).toISOString(),
-  end_at: new Date(Date.now() + 3 * DAY_MS + 60_000).toISOString(),
+  end_at: new Date(Date.now() + 13 * DAY_MS + 22 * HOUR_MS + 30 * 60_000).toISOString(),
   created_at: '2026-10-01T12:00:00Z',
   updated_at: '2026-10-03T12:00:00Z',
 }
 
-const TILE: Tile = {
-  id: 'test-tile',
-  position: 1,
-  row: 1,
-  col: 1,
-  name: 'Test objective',
-  tier: 'Mid',
-  points: 10,
-  requirement: 8,
-  progress: 3,
-  drops: [],
-  ruleNote: null,
-}
+const SEARCH = 'Where does my drop count?'
 
 async function renderBoard() {
   renderApp(<HomePage />)
-  return screen.findByRole('heading', { name: 'Objectives', level: 2 })
+  await screen.findByRole('heading', { name: EVENT.name, level: 1 })
 }
 
-describe('Bingo board', () => {
+/** Grid tile or list item (not the mini-map cell, whose name ends with "show in the list"). */
+function tileButton(name: string) {
+  const matches = screen
+    .getAllByRole('button', { name: new RegExp(`^${name},`) })
+    .filter((button) => !button.closest('[aria-label="Board mini-map"]'))
+  expect(matches).toHaveLength(1)
+  return matches[0]
+}
+
+function useMobileViewport() {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }),
+  )
+}
+
+describe('Board v2', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
+    vi.unstubAllGlobals()
     localStorage.clear()
     await i18n.changeLanguage('en')
     vi.mocked(fetchEvents).mockResolvedValue([EVENT])
@@ -139,229 +159,254 @@ describe('Bingo board', () => {
     })
   })
 
-  describe('tile matching', () => {
-    const tiles = boardToTiles(makeBoard())
-    const [guardians, collector, raids] = tiles
+  describe('helpers', () => {
+    const [guardians, collector, hydra] = boardToTiles(makeBoard())
 
-    it('matches tile names, drop names and aliases ignoring case and accents', () => {
+    it('matches names, drops and aliases ignoring case and accents, with the drop weight', () => {
       expect(matchTile(guardians, 'GROTESQUE', 'all')).toEqual({ matches: true, matchedDrop: null })
-      expect(matchTile(guardians, 'jar of stone', 'all')).toEqual({
-        matches: true,
-        matchedDrop: 'Jar of Stone',
+      expect(matchTile(guardians, 'jar of stone', 'all').matchedDrop).toEqual({
+        name: 'Jar of Stone',
+        progressWeight: 3,
       })
-      expect(matchTile(collector, 'jar of stone', 'all')).toEqual({
-        matches: true,
-        matchedDrop: 'Stone jar',
-      })
-      expect(matchTile(raids, 'tumékén', 'all').matches).toBe(true)
-      expect(matchTile(raids, 'granite', 'all').matches).toBe(false)
+      expect(matchTile(collector, 'jar of stone', 'all').matchedDrop?.name).toBe('Stone jar')
+      expect(matchTile(hydra, 'tumékén', 'all').matches).toBe(true)
+      expect(matchTile(hydra, 'granite', 'all').matches).toBe(false)
     })
 
-    it('combines search with the difficulty filter', () => {
+    it('combines search with the difficulty filter and builds initials', () => {
       expect(matchTile(guardians, 'jar', 'High').matches).toBe(false)
       expect(matchTile(collector, 'jar', 'High').matches).toBe(true)
       expect(isFiltering('  ', 'all')).toBe(false)
       expect(isFiltering('', 'Low')).toBe(true)
+      expect(tileInitials('Alchemical Hydra')).toBe('AH')
+      expect(tileInitials('DT2 Bosses')).toBe('DB')
     })
   })
 
-  it('communicates tile state and progress without relying only on color', () => {
-    render(<TileCard tile={TILE} />)
+  describe('desktop', () => {
+    it('renders the header, notice, toolbar, labeled grid and empty panel without progress', async () => {
+      await renderBoard()
 
-    expect(screen.getByRole('article', { name: 'Test objective: In progress' })).toBeInTheDocument()
-    expect(screen.getByText('Medium')).toBeInTheDocument()
-    expect(screen.getByText('10 pts')).toBeInTheDocument()
-    expect(
-      screen.getByRole('progressbar', { name: 'Progress for Test objective' }),
-    ).toHaveAttribute('aria-valuenow', '3')
-  })
-
-  it('replaces a failed image with the themed fallback', () => {
-    const { container } = render(
-      <TileCard tile={TILE} imageUrl="https://example.invalid/tile.png" />,
-    )
-    fireEvent.error(container.querySelector('img')!)
-    expect(screen.getByText('Image unavailable')).toBeInTheDocument()
-  })
-
-  it('renders the labeled grid without invented progress or score', async () => {
-    await renderBoard()
-
-    const region = screen.getByLabelText('Scrollable Bingo board')
-    expect(within(region).getAllByRole('button')).toHaveLength(36)
-    expect(
-      screen.getByRole('button', {
-        name: 'Row 1, column 1: Grotesque Guardians, Medium, 10 points, Progress unavailable',
-      }),
-    ).toBeInTheDocument()
-    expect(screen.getAllByText('Progress unavailable')).toHaveLength(36)
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
-    expect(screen.queryByText(/score summary|total/i)).not.toBeInTheDocument()
-  })
-
-  it('opens tile details with drops as progress and returns focus on close', async () => {
-    const user = userEvent.setup()
-    await renderBoard()
-    const tile = screen.getByRole('button', { name: /Row 1, column 1: Grotesque Guardians/ })
-
-    await user.click(tile)
-    const dialog = screen.getByRole('dialog', { name: 'Grotesque Guardians' })
-    expect(within(dialog).getByText('10 points when progress reaches 8')).toBeInTheDocument()
-    const maul = within(dialog).getByText('Granite Maul').closest('li')!
-    expect(within(maul).getByText('+1 progress')).toBeInTheDocument()
-    expect(within(maul).getByText('Verification: Screenshot required')).toBeInTheDocument()
-    expect(within(dialog).getByText('Any Slayer master task counts.')).toBeInTheDocument()
-    expect(within(dialog).getByText('Image unavailable')).toBeInTheDocument()
-
-    await user.keyboard('{Escape}')
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-    expect(tile).toHaveFocus()
-  })
-
-  it('highlights tiles where a searched drop counts without moving them', async () => {
-    const user = userEvent.setup()
-    await renderBoard()
-    const before = screen.getAllByRole('button', { name: /^Row/ }).map((tile) => tile.textContent)
-
-    await user.type(screen.getByLabelText('Search tiles or drops'), 'JAR OF STONE')
-
-    expect(screen.getByText('2 matching tiles')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /Grotesque Guardians.*Counts: Jar of Stone$/ }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /Stone Collector.*Counts: Stone jar$/ }),
-    ).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /Does not match the search$/ })).toHaveLength(34)
-    const after = screen.getAllByRole('button', { name: /^Row/ }).map((tile) => tile.textContent)
-    expect(after.map((text) => text?.includes('Objective'))).toEqual(
-      before.map((text) => text?.includes('Objective')),
-    )
-
-    await user.clear(screen.getByLabelText('Search tiles or drops'))
-    expect(screen.queryByText(/matching tile/)).not.toBeInTheDocument()
-  })
-
-  it('dims tiles outside the difficulty filter and combines it with search', async () => {
-    const user = userEvent.setup()
-    await renderBoard()
-
-    await user.click(screen.getByRole('button', { name: 'Hard' }))
-    expect(screen.getByRole('button', { name: 'Hard' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText('2 matching tiles')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /^Row/ })).toHaveLength(36)
-
-    await user.type(screen.getByLabelText('Search tiles or drops'), 'jar')
-    expect(screen.getByText('1 matching tile')).toBeInTheDocument()
-  })
-
-  it('shows a search with no results without hiding the board', async () => {
-    const user = userEvent.setup()
-    await renderBoard()
-    await user.type(screen.getByLabelText('Search tiles or drops'), 'twisted bow')
-    expect(screen.getByText('0 matching tiles')).toBeInTheDocument()
-    expect(screen.getAllByRole('button', { name: /^Row/ })).toHaveLength(36)
-  })
-
-  it('shows the schedule, remaining time and the viewer team', async () => {
-    vi.mocked(fetchOwnRegistration).mockResolvedValue({
-      id: 'p1',
-      event_id: EVENT.id,
-      team_id: 'team-1',
-      display_name: 'Zezima',
-      status: 'approved',
+      expect(screen.getByText('Active event')).toBeInTheDocument()
+      expect(screen.getByText('Ends in 13 d 22 h')).toBeInTheDocument()
+      expect(screen.getByText(/Drop submissions don't exist yet/)).toBeInTheDocument()
+      expect(screen.getByRole('searchbox', { name: SEARCH })).toBeInTheDocument()
+      const grid = screen.getByRole('region', { name: '6 by 6 board' })
+      expect(within(grid).getAllByRole('button')).toHaveLength(36)
+      expect(tileButton('Grotesque Guardians').getAttribute('aria-label')).toBe(
+        'Grotesque Guardians, row 1 column 1, Medium, 10 points',
+      )
+      expect(within(grid).getByRole('link', { name: 'OSRS Wiki' })).toBeInTheDocument()
+      expect(screen.getByRole('complementary', { name: 'Tile detail' })).toHaveTextContent(
+        'Select a tile to see its accepted drops',
+      )
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     })
-    vi.mocked(fetchTeams).mockResolvedValue([
-      { id: 'team-1', event_id: EVENT.id, name: 'Crabs', color: '#AA3300', member_count: 3 },
-    ])
-    await renderBoard()
 
-    expect(await screen.findByText('Your team: Crabs')).toBeInTheDocument()
-    expect(screen.getByText('Ends in 3 days')).toBeInTheDocument()
-    expect(screen.getByText(/—/)).toBeInTheDocument()
-  })
+    it('shows the selected tile in the fixed panel and returns to the prompt on close', async () => {
+      const user = userEvent.setup()
+      await renderBoard()
 
-  it.each([
-    [{ status: 'pending' as const, team_id: null }, 'Your registration is awaiting approval'],
-    [{ status: 'approved' as const, team_id: null }, 'Approved, awaiting team assignment'],
-    [{ status: 'removed' as const, team_id: null }, 'You are not participating in this event'],
-  ])('shows a neutral registration state (%o)', async (registration, message) => {
-    vi.mocked(fetchOwnRegistration).mockResolvedValue({
-      id: 'p1',
-      event_id: EVENT.id,
-      display_name: 'Zezima',
-      ...registration,
+      await user.click(tileButton('Grotesque Guardians'))
+      const panel = screen.getByRole('complementary', { name: 'Tile detail' })
+      expect(panel).toHaveTextContent('Row 1 · Column 1')
+      expect(
+        within(panel).getByRole('heading', { name: 'Grotesque Guardians' }),
+      ).toBeInTheDocument()
+      expect(within(panel).getByText('Boss group')).toBeInTheDocument()
+      expect(panel).toHaveTextContent(
+        'Completes when progress reaches 8. Worth 10 pts only once — extra progress gives no points.',
+      )
+      expect(panel).toHaveTextContent("Your team's progress: unavailable")
+      const maul = within(panel).getByText('Granite Maul').closest('li')!
+      expect(within(maul).getByText('+1 progress')).toBeInTheDocument()
+      expect(within(maul).getByText('Verification: Screenshot required')).toBeInTheDocument()
+      expect(within(panel).getByText('Any Slayer master task counts.')).toBeInTheDocument()
+      expect(tileButton('Grotesque Guardians')).toHaveAttribute('aria-pressed', 'true')
+      expect(screen.getByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
+
+      await user.click(within(panel).getByRole('button', { name: 'Close detail' }))
+      expect(panel).toHaveTextContent('Select a tile to see its accepted drops')
     })
-    await renderBoard()
-    expect(await screen.findByText(message)).toBeInTheDocument()
-  })
 
-  it('shows nothing about teams to anonymous visitors', async () => {
-    vi.mocked(fetchSession).mockResolvedValue(null)
-    await renderBoard()
-    await waitFor(() => expect(fetchSession).toHaveBeenCalled())
-    expect(
-      screen.queryByText(/^Your team:|not registered|awaiting|not participating/),
-    ).not.toBeInTheDocument()
-    expect(fetchOwnRegistration).not.toHaveBeenCalled()
-  })
+    it('highlights search matches in place and the matching drop in the panel', async () => {
+      const user = userEvent.setup()
+      await renderBoard()
+      const order = screen.getAllByRole('button', { name: /, row \d column \d,/ }).map((b) => b.id)
 
-  it('explains completion without bonus values', async () => {
-    const user = userEvent.setup()
-    await renderBoard()
-    await user.click(screen.getByText('How tiles are completed'))
+      await user.type(screen.getByRole('searchbox', { name: SEARCH }), 'jar of stone')
 
-    const help = screen.getByText('How tiles are completed').closest('details')!
-    expect(within(help).getByText(/defined by the event rules/)).toBeVisible()
-    expect(help.textContent).not.toMatch(/\d/)
-  })
+      expect(screen.getByRole('status')).toHaveTextContent(
+        '2 tiles accept “jar of stone” — the other 34 stay in place, dimmed.',
+      )
+      expect(tileButton('Grotesque Guardians')).toHaveTextContent('Jar of Stone +3')
+      expect(tileButton('Grotesque Guardians').getAttribute('aria-label')).toMatch(
+        /matches search: Jar of Stone \+3$/,
+      )
+      expect(screen.getAllByRole('button', { name: /does not match the search$/ })).toHaveLength(34)
+      expect(
+        screen.getAllByRole('button', { name: /, row \d column \d,/ }).map((b) => b.id),
+      ).toEqual(order)
 
-  it('switches to the row list and remembers the choice', async () => {
-    const user = userEvent.setup()
-    const { unmount } = renderApp(<HomePage />)
-    await screen.findByRole('heading', { name: 'Objectives', level: 2 })
-
-    await user.click(screen.getByRole('button', { name: 'List view' }))
-    expect(screen.getByRole('heading', { name: 'Row 1', level: 3 })).toBeInTheDocument()
-    expect(screen.queryByLabelText('Scrollable Bingo board')).not.toBeInTheDocument()
-    expect(localStorage.getItem('osrs-bingo-board-view')).toBe('list')
-    unmount()
-
-    await renderBoard()
-    expect(screen.getByRole('button', { name: 'List view' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
-  })
-
-  it('defaults to the list on small screens and survives unavailable storage', async () => {
-    const matchMedia = vi.fn().mockReturnValue({ matches: true })
-    vi.stubGlobal('matchMedia', matchMedia)
-    const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-      throw new Error('blocked')
+      await user.click(tileButton('Grotesque Guardians'))
+      const panel = screen.getByRole('complementary', { name: 'Tile detail' })
+      expect(within(panel).getByText('Jar of Stone').tagName).toBe('STRONG')
     })
-    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-      throw new Error('blocked')
+
+    it('combines the difficulty filter with search and reports zero results', async () => {
+      const user = userEvent.setup()
+      await renderBoard()
+
+      await user.click(screen.getByRole('button', { name: 'Hard' }))
+      expect(screen.getByRole('status')).toHaveTextContent('2 Hard tiles')
+      await user.type(screen.getByRole('searchbox', { name: SEARCH }), 'jar')
+      expect(screen.getByRole('status')).toHaveTextContent('1 Hard tile accepts “jar”')
+      await user.clear(screen.getByRole('searchbox', { name: SEARCH }))
+      await user.click(screen.getByRole('button', { name: 'All' }))
+      await user.type(screen.getByRole('searchbox', { name: SEARCH }), 'twisted bow')
+      expect(screen.getByRole('status')).toHaveTextContent('0 tiles accept “twisted bow”')
+      expect(screen.getAllByRole('button', { name: /, row \d column \d,/ })).toHaveLength(36)
     })
-    const user = userEvent.setup()
-    await renderBoard()
 
-    expect(screen.getByRole('heading', { name: 'Row 6', level: 3 })).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Grid view' }))
-    expect(screen.getByLabelText('Scrollable Bingo board')).toBeInTheDocument()
+    it('shows the viewer team in the header card', async () => {
+      vi.mocked(fetchOwnRegistration).mockResolvedValue({
+        id: 'p1',
+        event_id: EVENT.id,
+        team_id: 'team-1',
+        display_name: 'Zezima',
+        status: 'approved',
+      })
+      vi.mocked(fetchTeams).mockResolvedValue([
+        { id: 'team-1', event_id: EVENT.id, name: 'Saradomin', color: '#2F5592', member_count: 3 },
+      ])
+      await renderBoard()
 
-    getItem.mockRestore()
-    setItem.mockRestore()
-    vi.unstubAllGlobals()
+      expect(await screen.findByText('Saradomin')).toBeInTheDocument()
+      expect(screen.getByText('SA')).toBeInTheDocument()
+      expect(screen.getByText('Your team')).toBeInTheDocument()
+    })
+
+    it.each([
+      [{ status: 'pending' as const, team_id: null }, 'Your registration is awaiting approval'],
+      [{ status: 'approved' as const, team_id: null }, 'Approved, awaiting team assignment'],
+      [{ status: 'removed' as const, team_id: null }, 'You are not participating in this event'],
+    ])('shows a neutral team state (%o)', async (registration, message) => {
+      vi.mocked(fetchOwnRegistration).mockResolvedValue({
+        id: 'p1',
+        event_id: EVENT.id,
+        display_name: 'Zezima',
+        ...registration,
+      })
+      await renderBoard()
+      expect(await screen.findByText(message)).toBeInTheDocument()
+    })
+
+    it('shows no team card to anonymous visitors', async () => {
+      vi.mocked(fetchSession).mockResolvedValue(null)
+      await renderBoard()
+      await waitFor(() => expect(fetchSession).toHaveBeenCalled())
+      expect(screen.queryByText('Your team')).not.toBeInTheDocument()
+      expect(fetchOwnRegistration).not.toHaveBeenCalled()
+    })
+
+    it('explains completion in a modal without bonus values', async () => {
+      const user = userEvent.setup()
+      await renderBoard()
+
+      await user.click(screen.getByRole('button', { name: 'How tiles are completed' }))
+      const dialog = screen.getByRole('dialog', { name: 'How tiles are completed' })
+      expect(within(dialog).getByText(/defined by the event rules/)).toBeInTheDocument()
+      expect(dialog.querySelector('ul')?.textContent).not.toMatch(/\d/)
+      await user.keyboard('{Escape}')
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    })
+
+    it('switches to the list view, keeps the panel and remembers the choice', async () => {
+      const user = userEvent.setup()
+      const { unmount } = renderApp(<HomePage />)
+      await screen.findByRole('heading', { name: EVENT.name, level: 1 })
+
+      await user.click(screen.getByRole('button', { name: 'List view' }))
+      expect(screen.getByRole('heading', { name: 'Row 1', level: 2 })).toBeInTheDocument()
+      await user.click(tileButton('Alchemical Hydra'))
+      expect(screen.getByRole('complementary', { name: 'Tile detail' })).toHaveTextContent(
+        'Row 1 · Column 3',
+      )
+      expect(localStorage.getItem('osrs-bingo-board-view')).toBe('list')
+      unmount()
+
+      await renderBoard()
+      expect(screen.getByRole('button', { name: 'List view' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+    })
+
+    it('keeps working when browser storage is blocked', async () => {
+      const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('blocked')
+      })
+      const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('blocked')
+      })
+      const user = userEvent.setup()
+      await renderBoard()
+      await user.click(screen.getByRole('button', { name: 'List view' }))
+      expect(screen.getByRole('heading', { name: 'Row 6', level: 2 })).toBeInTheDocument()
+      getItem.mockRestore()
+      setItem.mockRestore()
+    })
   })
 
-  it('keeps the existing unavailable states', async () => {
+  describe('mobile', () => {
+    it('shows the summary, chips, mini-map and row list', async () => {
+      useMobileViewport()
+      const user = userEvent.setup()
+      await renderBoard()
+
+      expect(screen.getByText('Ends in').parentElement).toHaveTextContent('Ends in13 d 22 h')
+      expect(screen.getByText('Progress unavailable for now')).toBeInTheDocument()
+      expect(screen.queryByRole('region', { name: '6 by 6 board' })).not.toBeInTheDocument()
+      const map = screen.getByRole('region', { name: 'Board mini-map' })
+      expect(within(map).getAllByRole('button')).toHaveLength(36)
+      expect(screen.getAllByRole('heading', { level: 2, name: /^Row \d$/ })).toHaveLength(6)
+
+      await user.type(screen.getByRole('searchbox', { name: SEARCH }), 'jar of stone')
+      expect(within(map).getByText('2 accept “jar of stone”')).toBeInTheDocument()
+      expect(screen.getByText('2 of 6 match the search')).toBeInTheDocument()
+      expect(screen.getAllByText('none match the search')).toHaveLength(5)
+      expect(screen.getByText('↳ Jar of Stone +3')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Hard' }))
+      expect(screen.getByRole('button', { name: 'Hard' })).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    it('jumps from the mini-map to the list and opens details in a modal', async () => {
+      useMobileViewport()
+      const scrollIntoView = vi.fn()
+      Element.prototype.scrollIntoView = scrollIntoView
+      const user = userEvent.setup()
+      await renderBoard()
+
+      const map = screen.getByRole('region', { name: 'Board mini-map' })
+      const cell = within(map).getByRole('button', { name: /^Alchemical Hydra, row 1 column 3/ })
+      await user.click(cell)
+      expect(cell).toHaveAttribute('aria-current', 'location')
+      expect(scrollIntoView).toHaveBeenCalled()
+
+      await user.click(tileButton('Alchemical Hydra'))
+      const dialog = screen.getByRole('dialog', { name: 'Alchemical Hydra' })
+      expect(within(dialog).getByText("Hydra's Claw").closest('li')).toHaveTextContent(
+        '+3 progress',
+      )
+    })
+  })
+
+  it('keeps the unavailable-board state', async () => {
     vi.mocked(fetchPublicBoard).mockResolvedValue(null)
     renderApp(<HomePage />)
     expect(
       await screen.findByText('The active event board is not available yet.'),
     ).toBeInTheDocument()
-
-    vi.mocked(fetchEvents).mockResolvedValue([])
   })
 })

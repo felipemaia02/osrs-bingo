@@ -9,29 +9,19 @@
     "mySubmissions": "My submissions"
   },
   "board": {
-    "eyebrow": "Event progress",
-    "title": "Bingo board",
-    "description": "Plan your hunt: open a tile to see which drops count and how much progress each one gives.",
-    "eventDescription": "Official board for {{event}}. Open a tile to see which drops count.",
     "noActiveEvent": "There is no active event to display.",
     "unavailable": "The active event board is not available yet.",
-    "gridTitle": "Objectives",
-    "tileCount": "{{count}} tiles",
-    "scrollRegion": "Scrollable Bingo board",
     "row": "Row {{row}}",
     "column": "Column {{column}}",
-    "rowShort": "{{row}}",
-    "columnShort": "{{column}}",
+    "columnShort": "C{{column}}",
     "match": {
-      "drop": "Counts: {{drop}}",
-      "tile": "Matches the tile name",
-      "none": "Does not match the search"
+      "drop": "matches search: {{drop}}",
+      "tile": "matches search",
+      "none": "does not match the search"
     },
     "search": {
-      "label": "Search tiles or drops",
-      "placeholder": "Search a drop or tile, e.g. jar",
-      "results_one": "{{count}} matching tile",
-      "results_other": "{{count}} matching tiles"
+      "label": "Where does my drop count?",
+      "placeholder": "Where does my drop count? e.g. jar, claw, Vorkath"
     },
     "filter": {
       "label": "Difficulty",
@@ -43,9 +33,9 @@
       "list": "List view"
     },
     "context": {
-      "schedule": "{{start}} — {{end}}",
-      "startsIn": "Starts {{time}}",
-      "endsIn": "Ends {{time}}",
+      "schedule": "{{start}} → {{end}}",
+      "startsIn": "Starts in {{time}}",
+      "endsIn": "Ends in {{time}}",
       "endReached": "Scheduled end reached",
       "notRegistered": "You are not registered in this event",
       "pending": "Your registration is awaiting approval",
@@ -60,26 +50,72 @@
       "excess": "Progress beyond the requirement does not award extra tile points.",
       "bonuses": "Row, column and special bonuses are defined by the event rules.",
       "details": "Select a tile to see its accepted drops, progress values and notes."
+    },
+    "activeEvent": "Active event",
+    "yourTeam": "Your team",
+    "startsInLabel": "Starts in",
+    "endsInLabel": "Ends in",
+    "progressUnavailableShort": "Progress unavailable for now",
+    "progressNotice": {
+      "title": "Progress unavailable.",
+      "body": "Drop submissions don't exist yet — for now, use search to find where each drop counts."
+    },
+    "status": {
+      "search_one": "{{count}} tile accepts “{{query}}”",
+      "search_other": "{{count}} tiles accept “{{query}}”",
+      "searchTier_one": "{{count}} {{tier}} tile accepts “{{query}}”",
+      "searchTier_other": "{{count}} {{tier}} tiles accept “{{query}}”",
+      "tier_one": "{{count}} {{tier}} tile",
+      "tier_other": "{{count}} {{tier}} tiles",
+      "rest_one": "— the other {{count}} stays in place, dimmed.",
+      "rest_other": "— the other {{count}} stay in place, dimmed.",
+      "short": {
+        "search": "{{count}} accept “{{query}}”",
+        "tier": "{{count}} {{tier}}"
+      }
+    },
+    "requirementShort": "Req. {{count}}",
+    "gridLabel": "6 by 6 board",
+    "pointsAndRequirement": "{{points}} pts · Req. {{requirement}}",
+    "attribution": {
+      "prefix": "Images:",
+      "fallback": "Without an image, the tile shows a shield with initials."
+    },
+    "panel": {
+      "label": "Tile detail",
+      "position": "Row {{row}} · Column {{column}}",
+      "close": "Close detail",
+      "prompt": "Select a tile to see its accepted drops and how it is completed.",
+      "completes": "Completes when progress reaches <strong>{{requirement}}</strong>. Worth <strong>{{points}} pts only once</strong> — extra progress gives no points.",
+      "teamProgress": "Your team's progress: unavailable",
+      "drops": "Accepted drops ({{count}})",
+      "weightHint": "weight = progress",
+      "imageSource": "Image: OSRS Wiki — {{name}}"
+    },
+    "rowSummary": {
+      "some": "{{count}} of {{total}} match the search",
+      "none": "none match the search"
+    },
+    "miniMap": {
+      "label": "Board mini-map",
+      "title": "6×6 map",
+      "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show in the list",
+      "legend": "E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list."
     }
   },
   "tile": {
-    "completed": "Completed",
-    "inProgress": "In progress",
-    "notStarted": "Not started",
-    "progressUnavailable": "Progress unavailable",
-    "imageUnavailable": "Image unavailable",
     "points": "{{count}} pts",
-    "progressLabel": "Progress for {{name}}",
-    "progressValue": "{{current}} / {{required}}",
-    "requirementValue": "Requirement: {{required}}",
-    "imageSource": "Image source: OSRS Wiki",
     "tier": {
       "Low": "Easy",
       "Mid": "Medium",
       "High": "Hard"
     },
-    "label": "Row {{row}}, column {{column}}: {{name}}, {{tier}}, {{points}} points, {{state}}",
-    "progressPending": "Team progress will appear once drop submissions and scoring are available."
+    "label": "{{name}}, row {{row}} column {{column}}, {{tier}}, {{points}} points",
+    "tierLetter": {
+      "Low": "E",
+      "Mid": "M",
+      "High": "H"
+    }
   },
   "common": {
     "loading": "Loading…",

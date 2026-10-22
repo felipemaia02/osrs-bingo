@@ -9,29 +9,19 @@
     "mySubmissions": "Meus envios"
   },
   "board": {
-    "eyebrow": "Progresso do evento",
-    "title": "Tabuleiro do Bingo",
-    "description": "Planeje sua caçada: abra um tile para ver quais drops contam e quanto progresso cada um dá.",
-    "eventDescription": "Tabuleiro oficial de {{event}}. Abra um tile para ver quais drops contam.",
     "noActiveEvent": "Não há um evento ativo para exibir.",
     "unavailable": "O tabuleiro do evento ativo ainda não está disponível.",
-    "gridTitle": "Objetivos",
-    "tileCount": "{{count}} tiles",
-    "scrollRegion": "Tabuleiro de Bingo rolável",
     "row": "Linha {{row}}",
     "column": "Coluna {{column}}",
-    "rowShort": "{{row}}",
-    "columnShort": "{{column}}",
+    "columnShort": "C{{column}}",
     "match": {
-      "drop": "Conta: {{drop}}",
-      "tile": "Corresponde ao nome do tile",
-      "none": "Não corresponde à busca"
+      "drop": "corresponde à busca: {{drop}}",
+      "tile": "corresponde à busca",
+      "none": "não corresponde à busca"
     },
     "search": {
-      "label": "Buscar tiles ou drops",
-      "placeholder": "Busque um drop ou tile, ex.: jar",
-      "results_one": "{{count}} tile encontrado",
-      "results_other": "{{count}} tiles encontrados"
+      "label": "Onde meu drop conta?",
+      "placeholder": "Onde meu drop conta? ex.: jar, claw, Vorkath"
     },
     "filter": {
       "label": "Dificuldade",
@@ -43,9 +33,9 @@
       "list": "Visualização em lista"
     },
     "context": {
-      "schedule": "{{start}} — {{end}}",
-      "startsIn": "Começa {{time}}",
-      "endsIn": "Termina {{time}}",
+      "schedule": "{{start}} → {{end}}",
+      "startsIn": "Começa em {{time}}",
+      "endsIn": "Termina em {{time}}",
       "endReached": "Fim programado atingido",
       "notRegistered": "Você não está inscrito neste evento",
       "pending": "Sua inscrição aguarda aprovação",
@@ -60,26 +50,72 @@
       "excess": "Progresso além do requisito não dá pontos extras de tile.",
       "bonuses": "Bônus de linha, coluna e especiais são definidos pelas regras do evento.",
       "details": "Selecione um tile para ver os drops aceitos, valores de progresso e observações."
+    },
+    "activeEvent": "Evento ativo",
+    "yourTeam": "Seu time",
+    "startsInLabel": "Começa em",
+    "endsInLabel": "Termina em",
+    "progressUnavailableShort": "Progresso indisponível por enquanto",
+    "progressNotice": {
+      "title": "Progresso indisponível.",
+      "body": "O envio de drops ainda não existe — por enquanto, use a busca para ver onde cada drop conta."
+    },
+    "status": {
+      "search_one": "{{count}} tile aceita “{{query}}”",
+      "search_other": "{{count}} tiles aceitam “{{query}}”",
+      "searchTier_one": "{{count}} tile {{tier}} aceita “{{query}}”",
+      "searchTier_other": "{{count}} tiles {{tier}} aceitam “{{query}}”",
+      "tier_one": "{{count}} tile {{tier}}",
+      "tier_other": "{{count}} tiles {{tier}}",
+      "rest_one": "— o outro continua no lugar, esmaecido.",
+      "rest_other": "— os outros {{count}} continuam no lugar, esmaecidos.",
+      "short": {
+        "search": "{{count}} aceitam “{{query}}”",
+        "tier": "{{count}} {{tier}}"
+      }
+    },
+    "requirementShort": "Req. {{count}}",
+    "gridLabel": "Tabuleiro 6 por 6",
+    "pointsAndRequirement": "{{points}} pts · Req. {{requirement}}",
+    "attribution": {
+      "prefix": "Imagens:",
+      "fallback": "Sem imagem, o tile mostra um escudo com as iniciais."
+    },
+    "panel": {
+      "label": "Detalhes do tile",
+      "position": "Linha {{row}} · Coluna {{column}}",
+      "close": "Fechar detalhes",
+      "prompt": "Selecione um tile para ver os drops aceitos e como ele é completado.",
+      "completes": "Completa quando o progresso chega a <strong>{{requirement}}</strong>. Vale <strong>{{points}} pts uma única vez</strong> — progresso extra não dá pontos.",
+      "teamProgress": "Progresso do seu time: indisponível",
+      "drops": "Drops aceitos ({{count}})",
+      "weightHint": "peso = progresso",
+      "imageSource": "Imagem: OSRS Wiki — {{name}}"
+    },
+    "rowSummary": {
+      "some": "{{count}} de {{total}} correspondem à busca",
+      "none": "nenhum corresponde à busca"
+    },
+    "miniMap": {
+      "label": "Minimapa do tabuleiro",
+      "title": "Mapa 6×6",
+      "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: mostrar na lista",
+      "legend": "F = Fácil · M = Médio · D = Difícil. Toque numa célula para ir até ela na lista."
     }
   },
   "tile": {
-    "completed": "Concluído",
-    "inProgress": "Em progresso",
-    "notStarted": "Não iniciado",
-    "progressUnavailable": "Progresso indisponível",
-    "imageUnavailable": "Imagem indisponível",
     "points": "{{count}} pts",
-    "progressLabel": "Progresso de {{name}}",
-    "progressValue": "{{current}} / {{required}}",
-    "requirementValue": "Requisito: {{required}}",
-    "imageSource": "Fonte da imagem: OSRS Wiki",
     "tier": {
       "Low": "Fácil",
       "Mid": "Médio",
       "High": "Difícil"
     },
-    "label": "Linha {{row}}, coluna {{column}}: {{name}}, {{tier}}, {{points}} pontos, {{state}}",
-    "progressPending": "O progresso do time aparecerá quando o envio de drops e a pontuação estiverem disponíveis."
+    "label": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}, {{points}} pontos",
+    "tierLetter": {
+      "Low": "F",
+      "Mid": "M",
+      "High": "D"
+    }
   },
   "common": {
     "loading": "Carregando…",

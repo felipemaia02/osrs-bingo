@@ -2,48 +2,64 @@ import { useTranslation } from 'react-i18next'
 import type { Tile, TileMatch } from '../types'
 import { TileCard } from './TileCard'
 
-const GRID_SIZE = 6
-const GRID_POSITIONS = Array.from({ length: GRID_SIZE }, (_, index) => index + 1)
+const GRID_POSITIONS = [1, 2, 3, 4, 5, 6]
+const WIKI_URL = 'https://oldschool.runescape.wiki/'
+const GRID_COLUMNS = 'grid grid-cols-[20px_repeat(6,minmax(0,1fr))] gap-2'
 
 interface BingoBoardProps {
   tiles: Tile[]
   /** Per-tile match state while a search or filter is active; null when not filtering. */
-  matches?: Map<string, TileMatch> | null
-  onSelect?: (tile: Tile) => void
+  matches: Map<string, TileMatch> | null
+  selectedId: string | null
+  onSelect: (tile: Tile) => void
 }
 
-/** Compact 6×6 grid with row/column labels. Positions never move when filtering. */
-export function BingoBoard({ tiles, matches = null, onSelect }: BingoBoardProps) {
+/** Labeled 6×6 grid (board-a-desktop). Positions never move when filtering. */
+export function BingoBoard({ tiles, matches, selectedId, onSelect }: BingoBoardProps) {
   const { t } = useTranslation()
-  const axisLabel = 'flex items-center justify-center text-[11px] font-semibold text-rs-muted'
-
+  const axis = 'text-center text-xs font-semibold text-rs-muted'
   return (
-    <div className="overflow-x-auto p-3 sm:p-4" tabIndex={0} aria-label={t('board.scrollRegion')}>
-      <div className="grid min-w-[52rem] grid-cols-[1.25rem_repeat(6,minmax(0,1fr))] gap-2 lg:min-w-0">
-        <span aria-hidden="true" />
+    <section aria-label={t('board.gridLabel')} className="flex min-w-0 flex-1 flex-col gap-2">
+      <div className={GRID_COLUMNS} aria-hidden="true">
+        <span />
         {GRID_POSITIONS.map((col) => (
-          <span key={`col-${col}`} className={axisLabel} aria-hidden="true">
-            {t('board.columnShort', { column: col })}
+          <span key={col} className={axis}>
+            {col}
           </span>
         ))}
-        {GRID_POSITIONS.map((row) => [
-          <span key={`row-${row}`} className={axisLabel} aria-hidden="true">
-            {t('board.rowShort', { row })}
-          </span>,
-          ...GRID_POSITIONS.map((col) => {
+      </div>
+      {GRID_POSITIONS.map((row) => (
+        <div key={row} className={`${GRID_COLUMNS} items-stretch`}>
+          <span className={`${axis} self-center`} aria-hidden="true">
+            {row}
+          </span>
+          {GRID_POSITIONS.map((col) => {
             const tile = tiles.find((item) => item.row === row && item.col === col)
-            if (!tile) return <span key={`empty-${row}-${col}`} aria-hidden="true" />
+            if (!tile) return <span key={col} aria-hidden="true" />
             return (
               <TileCard
                 key={tile.id}
                 tile={tile}
                 match={matches?.get(tile.id)}
+                selected={tile.id === selectedId}
                 onSelect={onSelect}
               />
             )
-          }),
-        ])}
-      </div>
-    </div>
+          })}
+        </div>
+      ))}
+      <p className="m-0 ml-7 mt-1.5 text-xs text-rs-muted">
+        {t('board.attribution.prefix')}{' '}
+        <a
+          href={WIKI_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="text-rs-gold-bright hover:text-rs-gold-hover"
+        >
+          OSRS Wiki
+        </a>
+        . {t('board.attribution.fallback')}
+      </p>
+    </section>
   )
 }

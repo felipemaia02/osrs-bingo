@@ -1,12 +1,46 @@
-import GridViewIcon from '@mui/icons-material/GridView'
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
+import FilterCenterFocusOutlinedIcon from '@mui/icons-material/FilterCenterFocusOutlined'
+import GridView from '@mui/icons-material/GridView'
+import GridViewOutlined from '@mui/icons-material/GridViewOutlined'
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
-import ViewListIcon from '@mui/icons-material/ViewList'
-import ViewListOutlinedIcon from '@mui/icons-material/ViewListOutlined'
+import ViewList from '@mui/icons-material/ViewList'
+import ViewListOutlined from '@mui/icons-material/ViewListOutlined'
 import { useTranslation } from 'react-i18next'
+import { SegmentedControl } from '../../../components/ui/SegmentedControl'
+import type { FilterSummary } from '../hooks/useFilterSummary'
+import { useTierOptions } from '../hooks/useTierOptions'
 import type { BoardView, TierFilter } from '../types'
 
-const TIER_FILTERS: TierFilter[] = ['all', 'Low', 'Mid', 'High']
+export function SearchField({
+  value,
+  onChange,
+  mobile = false,
+}: {
+  value: string
+  onChange: (value: string) => void
+  mobile?: boolean
+}) {
+  const { t } = useTranslation()
+  return (
+    <label className={`relative flex min-w-0 items-center ${mobile ? '' : 'flex-1 basis-72'}`}>
+      <SearchOutlinedIcon
+        fontSize="small"
+        className="pointer-events-none absolute left-2.5 text-rs-muted"
+        aria-hidden="true"
+      />
+      <span className="sr-only">{t('board.search.label')}</span>
+      <input
+        type="search"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={t('board.search.placeholder')}
+        className={`w-full rounded-[3px] border border-rs-border bg-rs-inset pl-[38px] pr-3 text-rs-text placeholder:text-rs-muted ${
+          mobile ? 'min-h-11 text-base' : 'min-h-10 text-sm'
+        }`}
+      />
+    </label>
+  )
+}
 
 interface BoardToolbarProps {
   search: string
@@ -15,10 +49,11 @@ interface BoardToolbarProps {
   onTierChange: (tier: TierFilter) => void
   view: BoardView
   onViewChange: (view: BoardView) => void
-  /** Number of matching tiles while filtering; null when no filter is active. */
-  matchCount: number | null
+  onHelp: () => void
+  summary: FilterSummary | null
 }
 
+/** Desktop toolbar (board-a-desktop): search, difficulty, view, help and the result line. */
 export function BoardToolbar({
   search,
   onSearchChange,
@@ -26,87 +61,69 @@ export function BoardToolbar({
   onTierChange,
   view,
   onViewChange,
-  matchCount,
+  onHelp,
+  summary,
 }: BoardToolbarProps) {
   const { t } = useTranslation()
-  const segment = (active: boolean) =>
-    `rounded-sm px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-rs-gold ${
-      active ? 'bg-rs-gold/15 text-rs-gold-bright' : 'text-rs-muted hover:text-rs-text'
-    }`
-
+  const tierOptions = useTierOptions()
   return (
-    <div className="space-y-2 border-b border-rs-border/50 bg-rs-inset/40 p-3 sm:p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <label className="relative min-w-0 flex-1 basis-56">
-          <span className="sr-only">{t('board.search.label')}</span>
-          <SearchOutlinedIcon
-            fontSize="small"
-            className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-rs-muted"
-            aria-hidden="true"
-          />
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
-            placeholder={t('board.search.placeholder')}
-            className="w-full rounded-sm border border-rs-border bg-rs-inset py-2 pl-8 pr-2 text-sm text-rs-text placeholder:text-rs-muted"
-          />
-        </label>
-        <div
-          role="group"
-          aria-label={t('board.filter.label')}
-          className="flex rounded-sm border border-rs-border/60 bg-rs-inset p-0.5"
-        >
-          {TIER_FILTERS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              aria-pressed={tier === option}
-              onClick={() => onTierChange(option)}
-              className={segment(tier === option)}
-            >
-              {option === 'all' ? t('board.filter.all') : t(`tile.tier.${option}`)}
-            </button>
-          ))}
-        </div>
-        <div
-          role="group"
-          aria-label={t('board.view.label')}
-          className="flex rounded-sm border border-rs-border/60 bg-rs-inset p-0.5"
-        >
-          <button
-            type="button"
-            aria-pressed={view === 'grid'}
-            aria-label={t('board.view.grid')}
-            title={t('board.view.grid')}
-            onClick={() => onViewChange('grid')}
-            className={segment(view === 'grid')}
-          >
-            {view === 'grid' ? (
-              <GridViewIcon fontSize="small" aria-hidden="true" />
-            ) : (
-              <GridViewOutlinedIcon fontSize="small" aria-hidden="true" />
-            )}
-          </button>
-          <button
-            type="button"
-            aria-pressed={view === 'list'}
-            aria-label={t('board.view.list')}
-            title={t('board.view.list')}
-            onClick={() => onViewChange('list')}
-            className={segment(view === 'list')}
-          >
-            {view === 'list' ? (
-              <ViewListIcon fontSize="small" aria-hidden="true" />
-            ) : (
-              <ViewListOutlinedIcon fontSize="small" aria-hidden="true" />
-            )}
-          </button>
-        </div>
+    <div className="flex flex-wrap items-center gap-3 rounded border border-rs-border bg-rs-surface p-3">
+      <SearchField value={search} onChange={onSearchChange} />
+      <SegmentedControl
+        label={t('board.filter.label')}
+        options={tierOptions}
+        value={tier}
+        onChange={onTierChange}
+      />
+      <SegmentedControl
+        label={t('board.view.label')}
+        value={view}
+        onChange={onViewChange}
+        options={[
+          {
+            value: 'grid',
+            ariaLabel: t('board.view.grid'),
+            label:
+              view === 'grid' ? (
+                <GridView fontSize="small" />
+              ) : (
+                <GridViewOutlined fontSize="small" />
+              ),
+          },
+          {
+            value: 'list',
+            ariaLabel: t('board.view.list'),
+            label:
+              view === 'list' ? (
+                <ViewList fontSize="small" />
+              ) : (
+                <ViewListOutlined fontSize="small" />
+              ),
+          },
+        ]}
+      />
+      <button
+        type="button"
+        onClick={onHelp}
+        className="inline-flex min-h-10 items-center gap-2 rounded-[3px] border border-rs-border bg-rs-surface px-3.5 text-sm text-rs-text hover:border-rs-border-strong"
+      >
+        <HelpOutlineOutlinedIcon fontSize="small" aria-hidden="true" />
+        {t('board.help.title')}
+      </button>
+      <div role="status" className="flex w-full items-center gap-1.5 text-[13px]">
+        {summary && (
+          <>
+            <FilterCenterFocusOutlinedIcon
+              sx={{ fontSize: 18 }}
+              className="text-rs-gold-bright"
+              aria-hidden="true"
+            />
+            <strong>{summary.matched}</strong>
+            {summary.rest && ' '}
+            {summary.rest && <span className="text-rs-muted">{summary.rest}</span>}
+          </>
+        )}
       </div>
-      <p role="status" className="min-h-4 text-xs text-rs-muted">
-        {matchCount === null ? '' : t('board.search.results', { count: matchCount })}
-      </p>
     </div>
   )
 }

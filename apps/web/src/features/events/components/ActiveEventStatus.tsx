@@ -2,8 +2,7 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Badge } from '../../../components/ui/Badge'
-import { useNow } from '../../../hooks/useNow'
-import { splitDuration } from '../../../lib/time/duration'
+import { useEventCountdown } from '../hooks/useEventCountdown'
 import { useEvents } from '../hooks/useEvents'
 import type { BingoEvent } from '../types'
 
@@ -12,17 +11,9 @@ type Variant = 'pill' | 'bar'
 /** "13 d 22 h", "Starts in 2 d 4 h" or "Scheduled end reached" for the active event. */
 function useRemainingLabel(event: BingoEvent): string {
   const { t } = useTranslation()
-  const now = useNow()
-  const start = Date.parse(event.start_at)
-  const end = Date.parse(event.end_at)
-  const format = (ms: number) => {
-    const { days, hours, minutes } = splitDuration(ms)
-    return days > 0
-      ? t('shell.event.daysHours', { days, hours })
-      : t('shell.event.hoursMinutes', { hours, minutes })
-  }
-  if (now < start) return t('shell.event.startsIn', { time: format(start - now) })
-  if (now < end) return format(end - now)
+  const { phase, duration } = useEventCountdown(event)
+  if (phase === 'upcoming') return t('shell.event.startsIn', { time: duration })
+  if (phase === 'running') return duration ?? ''
   return t('shell.event.ended')
 }
 

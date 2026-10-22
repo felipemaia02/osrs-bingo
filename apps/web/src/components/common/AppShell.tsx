@@ -11,10 +11,14 @@ import { Wordmark } from './shell/Wordmark'
 
 interface AppShellProps {
   children: ReactNode
+  /** Desktop content padding from the page's mockup (they differ per screen). */
+  desktopPadding?: string
 }
 
+const DEFAULT_DESKTOP_PADDING = 'md:px-10 md:pt-7'
+
 /** Layout v2 shell 4A: docs/design/mockups/shell-a-desktop and shell-a-mobile. */
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }: AppShellProps) {
   const { t } = useTranslation()
   const session = useSession()
   const isAdmin = session.data?.is_admin === true
@@ -47,7 +51,7 @@ export function AppShell({ children }: AppShellProps) {
         <ShellSidebar isAdmin={isAdmin} pendingRegistrations={registrations?.pending ?? null} />
         <main
           aria-label={t('shell.main')}
-          className="min-w-0 flex-1 px-4 pb-[90px] pt-4 md:px-10 md:pb-8 md:pt-7"
+          className={`min-w-0 flex-1 px-4 pb-[90px] pt-4 md:pb-8 ${desktopPadding}`}
         >
           {children}
         </main>

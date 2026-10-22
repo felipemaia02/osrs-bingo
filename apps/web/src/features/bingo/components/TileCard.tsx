@@ -1,155 +1,60 @@
-import { useState } from 'react'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import ImageNotSupportedOutlinedIcon from '@mui/icons-material/ImageNotSupportedOutlined'
-import TimelapseOutlinedIcon from '@mui/icons-material/TimelapseOutlined'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
-import { ProgressBar } from '../../../components/ui/ProgressBar'
+import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
+import { TileImage } from './TileImage'
 
 interface TileCardProps {
   tile: Tile
-  imageUrl?: string | null
   /** Present while a search or difficulty filter is active. */
   match?: TileMatch
-  onSelect?: (tile: Tile) => void
+  selected: boolean
+  onSelect: (tile: Tile) => void
 }
 
-export function TileCard({ tile, imageUrl = tile.imageUrl, match, onSelect }: TileCardProps) {
+/** Compact grid tile (board-a-desktop `.tile`). Filtering dims or highlights it in place. */
+export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
   const { t } = useTranslation()
-  const [imageFailed, setImageFailed] = useState(false)
-  const progress = tile.progress
-  const hasProgress = progress !== null
-  const isComplete = hasProgress && progress >= tile.requirement
-  const isInProgress = hasProgress && progress > 0 && !isComplete
-  const showImage = Boolean(imageUrl) && !imageFailed
+  const label = useTileLabel(tile, match)
   const dimmed = match !== undefined && !match.matches
   const highlighted = match !== undefined && match.matches
-  const stateLabel = isComplete
-    ? t('tile.completed')
-    : isInProgress
-      ? t('tile.inProgress')
-      : hasProgress
-        ? t('tile.notStarted')
-        : t('tile.progressUnavailable')
-  const matchLabel = highlighted
-    ? match.matchedDrop
-      ? t('board.match.drop', { drop: match.matchedDrop })
-      : t('board.match.tile')
-    : dimmed
-      ? t('board.match.none')
-      : null
-  const baseLabel = t('tile.label', {
-    row: tile.row,
-    column: tile.col,
-    name: tile.name,
-    tier: t(`tile.tier.${tile.tier}`),
-    points: tile.points,
-    state: stateLabel,
-  })
-  const label = matchLabel ? `${baseLabel}. ${matchLabel}` : baseLabel
-  const borderClass = highlighted
-    ? 'border-rs-gold ring-1 ring-rs-gold'
-    : isComplete
-      ? 'border-rs-success/80'
-      : 'border-rs-border/60 hover:border-rs-border-strong'
+  const hit = highlighted ? match.matchedDrop : null
 
-  const body = (
-    <>
-      <div className="relative h-24 overflow-hidden border-b border-rs-border/50 bg-rs-inset">
-        {showImage ? (
-          <img
-            src={imageUrl ?? undefined}
-            alt=""
-            loading="lazy"
-            onError={() => setImageFailed(true)}
-            className="h-full w-full object-contain p-1.5 opacity-90 transition-transform duration-300 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="rs-texture flex h-full flex-col items-center justify-center gap-1 text-rs-muted">
-            <ImageNotSupportedOutlinedIcon fontSize="small" aria-hidden="true" />
-            <span className="text-[10px]">{t('tile.imageUnavailable')}</span>
-          </div>
-        )}
-        <div className="absolute left-1.5 top-1.5">
-          <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
-        </div>
-        <div
-          className={`absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-sm border ${
-            isComplete
-              ? 'border-rs-success bg-rs-success text-rs-inset'
-              : 'border-rs-border/60 bg-rs-inset/90 text-rs-muted'
-          }`}
-          title={stateLabel}
-        >
-          {isComplete ? (
-            <CheckCircleIcon sx={{ fontSize: 16 }} aria-hidden="true" />
-          ) : (
-            <TimelapseOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-2.5">
-        <p className="line-clamp-2 min-h-10 text-sm font-semibold leading-5 text-rs-text">
-          {tile.name}
-        </p>
-        {highlighted && (
-          <p className="mt-1 truncate text-[11px] font-semibold text-rs-gold-bright">
-            {matchLabel}
-          </p>
-        )}
-        <div className="mt-auto pt-2">
-          <div className="mb-1 flex items-center justify-between gap-2 text-[11px]">
-            <span className={isComplete ? 'font-semibold text-rs-success' : 'text-rs-muted'}>
-              {stateLabel}
-            </span>
-            <span className="font-semibold text-rs-gold-bright">
-              {t('tile.points', { count: tile.points })}
-            </span>
-          </div>
-          {hasProgress ? (
-            <>
-              <ProgressBar
-                value={progress}
-                max={tile.requirement}
-                label={t('tile.progressLabel', { name: tile.name })}
-                complete={isComplete}
-              />
-              <p className="mt-1 text-right text-[11px] tabular-nums text-rs-muted">
-                {t('tile.progressValue', { current: progress, required: tile.requirement })}
-              </p>
-            </>
-          ) : (
-            <p className="text-right text-[11px] tabular-nums text-rs-muted">
-              {t('tile.requirementValue', { required: tile.requirement })}
-            </p>
-          )}
-        </div>
-      </div>
-    </>
-  )
-
-  const className = `group flex h-full w-full flex-col overflow-hidden rounded-sm border bg-rs-raised text-left transition-[opacity,border-color] ${borderClass} ${
-    dimmed ? 'opacity-35' : ''
-  }`
-
-  if (!onSelect) {
-    return (
-      <article className={className} aria-label={`${tile.name}: ${stateLabel}`}>
-        {body}
-      </article>
-    )
-  }
   return (
     <button
       type="button"
       onClick={() => onSelect(tile)}
       aria-label={label}
-      className={`${className} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rs-gold`}
+      aria-pressed={selected}
+      className={`relative flex min-h-[138px] min-w-0 flex-col gap-1.5 rounded border bg-rs-surface p-[7px] text-left text-rs-text transition-opacity ${
+        highlighted
+          ? 'border-rs-gold-bright shadow-[inset_0_0_0_1px_theme(colors.rs.gold-bright)]'
+          : 'border-rs-border'
+      } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-[3px] outline-rs-gold-bright' : ''}`}
     >
-      {body}
+      <span className="relative block">
+        <TileImage tile={tile} className="h-14 w-full" />
+        <span className="absolute left-1 top-1">
+          <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
+        </span>
+      </span>
+      <span className="line-clamp-2 min-h-8 text-[13px] font-semibold leading-tight">
+        {tile.name}
+      </span>
+      {hit && (
+        <span className="flex items-center gap-0.5 self-start rounded-[2px] bg-rs-gold-bright px-[5px] py-0.5 text-[11px] font-semibold leading-tight text-rs-canvas">
+          <SearchOutlinedIcon sx={{ fontSize: 14 }} aria-hidden="true" />
+          {hit.name} +{hit.progressWeight}
+        </span>
+      )}
+      <span className="mt-auto flex items-baseline justify-between text-xs">
+        <span className="text-rs-muted">
+          {t('board.requirementShort', { count: tile.requirement })}
+        </span>
+        <strong>{t('tile.points', { count: tile.points })}</strong>
+      </span>
     </button>
   )
 }

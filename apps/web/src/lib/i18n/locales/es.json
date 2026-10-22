@@ -9,29 +9,19 @@
     "mySubmissions": "Mis envíos"
   },
   "board": {
-    "eyebrow": "Progreso del evento",
-    "title": "Tablero del Bingo",
-    "description": "Planifica tu caza: abre una casilla para ver qué drops cuentan y cuánto progreso da cada uno.",
-    "eventDescription": "Tablero oficial de {{event}}. Abre una casilla para ver qué drops cuentan.",
     "noActiveEvent": "No hay un evento activo para mostrar.",
     "unavailable": "El tablero del evento activo todavía no está disponible.",
-    "gridTitle": "Objetivos",
-    "tileCount": "{{count}} casillas",
-    "scrollRegion": "Tablero de Bingo desplazable",
     "row": "Fila {{row}}",
     "column": "Columna {{column}}",
-    "rowShort": "{{row}}",
-    "columnShort": "{{column}}",
+    "columnShort": "C{{column}}",
     "match": {
-      "drop": "Cuenta: {{drop}}",
-      "tile": "Coincide con el nombre de la casilla",
-      "none": "No coincide con la búsqueda"
+      "drop": "coincide con la búsqueda: {{drop}}",
+      "tile": "coincide con la búsqueda",
+      "none": "no coincide con la búsqueda"
     },
     "search": {
-      "label": "Buscar casillas o drops",
-      "placeholder": "Busca un drop o casilla, p. ej. jar",
-      "results_one": "{{count}} casilla encontrada",
-      "results_other": "{{count}} casillas encontradas"
+      "label": "¿Dónde cuenta mi drop?",
+      "placeholder": "¿Dónde cuenta mi drop? p. ej. jar, claw, Vorkath"
     },
     "filter": {
       "label": "Dificultad",
@@ -43,9 +33,9 @@
       "list": "Vista de lista"
     },
     "context": {
-      "schedule": "{{start}} — {{end}}",
-      "startsIn": "Empieza {{time}}",
-      "endsIn": "Termina {{time}}",
+      "schedule": "{{start}} → {{end}}",
+      "startsIn": "Empieza en {{time}}",
+      "endsIn": "Termina en {{time}}",
       "endReached": "Fin programado alcanzado",
       "notRegistered": "No estás inscrito en este evento",
       "pending": "Tu inscripción espera aprobación",
@@ -60,26 +50,72 @@
       "excess": "El progreso por encima del requisito no da puntos extra.",
       "bonuses": "Los bonos de fila, columna y especiales los definen las reglas del evento.",
       "details": "Selecciona una casilla para ver los drops aceptados, valores de progreso y notas."
+    },
+    "activeEvent": "Evento activo",
+    "yourTeam": "Tu equipo",
+    "startsInLabel": "Empieza en",
+    "endsInLabel": "Termina en",
+    "progressUnavailableShort": "Progreso no disponible por ahora",
+    "progressNotice": {
+      "title": "Progreso no disponible.",
+      "body": "El envío de drops aún no existe — por ahora, usa la búsqueda para ver dónde cuenta cada drop."
+    },
+    "status": {
+      "search_one": "{{count}} casilla acepta “{{query}}”",
+      "search_other": "{{count}} casillas aceptan “{{query}}”",
+      "searchTier_one": "{{count}} casilla {{tier}} acepta “{{query}}”",
+      "searchTier_other": "{{count}} casillas {{tier}} aceptan “{{query}}”",
+      "tier_one": "{{count}} casilla {{tier}}",
+      "tier_other": "{{count}} casillas {{tier}}",
+      "rest_one": "— la otra sigue en su lugar, atenuada.",
+      "rest_other": "— las otras {{count}} siguen en su lugar, atenuadas.",
+      "short": {
+        "search": "{{count}} aceptan “{{query}}”",
+        "tier": "{{count}} {{tier}}"
+      }
+    },
+    "requirementShort": "Req. {{count}}",
+    "gridLabel": "Tablero de 6 por 6",
+    "pointsAndRequirement": "{{points}} pts · Req. {{requirement}}",
+    "attribution": {
+      "prefix": "Imágenes:",
+      "fallback": "Sin imagen, la casilla muestra un escudo con las iniciales."
+    },
+    "panel": {
+      "label": "Detalle de la casilla",
+      "position": "Fila {{row}} · Columna {{column}}",
+      "close": "Cerrar detalle",
+      "prompt": "Selecciona una casilla para ver los drops aceptados y cómo se completa.",
+      "completes": "Se completa cuando el progreso llega a <strong>{{requirement}}</strong>. Vale <strong>{{points}} pts una sola vez</strong> — el progreso extra no da puntos.",
+      "teamProgress": "Progreso de tu equipo: no disponible",
+      "drops": "Drops aceptados ({{count}})",
+      "weightHint": "peso = progreso",
+      "imageSource": "Imagen: OSRS Wiki — {{name}}"
+    },
+    "rowSummary": {
+      "some": "{{count}} de {{total}} coinciden con la búsqueda",
+      "none": "ninguna coincide con la búsqueda"
+    },
+    "miniMap": {
+      "label": "Minimapa del tablero",
+      "title": "Mapa 6×6",
+      "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver en la lista",
+      "legend": "F = Fácil · M = Medio · D = Difícil. Toca una celda para ir a ella en la lista."
     }
   },
   "tile": {
-    "completed": "Completada",
-    "inProgress": "En progreso",
-    "notStarted": "Sin iniciar",
-    "progressUnavailable": "Progreso no disponible",
-    "imageUnavailable": "Imagen no disponible",
     "points": "{{count}} pts",
-    "progressLabel": "Progreso de {{name}}",
-    "progressValue": "{{current}} / {{required}}",
-    "requirementValue": "Requisito: {{required}}",
-    "imageSource": "Fuente de la imagen: OSRS Wiki",
     "tier": {
       "Low": "Fácil",
       "Mid": "Media",
       "High": "Difícil"
     },
-    "label": "Fila {{row}}, columna {{column}}: {{name}}, {{tier}}, {{points}} puntos, {{state}}",
-    "progressPending": "El progreso del equipo aparecerá cuando el envío de drops y la puntuación estén disponibles."
+    "label": "{{name}}, fila {{row}} columna {{column}}, {{tier}}, {{points}} puntos",
+    "tierLetter": {
+      "Low": "F",
+      "Mid": "M",
+      "High": "D"
+    }
   },
   "common": {
     "loading": "Cargando…",
