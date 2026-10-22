@@ -81,19 +81,20 @@ const SPECIAL: Record<number, Partial<BoardCardSnapshot>> = {
   },
 }
 
-function makeBoard(): EventBoard {
+function makeBoard(size = 6): EventBoard {
   return {
     event_id: 'event-1',
     status: 'published',
     revision: 1,
+    size,
     complete: true,
     created_at: '2026-10-01T12:00:00Z',
     updated_at: '2026-10-01T12:00:00Z',
     published_at: '2026-10-01T12:00:00Z',
-    positions: Array.from({ length: 36 }, (_, index) => ({
+    positions: Array.from({ length: size * size }, (_, index) => ({
       position: index + 1,
-      row: Math.floor(index / 6) + 1,
-      column: (index % 6) + 1,
+      row: Math.floor(index / size) + 1,
+      column: (index % size) + 1,
       card: snapshot(index + 1, SPECIAL[index + 1]),
     })),
   }
@@ -352,6 +353,14 @@ describe('Board v2', () => {
       getItem.mockRestore()
       setItem.mockRestore()
     })
+  })
+
+  it('draws the published board at its own size', async () => {
+    vi.mocked(fetchPublicBoard).mockResolvedValue(makeBoard(3))
+    await renderBoard()
+
+    const grid = screen.getByRole('region', { name: '3 by 3 board' })
+    expect(within(grid).getAllByRole('button')).toHaveLength(9)
   })
 
   describe('mobile', () => {

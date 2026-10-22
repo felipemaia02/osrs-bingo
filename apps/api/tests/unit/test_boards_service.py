@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 from bson import ObjectId
+from pydantic import ValidationError
 
 from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.auth.schemas import CurrentUser
@@ -141,7 +142,7 @@ async def test_retired_card_already_on_draft_board_can_be_saved_again(
             }
         ]
     )
-    boards.save_draft.side_effect = lambda event_id, positions, revision, actor: saved_board(
+    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, size: saved_board(
         [position.model_dump(mode="python") for position in positions]
     )
     service = BoardService(boards, cards, events)
@@ -167,7 +168,12 @@ async def test_save_pins_exact_card_revision_values(
     )
 
     async def save(
-        event_id: str, positions: list[object], expected_revision: int, actor_id: str
+        event_id: str,
+        positions: list[object],
+        expected_revision: int,
+        actor_id: str,
+        *,
+        size: int,
     ) -> BoardDocument:
         serialized = [position.model_dump(mode="python") for position in positions]
         return saved_board(serialized)
@@ -225,3 +231,67 @@ def test_publishable_board_requires_every_unique_position_and_card() -> None:
     assert is_publishable_board({"positions": positions}) is True
     positions[-1]["card"] = positions[0]["card"]
     assert is_publishable_board({"positions": positions}) is False
+
+
+def full_board(size: int, filled: int | None = None) -> dict[str, object]:
+    count = size**2 if filled is None else filled
+    return {
+        "size": size,
+        "positions": [
+            {
+                "position": position,
+                "card": {"card_id": f"card-{position}", "fallback_image_accepted": True},
+            }
+            for position in range(1, count + 1)
+        ],
+    }
+
+
+async def test_save_computes_row_and_column_from_board_size(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, size: {
+        **saved_board([position.model_dump(mode="python") for position in positions]),
+        "size": size,
+    }
+    payload = BoardSave(
+        expected_revision=0,
+        size=4,
+        positions=[{"position": 6, "card_id": CARD_ID, "card_revision": 1}],
+    )
+
+    result = await BoardService(boards, cards, events).save(EVENT_ID, payload, ADMIN)
+
+    assert result.size == 4
+    assert (result.positions[0].row, result.positions[0].column) == (2, 2)
+    assert boards.save_draft.await_args.kwargs["size"] == 4
+
+
+@pytest.mark.parametrize("size", [2, 7])
+def test_board_size_must_be_between_three_and_six(size: int) -> None:
+    with pytest.raises(ValidationError):
+        BoardSave(expected_revision=0, size=size, positions=[])
+
+
+def test_board_positions_must_fit_the_board_size() -> None:
+    with pytest.raises(ValidationError, match="fit the board size"):
+        BoardSave(
+            expected_revision=0,
+            size=4,
+            positions=[{"position": 17, "card_id": CARD_ID, "card_revision": 1}],
+        )
+
+
+def test_publishable_board_requires_every_position_of_its_size() -> None:
+    assert is_publishable_board(full_board(5, filled=24)) is False
+    assert is_publishable_board(full_board(5)) is True
+    assert is_publishable_board(full_board(3)) is True
+
+
+def test_board_without_size_is_six_by_six() -> None:
+    legacy = full_board(6)
+    del legacy["size"]
+
+    assert is_publishable_board(legacy) is True
+    assert BoardService._response(saved_board([])).size == 6

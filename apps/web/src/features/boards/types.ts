@@ -34,6 +34,7 @@ export interface EventBoard {
   event_id: string
   status: 'draft' | 'published'
   revision: number
+  size: number
   complete: boolean
   positions: BoardPosition[]
   created_at: string
@@ -43,6 +44,7 @@ export interface EventBoard {
 
 export interface BoardSavePayload {
   expected_revision: number
+  size: number
   positions: Array<{ position: number; card_id: string; card_revision: number }>
 }
 

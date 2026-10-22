@@ -11,6 +11,10 @@ from app.modules.tiles.schemas import (
     WikiImage,
 )
 
+MIN_BOARD_SIZE = 3
+MAX_BOARD_SIZE = 6
+DEFAULT_BOARD_SIZE = MAX_BOARD_SIZE
+
 
 class BoardStatus(StrEnum):
     DRAFT = "draft"
@@ -20,7 +24,7 @@ class BoardStatus(StrEnum):
 class BoardPositionInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    position: int = Field(ge=1, le=36)
+    position: int = Field(ge=1, le=MAX_BOARD_SIZE**2)
     card_id: str = Field(min_length=24, max_length=24)
     card_revision: int = Field(ge=1)
 
@@ -29,12 +33,15 @@ class BoardSave(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     expected_revision: int = Field(ge=0)
-    positions: list[BoardPositionInput] = Field(default_factory=list, max_length=36)
+    size: int = Field(default=DEFAULT_BOARD_SIZE, ge=MIN_BOARD_SIZE, le=MAX_BOARD_SIZE)
+    positions: list[BoardPositionInput] = Field(default_factory=list, max_length=MAX_BOARD_SIZE**2)
 
     @model_validator(mode="after")
     def unique_positions_and_cards(self) -> "BoardSave":
         positions = [item.position for item in self.positions]
         cards = [item.card_id for item in self.positions]
+        if any(position > self.size**2 for position in positions):
+            raise ValueError("Board positions must fit the board size")
         if len(set(positions)) != len(positions):
             raise ValueError("Board positions must be unique")
         if len(set(cards)) != len(cards):
@@ -70,6 +77,7 @@ class BoardResponse(BaseModel):
     event_id: str
     status: BoardStatus
     revision: int
+    size: int
     complete: bool
     positions: list[BoardPositionResponse]
     created_at: datetime

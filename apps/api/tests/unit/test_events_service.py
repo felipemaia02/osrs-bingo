@@ -120,7 +120,7 @@ async def test_activation_requires_complete_board(
     repository.get.return_value = event_document()
     boards.get_by_event.return_value = {"positions": []}
 
-    with pytest.raises(ConflictError, match="36-card board"):
+    with pytest.raises(ConflictError, match="complete valid board"):
         await service.activate("event-id")
 
     repository.activate.assert_not_awaited()

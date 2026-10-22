@@ -60,7 +60,7 @@ it('makes every overview card a complete navigation link', async () => {
     ['/admin/events', 'Create, activate and finish. Only one can be active.'],
     ['/admin/teams', 'Approve requests and build teams for the draft event.'],
     ['/admin/cards', 'Bosses, drops, progress weights and revisions.'],
-    ['/admin/boards', 'Choose the 36 cards and their positions for each event.'],
+    ['/admin/boards', 'Choose the board size, cards and positions for each event.'],
     ['/admin/administrators', 'App roles, independent of Discord.'],
   ]
   for (const [path, description] of destinations) {
@@ -207,7 +207,7 @@ describe('administration overview status', () => {
     await waitFor(() => expect(teams).toHaveTextContent('4 pending3 unassigned'))
     const cards = await cardFor('Bosses, drops, progress weights and revisions.')
     await waitFor(() => expect(cards).toHaveTextContent('36 active1 retired'))
-    const boards = await cardFor('Choose the 36 cards and their positions for each event.')
+    const boards = await cardFor('Choose the board size, cards and positions for each event.')
     await waitFor(() => expect(boards).toHaveTextContent('Winter 2026 · 30/36'))
     const admins = await cardFor('App roles, independent of Discord.')
     await waitFor(() => expect(admins).toHaveTextContent('1 administrator'))
@@ -228,7 +228,7 @@ describe('administration overview status', () => {
     const cards = screen.getByText('Bosses, drops, progress weights and revisions.').closest('a')!
     expect(cards).not.toHaveTextContent(/\d/)
     const boards = screen
-      .getByText('Choose the 36 cards and their positions for each event.')
+      .getByText('Choose the board size, cards and positions for each event.')
       .closest('a')!
     expect(boards).not.toHaveTextContent('/36')
     expect(screen.queryByText(/pending/)).not.toBeInTheDocument()

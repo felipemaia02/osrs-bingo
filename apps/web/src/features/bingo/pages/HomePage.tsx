@@ -7,6 +7,7 @@ import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { usePublicBoard } from '../../boards/hooks/useBoards'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
+import { DEFAULT_BOARD_SIZE } from '../../boards/draft'
 import { boardToTiles, isFiltering, matchTile, tileListItemId } from '../boardTiles'
 import { BingoBoard } from '../components/BingoBoard'
 import { BoardToolbar, SearchField } from '../components/BoardToolbar'
@@ -23,6 +24,8 @@ import type { TierFilter, Tile, TileMatch } from '../types'
 
 interface BoardState {
   tiles: Tile[]
+  /** Rows (and columns) of the published board. */
+  size: number
   matches: Map<string, TileMatch> | null
   summary: FilterSummary | null
   search: string
@@ -53,6 +56,7 @@ export function HomePage() {
   const summary = useFilterSummary(matchCount, tiles.length, search, tier)
   const state: BoardState = {
     tiles,
+    size: board.data?.size ?? DEFAULT_BOARD_SIZE,
     matches,
     summary,
     search,
@@ -115,6 +119,7 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
         {view === 'grid' ? (
           <BingoBoard
             tiles={state.tiles}
+            size={state.size}
             matches={state.matches}
             selectedId={state.selected?.id ?? null}
             onSelect={select}
@@ -168,6 +173,7 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
       </p>
       <MiniMap
         tiles={state.tiles}
+        size={state.size}
         matches={state.matches}
         summary={state.summary}
         currentId={currentId}

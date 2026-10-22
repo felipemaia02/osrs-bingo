@@ -39,7 +39,7 @@ const ERROR_TRANSLATION: Record<string, string> = {
   'Only draft events can be edited': 'events.errors.readOnly',
   'Event status does not allow this transition': 'events.errors.invalidTransition',
   'Event not found': 'events.errors.notFound',
-  'A complete valid 36-card board is required': 'events.errors.boardRequired',
+  'A complete valid board is required': 'events.errors.boardRequired',
 }
 
 export function EventsPage({ management = false }: { management?: boolean }) {

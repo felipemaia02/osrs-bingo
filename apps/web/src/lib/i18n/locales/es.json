@@ -75,7 +75,7 @@
       }
     },
     "requirementShort": "Req. {{count}}",
-    "gridLabel": "Tablero de 6 por 6",
+    "gridLabel": "Tablero de {{size}} por {{size}}",
     "pointsAndRequirement": "{{points}} pts · Req. {{requirement}}",
     "attribution": {
       "prefix": "Imágenes:",
@@ -98,7 +98,7 @@
     },
     "miniMap": {
       "label": "Minimapa del tablero",
-      "title": "Mapa 6×6",
+      "title": "Mapa {{size}}×{{size}}",
       "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver en la lista",
       "legend": "F = Fácil · M = Medio · D = Difícil. Toca una celda para ir a ella en la lista."
     }
@@ -186,7 +186,7 @@
       "readOnly": "Solo se pueden editar eventos en borrador.",
       "invalidTransition": "Este evento no permite ese cambio de estado.",
       "notFound": "No se encontró el evento.",
-      "boardRequired": "Completa y guarda las 36 posiciones del tablero antes de activar el evento."
+      "boardRequired": "Completa y guarda todas las posiciones del tablero antes de activar el evento."
     },
     "publicEyebrow": "Eventos de la comunidad",
     "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción."
@@ -346,7 +346,7 @@
     "eventsDescription": "Crear, activar y finalizar. Solo uno puede estar activo.",
     "teamsDescription": "Aprueba solicitudes y arma los equipos del evento en borrador.",
     "cardsDescription": "Bosses, drops, pesos de progreso y revisiones.",
-    "boardsDescription": "Elige las 36 cartas y sus posiciones en cada evento.",
+    "boardsDescription": "Elige el tamaño del tablero, las cartas y sus posiciones en cada evento.",
     "rolesDescription": "Roles de la app, independientes de Discord.",
     "rankingDescription": "Compara equipos y contribuciones. Aún no disponible.",
     "rankingUnavailable": "La puntuación del evento aún no está disponible. La clasificación y las contribuciones aparecerán cuando las reglas y las actividades aceptadas estén definidas.",
@@ -518,6 +518,14 @@
       "remove": "Quitar",
       "swapHint": "Toca la posición para cambiar con {{position}}.",
       "badge": "Borrador · {{filled}}/{{total}}"
+    },
+    "size": {
+      "label": "Tamaño del tablero",
+      "dimensions": "{{size}}×{{size}}",
+      "shrinkTitle": "¿Reducir a {{size}}×{{size}}?",
+      "shrinkConfirm": "Reducir y quitar",
+      "shrinkConfirmation_one": "{{count}} carta está fuera del área {{size}}×{{size}} y se quitará del borrador: {{names}}. Nada se guarda hasta que guardes el tablero.",
+      "shrinkConfirmation_other": "{{count}} cartas están fuera del área {{size}}×{{size}} y se quitarán del borrador: {{names}}. Nada se guarda hasta que guardes el tablero."
     }
   },
   "brand": {

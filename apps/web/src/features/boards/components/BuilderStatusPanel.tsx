@@ -8,17 +8,19 @@ import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
 import type { CardDifficulty } from '../../cards/types'
 import { TIER_TONE } from '../../bingo/tierTone'
-import { BOARD_SIZE } from '../draft'
+import { BoardSizeControl } from './BoardSizeControl'
 
 const TIERS: CardDifficulty[] = ['Low', 'Mid', 'High']
 
 interface BuilderStatusPanelProps {
   editable: boolean
+  size: number
   filled: number
   tierCounts: Record<CardDifficulty, number>
   fillCount: number
   dirty: boolean
   saving: boolean
+  onResize: (size: number) => void
   onFill: () => void
   onClear: () => void
   onSave: () => void
@@ -27,17 +29,20 @@ interface BuilderStatusPanelProps {
 /** State, fill progress, difficulty balance and board actions (boards-a-desktop). */
 export function BuilderStatusPanel({
   editable,
+  size,
   filled,
   tierCounts,
   fillCount,
   dirty,
   saving,
+  onResize,
   onFill,
   onClear,
   onSave,
 }: BuilderStatusPanelProps) {
   const { t } = useTranslation()
-  const empty = BOARD_SIZE - filled
+  const total = size * size
+  const empty = total - filled
   return (
     <div className="flex flex-wrap items-center gap-[18px] rounded border border-rs-border bg-rs-surface px-3.5 py-2.5">
       <Badge tone="neutral" className="text-xs">
@@ -50,20 +55,21 @@ export function BuilderStatusPanel({
       </Badge>
       <div className="flex flex-col gap-1">
         <span className="text-[13px]">
-          <strong>{t('boards.filledOf', { filled, total: BOARD_SIZE })}</strong>{' '}
+          <strong>{t('boards.filledOf', { filled, total: total })}</strong>{' '}
           <span className="text-rs-muted">{t('boards.filledDetail', { count: empty })}</span>
         </span>
         <div
           role="progressbar"
           aria-valuemin={0}
-          aria-valuemax={BOARD_SIZE}
+          aria-valuemax={total}
           aria-valuenow={filled}
-          aria-label={t('boards.filledOf', { filled, total: BOARD_SIZE })}
+          aria-label={t('boards.filledOf', { filled, total: total })}
           className="h-1.5 w-60 overflow-hidden rounded-[2px] bg-rs-inset"
         >
-          <div className="h-full bg-rs-gold" style={{ width: `${(filled / BOARD_SIZE) * 100}%` }} />
+          <div className="h-full bg-rs-gold" style={{ width: `${(filled / total) * 100}%` }} />
         </div>
       </div>
+      <BoardSizeControl size={size} editable={editable && !saving} onChange={onResize} />
       <div className="flex items-center gap-2 text-[13px]">
         <span className="text-rs-muted">{t('boards.difficulty')}</span>
         {TIERS.map((tier) => (

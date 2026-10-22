@@ -75,7 +75,7 @@
       }
     },
     "requirementShort": "Req. {{count}}",
-    "gridLabel": "6 by 6 board",
+    "gridLabel": "{{size}} by {{size}} board",
     "pointsAndRequirement": "{{points}} pts · Req. {{requirement}}",
     "attribution": {
       "prefix": "Images:",
@@ -98,7 +98,7 @@
     },
     "miniMap": {
       "label": "Board mini-map",
-      "title": "6×6 map",
+      "title": "{{size}}×{{size}} map",
       "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show in the list",
       "legend": "E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list."
     }
@@ -186,7 +186,7 @@
       "readOnly": "Only draft events can be edited.",
       "invalidTransition": "This event cannot perform that status change.",
       "notFound": "The event was not found.",
-      "boardRequired": "Complete and save all 36 board positions before activating the event."
+      "boardRequired": "Complete and save every board position before activating the event."
     },
     "publicEyebrow": "Community events",
     "publicDescription": "Discover Bingo events and follow your registration."
@@ -346,7 +346,7 @@
     "eventsDescription": "Create, activate and finish. Only one can be active.",
     "teamsDescription": "Approve requests and build teams for the draft event.",
     "cardsDescription": "Bosses, drops, progress weights and revisions.",
-    "boardsDescription": "Choose the 36 cards and their positions for each event.",
+    "boardsDescription": "Choose the board size, cards and positions for each event.",
     "rolesDescription": "App roles, independent of Discord.",
     "rankingDescription": "Compare teams and contributions. Not available yet.",
     "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
@@ -518,6 +518,14 @@
       "remove": "Remove",
       "swapHint": "Tap the position to swap with {{position}}.",
       "badge": "Draft · {{filled}}/{{total}}"
+    },
+    "size": {
+      "label": "Board size",
+      "dimensions": "{{size}}×{{size}}",
+      "shrinkTitle": "Shrink to {{size}}×{{size}}?",
+      "shrinkConfirm": "Shrink and remove",
+      "shrinkConfirmation_one": "{{count}} card is outside the {{size}}×{{size}} area and will be removed from the draft: {{names}}. Nothing is saved until you save the board.",
+      "shrinkConfirmation_other": "{{count}} cards are outside the {{size}}×{{size}} area and will be removed from the draft: {{names}}. Nothing is saved until you save the board."
     }
   },
   "brand": {

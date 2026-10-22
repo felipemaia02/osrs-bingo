@@ -7,8 +7,6 @@ import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
 
-const ROWS = [1, 2, 3, 4, 5, 6]
-
 interface TileListProps {
   tiles: Tile[]
   matches: Map<string, TileMatch> | null
@@ -19,11 +17,11 @@ interface TileListProps {
 /** Row-grouped list (board-b-mobile); also the desktop list view. Never reorders tiles. */
 export function TileList({ tiles, matches, selectedId = null, onSelect }: TileListProps) {
   const { t } = useTranslation()
+  const rows = [...new Set(tiles.map((tile) => tile.row))].sort((a, b) => a - b)
   return (
     <div className="flex flex-col gap-3">
-      {ROWS.map((row) => {
+      {rows.map((row) => {
         const rowTiles = tiles.filter((tile) => tile.row === row).sort((a, b) => a.col - b.col)
-        if (!rowTiles.length) return null
         const hits = matches
           ? rowTiles.filter((tile) => matches.get(tile.id)?.matches).length
           : null

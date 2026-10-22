@@ -86,7 +86,7 @@ Use `@mui/icons-material` as the only interface icon system:
 
 Content must remain usable from 320 px upward, with touch targets of at least 44 px on mobile. Desktop uses a persistent sidebar; mobile uses a header, an event bar and a bottom bar (shell 4A in `docs/design/`).
 
-The 6×6 board never compresses six readable columns into a phone viewport: on mobile it is shown as a row-grouped list, with the 6×6 mini-map from mockup 1B above it once the board v2 is implemented.
+The board (3×3 to 6×6, feature 014; the mockups show 6×6) never compresses its columns into a phone viewport: on mobile it is shown as a row-grouped list, with the 6×6 mini-map from mockup 1B above it once the board v2 is implemented.
 
 ## Layout v2 migration
 

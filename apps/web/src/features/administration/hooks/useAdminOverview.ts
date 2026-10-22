@@ -1,18 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
+import { DEFAULT_BOARD_SIZE } from '../../boards/draft'
 import { useAdminBoard } from '../../boards/hooks/useBoards'
 import { useCards } from '../../cards/hooks/useCards'
 import { useEvents } from '../../events/hooks/useEvents'
 import { useDraftRegistrationCounts } from '../../teams/hooks/useDraftRegistrationCounts'
 import { fetchUsers } from '../api/administrationApi'
 
-export const BOARD_SIZE = 36
-
 export interface AdminOverview {
   events: { active: number; draft: number; finished: number } | null
   registrations: { pending: number; unassigned: number } | null
   cards: { active: number; retired: number } | null
   /** Most recently created draft event's board fill; null when there is no draft event. */
-  draftBoard: { eventName: string; filled: number } | null
+  draftBoard: { eventName: string; filled: number; total: number } | null
   administrators: number | null
 }
 
@@ -48,7 +47,11 @@ export function useAdminOverview(): AdminOverview {
       : null,
     draftBoard:
       latestDraft && board.isSuccess
-        ? { eventName: latestDraft.name, filled: board.data?.positions.length ?? 0 }
+        ? {
+            eventName: latestDraft.name,
+            filled: board.data?.positions.length ?? 0,
+            total: (board.data?.size ?? DEFAULT_BOARD_SIZE) ** 2,
+          }
         : null,
     administrators: directory.data?.admin_count ?? null,
   }

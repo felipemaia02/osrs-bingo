@@ -27,6 +27,8 @@ class BoardRepository:
         positions: list[BoardPositionResponse],
         expected_revision: int,
         actor_id: str,
+        *,
+        size: int,
     ) -> BoardDocument | None:
         object_id = self._object_id(event_id)
         if object_id is None:
@@ -39,6 +41,7 @@ class BoardRepository:
                 "event_id": object_id,
                 "status": BoardStatus.DRAFT,
                 "revision": 1,
+                "size": size,
                 "positions": serialized,
                 "created_by": actor_id,
                 "updated_by": actor_id,
@@ -58,6 +61,7 @@ class BoardRepository:
             },
             {
                 "$set": {
+                    "size": size,
                     "positions": serialized,
                     "updated_by": actor_id,
                     "updated_at": now,

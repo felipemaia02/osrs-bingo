@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import { initialsOf } from '../../../lib/text/initials'
+import { axisOf } from '../../boards/draft'
+import { gridColumns } from '../../boards/gridStyle'
 import type { FilterSummary } from '../hooks/useFilterSummary'
 import type { Tile, TileMatch, TileTier } from '../types'
 
-const POSITIONS = [1, 2, 3, 4, 5, 6]
-const GRID = 'grid grid-cols-[14px_repeat(6,minmax(0,1fr))] gap-1'
+const AXIS_PX = 14
 const LETTER_COLOR: Record<TileTier, string> = {
   Low: 'text-rs-success-text',
   Mid: 'text-rs-gold-bright',
@@ -13,15 +14,18 @@ const LETTER_COLOR: Record<TileTier, string> = {
 
 interface MiniMapProps {
   tiles: Tile[]
+  size: number
   matches: Map<string, TileMatch> | null
   summary: FilterSummary | null
   currentId: string | null
   onJump: (tile: Tile) => void
 }
 
-/** Mobile 6×6 overview (board-b-mobile): initials and difficulty letter per cell; tap to jump. */
-export function MiniMap({ tiles, matches, summary, currentId, onJump }: MiniMapProps) {
+/** Mobile size×size overview (board-b-mobile): initials and difficulty letter per cell; tap to jump. */
+export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: MiniMapProps) {
   const { t } = useTranslation()
+  const positions = axisOf(size)
+  const grid = gridColumns(AXIS_PX, size)
   const axis = 'text-center text-[11px] font-semibold text-rs-muted'
 
   return (
@@ -30,23 +34,23 @@ export function MiniMap({ tiles, matches, summary, currentId, onJump }: MiniMapP
       className="flex flex-col gap-1.5 rounded border border-rs-border bg-rs-surface p-2.5"
     >
       <div className="flex items-baseline justify-between">
-        <strong className="text-[13px]">{t('board.miniMap.title')}</strong>
+        <strong className="text-[13px]">{t('board.miniMap.title', { size })}</strong>
         {summary && <span className="text-xs">{summary.short}</span>}
       </div>
-      <div className={GRID} aria-hidden="true">
+      <div className="grid gap-1" style={grid} aria-hidden="true">
         <span />
-        {POSITIONS.map((col) => (
+        {positions.map((col) => (
           <span key={col} className={axis}>
             {col}
           </span>
         ))}
       </div>
-      {POSITIONS.map((row) => (
-        <div key={row} className={GRID}>
+      {positions.map((row) => (
+        <div key={row} className="grid gap-1" style={grid}>
           <span className={`${axis} self-center`} aria-hidden="true">
             {row}
           </span>
-          {POSITIONS.map((col) => {
+          {positions.map((col) => {
             const tile = tiles.find((item) => item.row === row && item.col === col)
             if (!tile) return <span key={col} aria-hidden="true" />
             const match = matches?.get(tile.id)

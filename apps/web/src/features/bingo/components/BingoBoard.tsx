@@ -1,53 +1,64 @@
 import { useTranslation } from 'react-i18next'
+import { axisOf } from '../../boards/draft'
+import { gridColumns, sameCellWidth } from '../../boards/gridStyle'
 import type { Tile, TileMatch } from '../types'
 import { TileCard } from './TileCard'
 
-const GRID_POSITIONS = [1, 2, 3, 4, 5, 6]
 const WIKI_URL = 'https://oldschool.runescape.wiki/'
-const GRID_COLUMNS = 'grid grid-cols-[20px_repeat(6,minmax(0,1fr))] gap-2'
+const AXIS_PX = 20
+const GAP_PX = 8
 
 interface BingoBoardProps {
   tiles: Tile[]
+  /** Rows (and columns) of the published board. */
+  size: number
   /** Per-tile match state while a search or filter is active; null when not filtering. */
   matches: Map<string, TileMatch> | null
   selectedId: string | null
   onSelect: (tile: Tile) => void
 }
 
-/** Labeled 6×6 grid (board-a-desktop). Positions never move when filtering. */
-export function BingoBoard({ tiles, matches, selectedId, onSelect }: BingoBoardProps) {
+/** Labeled size×size grid (board-a-desktop). Positions never move when filtering. */
+export function BingoBoard({ tiles, size, matches, selectedId, onSelect }: BingoBoardProps) {
   const { t } = useTranslation()
   const axis = 'text-center text-xs font-semibold text-rs-muted'
+  const positions = axisOf(size)
+  const grid = gridColumns(AXIS_PX, size)
   return (
-    <section aria-label={t('board.gridLabel')} className="flex min-w-0 flex-1 flex-col gap-2">
-      <div className={GRID_COLUMNS} aria-hidden="true">
-        <span />
-        {GRID_POSITIONS.map((col) => (
-          <span key={col} className={axis}>
-            {col}
-          </span>
+    <section
+      aria-label={t('board.gridLabel', { size })}
+      className="flex min-w-0 flex-1 flex-col gap-2"
+    >
+      <div className="flex flex-col gap-2" style={sameCellWidth(AXIS_PX, GAP_PX, size)}>
+        <div className="grid gap-2" style={grid} aria-hidden="true">
+          <span />
+          {positions.map((col) => (
+            <span key={col} className={axis}>
+              {col}
+            </span>
+          ))}
+        </div>
+        {positions.map((row) => (
+          <div key={row} className="grid items-stretch gap-2" style={grid}>
+            <span className={`${axis} self-center`} aria-hidden="true">
+              {row}
+            </span>
+            {positions.map((col) => {
+              const tile = tiles.find((item) => item.row === row && item.col === col)
+              if (!tile) return <span key={col} aria-hidden="true" />
+              return (
+                <TileCard
+                  key={tile.id}
+                  tile={tile}
+                  match={matches?.get(tile.id)}
+                  selected={tile.id === selectedId}
+                  onSelect={onSelect}
+                />
+              )
+            })}
+          </div>
         ))}
       </div>
-      {GRID_POSITIONS.map((row) => (
-        <div key={row} className={`${GRID_COLUMNS} items-stretch`}>
-          <span className={`${axis} self-center`} aria-hidden="true">
-            {row}
-          </span>
-          {GRID_POSITIONS.map((col) => {
-            const tile = tiles.find((item) => item.row === row && item.col === col)
-            if (!tile) return <span key={col} aria-hidden="true" />
-            return (
-              <TileCard
-                key={tile.id}
-                tile={tile}
-                match={matches?.get(tile.id)}
-                selected={tile.id === selectedId}
-                onSelect={onSelect}
-              />
-            )
-          })}
-        </div>
-      ))}
       <p className="m-0 ml-7 mt-1.5 text-xs text-rs-muted">
         {t('board.attribution.prefix')}{' '}
         <a

@@ -5,6 +5,7 @@ from app.modules.auth.schemas import CurrentUser
 from app.modules.boards.models import BoardDocument
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import (
+    DEFAULT_BOARD_SIZE,
     BoardCardSnapshot,
     BoardPositionResponse,
     BoardResponse,
@@ -16,7 +17,7 @@ from app.modules.tiles.repository import CardRepository
 from app.modules.tiles.schemas import CardRevisionResponse, CardStatus
 
 BOARD_CHANGED_DETAIL = "Board changed while you were editing"
-BOARD_REQUIRED_DETAIL = "A complete valid 36-card board is required"
+BOARD_REQUIRED_DETAIL = "A complete valid board is required"
 
 
 class BoardService:
@@ -63,13 +64,13 @@ class BoardService:
             positions.append(
                 BoardPositionResponse(
                     position=selected.position,
-                    row=(selected.position - 1) // 6 + 1,
-                    column=(selected.position - 1) % 6 + 1,
+                    row=(selected.position - 1) // payload.size + 1,
+                    column=(selected.position - 1) % payload.size + 1,
                     card=snapshot,
                 )
             )
         document = await self._boards.save_draft(
-            event_id, positions, payload.expected_revision, actor.id
+            event_id, positions, payload.expected_revision, actor.id, size=payload.size
         )
         if document is None:
             raise ConflictError(BOARD_CHANGED_DETAIL)
@@ -112,6 +113,7 @@ class BoardService:
             event_id=str(document["event_id"]),
             status=document["status"],
             revision=document["revision"],
+            size=board_size(document),
             complete=is_publishable_board(document),
             positions=positions,
             created_at=document["created_at"],
@@ -120,15 +122,21 @@ class BoardService:
         )
 
 
+def board_size(document: BoardDocument | dict[str, Any]) -> int:
+    """Boards saved before sizes existed are 6x6."""
+    return int(document.get("size", DEFAULT_BOARD_SIZE))
+
+
 def is_publishable_board(document: BoardDocument | dict[str, Any] | None) -> bool:
     if document is None:
         return False
+    total = board_size(document) ** 2
     positions = document.get("positions", [])
-    if len(positions) != 36:
+    if len(positions) != total:
         return False
     position_numbers = {position.get("position") for position in positions}
     card_ids = {position.get("card", {}).get("card_id") for position in positions}
-    if position_numbers != set(range(1, 37)) or len(card_ids) != 36 or None in card_ids:
+    if position_numbers != set(range(1, total + 1)) or len(card_ids) != total or None in card_ids:
         return False
     return all(
         position.get("card", {}).get("wiki_image") is not None

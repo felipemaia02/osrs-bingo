@@ -20,6 +20,7 @@ def board_response() -> BoardResponse:
         event_id=EVENT_ID,
         status=BoardStatus.DRAFT,
         revision=1,
+        size=6,
         complete=False,
         positions=[],
         created_at=NOW,
@@ -76,6 +77,7 @@ async def test_admin_can_save_draft_board(
     services[1].save.assert_awaited_once()
     assert services[1].save.await_args.args[0] == EVENT_ID
     assert services[1].save.await_args.args[1].expected_revision == 0
+    assert services[1].save.await_args.args[1].size == 6
     assert services[1].save.await_args.args[2].is_admin is True
 
 
@@ -93,4 +95,17 @@ async def test_regular_user_cannot_read_or_change_draft_board(
         )
     ).status_code == 403
     services[1].get_admin.assert_not_awaited()
+    services[1].save.assert_not_awaited()
+
+
+async def test_board_save_rejects_size_outside_three_to_six(
+    client: AsyncClient, services: tuple[AsyncMock, AsyncMock]
+) -> None:
+    response = await client.put(
+        f"/admin/events/{EVENT_ID}/board",
+        json={"expected_revision": 0, "size": 7, "positions": []},
+        headers={"Origin": "http://localhost:5173"},
+    )
+
+    assert response.status_code == 422
     services[1].save.assert_not_awaited()

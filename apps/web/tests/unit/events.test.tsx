@@ -81,7 +81,7 @@ describe('Events feature', () => {
     vi.mocked(activateEvent).mockRejectedValue(
       new AxiosError('Conflict', '409', undefined, undefined, {
         status: 409,
-        data: { detail: 'A complete valid 36-card board is required' },
+        data: { detail: 'A complete valid board is required' },
       } as never),
     )
     renderApp(<EventsPage management />, '/admin/events')
@@ -92,13 +92,13 @@ describe('Events feature', () => {
 
     expect(
       await within(dialog).findByText(
-        'Complete and save all 36 board positions before activating the event.',
+        'Complete and save every board position before activating the event.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getAllByText(/Complete and save all 36 board positions/)).toHaveLength(1)
+    expect(screen.getAllByText(/Complete and save every board position/)).toHaveLength(1)
 
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Complete and save all 36 board positions/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Complete and save every board position/)).not.toBeInTheDocument()
   })
 })

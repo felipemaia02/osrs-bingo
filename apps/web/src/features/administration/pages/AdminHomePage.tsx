@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { Badge, type BadgeTone } from '../../../components/ui/Badge'
-import { BOARD_SIZE, useAdminOverview, type AdminOverview } from '../hooks/useAdminOverview'
+import { useAdminOverview, type AdminOverview } from '../hooks/useAdminOverview'
 
 interface StatusItem {
   label: string
@@ -85,7 +85,7 @@ function useSections(overview: AdminOverview): Section[] {
     : []
   const boardBadge = draftBoard
     ? {
-        label: `${draftBoard.eventName} · ${draftBoard.filled}/${BOARD_SIZE}`,
+        label: `${draftBoard.eventName} · ${draftBoard.filled}/${draftBoard.total}`,
         tone: 'neutral' as const,
       }
     : null

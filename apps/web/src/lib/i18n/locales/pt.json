@@ -75,7 +75,7 @@
       }
     },
     "requirementShort": "Req. {{count}}",
-    "gridLabel": "Tabuleiro 6 por 6",
+    "gridLabel": "Tabuleiro {{size}} por {{size}}",
     "pointsAndRequirement": "{{points}} pts · Req. {{requirement}}",
     "attribution": {
       "prefix": "Imagens:",
@@ -98,7 +98,7 @@
     },
     "miniMap": {
       "label": "Minimapa do tabuleiro",
-      "title": "Mapa 6×6",
+      "title": "Mapa {{size}}×{{size}}",
       "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: mostrar na lista",
       "legend": "F = Fácil · M = Médio · D = Difícil. Toque numa célula para ir até ela na lista."
     }
@@ -186,7 +186,7 @@
       "readOnly": "Somente eventos em rascunho podem ser editados.",
       "invalidTransition": "Este evento não permite essa mudança de status.",
       "notFound": "O evento não foi encontrado.",
-      "boardRequired": "Preencha e salve as 36 posições do tabuleiro antes de ativar o evento."
+      "boardRequired": "Preencha e salve todas as posições do tabuleiro antes de ativar o evento."
     },
     "publicEyebrow": "Eventos da comunidade",
     "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição."
@@ -346,7 +346,7 @@
     "eventsDescription": "Criar, ativar e finalizar. Só um pode estar ativo.",
     "teamsDescription": "Aprove pedidos e monte os times do evento em rascunho.",
     "cardsDescription": "Bosses, drops, pesos de progresso e revisões.",
-    "boardsDescription": "Escolha os 36 cards e suas posições em cada evento.",
+    "boardsDescription": "Escolha o tamanho do tabuleiro, os cards e suas posições em cada evento.",
     "rolesDescription": "Papéis do app, independentes do Discord.",
     "rankingDescription": "Compare times e contribuições. Ainda não disponível.",
     "rankingUnavailable": "A pontuação do evento ainda não está disponível. A classificação dos times e as contribuições dos jogadores aparecerão aqui quando as regras e as atividades aceitas estiverem definidas.",
@@ -518,6 +518,14 @@
       "remove": "Remover",
       "swapHint": "Toque na posição para trocar com {{position}}.",
       "badge": "Rascunho · {{filled}}/{{total}}"
+    },
+    "size": {
+      "label": "Tamanho do tabuleiro",
+      "dimensions": "{{size}}×{{size}}",
+      "shrinkTitle": "Reduzir para {{size}}×{{size}}?",
+      "shrinkConfirm": "Reduzir e remover",
+      "shrinkConfirmation_one": "{{count}} card está fora da área {{size}}×{{size}} e será removido do rascunho: {{names}}. Nada é salvo até você salvar o tabuleiro.",
+      "shrinkConfirmation_other": "{{count}} cards estão fora da área {{size}}×{{size}} e serão removidos do rascunho: {{names}}. Nada é salvo até você salvar o tabuleiro."
     }
   },
   "brand": {

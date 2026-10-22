@@ -44,7 +44,7 @@ The B alternatives (`*-b-*`) are kept for comparison. `recommendation.dc.html` a
 
 1. Event lifecycle: draft → active → finished, only by explicit admin action. **Only one active event.** Only draft events are editable (data, teams, registrations, board). Active and finished are read-only.
 2. Registration: the player requests, it stays "pending", an admin approves (one by one or all). Only admins set the team. Players don't choose a team or cancel their registration. Removed ≠ deleted: a removed player still sees their own "removed" status.
-3. Board: 6×6, 36 fixed positions, one board per event, the same for every team, frozen on activation. **Search and filters may highlight or dim tiles, never reorder or hide them.**
+3. Board: square, 3×3 to 6×6 (default 6×6; feature 014), every position filled, one board per event, the same for every team, frozen on activation. **Search and filters may highlight or dim tiles, never reorder or hide them.**
 4. Each tile has difficulty (Easy/Medium/Hard), points (configurable), a progress requirement and a list of accepted drops.
 5. **A drop's weight is PROGRESS, not points.** A tile is worth its points once, when progress reaches the requirement. Extra progress gives no points.
 6. Scoring, real progress, row/column bonuses and ranking **don't exist yet**. Today every screen shows "Progress unavailable". Never show invented numbers as if they were real.

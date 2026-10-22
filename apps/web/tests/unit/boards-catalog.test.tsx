@@ -105,6 +105,7 @@ it('saves selected exact card revisions for a draft event board', async () => {
     event_id: EVENT.id,
     status: 'draft',
     revision: 1,
+    size: 6,
     complete: false,
     positions: [],
     created_at: EVENT.created_at,
@@ -123,6 +124,7 @@ it('saves selected exact card revisions for a draft event board', async () => {
     eventId: EVENT.id,
     payload: {
       expected_revision: 0,
+      size: 6,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
     },
   })
@@ -160,16 +162,17 @@ describe('board builder v2', () => {
   const BARROWS = card('66d000000000000000000012', 'Barrows', 'Low')
   const RETIRED = card('66d000000000000000000013', 'Kalphite Queen', 'Mid', { status: 'retired' })
 
-  function boardWith(placed: Array<[number, CardSummary]>) {
+  function boardWith(placed: Array<[number, CardSummary]>, size = 6) {
     return {
       event_id: EVENT.id,
       status: 'draft' as const,
       revision: 4,
+      size,
       complete: false,
       positions: placed.map(([position, placedCard]) => ({
         position,
-        row: Math.floor((position - 1) / 6) + 1,
-        column: ((position - 1) % 6) + 1,
+        row: Math.floor((position - 1) / size) + 1,
+        column: ((position - 1) % size) + 1,
         card: {
           ...placedCard.revision,
           card_id: placedCard.id,
@@ -238,6 +241,7 @@ describe('board builder v2', () => {
       eventId: EVENT.id,
       payload: {
         expected_revision: 4,
+        size: 6,
         positions: [
           { position: 1, card_id: CARD.id, card_revision: 1 },
           { position: 4, card_id: HYDRA.id, card_revision: 1 },
@@ -284,6 +288,52 @@ describe('board builder v2', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Clear' }))
     expect(screen.getByText('0 of 36')).toBeInTheDocument()
     expect(saveBoard).not.toHaveBeenCalled()
+  })
+
+  it('changes the board size, confirming before cards outside the new area are removed', async () => {
+    vi.mocked(saveBoard).mockResolvedValue(boardWith([[1, CARD]], 4))
+    const user = await openBuilder([
+      [1, CARD],
+      [5, HYDRA],
+    ])
+    const sizes = screen.getByRole('group', { name: 'Board size' })
+    expect(within(sizes).getByRole('button', { name: '6×6' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+
+    await user.click(within(sizes).getByRole('button', { name: '4×4' }))
+    const dialog = screen.getByRole('dialog', { name: 'Shrink to 4×4?' })
+    expect(dialog).toHaveTextContent(
+      '1 card is outside the 4×4 area and will be removed from the draft: Alchemical Hydra.',
+    )
+    await user.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(screen.getByText('2 of 36')).toBeInTheDocument()
+
+    await user.click(within(sizes).getByRole('button', { name: '4×4' }))
+    await user.click(screen.getByRole('button', { name: 'Shrink and remove' }))
+    expect(screen.getByText('1 of 16')).toBeInTheDocument()
+    expect(within(grid()).getAllByRole('button', { name: /empty — choose card$/ })).toHaveLength(15)
+    expect(screen.getByText('Unsaved changes')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+    expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toEqual({
+      expected_revision: 4,
+      size: 4,
+      positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
+    })
+  })
+
+  it('keeps rows and columns when the size changes without removing cards', async () => {
+    const user = await openBuilder([[8, CARD]])
+    const sizes = screen.getByRole('group', { name: 'Board size' })
+
+    await user.click(within(sizes).getByRole('button', { name: '3×3' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(
+      within(grid()).getByRole('button', { name: /^Position 2·2: Vorkath/ }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('1 of 9')).toBeInTheDocument()
   })
 
   it('filters the catalog, searches drop names and groups drops by weight', async () => {
@@ -371,13 +421,11 @@ describe('board builder v2', () => {
     beforeEach(() => {
       vi.stubGlobal(
         'matchMedia',
-        vi
-          .fn()
-          .mockReturnValue({
-            matches: false,
-            addEventListener: vi.fn(),
-            removeEventListener: vi.fn(),
-          }),
+        vi.fn().mockReturnValue({
+          matches: false,
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+        }),
       )
     })
     afterEach(() => vi.unstubAllGlobals())

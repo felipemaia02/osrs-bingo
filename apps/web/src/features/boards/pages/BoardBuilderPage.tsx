@@ -14,13 +14,14 @@ import { useCards } from '../../cards/hooks/useCards'
 import type { CardDifficulty } from '../../cards/types'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
+import { BoardSizeControl } from '../components/BoardSizeControl'
 import { BuilderCatalog } from '../components/BuilderCatalog'
 import { BuilderGrid } from '../components/BuilderGrid'
 import { BuilderStatusPanel } from '../components/BuilderStatusPanel'
 import { CardRulesSummary } from '../components/CardRulesSummary'
 import { MobileFilledPosition, MobilePickCard } from '../components/MobileCardStep'
 import { MobilePositionMap } from '../components/MobilePositionMap'
-import { BOARD_SIZE, columnOf, emptyPositions, rowOf } from '../draft'
+import { columnOf, emptyPositions, rowOf } from '../draft'
 import { useAdminBoard, useSaveBoard } from '../hooks/useBoards'
 import { useBoardDraft } from '../hooks/useBoardDraft'
 import { useBuilderCards, type BuilderCard } from '../hooks/useBuilderCards'
@@ -42,7 +43,10 @@ interface Feedback {
   isError: boolean
 }
 
-const positionLabel = (position: number) => `${rowOf(position)}·${columnOf(position)}`
+interface PendingResize {
+  size: number
+  names: string[]
+}
 
 /** Layout v2 board builder (docs/design/mockups/boards-a-desktop and boards-b-mobile). */
 export function BoardBuilderPage() {
@@ -157,7 +161,7 @@ function EventBoardBuilder({
   /** Mobile: the selector sits between the title row and step 1. */
   eventSelect: ReactNode
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const cards = useCards(true)
   const board = useAdminBoard(event.id)
   const save = useSaveBoard()
@@ -176,6 +180,9 @@ function EventBoardBuilder({
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('all')
   const [query, setQuery] = useState('')
   const [swapping, setSwapping] = useState(false)
+  const [pendingResize, setPendingResize] = useState<PendingResize | null>(null)
+  const positionLabel = (position: number) =>
+    `${rowOf(position, draft.size)}·${columnOf(position, draft.size)}`
 
   const catalog = useMemo(
     () => filterCatalog(builder.catalogCards, draft.draft, { mode, difficulty, query }),
@@ -188,7 +195,7 @@ function EventBoardBuilder({
       card ? { ...counts, [card.difficulty]: counts[card.difficulty] + 1 } : counts,
     { Low: 0, Mid: 0, High: 0 },
   )
-  const empty = emptyPositions(draft.draft).length
+  const empty = emptyPositions(draft.draft, draft.size).length
   const fillCount = Math.min(empty, catalog.available.length)
   const rulesCard =
     builder.cardFor(selectedKey ?? undefined) ??
@@ -202,6 +209,27 @@ function EventBoardBuilder({
       setFeedback(null)
       setSelectedPosition(null)
     }
+  }
+
+  function applyResize(size: number) {
+    draft.resize(size)
+    setSelectedPosition(null)
+    setSwapping(false)
+    setPendingResize(null)
+  }
+
+  /** Shrinking that drops cards asks first (FR-007); anything else applies at once. */
+  function requestResize(size: number) {
+    if (size === draft.size) return
+    const removed = draft.cardsOutside(size)
+    if (removed.length) {
+      setPendingResize({
+        size,
+        names: removed.map((key) => builder.cardFor(key)?.name ?? key),
+      })
+      return
+    }
+    applyResize(size)
   }
 
   function dropOn(position: number) {
@@ -235,13 +263,21 @@ function EventBoardBuilder({
             <Badge tone="neutral">
               {t(draftEvent ? 'boards.mobile.badge' : 'boards.state.readOnly', {
                 filled,
-                total: BOARD_SIZE,
+                total: draft.total,
               })}
             </Badge>
           ) : null
         }
       />
       {eventSelect}
+      {board.isFetched && !board.isError && (
+        <BoardSizeControl
+          size={draft.size}
+          editable={editable}
+          onChange={requestResize}
+          variant="chip"
+        />
+      )}
     </>
   )
 
@@ -292,17 +328,36 @@ function EventBoardBuilder({
       onClose={() => setConfirmClear(false)}
     />
   )
+  const resizeDialog = pendingResize && (
+    <ConfirmDialog
+      title={t('boards.size.shrinkTitle', { size: pendingResize.size })}
+      message={t('boards.size.shrinkConfirmation', {
+        count: pendingResize.names.length,
+        size: pendingResize.size,
+        names: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(
+          pendingResize.names,
+        ),
+      })}
+      confirmLabel={t('boards.size.shrinkConfirm', { size: pendingResize.size })}
+      danger
+      busy={false}
+      onConfirm={() => applyResize(pendingResize.size)}
+      onClose={() => setPendingResize(null)}
+    />
+  )
 
   if (desktop) {
     return (
       <>
         <BuilderStatusPanel
           editable={draftEvent}
+          size={draft.size}
           filled={filled}
           tierCounts={tierCounts}
           fillCount={fillCount}
           dirty={draft.dirty}
           saving={save.isPending}
+          onResize={requestResize}
           onFill={() => draft.fill(catalog.available.map((card) => card.key))}
           onClear={() => setConfirmClear(true)}
           onSave={() => void saveBoard()}
@@ -312,6 +367,7 @@ function EventBoardBuilder({
         <div className="flex items-start gap-5">
           <BuilderGrid
             draft={draft.draft}
+            size={draft.size}
             cardFor={builder.cardFor}
             editable={editable}
             selectedPosition={selectedPosition}
@@ -350,6 +406,7 @@ function EventBoardBuilder({
           </aside>
         </div>
         {clearDialog}
+        {resizeDialog}
       </>
     )
   }
@@ -363,6 +420,7 @@ function EventBoardBuilder({
       {noCards}
       <MobilePositionMap
         draft={draft.draft}
+        size={draft.size}
         cardFor={builder.cardFor}
         current={current}
         editable={editable}
@@ -416,6 +474,7 @@ function EventBoardBuilder({
         </>
       )}
       {clearDialog}
+      {resizeDialog}
     </>
   )
 }
