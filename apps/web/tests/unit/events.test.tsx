@@ -4,9 +4,14 @@ import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
 import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
-import { activateEvent, createEvent, fetchEvents } from '../../src/features/events/api/eventsApi'
+import {
+  activateEvent,
+  createEvent,
+  fetchEvents,
+  updateEvent,
+} from '../../src/features/events/api/eventsApi'
 import { EventScheduleFields } from '../../src/features/events/components/EventScheduleFields'
-import { EventsPage } from '../../src/features/events/pages/EventsPage'
+import { AdminEventsPage } from '../../src/features/events/pages/AdminEventsPage'
 import type { BingoEvent } from '../../src/features/events/types'
 import { renderApp } from '../render'
 
@@ -28,10 +33,10 @@ describe('Events feature', () => {
   })
 
   it('renders the empty management state and public event form', async () => {
-    renderApp(<EventsPage management />, '/admin/events')
+    renderApp(<AdminEventsPage />, '/admin/events')
 
     expect(await screen.findByText('No events found.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Create event' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'New event' })).toBeInTheDocument()
     expect(
       screen
         .getAllByRole('link', { name: 'Events' })
@@ -42,9 +47,9 @@ describe('Events feature', () => {
   it('creates an event using timezone-safe instants', async () => {
     const user = userEvent.setup()
     vi.mocked(createEvent).mockResolvedValue({ ...ACTIVE_EVENT, status: 'draft' })
-    renderApp(<EventsPage management />, '/admin/events')
+    renderApp(<AdminEventsPage />, '/admin/events')
 
-    await user.click(await screen.findByRole('button', { name: 'Create event' }))
+    await user.click(await screen.findByRole('button', { name: 'New event' }))
     await user.type(screen.getByLabelText('Name'), 'Autumn Bingo')
     await user.click(screen.getByRole('button', { name: '+1 day' }))
     await user.click(screen.getByRole('button', { name: 'Save' }))
@@ -84,9 +89,9 @@ describe('Events feature', () => {
         data: { detail: 'A complete valid board is required' },
       } as never),
     )
-    renderApp(<EventsPage management />, '/admin/events')
+    renderApp(<AdminEventsPage />, '/admin/events')
 
-    await user.click(await screen.findByRole('button', { name: 'Activate event' }))
+    await user.click(await screen.findByRole('button', { name: 'Activate event · Thunder Summer' }))
     const dialog = screen.getByRole('dialog', { name: 'Activate event?' })
     await user.click(within(dialog).getByRole('button', { name: 'Activate' }))
 
@@ -100,5 +105,96 @@ describe('Events feature', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Cancel' }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(screen.queryByText(/Complete and save every board position/)).not.toBeInTheDocument()
+  })
+
+  describe('events v2', () => {
+    const DRAFT: BingoEvent = {
+      ...ACTIVE_EVENT,
+      id: 'draft-1',
+      name: 'Winter Bingo',
+      description: 'Cold drops',
+      status: 'draft',
+    }
+    const FINISHED: BingoEvent = {
+      ...ACTIVE_EVENT,
+      id: 'done-1',
+      name: 'Spring Bingo',
+      status: 'finished',
+    }
+
+    beforeEach(() => {
+      vi.mocked(fetchEvents).mockResolvedValue([ACTIVE_EVENT, DRAFT, FINISHED])
+    })
+
+    it('shows tabs with counts, the active notice and actions by status', async () => {
+      renderApp(<AdminEventsPage />, '/admin/events')
+
+      const tabs = await screen.findByRole('tablist', { name: 'Event status' })
+      expect(within(tabs).getByRole('tab', { name: 'All 3' })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      )
+      expect(within(tabs).getByRole('tab', { name: 'Draft 1' })).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Thunder Summer is active. Only one event can be active at a time: finish it before activating another.',
+        ),
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Finish · Thunder Summer' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Edit · Winter Bingo' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Board · Winter Bingo' })).toHaveAttribute(
+        'href',
+        '/admin/boards?event=draft-1',
+      )
+      expect(
+        screen.getByRole('button', { name: 'Activate event · Winter Bingo' }),
+      ).toBeInTheDocument()
+      expect(screen.getByText('Read-only')).toBeInTheDocument()
+      expect(screen.getByText('Cold drops')).toBeInTheDocument()
+      expect(screen.getAllByText(/· 7 days/)).toHaveLength(3)
+    })
+
+    it('filters by tab without a new request', async () => {
+      const user = userEvent.setup()
+      renderApp(<AdminEventsPage />, '/admin/events')
+      await screen.findByRole('tab', { name: 'Draft 1' })
+      const calls = vi.mocked(fetchEvents).mock.calls.length
+
+      await user.click(screen.getByRole('tab', { name: 'Draft 1' }))
+
+      const panel = screen.getByRole('tabpanel')
+      expect(within(panel).getByText('Winter Bingo')).toBeInTheDocument()
+      expect(within(panel).queryByText('Spring Bingo')).toBeNull()
+      expect(vi.mocked(fetchEvents).mock.calls.length).toBe(calls)
+    })
+
+    it('edits a draft in the modal and keeps inputs when the API fails', async () => {
+      const user = userEvent.setup()
+      vi.mocked(updateEvent).mockRejectedValueOnce(
+        new AxiosError('Conflict', '409', undefined, undefined, {
+          status: 409,
+          data: { detail: 'Only draft events can be edited' },
+        } as never),
+      )
+      vi.mocked(updateEvent).mockResolvedValueOnce(DRAFT)
+      renderApp(<AdminEventsPage />, '/admin/events')
+
+      await user.click(await screen.findByRole('button', { name: 'Edit · Winter Bingo' }))
+      const dialog = screen.getByRole('dialog', { name: 'Edit event' })
+      await user.clear(within(dialog).getByLabelText('Name'))
+      await user.type(within(dialog).getByLabelText('Name'), 'Winter Bingo II')
+      await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+      expect(
+        await within(dialog).findByText('Only draft events can be edited.'),
+      ).toBeInTheDocument()
+      expect(within(dialog).getByLabelText('Name')).toHaveValue('Winter Bingo II')
+
+      await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+      await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+      expect(screen.getByText('Event updated.')).toBeInTheDocument()
+      expect(vi.mocked(updateEvent).mock.calls[1][0]).toBe('draft-1')
+      expect(vi.mocked(updateEvent).mock.calls[1][1].name).toBe('Winter Bingo II')
+    })
   })
 })

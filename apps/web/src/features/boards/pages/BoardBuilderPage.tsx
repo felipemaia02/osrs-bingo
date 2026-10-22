@@ -4,7 +4,7 @@ import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
 import { AxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
@@ -53,7 +53,9 @@ export function BoardBuilderPage() {
   const { t } = useTranslation()
   const isDesktop = useIsDesktop()
   const events = useEvents()
-  const [eventId, setEventId] = useState('')
+  const [params] = useSearchParams()
+  // `?event=<id>` preselects an event (Events page "Board" shortcut, feature 015).
+  const [eventId, setEventId] = useState(() => params.get('event') ?? '')
   const event = events.data?.find((candidate) => candidate.id === eventId) ?? null
 
   const eventSelect = (
@@ -61,7 +63,7 @@ export function BoardBuilderPage() {
       <span className="text-[13px] font-semibold">{t('boards.event')}</span>
       <span className="relative flex items-center">
         <select
-          value={eventId}
+          value={event ? eventId : ''}
           onChange={(change) => setEventId(change.target.value)}
           className="min-h-11 w-full appearance-none rounded-[3px] border border-rs-border bg-rs-inset pl-3 pr-9 text-base text-rs-text md:min-h-10 md:text-sm"
         >

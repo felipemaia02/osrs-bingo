@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { HomePage } from '../../features/bingo/pages/HomePage'
-import { EventsPage } from '../../features/events/pages/EventsPage'
+import { AdminEventsPage } from '../../features/events/pages/AdminEventsPage'
+import { PlayerEventsPage } from '../../features/events/pages/PlayerEventsPage'
 import { LoginPage } from '../../features/auth/pages/LoginPage'
 import { TeamsPage } from '../../features/teams/pages/TeamsPage'
 
@@ -16,11 +17,11 @@ export function AppRouter() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
-      <Route path="/events" element={<EventsPage />} />
+      <Route path="/events" element={<PlayerEventsPage />} />
       <Route path="/teams" element={<Navigate to="/admin/teams" replace />} />
       <Route path="/admin" element={<AdminRoute />}>
         <Route index element={<AdminHomePage />} />
-        <Route path="events" element={<EventsPage management />} />
+        <Route path="events" element={<AdminEventsPage />} />
         <Route path="teams" element={<TeamsPage />} />
         <Route path="cards" element={<CardCatalogPage />} />
         <Route path="boards" element={<BoardBuilderPage />} />

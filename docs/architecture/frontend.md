@@ -96,6 +96,7 @@ The board (3×3 to 6×6, feature 014; the mockups show 6×6) never compresses it
 | 2 | Board `/` | `board-a-desktop`, `board-b-mobile` | **Done (feature 011)** | 6×6 grid with a fixed tile detail panel on desktop, "Progress unavailable" info banner, "Your team" card; mobile row list plus a 6×6 mini-map |
 | 3 | `/admin/teams` | `teams-a-desktop`, `teams-a-mobile` | **Done (feature 012)** | Table with Discord and request time, multi-select with approve/remove selected, mobile cards |
 | 4 | `/admin/boards` | `boards-a-desktop`, `boards-b-mobile` | **Done (feature 013)** | Desktop 2A with status panel, difficulty counts, visible empty slots, catalog filters; mobile "position first" flow |
+| 5 | `/events`, `/admin/events` | none (design system) | **Done (feature 015)** | Tabs with counts, admin table/cards with per-status actions, FormModal, player cards with registration badges |
 
 [FUTURE] mockups are implemented only with their own features (submissions, scoring, ranking).
 

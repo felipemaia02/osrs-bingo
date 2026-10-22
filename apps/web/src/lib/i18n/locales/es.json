@@ -130,7 +130,6 @@
     "eyebrow": "Administración",
     "title": "Eventos",
     "description": "Crea y gestiona el ciclo de vida de los eventos de Bingo.",
-    "listTitle": "Lista de eventos",
     "empty": "No se encontraron eventos.",
     "status": {
       "draft": "Borrador",
@@ -138,16 +137,19 @@
       "finished": "Finalizado"
     },
     "filter": {
-      "label": "Filtrar eventos",
-      "all": "Todos los estados",
+      "label": "Estado del evento",
+      "all": "Todos",
       "draft": "Borrador",
       "active": "Activo",
       "finished": "Finalizado"
     },
     "actions": {
-      "create": "Crear evento",
+      "create": "Nuevo evento",
       "activate": "Activar evento",
-      "finish": "Finalizar evento"
+      "finish": "Finalizar",
+      "edit": "Editar",
+      "board": "Tablero",
+      "activateShort": "Activar"
     },
     "form": {
       "createTitle": "Crear evento",
@@ -189,7 +191,17 @@
       "boardRequired": "Completa y guarda todas las posiciones del tablero antes de activar el evento."
     },
     "publicEyebrow": "Eventos de la comunidad",
-    "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción."
+    "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción.",
+    "table": {
+      "event": "Evento",
+      "status": "Estado",
+      "schedule": "Fechas",
+      "actions": "Acciones"
+    },
+    "readOnly": "Solo lectura",
+    "activeNotice": "{{name}} está activo. Solo puede haber un evento activo a la vez: finalízalo antes de activar otro.",
+    "durationDays_one": "{{count}} día",
+    "durationDays_other": "{{count}} días"
   },
   "teams": {
     "eyebrow": "Administración",
@@ -329,6 +341,12 @@
       "pending": "Inscripción pendiente de aprobación",
       "approved": "Inscripción aprobada",
       "removed": "Inscripción eliminada por un administrador"
+    },
+    "yours": "Tu inscripción",
+    "badge": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "removed": "Quitada"
     }
   },
   "admin": {

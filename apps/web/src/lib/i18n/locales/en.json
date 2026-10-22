@@ -130,7 +130,6 @@
     "eyebrow": "Administration",
     "title": "Events",
     "description": "Create and manage the lifecycle of Bingo events.",
-    "listTitle": "Event list",
     "empty": "No events found.",
     "status": {
       "draft": "Draft",
@@ -138,16 +137,19 @@
       "finished": "Finished"
     },
     "filter": {
-      "label": "Filter events",
-      "all": "All statuses",
+      "label": "Event status",
+      "all": "All",
       "draft": "Draft",
       "active": "Active",
       "finished": "Finished"
     },
     "actions": {
-      "create": "Create event",
+      "create": "New event",
       "activate": "Activate event",
-      "finish": "Finish event"
+      "finish": "Finish",
+      "edit": "Edit",
+      "board": "Board",
+      "activateShort": "Activate"
     },
     "form": {
       "createTitle": "Create event",
@@ -189,7 +191,17 @@
       "boardRequired": "Complete and save every board position before activating the event."
     },
     "publicEyebrow": "Community events",
-    "publicDescription": "Discover Bingo events and follow your registration."
+    "publicDescription": "Discover Bingo events and follow your registration.",
+    "table": {
+      "event": "Event",
+      "status": "Status",
+      "schedule": "Schedule",
+      "actions": "Actions"
+    },
+    "readOnly": "Read-only",
+    "activeNotice": "{{name}} is active. Only one event can be active at a time: finish it before activating another.",
+    "durationDays_one": "{{count}} day",
+    "durationDays_other": "{{count}} days"
   },
   "teams": {
     "eyebrow": "Administration",
@@ -329,6 +341,12 @@
       "pending": "Registration pending approval",
       "approved": "Registration approved",
       "removed": "Registration removed by an administrator"
+    },
+    "yours": "Your registration",
+    "badge": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "removed": "Removed"
     }
   },
   "admin": {

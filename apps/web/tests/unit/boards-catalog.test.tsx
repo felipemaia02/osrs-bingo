@@ -290,6 +290,15 @@ describe('board builder v2', () => {
     expect(saveBoard).not.toHaveBeenCalled()
   })
 
+  it('preselects the event from the Events page shortcut', async () => {
+    vi.mocked(fetchCards).mockResolvedValue([CARD])
+    vi.mocked(fetchAdminBoard).mockResolvedValue(boardWith([[1, CARD]]))
+    renderApp(<AppRouter />, `/admin/boards?event=${EVENT.id}`)
+
+    expect(await screen.findByRole('region', { name: 'Board being built' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Event')).toHaveValue(EVENT.id)
+  })
+
   it('changes the board size, confirming before cards outside the new area are removed', async () => {
     vi.mocked(saveBoard).mockResolvedValue(boardWith([[1, CARD]], 4))
     const user = await openBuilder([

@@ -4,7 +4,7 @@ import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
 import { fetchSession, logout } from '../../src/features/auth/api/authApi'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'
-import { EventsPage } from '../../src/features/events/pages/EventsPage'
+import { PlayerEventsPage } from '../../src/features/events/pages/PlayerEventsPage'
 import type { BingoEvent } from '../../src/features/events/types'
 import * as api from '../../src/features/teams/api/teamsApi'
 import { TeamsPage } from '../../src/features/teams/pages/TeamsPage'
@@ -85,15 +85,16 @@ it('requests registration without a team and refreshes pending status', async ()
     vi.mocked(api.fetchOwnRegistration).mockResolvedValue(PLAYER)
     return PLAYER
   })
-  renderApp(<EventsPage />, '/events')
+  renderApp(<PlayerEventsPage />, '/events')
   await user.type(await screen.findByLabelText('OSRS display name'), 'Thunder Crab')
   await user.click(screen.getByRole('button', { name: 'Request registration' }))
   expect(await screen.findByText('Registration pending approval')).toBeInTheDocument()
+  expect(screen.getByText('Pending')).toBeInTheDocument()
   expect(vi.mocked(api.createPlayer).mock.calls[0][0]).toEqual({
     eventId: EVENT.id,
     payload: { display_name: 'Thunder Crab' },
   })
-  expect(screen.queryByRole('button', { name: 'Create event' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'New event' })).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
   expect(screen.queryByLabelText('Team for Thunder Crab')).not.toBeInTheDocument()
 })
@@ -217,7 +218,7 @@ it.each([
 ])('localizes registration in %s', async (language, text) => {
   await i18n.changeLanguage(language)
   vi.mocked(api.fetchOwnRegistration).mockResolvedValue(PLAYER)
-  renderApp(<EventsPage />, '/events')
+  renderApp(<PlayerEventsPage />, '/events')
   expect(await screen.findByText(text)).toBeInTheDocument()
 })
 

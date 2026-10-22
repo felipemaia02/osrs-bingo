@@ -130,7 +130,6 @@
     "eyebrow": "Administração",
     "title": "Eventos",
     "description": "Crie e gerencie o ciclo de vida dos eventos de Bingo.",
-    "listTitle": "Lista de eventos",
     "empty": "Nenhum evento encontrado.",
     "status": {
       "draft": "Rascunho",
@@ -138,16 +137,19 @@
       "finished": "Finalizado"
     },
     "filter": {
-      "label": "Filtrar eventos",
-      "all": "Todos os status",
+      "label": "Status do evento",
+      "all": "Todos",
       "draft": "Rascunho",
       "active": "Ativo",
       "finished": "Finalizado"
     },
     "actions": {
-      "create": "Criar evento",
+      "create": "Novo evento",
       "activate": "Ativar evento",
-      "finish": "Finalizar evento"
+      "finish": "Encerrar",
+      "edit": "Editar",
+      "board": "Tabuleiro",
+      "activateShort": "Ativar"
     },
     "form": {
       "createTitle": "Criar evento",
@@ -189,7 +191,17 @@
       "boardRequired": "Preencha e salve todas as posições do tabuleiro antes de ativar o evento."
     },
     "publicEyebrow": "Eventos da comunidade",
-    "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição."
+    "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição.",
+    "table": {
+      "event": "Evento",
+      "status": "Status",
+      "schedule": "Período",
+      "actions": "Ações"
+    },
+    "readOnly": "Somente leitura",
+    "activeNotice": "{{name}} está ativo. Só um evento pode estar ativo por vez: encerre-o antes de ativar outro.",
+    "durationDays_one": "{{count}} dia",
+    "durationDays_other": "{{count}} dias"
   },
   "teams": {
     "eyebrow": "Administração",
@@ -329,6 +341,12 @@
       "pending": "Inscrição aguardando aprovação",
       "approved": "Inscrição aprovada",
       "removed": "Inscrição removida por um administrador"
+    },
+    "yours": "Sua inscrição",
+    "badge": {
+      "pending": "Pendente",
+      "approved": "Aprovada",
+      "removed": "Removida"
     }
   },
   "admin": {

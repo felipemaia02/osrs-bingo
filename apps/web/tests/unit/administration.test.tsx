@@ -72,19 +72,19 @@ it('makes every overview card a complete navigation link', async () => {
   expect(ranking.closest('[aria-disabled="true"]')).not.toBeNull()
 
   await user.click(screen.getByText('Create, activate and finish. Only one can be active.'))
-  expect(await screen.findByRole('button', { name: 'Create event' })).toBeInTheDocument()
+  expect(await screen.findByRole('button', { name: 'New event' })).toBeInTheDocument()
 })
 
 it('keeps event management out of the public event listing even for admins', async () => {
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/events')
   await screen.findByText('No events found.')
-  expect(screen.queryByRole('button', { name: 'Create event' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'New event' })).not.toBeInTheDocument()
   const adminEvents = (await screen.findAllByRole('link', { name: 'Events' })).find(
     (link) => link.getAttribute('href') === '/admin/events',
   )
   await user.click(adminEvents!)
-  expect(await screen.findByRole('button', { name: 'Create event' })).toBeInTheDocument()
+  expect(await screen.findByRole('button', { name: 'New event' })).toBeInTheDocument()
 })
 
 it('redirects the former team-management route to the protected portal', async () => {
