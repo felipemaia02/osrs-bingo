@@ -45,3 +45,7 @@ export interface BoardSavePayload {
   expected_revision: number
   positions: Array<{ position: number; card_id: string; card_revision: number }>
 }
+
+/** What is being dragged in the builder: a catalog card or a card already on the board. */
+export type DragSource =
+  { kind: 'catalog'; key: string; name: string } | { kind: 'slot'; position: number; name: string }

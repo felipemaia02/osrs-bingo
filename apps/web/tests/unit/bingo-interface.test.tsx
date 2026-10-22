@@ -5,12 +5,8 @@ import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
 import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
 import type { BoardCardSnapshot, EventBoard } from '../../src/features/boards/types'
-import {
-  boardToTiles,
-  isFiltering,
-  matchTile,
-  tileInitials,
-} from '../../src/features/bingo/boardTiles'
+import { boardToTiles, isFiltering, matchTile } from '../../src/features/bingo/boardTiles'
+import { initialsOf as tileInitials } from '../../src/lib/text/initials'
 import { HomePage } from '../../src/features/bingo/pages/HomePage'
 import type { AcceptedDrop } from '../../src/features/cards/types'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'

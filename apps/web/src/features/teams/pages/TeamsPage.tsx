@@ -15,7 +15,8 @@ import { useSession } from '../../auth/hooks/useSession'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { BulkBar } from '../components/BulkBar'
-import { ConfirmDialog, PlayerAssignment } from '../components/RosterDialogs'
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
+import { PlayerAssignment } from '../components/RosterDialogs'
 import { RosterCards } from '../components/RosterCards'
 import { RosterTable } from '../components/RosterTable'
 import { RosterTabs, type RosterTab } from '../components/RosterTabs'
@@ -461,7 +462,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           confirmLabel={t('teams.confirmRemoval')}
           danger
           busy={actions.saving}
-          error={actions.feedback}
+          error={actions.feedback?.isError ? actions.feedback.message : null}
           onConfirm={() =>
             void confirm(
               () => actions.remove(removing),
@@ -478,7 +479,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           confirmLabel={t('teams.confirmRemoval')}
           danger
           busy={actions.saving}
-          error={actions.feedback}
+          error={actions.feedback?.isError ? actions.feedback.message : null}
           onConfirm={() =>
             void confirm(
               () => actions.removeSelected([...selected]),
@@ -499,7 +500,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           }
           confirmLabel={t('teams.roster.approveCount', { count: counts?.pending ?? 0 })}
           busy={actions.saving}
-          error={actions.feedback}
+          error={actions.feedback?.isError ? actions.feedback.message : null}
           onConfirm={() => void confirm(actions.approveAll, () => setConfirmAll(false))}
           onClose={() => setConfirmAll(false)}
         />

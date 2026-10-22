@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { normalizeSearch } from '../boardTiles'
+import { normalizeSearch } from '../../../lib/text/search'
 import type { TierFilter } from '../types'
 
 export interface FilterSummary {

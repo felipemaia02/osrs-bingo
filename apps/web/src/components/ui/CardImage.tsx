@@ -1,26 +1,26 @@
 import { useState } from 'react'
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
-import { tileInitials } from '../boardTiles'
-import type { Tile } from '../types'
+import { initialsOf } from '../../lib/text/initials'
 
-interface TileImageProps {
-  tile: Tile
+interface CardImageProps {
+  name: string
+  imageUrl?: string | null
   /** Size of the image well, e.g. "h-14 w-full". */
   className: string
   /** Larger fallback for the detail views. */
   large?: boolean
 }
 
-/** Image well with the Wiki image, or a shield with the tile's initials when unavailable. */
-export function TileImage({ tile, className, large = false }: TileImageProps) {
+/** Image well with the Wiki image, or a shield with the card's initials when unavailable. */
+export function CardImage({ name, imageUrl, className, large = false }: CardImageProps) {
   const [failed, setFailed] = useState(false)
   return (
     <span
       className={`flex items-center justify-center overflow-hidden rounded-[3px] bg-rs-inset ${className}`}
     >
-      {tile.imageUrl && !failed ? (
+      {imageUrl && !failed ? (
         <img
-          src={tile.imageUrl}
+          src={imageUrl}
           alt=""
           loading="lazy"
           onError={() => setFailed(true)}
@@ -33,7 +33,7 @@ export function TileImage({ tile, className, large = false }: TileImageProps) {
           }`}
         >
           <ShieldOutlinedIcon sx={{ fontSize: large ? 32 : 18 }} aria-hidden="true" />
-          {tileInitials(tile.name)}
+          {initialsOf(name)}
         </span>
       )}
     </span>

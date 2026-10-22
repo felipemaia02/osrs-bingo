@@ -95,7 +95,7 @@ The 6×6 board never compresses six readable columns into a phone viewport: on m
 | 1 | App shell | `shell-a-desktop`, `shell-a-mobile` | **Done (feature 010)** | Grouped sidebar (Play / Administration), no admin tab row, Ranking only inside Administration, event pill with countdown, EN/PT/ES segmented control, account menu; mobile event bar and bottom bar with Admin for administrators; administration overview with real counts |
 | 2 | Board `/` | `board-a-desktop`, `board-b-mobile` | **Done (feature 011)** | 6×6 grid with a fixed tile detail panel on desktop, "Progress unavailable" info banner, "Your team" card; mobile row list plus a 6×6 mini-map |
 | 3 | `/admin/teams` | `teams-a-desktop`, `teams-a-mobile` | **Done (feature 012)** | Table with Discord and request time, multi-select with approve/remove selected, mobile cards |
-| 4 | `/admin/boards` | `boards-a-desktop`, `boards-b-mobile` | Drag and drop, catalog, add all | Desktop 2A with difficulty counts and visible empty slots; mobile "position first" flow |
+| 4 | `/admin/boards` | `boards-a-desktop`, `boards-b-mobile` | **Done (feature 013)** | Desktop 2A with status panel, difficulty counts, visible empty slots, catalog filters; mobile "position first" flow |
 
 [FUTURE] mockups are implemented only with their own features (submissions, scoring, ranking).
 

@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
-import { TileImage } from './TileImage'
+import { CardImage } from '../../../components/ui/CardImage'
 
 interface TileDetailContentProps {
   tile: Tile
@@ -21,7 +21,12 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
 
   return (
     <>
-      <TileImage tile={tile} className="h-[150px] w-full rounded-none" large />
+      <CardImage
+        name={tile.name}
+        imageUrl={tile.imageUrl}
+        className="h-[150px] w-full rounded-none"
+        large
+      />
       <div className="flex flex-col gap-3 p-3.5">
         <div className="flex flex-col gap-1.5">
           {showName && (

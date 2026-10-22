@@ -1,5 +1,6 @@
 import { fireEvent, screen, within, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
 import { AppRouter } from '../../src/app/router'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'
@@ -127,162 +128,310 @@ it('saves selected exact card revisions for a draft event board', async () => {
   })
 })
 
-it('loads the visual catalog before event selection without assigning cards', async () => {
-  renderApp(<AppRouter />, '/admin/boards')
-  expect(await screen.findByRole('button', { name: 'Add Vorkath' })).toBeDisabled()
-  expect(fetchCards).toHaveBeenCalled()
-  expect(saveBoard).not.toHaveBeenCalled()
-})
-
-it('assigns, prevents duplicates and removes cards without a swap control', async () => {
-  vi.mocked(fetchCards).mockResolvedValue([
-    CARD,
-    { ...CARD, id: 'other', revision: { ...CARD.revision, name: 'Zulrah' } },
-  ])
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  const card = await screen.findByRole('button', { name: 'Add Vorkath' })
-  await user.click(card)
-  expect(card).toBeDisabled()
-  expect(screen.getByRole('button', { name: 'Position 1' })).toHaveTextContent('Vorkath')
-  await user.click(screen.getByRole('button', { name: 'Add Zulrah' }))
-  await user.click(screen.getByRole('button', { name: 'Position 1' }))
-  expect(screen.queryByRole('button', { name: 'Move / swap' })).not.toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Remove card' }))
-  expect(card).toBeEnabled()
-})
-
-it('keeps the pinned snapshot visible when the catalog has a newer revision', async () => {
-  vi.mocked(fetchCards).mockResolvedValue([
-    {
+describe('board builder v2', () => {
+  function card(
+    id: string,
+    name: string,
+    difficulty: CardSummary['revision']['difficulty'],
+    extra: Partial<CardSummary> = {},
+  ): CardSummary {
+    return {
       ...CARD,
-      current_revision: 2,
-      revision: { ...CARD.revision, revision: 2, name: 'New Vorkath' },
+      id,
+      slug: id,
+      ...extra,
+      revision: { ...CARD.revision, name, difficulty, ...(extra.revision ?? {}) },
+    }
+  }
+  const HYDRA = card('66d000000000000000000011', 'Alchemical Hydra', 'High', {
+    revision: {
+      ...CARD.revision,
+      name: 'Alchemical Hydra',
+      difficulty: 'High',
+      tile_score: 20,
+      completion_requirement: 6,
+      drops: [
+        { ...CARD.revision.drops[0], key: 'claw', name: "Hydra's Claw", progress_weight: 3 },
+        { ...CARD.revision.drops[0], key: 'tail', name: "Hydra's Tail", progress_weight: 2 },
+        { ...CARD.revision.drops[0], key: 'leather', name: "Hydra's Leather", progress_weight: 2 },
+      ],
     },
-  ])
-  vi.mocked(fetchAdminBoard).mockResolvedValue({
-    event_id: EVENT.id,
-    status: 'draft',
-    revision: 1,
-    complete: false,
-    positions: [
-      {
-        position: 1,
-        row: 0,
-        column: 0,
-        card: { ...CARD.revision, card_id: CARD.id, slug: CARD.slug, card_revision: 1 },
-      },
-    ],
-    created_at: EVENT.created_at,
-    updated_at: EVENT.updated_at,
-    published_at: null,
   })
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  const position = await screen.findByRole('button', { name: 'Position 1' })
-  expect(position).toHaveTextContent('Vorkath')
-  expect(position).not.toHaveTextContent('New Vorkath')
-  expect(screen.getByRole('button', { name: 'Add New Vorkath' })).toBeDisabled()
+  const BARROWS = card('66d000000000000000000012', 'Barrows', 'Low')
+  const RETIRED = card('66d000000000000000000013', 'Kalphite Queen', 'Mid', { status: 'retired' })
 
-  const rules = screen.getByRole('region', { name: 'Rules for position 1' })
-  expect(within(rules).getByText('13 points when progress reaches 8')).toBeInTheDocument()
-  expect(within(rules).getByText('+2 progress')).toBeInTheDocument()
-})
+  function boardWith(placed: Array<[number, CardSummary]>) {
+    return {
+      event_id: EVENT.id,
+      status: 'draft' as const,
+      revision: 4,
+      complete: false,
+      positions: placed.map(([position, placedCard]) => ({
+        position,
+        row: Math.floor((position - 1) / 6) + 1,
+        column: ((position - 1) % 6) + 1,
+        card: {
+          ...placedCard.revision,
+          card_id: placedCard.id,
+          slug: placedCard.slug,
+          card_revision: placedCard.current_revision,
+        },
+      })),
+      created_at: EVENT.created_at,
+      updated_at: EVENT.updated_at,
+      published_at: null,
+    }
+  }
 
-it('keeps published events read-only', async () => {
-  vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  await screen.findByRole('option', { name: 'Summer Bingo · Active' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  expect(await screen.findByRole('button', { name: 'Add Vorkath' })).toBeDisabled()
-  expect(screen.queryByRole('button', { name: 'Save board' })).not.toBeInTheDocument()
-})
+  async function openBuilder(placed: Array<[number, CardSummary]> = [[1, CARD]]) {
+    vi.mocked(fetchCards).mockResolvedValue([CARD, HYDRA, BARROWS, RETIRED])
+    vi.mocked(fetchAdminBoard).mockResolvedValue(boardWith(placed))
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+    await screen.findByRole('region', { name: 'Board being built' })
+    return user
+  }
 
-it('offers catalog setup when no cards exist', async () => {
-  vi.mocked(fetchCards).mockResolvedValue([])
-  renderApp(<AppRouter />, '/admin/boards')
-  expect(await screen.findByRole('link', { name: 'Open card catalog' })).toHaveAttribute(
-    'href',
-    '/admin/cards',
-  )
-})
+  const grid = () => screen.getByRole('region', { name: 'Board being built' })
 
-it('shows one drop area without empty position placeholders and accepts dragged catalog cards', async () => {
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  const dropZone = await screen.findByRole('region', { name: 'Drag cards here' })
-  expect(screen.queryByRole('button', { name: 'Position 1' })).not.toBeInTheDocument()
-  const dataTransfer = { setData: vi.fn(), effectAllowed: '' }
-  fireEvent.dragStart(screen.getByRole('button', { name: 'Add Vorkath' }), { dataTransfer })
-  fireEvent.dragOver(dropZone, { dataTransfer })
-  fireEvent.drop(dropZone, { dataTransfer })
-  expect(screen.getByRole('button', { name: 'Position 1' })).toHaveTextContent('Vorkath')
-  expect(screen.queryByRole('button', { name: 'Position 2' })).not.toBeInTheDocument()
-  expect(screen.queryByText('Empty position')).not.toBeInTheDocument()
-  fireEvent.drop(dropZone, { dataTransfer })
-  expect(screen.queryByRole('button', { name: 'Position 2' })).not.toBeInTheDocument()
-})
+  it('shows the status panel, the full grid with empty slots and the catalog', async () => {
+    await openBuilder()
 
-it('swaps occupied positions by dragging without changing card revisions', async () => {
-  vi.mocked(fetchCards).mockResolvedValue([
-    CARD,
-    { ...CARD, id: 'other', revision: { ...CARD.revision, name: 'Zulrah' } },
-  ])
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  await user.click(await screen.findByRole('button', { name: 'Add Vorkath' }))
-  await user.click(screen.getByRole('button', { name: 'Add Zulrah' }))
-  const first = screen.getByRole('button', { name: 'Position 1' })
-  const second = screen.getByRole('button', { name: 'Position 2' })
-  const dataTransfer = { setData: vi.fn(), effectAllowed: '' }
-  fireEvent.dragStart(first, { dataTransfer })
-  fireEvent.dragOver(second, { dataTransfer })
-  fireEvent.drop(second, { dataTransfer })
-  expect(first).toHaveTextContent('Zulrah')
-  expect(second).toHaveTextContent('Vorkath')
-  expect(second).toHaveTextContent('v1')
-})
+    expect(screen.getByText('Draft · editable')).toBeInTheDocument()
+    expect(screen.getByText('1 of 36')).toBeInTheDocument()
+    expect(screen.getByText('positions filled · 35 empty')).toBeInTheDocument()
+    expect(screen.getByText('Hard 1')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Fill empty slots (2)' })).toBeEnabled()
+    expect(within(grid()).getAllByRole('button', { name: /empty — choose card$/ })).toHaveLength(35)
+    expect(
+      within(grid()).getByRole('button', { name: 'Position 1·1: Vorkath, Hard. Drag to move.' }),
+    ).toBeInTheDocument()
+    const catalog = screen.getByRole('region', { name: 'Card catalog' })
+    expect(catalog).toHaveTextContent('3 active · 1 retired')
+    expect(within(catalog).getByText('Kalphite Queen').closest('div')).toHaveTextContent('Retired')
+    expect(within(catalog).queryByRole('button', { name: 'Add Kalphite Queen' })).toBeNull()
+    expect(within(catalog).queryByRole('button', { name: 'Add Vorkath' })).toBeNull()
+  })
 
-it('adds the whole catalog up to capacity, preserving assigned cards despite search', async () => {
-  const extras = Array.from({ length: 40 }, (_, index) => ({
-    ...CARD,
-    id: `extra-${index}`,
-    revision: { ...CARD.revision, name: `Extra ${index}` },
-  }))
-  vi.mocked(fetchCards).mockResolvedValue([CARD, ...extras])
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  expect(await screen.findByRole('button', { name: 'Add all' })).toBeDisabled()
-  await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  await user.click(await screen.findByRole('button', { name: 'Add Vorkath' }))
-  await user.type(screen.getByRole('searchbox'), 'not a card')
-  await user.click(screen.getByRole('button', { name: 'Add all' }))
-  expect(screen.getAllByRole('button', { name: /^Position \d+$/ })).toHaveLength(36)
-  expect(screen.getByRole('button', { name: 'Position 1' })).toHaveTextContent('Vorkath')
-  expect(screen.getByRole('button', { name: 'Position 2' })).toHaveTextContent('Extra 0')
-  expect(screen.getByRole('button', { name: 'Position 36' })).toHaveTextContent('Extra 34')
-  expect(screen.getByRole('button', { name: 'Add all' })).toBeDisabled()
-  expect(saveBoard).not.toHaveBeenCalled()
-})
+  it('adds a card to the selected empty slot and saves the exact revisions', async () => {
+    vi.mocked(saveBoard).mockResolvedValue(
+      boardWith([
+        [1, CARD],
+        [4, HYDRA],
+      ]),
+    )
+    const user = await openBuilder()
 
-it('disables bulk addition when every catalog card has already been added', async () => {
-  const user = userEvent.setup()
-  renderApp(<AppRouter />, '/admin/boards')
-  await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  await user.click(screen.getByRole('button', { name: 'Add all' }))
-  expect(screen.getByRole('button', { name: 'Position 1' })).toHaveTextContent('Vorkath')
-  expect(screen.getByRole('button', { name: 'Add all' })).toBeDisabled()
+    await user.click(
+      within(grid()).getByRole('button', { name: 'Position 1·4 empty — choose card' }),
+    )
+    await user.click(screen.getByRole('button', { name: 'Add Alchemical Hydra' }))
+    expect(
+      within(grid()).getByRole('button', { name: /^Position 1·4: Alchemical Hydra/ }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Unsaved changes')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+    expect(vi.mocked(saveBoard).mock.calls[0][0]).toEqual({
+      eventId: EVENT.id,
+      payload: {
+        expected_revision: 4,
+        positions: [
+          { position: 1, card_id: CARD.id, card_revision: 1 },
+          { position: 4, card_id: HYDRA.id, card_revision: 1 },
+        ],
+      },
+    })
+  })
+
+  it('moves cards by dragging, accepts catalog drops on empty slots and removes cards', async () => {
+    const user = await openBuilder()
+
+    const vorkath = within(grid()).getByRole('button', { name: /^Position 1·1: Vorkath/ })
+    fireEvent.dragStart(vorkath.parentElement!, { dataTransfer: { setData: vi.fn() } })
+    const target = within(grid()).getByRole('button', { name: 'Position 2·2 empty — choose card' })
+    fireEvent.dragOver(target)
+    fireEvent.drop(target)
+    expect(
+      within(grid()).getByRole('button', { name: /^Position 2·2: Vorkath/ }),
+    ).toBeInTheDocument()
+
+    const hydraItem = screen.getByText('Alchemical Hydra').closest('[draggable="true"]')!
+    fireEvent.dragStart(hydraItem, { dataTransfer: { setData: vi.fn() } })
+    const empty = within(grid()).getByRole('button', { name: 'Position 1·1 empty — choose card' })
+    fireEvent.dragOver(empty)
+    expect(within(grid()).getByText('Drop Alchemical Hydra on 1·1')).toBeInTheDocument()
+    fireEvent.drop(within(grid()).getByText('Drop Alchemical Hydra on 1·1'))
+    expect(
+      within(grid()).getByRole('button', { name: /^Position 1·1: Alchemical Hydra/ }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Remove Vorkath from this position' }))
+    expect(within(grid()).queryByRole('button', { name: /: Vorkath/ })).toBeNull()
+  })
+
+  it('fills empty slots in catalog order and clears the board after confirmation', async () => {
+    const user = await openBuilder()
+
+    await user.click(screen.getByRole('button', { name: 'Fill empty slots (2)' }))
+    expect(screen.getByText('3 of 36')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Fill empty slots (0)' })).toBeDisabled()
+
+    await user.click(screen.getByRole('button', { name: 'Clear' }))
+    const dialog = screen.getByRole('dialog', { name: 'Clear the board?' })
+    await user.click(within(dialog).getByRole('button', { name: 'Clear' }))
+    expect(screen.getByText('0 of 36')).toBeInTheDocument()
+    expect(saveBoard).not.toHaveBeenCalled()
+  })
+
+  it('filters the catalog, searches drop names and groups drops by weight', async () => {
+    const user = await openBuilder()
+    const catalog = screen.getByRole('region', { name: 'Card catalog' })
+
+    await user.type(within(catalog).getByRole('searchbox'), 'claw')
+    expect(within(catalog).getByText('Alchemical Hydra')).toBeInTheDocument()
+    expect(within(catalog).queryByText('Barrows')).toBeNull()
+
+    await user.click(within(catalog).getByText('Alchemical Hydra'))
+    const rules = screen.getByRole('region', { name: 'Selected card rules' })
+    expect(rules).toHaveTextContent('Completes at 6 progress · revision 1')
+    expect(rules).toHaveTextContent("Hydra's Tail · Hydra's Leather+2 each")
+    expect(rules).toHaveTextContent("Hydra's Claw+3")
+
+    await user.clear(within(catalog).getByRole('searchbox'))
+    await user.click(within(catalog).getByRole('button', { name: 'On board (1)' }))
+    expect(within(catalog).getByText('Vorkath')).toBeInTheDocument()
+    expect(within(catalog).queryByText('Barrows')).toBeNull()
+  })
+
+  it('keeps a pinned snapshot when the catalog has a newer revision', async () => {
+    vi.mocked(fetchCards).mockResolvedValue([
+      {
+        ...CARD,
+        current_revision: 2,
+        revision: { ...CARD.revision, revision: 2, name: 'New Vorkath' },
+      },
+    ])
+    vi.mocked(fetchAdminBoard).mockResolvedValue(boardWith([[1, CARD]]))
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    const slot = await screen.findByRole('button', { name: /^Position 1·1: Vorkath,/ })
+    expect(slot).not.toHaveTextContent('New Vorkath')
+    expect(screen.queryByRole('button', { name: 'Add New Vorkath' })).toBeNull()
+  })
+
+  it('shows a stale save inside the page', async () => {
+    vi.mocked(saveBoard).mockRejectedValue(
+      new AxiosError('Conflict', '409', undefined, undefined, {
+        status: 409,
+        data: { detail: 'Board changed while you were editing' },
+      } as never),
+    )
+    const user = await openBuilder()
+    await user.click(screen.getByRole('button', { name: 'Fill empty slots (2)' }))
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'This board changed while you were editing',
+    )
+  })
+
+  it('keeps published events read-only', async () => {
+    vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
+    vi.mocked(fetchCards).mockResolvedValue([CARD])
+    vi.mocked(fetchAdminBoard).mockResolvedValue({ ...boardWith([[1, CARD]]), status: 'published' })
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Active' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    expect(await screen.findByText('Published · read-only')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Save board' })).toBeNull()
+    expect(screen.queryByRole('button', { name: /^Remove .* from this position$/ })).toBeNull()
+    expect(screen.getAllByRole('button', { name: /empty — choose card$/ })[0]).toBeDisabled()
+  })
+
+  it('offers catalog setup when no cards exist', async () => {
+    vi.mocked(fetchCards).mockResolvedValue([])
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+    expect(await screen.findByRole('link', { name: 'Open card catalog' })).toHaveAttribute(
+      'href',
+      '/admin/cards',
+    )
+  })
+
+  describe('mobile', () => {
+    beforeEach(() => {
+      vi.stubGlobal(
+        'matchMedia',
+        vi
+          .fn()
+          .mockReturnValue({
+            matches: false,
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+          }),
+      )
+    })
+    afterEach(() => vi.unstubAllGlobals())
+
+    async function openMobile() {
+      vi.mocked(fetchCards).mockResolvedValue([CARD, HYDRA, BARROWS])
+      vi.mocked(fetchAdminBoard).mockResolvedValue(boardWith([[1, CARD]]))
+      const user = userEvent.setup()
+      renderApp(<AppRouter />, '/admin/boards')
+      await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
+      await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+      await screen.findByRole('region', { name: '1. Choose a position' })
+      return user
+    }
+
+    it('picks a position first, then places a card on it', async () => {
+      const user = await openMobile()
+      expect(screen.getByText('Draft · 1/36')).toBeInTheDocument()
+      const map = screen.getByRole('region', { name: '1. Choose a position' })
+      expect(map).toHaveTextContent('35 empty')
+
+      await user.click(
+        within(map).getByRole('button', { name: 'Position 2·5 empty — choose card' }),
+      )
+      const picker = screen.getByRole('region', { name: 'Choose the card for 2·5' })
+      await user.click(within(picker).getByRole('button', { name: /Alchemical Hydra/ }))
+      expect(within(picker).getByText("Hydra's Claw", { exact: false })).toBeInTheDocument()
+      await user.click(within(picker).getByRole('button', { name: 'Place on 2·5' }))
+
+      expect(
+        within(map).getByRole('button', { name: /^Position 2·5: Alchemical Hydra/ }),
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Save board' })).toBeInTheDocument()
+    })
+
+    it('swaps and removes a filled position', async () => {
+      const user = await openMobile()
+      const map = screen.getByRole('region', { name: '1. Choose a position' })
+
+      await user.click(within(map).getByRole('button', { name: /^Position 1·1: Vorkath/ }))
+      await user.click(screen.getByRole('button', { name: 'Swap' }))
+      expect(screen.getByText('Tap the position to swap with 1·1.')).toBeInTheDocument()
+      await user.click(
+        within(map).getByRole('button', { name: 'Position 3·3 empty — choose card' }),
+      )
+      expect(
+        within(map).getByRole('button', { name: /^Position 3·3: Vorkath/ }),
+      ).toBeInTheDocument()
+
+      await user.click(within(map).getByRole('button', { name: /^Position 3·3: Vorkath/ }))
+      await user.click(screen.getByRole('button', { name: 'Remove' }))
+      expect(within(map).queryByRole('button', { name: /: Vorkath/ })).toBeNull()
+    })
+  })
 })
 
 it('opens creation in a modal and restores focus on Escape without saving', async () => {

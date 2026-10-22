@@ -4,7 +4,7 @@ import { Badge } from '../../../components/ui/Badge'
 import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
-import { TileImage } from './TileImage'
+import { CardImage } from '../../../components/ui/CardImage'
 
 interface TileCardProps {
   tile: Tile
@@ -35,7 +35,7 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
       } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-[3px] outline-rs-gold-bright' : ''}`}
     >
       <span className="relative block">
-        <TileImage tile={tile} className="h-14 w-full" />
+        <CardImage name={tile.name} imageUrl={tile.imageUrl} className="h-14 w-full" />
         <span className="absolute left-1 top-1">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
         </span>

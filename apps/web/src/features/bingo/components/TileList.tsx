@@ -5,7 +5,7 @@ import { tileListItemId } from '../boardTiles'
 import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
-import { TileImage } from './TileImage'
+import { CardImage } from '../../../components/ui/CardImage'
 
 const ROWS = [1, 2, 3, 4, 5, 6]
 
@@ -90,7 +90,7 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
       <span className="min-w-[30px] text-center text-[11px] font-semibold tabular-nums text-rs-muted">
         {t('board.columnShort', { column: tile.col })}
       </span>
-      <TileImage tile={tile} className="h-12 w-[52px] shrink-0" />
+      <CardImage name={tile.name} imageUrl={tile.imageUrl} className="h-12 w-[52px] shrink-0" />
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
         <span className="font-semibold">{tile.name}</span>
         <span className="flex items-center gap-1.5">

@@ -1,57 +1,10 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui/Button'
 import { FormModal } from '../../../components/ui/FormModal'
 import { teamErrorKey } from '../errors'
-import type { RosterFeedback } from '../hooks/useRosterActions'
 import { useTeamMutations } from '../hooks/useTeams'
 import type { Player, Team } from '../types'
-
-interface ConfirmDialogProps {
-  title: string
-  message: ReactNode
-  confirmLabel: string
-  danger?: boolean
-  busy: boolean
-  error: RosterFeedback | null
-  onConfirm: () => void
-  onClose: () => void
-}
-
-/** Small confirmation modal; API errors stay inside it. */
-export function ConfirmDialog({
-  title,
-  message,
-  confirmLabel,
-  danger = false,
-  busy,
-  error,
-  onConfirm,
-  onClose,
-}: ConfirmDialogProps) {
-  const { t } = useTranslation()
-  return (
-    <FormModal title={title} busy={busy} size="sm" onClose={onClose}>
-      <p className="m-0">{message}</p>
-      {error?.isError && (
-        <p
-          role="alert"
-          className="mt-3 rounded-sm border border-rs-danger/60 bg-rs-inset p-3 text-sm"
-        >
-          {error.message}
-        </p>
-      )}
-      <div className="mt-5 flex justify-end gap-2">
-        <Button onClick={onClose} disabled={busy}>
-          {t('common.cancel')}
-        </Button>
-        <Button variant={danger ? 'danger' : 'primary'} onClick={onConfirm} disabled={busy}>
-          {busy ? t('common.saving') : confirmLabel}
-        </Button>
-      </div>
-    </FormModal>
-  )
-}
 
 /** Assign or change the team of an approved registration. */
 export function PlayerAssignment({

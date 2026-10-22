@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { tileInitials } from '../boardTiles'
+import { initialsOf } from '../../../lib/text/initials'
 import type { FilterSummary } from '../hooks/useFilterSummary'
 import type { Tile, TileMatch, TileTier } from '../types'
 
@@ -74,7 +74,7 @@ export function MiniMap({ tiles, matches, summary, currentId, onJump }: MiniMapP
                     : ''
                 }`}
               >
-                <span>{tileInitials(tile.name)}</span>
+                <span>{initialsOf(tile.name)}</span>
                 <span
                   className={`text-[10px] font-semibold ${hit ? 'text-rs-canvas' : LETTER_COLOR[tile.tier]}`}
                 >

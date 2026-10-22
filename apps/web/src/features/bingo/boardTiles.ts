@@ -1,4 +1,5 @@
 import type { EventBoard } from '../boards/types'
+import { normalizeSearch } from '../../lib/text/search'
 import type { TierFilter, Tile, TileMatch } from './types'
 
 /** Maps the published board snapshot to tiles. No progress or score exists yet (BR-001). */
@@ -21,15 +22,6 @@ export function boardToTiles(board: EventBoard): Tile[] {
   }))
 }
 
-/** Lowercases and strips accents so "Tumékén" matches "tumeken". */
-export function normalizeSearch(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLocaleLowerCase()
-    .trim()
-}
-
 export function matchTile(tile: Tile, search: string, tier: TierFilter): TileMatch {
   const tierMatches = tier === 'all' || tile.tier === tier
   const query = normalizeSearch(search)
@@ -48,18 +40,6 @@ export function matchTile(tile: Tile, search: string, tier: TierFilter): TileMat
 
 export function isFiltering(search: string, tier: TierFilter): boolean {
   return tier !== 'all' || normalizeSearch(search) !== ''
-}
-
-const MAX_INITIALS = 3
-
-/** "Alchemical Hydra" → "AH", "DT2 Bosses" → "DB": shown when a tile has no image. */
-export function tileInitials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter((word) => /^[A-Z0-9]/.test(word))
-    .map((word) => word[0])
-    .join('')
-    .slice(0, MAX_INITIALS)
 }
 
 /** DOM id used by the mini-map to scroll to a tile in the row list. */
