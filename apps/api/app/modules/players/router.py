@@ -11,7 +11,9 @@ from app.modules.players.schemas import (
     PlayerListQuery,
     PlayerListResponse,
     PlayerResponse,
+    PlayerSelection,
     PlayerUpdate,
+    SelectionResult,
 )
 from app.modules.players.service import PlayerService
 from app.modules.teams.repository import TeamRepository
@@ -58,6 +60,26 @@ async def approve_all(
     event_id: str, admin: AdminDependency, service: PlayerServiceDependency
 ) -> ApprovalResponse:
     return ApprovalResponse(approved_count=await service.approve_all(event_id))
+
+
+@router.post("/approve-selected", response_model=SelectionResult)
+async def approve_selected(
+    event_id: str,
+    payload: PlayerSelection,
+    admin: AdminDependency,
+    service: PlayerServiceDependency,
+) -> SelectionResult:
+    return await service.approve_selected(event_id, payload.player_ids)
+
+
+@router.post("/remove-selected", response_model=SelectionResult)
+async def remove_selected(
+    event_id: str,
+    payload: PlayerSelection,
+    admin: AdminDependency,
+    service: PlayerServiceDependency,
+) -> SelectionResult:
+    return await service.remove_selected(event_id, payload.player_ids)
 
 
 @router.post("/{player_id}/approve", response_model=PlayerResponse)

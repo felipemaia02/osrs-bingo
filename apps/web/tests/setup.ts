@@ -31,6 +31,8 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
   approvePlayer: vi.fn(),
   approveAllPlayers: vi.fn(),
   removePlayer: vi.fn(),
+  approveSelectedPlayers: vi.fn(),
+  removeSelectedPlayers: vi.fn(),
 }))
 
 vi.mock('../src/features/administration/api/administrationApi', () => ({

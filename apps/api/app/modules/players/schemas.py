@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -39,6 +39,7 @@ class PlayerResponse(PlayerFields):
     model_config = ConfigDict(from_attributes=True)
 
     id: str
+    discord_username: str | None = None
     status: RegistrationStatus
     event_id: str
     team_id: str | None
@@ -66,6 +67,32 @@ class PlayerListResponse(BaseModel):
     offset: int
     limit: int
     counts: PlayerCounts
+
+
+MAX_SELECTION = 25
+OBJECT_ID_PATTERN = r"^[0-9a-fA-F]{24}$"
+
+
+class PlayerSelection(BaseModel):
+    """Registrations chosen on one roster page (at most one page of 25)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player_ids: list[Annotated[str, Field(pattern=OBJECT_ID_PATTERN)]] = Field(
+        min_length=1, max_length=MAX_SELECTION
+    )
+
+    @field_validator("player_ids")
+    @classmethod
+    def unique_ids(cls, value: list[str]) -> list[str]:
+        if len({player_id.lower() for player_id in value}) != len(value):
+            raise ValueError("Each registration can be selected only once")
+        return value
+
+
+class SelectionResult(BaseModel):
+    changed: int
+    skipped: int
 
 
 class ApprovalResponse(BaseModel):

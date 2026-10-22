@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   approvePlayer,
   approveAllPlayers,
+  approveSelectedPlayers,
   removePlayer,
+  removeSelectedPlayers,
   fetchOwnRegistration,
   createPlayer,
   createTeam,
@@ -42,6 +44,8 @@ export function useTeamMutations() {
     approvePlayer: useMutation({ mutationFn: approvePlayer, onSuccess: refresh }),
     approveAllPlayers: useMutation({ mutationFn: approveAllPlayers, onSuccess: refresh }),
     removePlayer: useMutation({ mutationFn: removePlayer, onSuccess: refresh }),
+    approveSelectedPlayers: useMutation({ mutationFn: approveSelectedPlayers, onSuccess: refresh }),
+    removeSelectedPlayers: useMutation({ mutationFn: removeSelectedPlayers, onSuccess: refresh }),
     updatePlayer: useMutation({ mutationFn: updatePlayer, onSuccess: refresh }),
   }
 }

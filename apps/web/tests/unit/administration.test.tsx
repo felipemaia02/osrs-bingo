@@ -89,7 +89,7 @@ it('keeps event management out of the public event listing even for admins', asy
 
 it('redirects the former team-management route to the protected portal', async () => {
   renderApp(<AppRouter />, '/teams')
-  expect(await screen.findByRole('heading', { name: 'Teams and players' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Teams and registrations', level: 1 })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Teams and registrations' })).toHaveAttribute(
     'aria-current',
     'page',

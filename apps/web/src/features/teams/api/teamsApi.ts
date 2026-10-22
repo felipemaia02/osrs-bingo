@@ -5,6 +5,7 @@ import type {
   Player,
   PlayerAssignmentPayload,
   PlayerPayload,
+  SelectionResult,
   Team,
   TeamPayload,
 } from '../types'
@@ -40,3 +41,18 @@ export const approveAllPlayers = async ({ eventId }: { eventId: string }) =>
   (await apiClient.post<{ approved_count: number }>(`/events/${eventId}/players/approve-all`)).data
 export const removePlayer = async ({ eventId, playerId }: { eventId: string; playerId: string }) =>
   (await apiClient.delete<Player>(`/events/${eventId}/players/${playerId}`)).data
+
+type SelectionRequest = { eventId: string; playerIds: string[] }
+
+export const approveSelectedPlayers = async ({ eventId, playerIds }: SelectionRequest) =>
+  (
+    await apiClient.post<SelectionResult>(`/events/${eventId}/players/approve-selected`, {
+      player_ids: playerIds,
+    })
+  ).data
+export const removeSelectedPlayers = async ({ eventId, playerIds }: SelectionRequest) =>
+  (
+    await apiClient.post<SelectionResult>(`/events/${eventId}/players/remove-selected`, {
+      player_ids: playerIds,
+    })
+  ).data

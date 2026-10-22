@@ -1,3 +1,5 @@
+from builtins import list as builtin_list
+
 from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
@@ -11,6 +13,7 @@ from app.modules.players.schemas import (
     PlayerResponse,
     PlayerUpdate,
     RegistrationStatus,
+    SelectionResult,
 )
 from app.modules.teams.repository import TeamRepository
 
@@ -45,6 +48,12 @@ class PlayerService:
         elif query.group in ("unassigned", "assigned"):
             status = RegistrationStatus.APPROVED
             assigned = query.group == "assigned"
+        counts = PlayerCounts(**await self._players.counts(event_id))
+        if query.group == "unassigned" and query.team_id:
+            # A team filter can never match unassigned registrations.
+            return PlayerListResponse(
+                items=[], total=0, offset=query.offset, limit=query.limit, counts=counts
+            )
         documents, total = await self._players.page(
             event_id,
             status=status,
@@ -59,8 +68,22 @@ class PlayerService:
             total=total,
             offset=query.offset,
             limit=query.limit,
-            counts=PlayerCounts(**await self._players.counts(event_id)),
+            counts=counts,
         )
+
+    async def approve_selected(
+        self, event_id: str, player_ids: builtin_list[str]
+    ) -> SelectionResult:
+        await self._require_draft_event(event_id)
+        changed = await self._players.approve_selected(event_id, player_ids)
+        return SelectionResult(changed=changed, skipped=len(player_ids) - changed)
+
+    async def remove_selected(
+        self, event_id: str, player_ids: builtin_list[str]
+    ) -> SelectionResult:
+        await self._require_draft_event(event_id)
+        changed = await self._players.remove_selected(event_id, player_ids)
+        return SelectionResult(changed=changed, skipped=len(player_ids) - changed)
 
     async def update(self, event_id: str, player_id: str, payload: PlayerUpdate) -> PlayerResponse:
         await self._require_draft_event(event_id)
@@ -131,6 +154,7 @@ class PlayerService:
             event_id=str(document["event_id"]),
             team_id=str(document["team_id"]) if document["team_id"] is not None else None,
             display_name=document["display_name"],
+            discord_username=document.get("discord_username"),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

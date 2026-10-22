@@ -7,6 +7,7 @@ from bson import ObjectId
 class PlayerDocument(TypedDict):
     user_id: NotRequired[ObjectId]
     status: NotRequired[str]
+    discord_username: NotRequired[str | None]
     _id: ObjectId
     event_id: ObjectId
     team_id: ObjectId | None

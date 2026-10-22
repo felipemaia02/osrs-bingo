@@ -249,3 +249,61 @@ async def test_roster_group_semantics(
         offset=0,
         limit=25,
     )
+
+
+async def test_selected_approval_and_removal_contract(
+    client: AsyncClient, repositories: tuple[AsyncMock, AsyncMock, AsyncMock]
+) -> None:
+    players = repositories[0]
+    players.approve_selected.return_value = 1
+    players.remove_selected.return_value = 2
+    client.headers["Origin"] = "http://localhost:5173"
+    ids = [PLAYER_ID, str(ObjectId())]
+
+    response = await client.post(
+        f"/events/{EVENT_ID}/players/approve-selected", json={"player_ids": ids}
+    )
+    assert response.status_code == 200
+    assert response.json() == {"changed": 1, "skipped": 1}
+
+    response = await client.post(
+        f"/events/{EVENT_ID}/players/remove-selected", json={"player_ids": ids}
+    )
+    assert response.json() == {"changed": 2, "skipped": 0}
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"player_ids": []},
+        {"player_ids": [str(ObjectId()) for _ in range(26)]},
+        {"player_ids": [PLAYER_ID, PLAYER_ID]},
+        {"player_ids": ["not-an-id"]},
+        {"player_ids": [PLAYER_ID], "team_id": TEAM_ID},
+    ],
+)
+async def test_selected_actions_validate_the_selection(
+    client: AsyncClient,
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+    payload: dict[str, object],
+) -> None:
+    client.headers["Origin"] = "http://localhost:5173"
+    response = await client.post(f"/events/{EVENT_ID}/players/approve-selected", json=payload)
+    assert response.status_code == 422
+    repositories[0].approve_selected.assert_not_awaited()
+
+
+async def test_selected_actions_require_an_administrator(
+    client: AsyncClient, repositories: tuple[AsyncMock, AsyncMock, AsyncMock]
+) -> None:
+    auth = app.dependency_overrides[get_auth_service]
+    service = await auth()
+    service.current_user.return_value = CurrentUser(
+        id=USER_ID, discord_id="123", username="Player", is_admin=False
+    )
+    client.headers["Origin"] = "http://localhost:5173"
+    response = await client.post(
+        f"/events/{EVENT_ID}/players/remove-selected", json={"player_ids": [PLAYER_ID]}
+    )
+    assert response.status_code == 403
+    repositories[0].remove_selected.assert_not_awaited()

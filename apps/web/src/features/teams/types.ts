@@ -12,6 +12,10 @@ export interface Player {
   team_id: string | null
   display_name: string
   status: 'pending' | 'approved' | 'removed'
+  /** Linked Discord username; null for legacy registrations (administrator list only). */
+  discord_username?: string | null
+  /** When the registration was requested. */
+  created_at?: string
 }
 
 export interface TeamPayload {
@@ -41,4 +45,10 @@ export interface PlayerPage {
   offset: number
   limit: number
   counts: Record<RosterGroup, number>
+}
+
+/** Result of an approve/remove action on selected registrations. */
+export interface SelectionResult {
+  changed: number
+  skipped: number
 }

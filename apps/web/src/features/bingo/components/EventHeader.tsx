@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useEventCountdown, type EventCountdown } from '../../events/hooks/useEventCountdown'
 import type { BingoEvent } from '../../events/types'
 import { useOwnTeamStatus } from '../../teams/hooks/useOwnTeamStatus'
-import { TeamEmblem, TeamStatusValue } from './TeamStatus'
+import { TeamEmblem } from '../../teams/components/TeamEmblem'
+import { TeamStatusValue } from './TeamStatus'
 
 function useRemainingText(countdown: EventCountdown): string {
   const { t } = useTranslation()

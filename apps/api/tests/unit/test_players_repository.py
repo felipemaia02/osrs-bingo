@@ -99,13 +99,15 @@ async def test_individual_approval_cannot_revive_removed_or_already_approved_rec
     assert update["$set"]["status"] == RegistrationStatus.APPROVED
 
 
-async def test_page_scopes_filters_escapes_search_and_bounds_database_cursor() -> None:
+async def test_page_joins_discord_name_and_searches_both_names_with_bounds() -> None:
     database = MagicMock()
     collection = database.__getitem__.return_value
-    collection.count_documents = AsyncMock(return_value=42)
-    cursor = collection.find.return_value.sort.return_value.skip.return_value.limit.return_value
-    cursor.__aiter__.return_value = []
+    row = {"_id": ObjectId(), "display_name": "Crab", "discord_username": "crabby"}
+    collection.aggregate.return_value.to_list = AsyncMock(
+        return_value=[{"items": [row], "total": [{"value": 42}]}]
+    )
     event_id, team_id = str(ObjectId()), str(ObjectId())
+
     result = await PlayerRepository(database).page(
         event_id,
         status=RegistrationStatus.APPROVED,
@@ -115,22 +117,66 @@ async def test_page_scopes_filters_escapes_search_and_bounds_database_cursor() -
         offset=25,
         limit=25,
     )
-    query = collection.find.call_args.args[0]
-    assert query == {
-        "event_id": ObjectId(event_id),
-        "status": RegistrationStatus.APPROVED,
-        "team_id": ObjectId(team_id),
-        "normalized_display_name": {"$regex": r"crab\.\*"},
+
+    pipeline = collection.aggregate.call_args.args[0]
+    assert pipeline[0] == {
+        "$match": {
+            "event_id": ObjectId(event_id),
+            "status": RegistrationStatus.APPROVED,
+            "team_id": ObjectId(team_id),
+        }
     }
-    collection.count_documents.assert_awaited_once_with(query)
-    collection.find.return_value.sort.assert_called_once_with(
-        [("normalized_display_name", 1), ("_id", 1)]
+    assert pipeline[1]["$lookup"]["from"] == "users"
+    assert pipeline[1]["$lookup"]["localField"] == "user_id"
+    search = pipeline[4]["$match"]["$or"]
+    assert search[0] == {"normalized_display_name": {"$regex": r"crab\.\*"}}
+    assert search[1] == {"discord_username": {"$regex": r"Crab\.\*", "$options": "i"}}
+    assert pipeline[5]["$facet"]["items"] == [
+        {"$sort": {"normalized_display_name": 1, "_id": 1}},
+        {"$skip": 25},
+        {"$limit": 25},
+    ]
+    assert result == ([row], 42)
+
+
+async def test_page_without_search_or_rows_returns_an_empty_page() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    collection.aggregate.return_value.to_list = AsyncMock(return_value=[{"items": [], "total": []}])
+    result = await PlayerRepository(database).page(
+        str(ObjectId()),
+        status=None,
+        assigned=None,
+        search="  ",
+        team_id=None,
+        offset=0,
+        limit=25,
     )
-    collection.find.return_value.sort.return_value.skip.assert_called_once_with(25)
-    collection.find.return_value.sort.return_value.skip.return_value.limit.assert_called_once_with(
-        25
-    )
-    assert result == ([], 42)
+    pipeline = collection.aggregate.call_args.args[0]
+    assert pipeline[0]["$match"]["status"] == {"$in": ["pending", "approved"]}
+    assert all("$facet" in stage or "$or" not in str(stage) for stage in pipeline)
+    assert result == ([], 0)
+
+
+async def test_selected_updates_are_event_scoped_and_state_guarded() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    collection.update_many = AsyncMock(return_value=MagicMock(modified_count=2))
+    repository = PlayerRepository(database)
+    event_id, ids = str(ObjectId()), [str(ObjectId()), str(ObjectId()), "bad-id"]
+
+    assert await repository.approve_selected(event_id, ids) == 2
+    query, update = collection.update_many.call_args.args
+    assert query["_id"] == {"$in": [ObjectId(ids[0]), ObjectId(ids[1])]}
+    assert query["event_id"] == ObjectId(event_id)
+    assert query["status"] == RegistrationStatus.PENDING
+    assert update["$set"]["status"] == RegistrationStatus.APPROVED
+
+    await repository.remove_selected(event_id, ids)
+    query, update = collection.update_many.call_args.args
+    assert query["status"] == {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]}
+    assert update["$set"]["status"] == RegistrationStatus.REMOVED
+    assert update["$set"]["team_id"] is None
 
 
 async def test_counts_are_event_scoped_and_exclude_removed() -> None:

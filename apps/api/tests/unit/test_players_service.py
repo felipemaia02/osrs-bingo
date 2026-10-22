@@ -8,7 +8,12 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.repository import PlayerRepository
-from app.modules.players.schemas import PlayerCreate, PlayerUpdate, RegistrationStatus
+from app.modules.players.schemas import (
+    PlayerCreate,
+    PlayerListQuery,
+    PlayerUpdate,
+    RegistrationStatus,
+)
 from app.modules.players.service import PlayerService
 from app.modules.teams.repository import TeamRepository
 
@@ -161,3 +166,57 @@ async def test_missing_cross_event_registration_rejected(
     ]:
         with pytest.raises(NotFoundError, match="Player"):
             await operation
+
+
+async def test_selected_actions_report_changed_and_skipped(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, _ = repositories
+    ids = [str(ObjectId()) for _ in range(3)]
+    players.approve_selected.return_value = 2
+    players.remove_selected.return_value = 3
+
+    approved = await service.approve_selected(EVENT_ID, ids)
+    removed = await service.remove_selected(EVENT_ID, ids)
+
+    assert (approved.changed, approved.skipped) == (2, 1)
+    assert (removed.changed, removed.skipped) == (3, 0)
+    players.approve_selected.assert_awaited_once_with(EVENT_ID, ids)
+
+
+@pytest.mark.parametrize("status", [EventStatus.ACTIVE, EventStatus.FINISHED])
+async def test_selected_actions_require_draft_event(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock], status: EventStatus
+) -> None:
+    service, players, _, events = repositories
+    events.get.return_value = {"status": status}
+    with pytest.raises(ConflictError):
+        await service.approve_selected(EVENT_ID, [PLAYER_ID])
+    with pytest.raises(ConflictError):
+        await service.remove_selected(EVENT_ID, [PLAYER_ID])
+    players.approve_selected.assert_not_awaited()
+    players.remove_selected.assert_not_awaited()
+
+
+async def test_unassigned_group_with_team_filter_is_empty_without_query(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, teams, _ = repositories
+    teams.get.return_value = {"_id": ObjectId()}
+    players.counts.return_value = {"pending": 1, "unassigned": 2, "assigned": 3}
+    result = await service.list(
+        EVENT_ID, PlayerListQuery(group="unassigned", team_id=str(ObjectId()))
+    )
+    assert result.items == [] and result.total == 0
+    assert result.counts.unassigned == 2
+    players.page.assert_not_awaited()
+
+
+async def test_list_exposes_the_discord_username(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, _ = repositories
+    players.page.return_value = ([{**registration(), "discord_username": "crabby"}], 1)
+    players.counts.return_value = {"pending": 1, "unassigned": 0, "assigned": 0}
+    result = await service.list(EVENT_ID, PlayerListQuery())
+    assert result.items[0].discord_username == "crabby"

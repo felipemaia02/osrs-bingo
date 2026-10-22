@@ -138,8 +138,10 @@ it('approves all pending requests only in the selected event', async () => {
     return { approved_count: 1 }
   })
   const user = await openAdministration()
-  await user.click(await screen.findByRole('button', { name: 'Approve all pending' }))
-  await user.click(screen.getByRole('button', { name: 'Confirm approval' }))
+  await user.click(await screen.findByRole('button', { name: 'Approve all (1)…' }))
+  const dialog = screen.getByRole('dialog', { name: 'Approve 1 request?' })
+  expect(dialog).toHaveTextContent('Thunder Crab become approved, without a team.')
+  await user.click(within(dialog).getByRole('button', { name: 'Approve 1' }))
   expect(vi.mocked(api.approveAllPlayers).mock.calls[0][0]).toEqual({ eventId: EVENT.id })
   expect(await screen.findByText('No pending requests.')).toBeInTheDocument()
 })
@@ -271,22 +273,21 @@ it('paginates on the API and resets the page when searching', async () => {
     })),
   )
   const user = await openAdministration()
-  expect(await screen.findByText('1–25 of 30 participants')).toBeInTheDocument()
+  expect(await screen.findByText('1–25 of 30 · 25 per page')).toBeInTheDocument()
   expect(screen.queryByText('Player 25')).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Next' }))
-  expect(await screen.findByText('26–30 of 30 participants')).toBeInTheDocument()
+  expect(await screen.findByText('26–30 of 30 · 25 per page')).toBeInTheDocument()
   expect(api.fetchPlayers).toHaveBeenLastCalledWith(
     EVENT.id,
     expect.objectContaining({ offset: 25, limit: 25 }),
   )
   await user.type(screen.getByRole('searchbox'), 'Player 29')
-  await user.click(screen.getByRole('button', { name: 'Search' }))
-  expect(await screen.findByText('1–1 of 1 participants')).toBeInTheDocument()
+  expect(await screen.findByText('1–1 of 1 · 25 per page')).toBeInTheDocument()
   expect(api.fetchPlayers).toHaveBeenLastCalledWith(
     EVENT.id,
     expect.objectContaining({ offset: 0, search: 'Player 29' }),
   )
-  expect(screen.getByRole('tab', { name: 'Pending (30)' })).toBeInTheDocument()
+  expect(screen.getByRole('tab', { name: 'Pending 30' })).toBeInTheDocument()
 })
 
 it('creates a team in a modal and opens its filtered member list', async () => {
@@ -321,10 +322,127 @@ it('returns to the previous page when the last row is removed', async () => {
     return { ...players[25], status: 'removed' }
   })
   const user = await openAdministration()
-  await screen.findByText('1–25 of 26 participants')
+  await screen.findByText('1–25 of 26 · 25 per page')
   await user.click(screen.getByRole('button', { name: 'Next' }))
   await user.click(await screen.findByRole('button', { name: 'Remove Player 25' }))
   await user.click(screen.getByRole('button', { name: 'Confirm removal' }))
-  expect(await screen.findByText('1–25 of 25 participants')).toBeInTheDocument()
+  expect(await screen.findByText('1–25 of 25 · 25 per page')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
+})
+
+describe('teams v2 selection and columns', () => {
+  const pending = (index: number, extra: Partial<Player> = {}): Player => ({
+    ...PLAYER,
+    id: `p${index}`,
+    display_name: `Player ${index}`,
+    discord_username: `discord${index}`,
+    created_at: '2026-10-21T18:02:00Z',
+    ...extra,
+  })
+
+  it('shows Discord and request time, with "—" for legacy registrations', async () => {
+    setPlayers([pending(1), pending(2, { discord_username: null })])
+    await openAdministration()
+    const row = (await screen.findByText('Player 1')).closest('tr')!
+    expect(row).toHaveTextContent('discord1')
+    expect(row).toHaveTextContent(/Oct 21/)
+    expect(within(row).getByText('Pending')).toBeInTheDocument()
+    expect(screen.getByText('Player 2').closest('tr')).toHaveTextContent('—')
+    expect(screen.getByText('Editable: draft event')).toBeInTheDocument()
+    expect(screen.getByText(/doesn't delete the request/)).toBeInTheDocument()
+  })
+
+  it('approves selected registrations and reports skipped ones', async () => {
+    setPlayers([pending(1), pending(2), pending(3)])
+    vi.mocked(api.approveSelectedPlayers).mockResolvedValue({ changed: 1, skipped: 1 })
+    const user = await openAdministration()
+
+    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 1' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Select Player 2' }))
+    const bar = screen.getByRole('region', { name: 'Bulk actions' })
+    expect(bar).toHaveTextContent('2 selected')
+    await user.click(within(bar).getByRole('button', { name: 'Approve selected' }))
+
+    expect(vi.mocked(api.approveSelectedPlayers).mock.calls[0][0]).toEqual({
+      eventId: EVENT.id,
+      playerIds: ['p1', 'p2'],
+    })
+    expect(
+      await screen.findByText('1 approved. 1 skipped because it had already changed.'),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Bulk actions' })).not.toBeInTheDocument()
+  })
+
+  it('selects the whole page and removes it after confirmation', async () => {
+    setPlayers([pending(1), pending(2)])
+    vi.mocked(api.removeSelectedPlayers).mockResolvedValue({ changed: 2, skipped: 0 })
+    const user = await openAdministration()
+
+    await user.click(await screen.findByRole('checkbox', { name: 'Select all' }))
+    expect(screen.getByRole('checkbox', { name: 'Select Player 2' })).toBeChecked()
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }))
+    const dialog = screen.getByRole('dialog', { name: 'Remove selected registrations?' })
+    expect(dialog).toHaveTextContent('Remove 2 selected registrations?')
+    await user.click(within(dialog).getByRole('button', { name: 'Confirm removal' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(vi.mocked(api.removeSelectedPlayers).mock.calls[0][0].playerIds).toEqual(['p1', 'p2'])
+    expect(await screen.findByText('2 removed.')).toBeInTheDocument()
+  })
+
+  it('clears the selection when switching tabs and offers only removal outside Pending', async () => {
+    setPlayers([pending(1), pending(2, { status: 'approved' })])
+    const user = await openAdministration()
+    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 1' }))
+    await user.click(screen.getByRole('tab', { name: /Unassigned/ }))
+    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 2' }))
+    const bar = screen.getByRole('region', { name: 'Bulk actions' })
+    expect(bar).toHaveTextContent('1 selected')
+    expect(within(bar).queryByRole('button', { name: 'Approve selected' })).not.toBeInTheDocument()
+    expect(within(bar).getByRole('button', { name: 'Remove selected' })).toBeInTheDocument()
+  })
+
+  it('hides selection and actions for an active event', async () => {
+    vi.mocked(fetchEvents).mockImplementation(async (status) =>
+      status === 'draft' ? [] : [{ ...EVENT, status: 'active' }],
+    )
+    setPlayers([pending(1)])
+    vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: true })
+    renderApp(<TeamsPage />, '/teams')
+    const user = userEvent.setup()
+    await screen.findByRole('option', { name: 'Summer Bingo · Active' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    expect(await screen.findByText('Player 1')).toBeInTheDocument()
+    expect(screen.getByText('Read-only: Active event')).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Approve Player 1' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Approve all/ })).not.toBeInTheDocument()
+  })
+
+  it('uses cards without multi-select on mobile', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+    )
+    setPlayers([pending(1), pending(2)])
+    const user = await openAdministration()
+
+    expect(await screen.findByRole('link', { name: 'Administration' })).toHaveAttribute(
+      'href',
+      '/admin',
+    )
+    expect(screen.getByRole('tab', { name: 'Pending 2' })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByText(/discord1 · Oct 21/)).toBeInTheDocument()
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Approve Player 1' }))
+    expect(api.approvePlayer).toHaveBeenCalled()
+    expect(screen.getByText('1–2 of 2')).toBeInTheDocument()
+    vi.unstubAllGlobals()
+  })
 })
