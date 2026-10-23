@@ -149,7 +149,8 @@
       "finish": "Finish",
       "edit": "Edit",
       "board": "Board",
-      "activateShort": "Activate"
+      "activateShort": "Activate",
+      "rules": "Rules"
     },
     "form": {
       "createTitle": "Create event",
@@ -173,7 +174,8 @@
       "created": "Event created.",
       "updated": "Event updated.",
       "activated": "Event activated.",
-      "finished": "Event finished."
+      "finished": "Event finished.",
+      "rulesSaved": "Rules saved."
     },
     "confirm": {
       "activateTitle": "Activate event?",
@@ -188,7 +190,8 @@
       "readOnly": "Only draft events can be edited.",
       "invalidTransition": "This event cannot perform that status change.",
       "notFound": "The event was not found.",
-      "boardRequired": "Complete and save every board position before activating the event."
+      "boardRequired": "Complete and save every board position before activating the event.",
+      "rulesRequired": "Set the row and column bonuses (Rules) before activating the event."
     },
     "publicEyebrow": "Community events",
     "publicDescription": "Discover Bingo events and follow your registration.",
@@ -201,7 +204,18 @@
     "readOnly": "Read-only",
     "activeNotice": "{{name}} is active. Only one event can be active at a time: finish it before activating another.",
     "durationDays_one": "{{count}} day",
-    "durationDays_other": "{{count}} days"
+    "durationDays_other": "{{count}} days",
+    "rules": {
+      "title": "Rules · {{name}}",
+      "lines": "Row and column bonuses",
+      "row": "Per completed row (points)",
+      "column": "Per completed column (points)",
+      "linesHint": "No default value: each event sets its own (0 is allowed). A row or column counts once all of its tiles are complete.",
+      "formula": "Official team score = tiles + rows + columns. Individual contribution is a separate metric.",
+      "editableUntil": "Editable until the event is activated.",
+      "save": "Save rules",
+      "missing": "Rules missing"
+    }
   },
   "teams": {
     "eyebrow": "Administration",
@@ -366,8 +380,7 @@
     "cardsDescription": "Bosses, drops, progress weights and revisions.",
     "boardsDescription": "Choose the board size, cards and positions for each event.",
     "rolesDescription": "App roles, independent of Discord.",
-    "rankingDescription": "Compare teams and contributions. Not available yet.",
-    "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
+    "rankingDescription": "Compare teams and each player's contribution.",
     "searchUsers": "Search registered users",
     "search": "Search",
     "noUsers": "No users found. Users appear here after their first login.",
@@ -769,5 +782,52 @@
     "oldestFirst": "Oldest first",
     "empty": "Nothing to review. 🎉",
     "backToQueue": "Back to the queue"
+  },
+  "score": {
+    "tileComplete": "Complete +{{points}}",
+    "tileProgress": "{{value}} / {{requirement}}",
+    "panel": "Your team's score",
+    "official": "Official team score",
+    "completedTiles": "Completed tiles ({{count}} of {{total}})",
+    "rows": "Rows",
+    "columns": "Columns",
+    "lineBreakdown": "{{count}} × {{value}}",
+    "notConfigured": "bonus not configured",
+    "notConfiguredShort": "not set",
+    "labelComplete": "complete",
+    "labelProgress": "progress {{value}} of {{requirement}}",
+    "detailProgress": "Team progress: {{value}} of {{requirement}} · worth {{points}} pts once",
+    "dropCount": "{{name}} × {{count}}"
+  },
+  "ranking": {
+    "eyebrow": "Administration · private",
+    "private": "Only administrators see this screen. Players only see their own team.",
+    "event": "Event",
+    "noEvent": "There are no events yet.",
+    "rules": "Line bonuses: row {{row}} · column {{column}}",
+    "calculatedAt": "calculated at {{time}}",
+    "official": "Official team scores",
+    "position": "Position",
+    "team": "Team",
+    "tiles": "Tiles",
+    "rows": "Rows",
+    "columns": "Columns",
+    "total": "Total",
+    "members_one": "{{count}} player",
+    "members_other": "{{count}} players",
+    "tilesDone": "{{count}}/{{total}} tiles",
+    "breakdown": "Tiles {{tiles}} ({{done}}/{{total}}) · rows {{rows}} · columns {{columns}}",
+    "tie": "(tie)",
+    "place_ordinal_one": "{{count}}st",
+    "place_ordinal_two": "{{count}}nd",
+    "place_ordinal_few": "{{count}}rd",
+    "place_ordinal_other": "{{count}}th",
+    "tiesNote": "Ties share the position and there is no tiebreaker; the next position is skipped (1st, 2nd, 2nd, 4th).",
+    "contribution": "Individual contribution",
+    "contributionHint": "Separate metric · fractional · doesn't add to the team score",
+    "player": "Player",
+    "contributionShort": "Contribution",
+    "noPlayers": "No players on this team.",
+    "noTeams": "This event has no teams yet."
   }
 }

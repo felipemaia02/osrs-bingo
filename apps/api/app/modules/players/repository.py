@@ -203,6 +203,16 @@ class PlayerRepository:
         cursor = self._collection.find({"_id": {"$in": player_ids}})
         return {document["_id"]: cast(PlayerDocument, document) async for document in cursor}
 
+    async def list_assigned(self, event_id: str) -> builtin_list[PlayerDocument]:
+        """Approved players that have a team, sorted by name."""
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return []
+        cursor = self._collection.find(
+            {"event_id": object_id, "status": "approved", "team_id": {"$ne": None}}
+        ).sort("normalized_display_name", 1)
+        return cast(builtin_list[PlayerDocument], await cursor.to_list(length=None))
+
     async def get_for_user(self, event_id: str, user_id: str) -> PlayerDocument | None:
         event_object_id, user_object_id = self._object_id(event_id), self._object_id(user_id)
         if event_object_id is None or user_object_id is None:

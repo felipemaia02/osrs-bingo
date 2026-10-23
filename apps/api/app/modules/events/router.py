@@ -10,6 +10,7 @@ from app.modules.events.schemas import (
     EventCreate,
     EventListResponse,
     EventResponse,
+    EventRules,
     EventStatus,
     EventUpdate,
 )
@@ -67,6 +68,16 @@ async def update_event(
 ) -> EventResponse:
     log_event(logger, 20, "event_update_requested", event_id=event_id)
     return await service.update(event_id, payload)
+
+
+@router.patch(
+    "/{event_id}/rules", response_model=EventResponse, dependencies=[Depends(require_admin)]
+)
+async def update_rules(
+    event_id: str, payload: EventRules, service: EventServiceDependency
+) -> EventResponse:
+    log_event(logger, 20, "event_rules_update_requested", event_id=event_id)
+    return await service.set_rules(event_id, payload)
 
 
 @router.post("/{event_id}/activate", response_model=EventResponse)

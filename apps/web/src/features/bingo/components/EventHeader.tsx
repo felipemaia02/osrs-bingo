@@ -67,8 +67,8 @@ export function EventHeader({ event }: { event: BingoEvent }) {
   )
 }
 
-/** Mobile summary card: event name, countdown, own team and the progress notice. */
-export function MobileEventSummary({ event }: { event: BingoEvent }) {
+/** Mobile summary card: event name, countdown, own team and (without a score) the notice. */
+export function MobileEventSummary({ event, hasScore }: { event: BingoEvent; hasScore: boolean }) {
   const { t } = useTranslation()
   const countdown = useEventCountdown(event)
   const team = useOwnTeamStatus(event.id)
@@ -98,10 +98,12 @@ export function MobileEventSummary({ event }: { event: BingoEvent }) {
           </div>
         )}
       </div>
-      <span className="flex items-center gap-1 text-xs text-rs-muted">
-        <HourglassDisabledOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
-        {t('board.progressUnavailableShort')}
-      </span>
+      {!hasScore && (
+        <span className="flex items-center gap-1 text-xs text-rs-muted">
+          <HourglassDisabledOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
+          {t('board.progressUnavailableShort')}
+        </span>
+      )}
     </div>
   )
 }

@@ -149,7 +149,8 @@
       "finish": "Finalizar",
       "edit": "Editar",
       "board": "Tablero",
-      "activateShort": "Activar"
+      "activateShort": "Activar",
+      "rules": "Reglas"
     },
     "form": {
       "createTitle": "Crear evento",
@@ -173,7 +174,8 @@
       "created": "Evento creado.",
       "updated": "Evento actualizado.",
       "activated": "Evento activado.",
-      "finished": "Evento finalizado."
+      "finished": "Evento finalizado.",
+      "rulesSaved": "Reglas guardadas."
     },
     "confirm": {
       "activateTitle": "¿Activar evento?",
@@ -188,7 +190,8 @@
       "readOnly": "Solo se pueden editar eventos en borrador.",
       "invalidTransition": "Este evento no permite ese cambio de estado.",
       "notFound": "No se encontró el evento.",
-      "boardRequired": "Completa y guarda todas las posiciones del tablero antes de activar el evento."
+      "boardRequired": "Completa y guarda todas las posiciones del tablero antes de activar el evento.",
+      "rulesRequired": "Define los bonos de fila y columna (Reglas) antes de activar el evento."
     },
     "publicEyebrow": "Eventos de la comunidad",
     "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción.",
@@ -201,7 +204,18 @@
     "readOnly": "Solo lectura",
     "activeNotice": "{{name}} está activo. Solo puede haber un evento activo a la vez: finalízalo antes de activar otro.",
     "durationDays_one": "{{count}} día",
-    "durationDays_other": "{{count}} días"
+    "durationDays_other": "{{count}} días",
+    "rules": {
+      "title": "Reglas · {{name}}",
+      "lines": "Bonos de fila y columna",
+      "row": "Por fila completa (puntos)",
+      "column": "Por columna completa (puntos)",
+      "linesHint": "Sin valor por defecto: cada evento define el suyo (0 está permitido). Una fila o columna cuenta cuando todas sus casillas están completas.",
+      "formula": "Puntuación oficial del equipo = casillas + filas + columnas. La contribución individual es una métrica aparte.",
+      "editableUntil": "Editable hasta que se active el evento.",
+      "save": "Guardar reglas",
+      "missing": "Faltan reglas"
+    }
   },
   "teams": {
     "eyebrow": "Administración",
@@ -366,8 +380,7 @@
     "cardsDescription": "Bosses, drops, pesos de progreso y revisiones.",
     "boardsDescription": "Elige el tamaño del tablero, las cartas y sus posiciones en cada evento.",
     "rolesDescription": "Roles de la app, independientes de Discord.",
-    "rankingDescription": "Compara equipos y contribuciones. Aún no disponible.",
-    "rankingUnavailable": "La puntuación del evento aún no está disponible. La clasificación y las contribuciones aparecerán cuando las reglas y las actividades aceptadas estén definidas.",
+    "rankingDescription": "Compara los equipos y la contribución de cada jugador.",
     "searchUsers": "Buscar usuarios registrados",
     "search": "Buscar",
     "noUsers": "No se encontraron usuarios. Aparecen después de su primer inicio de sesión.",
@@ -769,5 +782,50 @@
     "oldestFirst": "Más antiguos primero",
     "empty": "Nada que revisar. 🎉",
     "backToQueue": "Volver a la cola"
+  },
+  "score": {
+    "tileComplete": "Completa +{{points}}",
+    "tileProgress": "{{value}} / {{requirement}}",
+    "panel": "Puntuación de tu equipo",
+    "official": "Puntuación oficial del equipo",
+    "completedTiles": "Casillas completas ({{count}} de {{total}})",
+    "rows": "Filas",
+    "columns": "Columnas",
+    "lineBreakdown": "{{count}} × {{value}}",
+    "notConfigured": "bono no configurado",
+    "notConfiguredShort": "sin definir",
+    "labelComplete": "completa",
+    "labelProgress": "progreso {{value}} de {{requirement}}",
+    "detailProgress": "Progreso del equipo: {{value}} de {{requirement}} · vale {{points}} pts una vez",
+    "dropCount": "{{name}} × {{count}}"
+  },
+  "ranking": {
+    "eyebrow": "Administración · privado",
+    "private": "Solo los administradores ven esta pantalla. Los jugadores solo ven su propio equipo.",
+    "event": "Evento",
+    "noEvent": "Todavía no hay eventos.",
+    "rules": "Bonos de línea: fila {{row}} · columna {{column}}",
+    "calculatedAt": "calculado a las {{time}}",
+    "official": "Puntuación oficial de los equipos",
+    "position": "Posición",
+    "team": "Equipo",
+    "tiles": "Casillas",
+    "rows": "Filas",
+    "columns": "Columnas",
+    "total": "Total",
+    "members_one": "{{count}} jugador",
+    "members_other": "{{count}} jugadores",
+    "tilesDone": "{{count}}/{{total}} casillas",
+    "breakdown": "Casillas {{tiles}} ({{done}}/{{total}}) · filas {{rows}} · columnas {{columns}}",
+    "tie": "(empate)",
+    "place_ordinal_one": "{{count}}.º",
+    "place_ordinal_other": "{{count}}.º",
+    "tiesNote": "Los empates comparten la posición y no hay desempate; se salta la siguiente posición (1.º, 2.º, 2.º, 4.º).",
+    "contribution": "Contribución individual",
+    "contributionHint": "Métrica aparte · fraccionaria · no suma a la puntuación del equipo",
+    "player": "Jugador",
+    "contributionShort": "Contribución",
+    "noPlayers": "No hay jugadores en este equipo.",
+    "noTeams": "Este evento todavía no tiene equipos."
   }
 }

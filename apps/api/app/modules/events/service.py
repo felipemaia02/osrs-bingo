@@ -4,11 +4,18 @@ from app.modules.boards.repository import BoardRepository
 from app.modules.boards.service import BOARD_REQUIRED_DETAIL, is_publishable_board
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
-from app.modules.events.schemas import EventCreate, EventResponse, EventStatus, EventUpdate
+from app.modules.events.schemas import (
+    EventCreate,
+    EventResponse,
+    EventRules,
+    EventStatus,
+    EventUpdate,
+)
 
 ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
+RULES_REQUIRED_DETAIL = "Set the row and column bonuses before activating"
 
 
 class EventService:
@@ -54,9 +61,21 @@ class EventService:
         log_event(self._logger, 20, "event_updated", event_id=event_id)
         return self._to_response(updated)
 
+    async def set_rules(self, event_id: str, rules: EventRules) -> EventResponse:
+        event = await self._require_event(event_id)
+        if event["status"] != EventStatus.DRAFT:
+            raise ConflictError(READ_ONLY_EVENT_DETAIL)
+        updated = await self._repository.update_rules(event_id, rules)
+        if updated is None:
+            raise ConflictError(READ_ONLY_EVENT_DETAIL)
+        log_event(self._logger, 20, "event_rules_updated", event_id=event_id)
+        return self._to_response(updated)
+
     async def activate(self, event_id: str, actor_id: str = "system") -> EventResponse:
         event = await self._require_event(event_id)
         self._require_status(event, EventStatus.DRAFT)
+        if event.get("row_bonus") is None or event.get("column_bonus") is None:
+            raise ConflictError(RULES_REQUIRED_DETAIL)
         board = await self._boards.get_by_event(event_id)
         if not is_publishable_board(board):
             raise ConflictError(BOARD_REQUIRED_DETAIL)
@@ -113,6 +132,8 @@ class EventService:
             start_at=document["start_at"],
             end_at=document["end_at"],
             status=document["status"],
+            row_bonus=document.get("row_bonus"),
+            column_bonus=document.get("column_bonus"),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

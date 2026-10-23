@@ -10,6 +10,7 @@ import GridView from '@mui/icons-material/GridView'
 import GridViewOutlined from '@mui/icons-material/GridViewOutlined'
 import Groups from '@mui/icons-material/Groups'
 import GroupsOutlined from '@mui/icons-material/GroupsOutlined'
+import Leaderboard from '@mui/icons-material/Leaderboard'
 import LeaderboardOutlined from '@mui/icons-material/LeaderboardOutlined'
 import SpaceDashboard from '@mui/icons-material/SpaceDashboard'
 import SpaceDashboardOutlined from '@mui/icons-material/SpaceDashboardOutlined'
@@ -114,9 +115,9 @@ export const ADMIN_ENTRIES: NavEntry[] = [
   {
     key: 'ranking',
     labelKey: 'admin.ranking',
-    to: null,
+    to: '/admin/ranking',
     icon: LeaderboardOutlined,
-    activeIcon: LeaderboardOutlined,
+    activeIcon: Leaderboard,
   },
 ]
 

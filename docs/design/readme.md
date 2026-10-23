@@ -57,7 +57,7 @@ The B alternatives (`*-b-*`) are kept for comparison. `recommendation.dc.html` a
 3. Board: square, 3×3 to 6×6 (default 6×6; feature 014), every position filled, one board per event, the same for every team, frozen on activation. **Search and filters may highlight or dim tiles, never reorder or hide them.**
 4. Each tile has difficulty (Easy/Medium/Hard), points (configurable), a progress requirement and a list of accepted drops.
 5. **A drop's weight is PROGRESS, not points.** A tile is worth its points once, when progress reaches the requirement. Extra progress gives no points.
-6. Scoring, real progress, row/column bonuses and ranking **don't exist yet**. Today every screen shows "Progress unavailable". Never show invented numbers as if they were real.
+6. Scoring (feature 006): tile progress, completion, row/column bonuses (per event, required before activation) and the private ranking come from accepted submissions on the server. Special bonuses don't exist yet. Players without a team still see "Progress unavailable". Never show invented numbers as if they were real.
 7. Players only see their OWN team. Comparing teams and the ranking are admin-only.
 8. Card catalog: global, immutable revisions (editing = new revision). A retired card can't be picked for new boards but stays on boards that already use it.
 9. Images come from the OSRS Wiki, always with attribution and a fallback image.

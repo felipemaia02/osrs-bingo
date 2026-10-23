@@ -10,6 +10,7 @@ vi.mock('../src/features/events/api/eventsApi', () => ({
   fetchEvents: vi.fn().mockResolvedValue([]),
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
+  updateEventRules: vi.fn(),
   activateEvent: vi.fn(),
   finishEvent: vi.fn(),
 }))
@@ -79,4 +80,10 @@ vi.mock('../src/features/submissions/api/submissionsApi', () => ({
   }),
   acceptSubmission: vi.fn(),
   rejectSubmission: vi.fn(),
+}))
+
+vi.mock('../src/features/scoring/api/scoringApi', () => ({
+  // Default: the viewer isn't on a team, so the board shows no progress.
+  fetchOwnTeamScore: vi.fn().mockRejectedValue(new Error('Not on a team')),
+  fetchRanking: vi.fn(),
 }))

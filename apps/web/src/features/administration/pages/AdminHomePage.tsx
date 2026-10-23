@@ -166,13 +166,13 @@ function useSections(overview: AdminOverview): Section[] {
     },
     {
       key: 'ranking',
-      to: null,
+      to: '/admin/ranking',
       titleKey: 'admin.ranking',
       descriptionKey: 'admin.rankingDescription',
       icon: <LeaderboardOutlinedIcon sx={{ fontSize: 20 }} />,
-      badges: [{ label: t('shell.soon'), tone: 'neutral' }],
+      badges: [],
       mobileDetail: null,
-      mobileBadge: { label: t('shell.soon'), tone: 'neutral' },
+      mobileBadge: null,
     },
   ]
 }

@@ -71,7 +71,9 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: Mi
                 className={`flex h-[46px] min-w-0 flex-col items-center justify-center rounded-[3px] border p-0 text-[11px] font-bold leading-[1.1] ${
                   hit
                     ? 'border-rs-gold-bright bg-rs-gold-bright text-rs-canvas'
-                    : 'border-rs-border bg-rs-surface text-rs-text'
+                    : tile.progress?.complete
+                      ? 'border-rs-success bg-rs-success-bg text-rs-success-text'
+                      : 'border-rs-border bg-rs-surface text-rs-text'
                 } ${dimmed ? 'opacity-35' : ''} ${
                   tile.id === currentId
                     ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright'

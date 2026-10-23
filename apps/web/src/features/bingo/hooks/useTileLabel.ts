@@ -11,10 +11,20 @@ export function useTileLabel(tile: Tile, match?: TileMatch): string {
     tier: t(`tile.tier.${tile.tier}`),
     points: tile.points,
   })
-  if (!match) return base
-  if (!match.matches) return `${base}, ${t('board.match.none')}`
-  if (!match.matchedDrop) return `${base}, ${t('board.match.tile')}`
-  return `${base}, ${t('board.match.drop', {
+  const progress = tile.progress
+    ? `, ${
+        tile.progress.complete
+          ? t('score.labelComplete')
+          : t('score.labelProgress', {
+              value: tile.progress.value,
+              requirement: tile.progress.requirement,
+            })
+      }`
+    : ''
+  if (!match) return base + progress
+  if (!match.matches) return `${base}${progress}, ${t('board.match.none')}`
+  if (!match.matchedDrop) return `${base}${progress}, ${t('board.match.tile')}`
+  return `${base}${progress}, ${t('board.match.drop', {
     drop: `${match.matchedDrop.name} +${match.matchedDrop.progressWeight}`,
   })}`
 }

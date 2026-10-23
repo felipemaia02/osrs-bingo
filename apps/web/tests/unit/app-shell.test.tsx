@@ -93,7 +93,10 @@ describe('App shell v2', () => {
     for (const name of ['Overview', 'Card catalog', 'Event boards', 'Administrators']) {
       expect(within(sidebar).getByRole('link', { name })).toBeInTheDocument()
     }
-    expect(within(sidebar).getByText('Ranking').closest('[aria-disabled="true"]')).not.toBeNull()
+    expect(within(sidebar).getByRole('link', { name: 'Ranking' })).toHaveAttribute(
+      'href',
+      '/admin/ranking',
+    )
     expect(screen.queryByRole('navigation', { name: 'Administration sections' })).toBeNull()
 
     const bottomBar = screen.getByRole('navigation', { name: 'Mobile navigation' })

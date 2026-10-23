@@ -128,6 +128,26 @@ class SubmissionRepository:
             ),
         )
 
+    async def accepted_drops(self, event_id: ObjectId) -> list[SubmissionDocument]:
+        """The verified activity scoring consumes (feature 006)."""
+        cursor = self._collection.find(
+            {
+                "event_id": event_id,
+                "kind": SubmissionKind.DROP,
+                "status": SubmissionStatus.ACCEPTED,
+            },
+            {
+                "team_id": 1,
+                "player_id": 1,
+                "position": 1,
+                "drop_key": 1,
+                "drop_name": 1,
+                "progress_weight": 1,
+                "quantity": 1,
+            },
+        )
+        return cast(list[SubmissionDocument], await cursor.to_list(length=None))
+
     @staticmethod
     def _object_id(value: str) -> ObjectId | None:
         try:

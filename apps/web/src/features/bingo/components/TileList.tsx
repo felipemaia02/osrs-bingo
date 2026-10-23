@@ -6,6 +6,7 @@ import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { TileProgressLine } from './TileProgressLine'
 
 interface TileListProps {
   tiles: Tile[]
@@ -100,6 +101,7 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
             })}
           </span>
         </span>
+        {tile.progress && <TileProgressLine progress={tile.progress} />}
         {hit && (
           <span className="text-xs font-semibold text-rs-gold-bright">
             ↳ {hit.name} +{hit.progressWeight}

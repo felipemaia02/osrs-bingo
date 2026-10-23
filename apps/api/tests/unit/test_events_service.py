@@ -8,14 +8,14 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
-from app.modules.events.schemas import EventCreate, EventStatus, EventUpdate
+from app.modules.events.schemas import EventCreate, EventRules, EventStatus, EventUpdate
 from app.modules.events.service import EventService
 
 NOW = datetime(2026, 8, 30, 12, tzinfo=UTC)
 
 
-def event_document(status: EventStatus = EventStatus.DRAFT) -> EventDocument:
-    return {
+def event_document(status: EventStatus = EventStatus.DRAFT, rules: bool = True) -> EventDocument:
+    document: EventDocument = {
         "_id": ObjectId("66d000000000000000000001"),
         "name": "Summer Bingo",
         "description": None,
@@ -25,6 +25,10 @@ def event_document(status: EventStatus = EventStatus.DRAFT) -> EventDocument:
         "created_at": NOW,
         "updated_at": NOW,
     }
+    if rules:
+        document["row_bonus"] = 25
+        document["column_bonus"] = 30
+    return document
 
 
 def event_payload() -> EventCreate:
@@ -140,3 +144,39 @@ async def test_finish_returns_finished_event(repository: AsyncMock, service: Eve
     finished = await service.finish("event-id")
 
     assert finished.status is EventStatus.FINISHED
+
+
+async def test_activation_requires_row_and_column_bonuses(
+    repository: AsyncMock, service: EventService
+) -> None:
+    repository.get.return_value = event_document(rules=False)
+
+    with pytest.raises(ConflictError, match="row and column bonuses"):
+        await service.activate("event-id")
+
+    repository.activate.assert_not_awaited()
+
+
+async def test_rules_are_editable_only_while_draft(
+    repository: AsyncMock, service: EventService
+) -> None:
+    rules = EventRules(row_bonus=25, column_bonus=0)
+    repository.get.return_value = event_document(rules=False)
+    repository.update_rules.return_value = {**event_document(), "column_bonus": 0}
+
+    result = await service.set_rules("event-id", rules)
+
+    assert (result.row_bonus, result.column_bonus) == (25, 0)
+    repository.update_rules.assert_awaited_once_with("event-id", rules)
+
+    repository.get.return_value = event_document(EventStatus.ACTIVE)
+    with pytest.raises(ConflictError, match="Only draft"):
+        await service.set_rules("event-id", rules)
+
+
+@pytest.mark.parametrize("value", [-1, 1001])
+def test_line_bonuses_are_bounded(value: int) -> None:
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        EventRules(row_bonus=value, column_bonus=0)

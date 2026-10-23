@@ -5,6 +5,7 @@ import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { TileProgressLine } from './TileProgressLine'
 
 interface TileCardProps {
   tile: Tile
@@ -31,7 +32,9 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
       className={`relative flex min-h-[138px] min-w-0 flex-col gap-1.5 rounded border bg-rs-surface p-[7px] text-left text-rs-text transition-opacity ${
         highlighted
           ? 'border-rs-gold-bright shadow-[inset_0_0_0_1px_theme(colors.rs.gold-bright)]'
-          : 'border-rs-border'
+          : tile.progress?.complete
+            ? 'border-rs-success'
+            : 'border-rs-border'
       } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-[3px] outline-rs-gold-bright' : ''}`}
     >
       <span className="relative block">
@@ -49,6 +52,7 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
           {hit.name} +{hit.progressWeight}
         </span>
       )}
+      {tile.progress && <TileProgressLine progress={tile.progress} />}
       <span className="mt-auto flex items-baseline justify-between text-xs">
         <span className="text-rs-muted">
           {t('board.requirementShort', { count: tile.requirement })}

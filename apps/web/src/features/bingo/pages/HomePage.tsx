@@ -4,6 +4,7 @@ import { AppShell } from '../../../components/common/AppShell'
 import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
+import { useSession } from '../../auth/hooks/useSession'
 import { usePublicBoard } from '../../boards/hooks/useBoards'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
@@ -20,10 +21,15 @@ import { TileList } from '../components/TileList'
 import { useBoardView } from '../hooks/useBoardView'
 import { useFilterSummary, type FilterSummary } from '../hooks/useFilterSummary'
 import { useTierOptions } from '../hooks/useTierOptions'
+import { TeamScorePanel } from '../../scoring/components/TeamScorePanel'
+import { useOwnTeamScore } from '../../scoring/hooks/useScoring'
+import type { TeamScore } from '../../scoring/types'
 import type { TierFilter, Tile, TileMatch } from '../types'
 
 interface BoardState {
   tiles: Tile[]
+  /** The viewer's own team score; null for visitors and players without a team. */
+  score: TeamScore | null
   /** Rows (and columns) of the published board. */
   size: number
   matches: Map<string, TileMatch> | null
@@ -43,11 +49,17 @@ export function HomePage() {
   const events = useEvents('active')
   const event = events.data?.find((candidate) => candidate.status === 'active') ?? null
   const board = usePublicBoard(event?.id ?? null)
+  const session = useSession()
+  const ownScore = useOwnTeamScore(event?.id ?? null, Boolean(session.data))
+  const score = ownScore.data ?? null
   const [search, setSearch] = useState('')
   const [tier, setTier] = useState<TierFilter>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
-  const tiles = useMemo(() => (board.data ? boardToTiles(board.data) : []), [board.data])
+  const tiles = useMemo(
+    () => (board.data ? boardToTiles(board.data, score) : []),
+    [board.data, score],
+  )
   const matches = useMemo(() => {
     if (!isFiltering(search, tier)) return null
     return new Map<string, TileMatch>(tiles.map((tile) => [tile.id, matchTile(tile, search, tier)]))
@@ -56,6 +68,7 @@ export function HomePage() {
   const summary = useFilterSummary(matchCount, tiles.length, search, tier)
   const state: BoardState = {
     tiles,
+    score,
     size: board.data?.size ?? DEFAULT_BOARD_SIZE,
     matches,
     summary,
@@ -102,9 +115,13 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
   return (
     <>
       <EventHeader event={event} />
-      <InfoBanner>
-        <strong>{t('board.progressNotice.title')}</strong> {t('board.progressNotice.body')}
-      </InfoBanner>
+      {state.score ? (
+        <TeamScorePanel score={state.score} />
+      ) : (
+        <InfoBanner>
+          <strong>{t('board.progressNotice.title')}</strong> {t('board.progressNotice.body')}
+        </InfoBanner>
+      )}
       <BoardToolbar
         search={state.search}
         onSearchChange={state.setSearch}
@@ -159,7 +176,8 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
 
   return (
     <>
-      <MobileEventSummary event={event} />
+      <MobileEventSummary event={event} hasScore={Boolean(state.score)} />
+      {state.score && <TeamScorePanel score={state.score} compact />}
       <SearchField value={state.search} onChange={state.setSearch} mobile />
       <SegmentedControl
         label={t('board.filter.label')}

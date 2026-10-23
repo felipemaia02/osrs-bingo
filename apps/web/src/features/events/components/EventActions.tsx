@@ -3,6 +3,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import RuleOutlinedIcon from '@mui/icons-material/RuleOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Button } from '../../../components/ui/Button'
@@ -14,13 +15,14 @@ interface EventActionsProps {
   event: BingoEvent
   mobile: boolean
   onEdit: (event: BingoEvent) => void
+  onRules: (event: BingoEvent) => void
   onTransition: (event: BingoEvent, action: EventTransition) => void
 }
 
 const ICON = { fontSize: 18 }
 
 /** Actions allowed by the event status (feature 002): drafts edit/board/activate, active finishes. */
-export function EventActions({ event, mobile, onEdit, onTransition }: EventActionsProps) {
+export function EventActions({ event, mobile, onEdit, onRules, onTransition }: EventActionsProps) {
   const { t } = useTranslation()
   const size = mobile ? 'md' : 'sm'
   const grow = mobile ? 'flex-1' : ''
@@ -66,6 +68,15 @@ export function EventActions({ event, mobile, onEdit, onTransition }: EventActio
         <GridViewOutlinedIcon sx={ICON} aria-hidden="true" />
         {t('events.actions.board')}
       </Link>
+      <Button
+        size={size}
+        className={grow}
+        aria-label={named('events.actions.rules')}
+        onClick={() => onRules(event)}
+      >
+        <RuleOutlinedIcon sx={ICON} aria-hidden="true" />
+        {t('events.actions.rules')}
+      </Button>
       <Button
         variant="primary"
         size={size}

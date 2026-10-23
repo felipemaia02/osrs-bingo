@@ -8,7 +8,7 @@ import { TeamsPage } from '../../features/teams/pages/TeamsPage'
 import { AdminRoute } from '../../features/administration/components/AdminRoute'
 import { AdministratorsPage } from '../../features/administration/pages/AdministratorsPage'
 import { AdminHomePage } from '../../features/administration/pages/AdminHomePage'
-import { AdminRankingPage } from '../../features/administration/pages/AdminRankingPage'
+import { RankingPage } from '../../features/scoring/pages/RankingPage'
 import { BoardBuilderPage } from '../../features/boards/pages/BoardBuilderPage'
 import { CardCatalogPage } from '../../features/cards/pages/CardCatalogPage'
 import { MySubmissionsPage } from '../../features/submissions/pages/MySubmissionsPage'
@@ -30,7 +30,7 @@ export function AppRouter() {
         <Route path="cards" element={<CardCatalogPage />} />
         <Route path="boards" element={<BoardBuilderPage />} />
         <Route path="administrators" element={<AdministratorsPage />} />
-        <Route path="ranking" element={<AdminRankingPage />} />
+        <Route path="ranking" element={<RankingPage />} />
       </Route>
     </Routes>
   )

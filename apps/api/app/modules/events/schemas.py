@@ -54,6 +54,18 @@ class EventUpdate(EventFields):
     pass
 
 
+LINE_BONUS_MAX = 1000
+
+
+class EventRules(BaseModel):
+    """Points per completed row and column (feature 006); set per event while it's a draft."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    row_bonus: int = Field(ge=0, le=LINE_BONUS_MAX)
+    column_bonus: int = Field(ge=0, le=LINE_BONUS_MAX)
+
+
 class EventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -63,6 +75,8 @@ class EventResponse(BaseModel):
     start_at: datetime
     end_at: datetime
     status: EventStatus
+    row_bonus: int | None = None
+    column_bonus: int | None = None
     created_at: datetime
     updated_at: datetime
 

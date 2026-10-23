@@ -2,6 +2,15 @@ import type { AcceptedDrop, CardKind } from '../cards/types'
 
 export type TileTier = 'Low' | 'Mid' | 'High'
 
+/** The viewer's own team progress on a tile (feature 006); weights are progress, not points. */
+export interface TileProgress {
+  value: number
+  requirement: number
+  complete: boolean
+  points: number
+  drops: Array<{ name: string; count: number; progress: number }>
+}
+
 /** Presentation model of one board tile, mapped from the event board API snapshot. */
 export interface Tile {
   id: string
@@ -16,6 +25,8 @@ export interface Tile {
   drops: AcceptedDrop[]
   ruleNote: string | null
   requiresPreverification: boolean
+  /** Present only for players on a team in an active or finished event. */
+  progress?: TileProgress | null
   imageUrl?: string | null
   imageSourceUrl?: string | null
   imageAttribution?: string | null

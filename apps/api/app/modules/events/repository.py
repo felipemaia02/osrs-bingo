@@ -9,7 +9,7 @@ from pymongo.errors import DuplicateKeyError
 
 from app.core.logging import get_logger, log_event
 from app.modules.events.models import EventDocument
-from app.modules.events.schemas import EventCreate, EventStatus, EventUpdate
+from app.modules.events.schemas import EventCreate, EventRules, EventStatus, EventUpdate
 
 EVENTS_COLLECTION = "events"
 
@@ -79,6 +79,17 @@ class EventRepository:
             "event_draft_updated",
             event_id=event_id,
             updated=bool(document),
+        )
+        return cast(EventDocument | None, document)
+
+    async def update_rules(self, event_id: str, rules: EventRules) -> EventDocument | None:
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return None
+        document = await self._collection.find_one_and_update(
+            {"_id": object_id, "status": EventStatus.DRAFT},
+            {"$set": {**rules.model_dump(), "updated_at": datetime.now(UTC)}},
+            return_document=ReturnDocument.AFTER,
         )
         return cast(EventDocument | None, document)
 

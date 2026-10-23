@@ -6,6 +6,7 @@ import { Badge } from '../../../components/ui/Badge'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { TileProgressLine } from './TileProgressLine'
 
 interface TileDetailContentProps {
   tile: Tile
@@ -48,14 +49,37 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
             components={{ strong: <strong /> }}
           />
         </p>
-        <p className="m-0 flex items-center gap-2 text-[13px]">
-          <HourglassDisabledOutlinedIcon
-            fontSize="small"
-            className="text-rs-muted"
-            aria-hidden="true"
-          />
-          <span className="text-rs-muted">{t('board.panel.teamProgress')}</span>
-        </p>
+        {tile.progress ? (
+          <div className="flex flex-col gap-1.5 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5">
+            <strong className="text-[13px]">
+              {t('score.detailProgress', {
+                value: tile.progress.value,
+                requirement: tile.progress.requirement,
+                points: tile.points,
+              })}
+            </strong>
+            <TileProgressLine progress={tile.progress} />
+            {tile.progress.drops.length > 0 && (
+              <ul className="m-0 flex list-none flex-col gap-0.5 p-0 text-xs">
+                {tile.progress.drops.map((drop) => (
+                  <li key={drop.name} className="flex justify-between gap-2">
+                    <span>{t('score.dropCount', { name: drop.name, count: drop.count })}</span>
+                    <span className="font-semibold text-rs-gold-bright">+{drop.progress}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <p className="m-0 flex items-center gap-2 text-[13px]">
+            <HourglassDisabledOutlinedIcon
+              fontSize="small"
+              className="text-rs-muted"
+              aria-hidden="true"
+            />
+            <span className="text-rs-muted">{t('board.panel.teamProgress')}</span>
+          </p>
+        )}
         <div>
           <div className="mb-1 flex items-baseline justify-between">
             <strong className="text-[13px]">

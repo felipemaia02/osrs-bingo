@@ -62,14 +62,13 @@ it('makes every overview card a complete navigation link', async () => {
     ['/admin/cards', 'Bosses, drops, progress weights and revisions.'],
     ['/admin/boards', 'Choose the board size, cards and positions for each event.'],
     ['/admin/administrators', 'App roles, independent of Discord.'],
+    ['/admin/ranking', "Compare teams and each player's contribution."],
+    ['/admin/review', "Accept or reject players' submissions with the screenshot."],
   ]
   for (const [path, description] of destinations) {
     const text = await screen.findByText(description)
     expect(text.closest('a')).toHaveAttribute('href', path)
   }
-  const ranking = screen.getByText('Compare teams and contributions. Not available yet.')
-  expect(ranking.closest('a')).toBeNull()
-  expect(ranking.closest('[aria-disabled="true"]')).not.toBeNull()
 
   await user.click(screen.getByText('Create, activate and finish. Only one can be active.'))
   expect(await screen.findByRole('button', { name: 'New event' })).toBeInTheDocument()
