@@ -36,6 +36,9 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
             <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
             <Badge tone="neutral">{t('tile.points', { count: tile.points })}</Badge>
             <Badge tone="neutral">{t(`cards.kind.${tile.kind}`)}</Badge>
+            {tile.requiresPreverification && (
+              <Badge tone="info">{t('cards.preverification')}</Badge>
+            )}
           </div>
         </div>
         <p className="m-0 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5 text-[13px]">

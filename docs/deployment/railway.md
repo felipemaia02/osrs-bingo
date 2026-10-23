@@ -60,6 +60,18 @@ Railway always builds with the `Dockerfile` it finds in the service root directo
 | `DISCORD_REDIRECT_URI` | `https://<web-domain>/api/auth/discord/callback` |
 | `ADMIN_DISCORD_IDS` | your Discord user ID; seeds the first administrator on an empty database |
 
+Screenshot storage (feature 008) — create a **Bucket** in the project (+ New → Bucket) and reference it from **api** (replace `Bucket` with the bucket service's name):
+
+| Variable | Value |
+|---|---|
+| `STORAGE_ENDPOINT` | `${{Bucket.ENDPOINT}}` |
+| `STORAGE_BUCKET` | `${{Bucket.BUCKET}}` |
+| `STORAGE_ACCESS_KEY_ID` | `${{Bucket.ACCESS_KEY_ID}}` |
+| `STORAGE_SECRET_ACCESS_KEY` | `${{Bucket.SECRET_ACCESS_KEY}}` |
+| `STORAGE_REGION` | `${{Bucket.REGION}}` |
+
+Without all four storage values the API keeps screenshots in a local folder, which is wiped on every deploy; it logs `screenshot_storage_local_outside_development` at startup when that happens outside development. Buckets are private: the app shows screenshots through short-lived signed links.
+
 **web**
 
 | Variable | Value |

@@ -115,6 +115,8 @@ class CardRevisionFields(BaseModel):
     wiki_image: WikiImage | None = None
     fallback_image_accepted: bool = False
     rule_note: str | None = Field(default=None, max_length=2000)
+    # Players must have an accepted pre-verification before drops of this card count.
+    requires_preverification: bool = False
 
     @field_validator("name", "description", "rule_note")
     @classmethod

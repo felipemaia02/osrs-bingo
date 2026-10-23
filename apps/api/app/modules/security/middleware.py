@@ -1,12 +1,28 @@
+import re
+
 from starlette.datastructures import Headers, MutableHeaders
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 
 class RequestSafetyMiddleware:
-    def __init__(self, app: ASGIApp, max_body_bytes: int) -> None:
+    def __init__(
+        self,
+        app: ASGIApp,
+        max_body_bytes: int,
+        upload_paths: re.Pattern[str] | None = None,
+        max_upload_bytes: int = 0,
+    ) -> None:
         self._app = app
         self._max_body_bytes = max_body_bytes
+        # Upload routes (screenshots) get a larger limit; every other route keeps the default.
+        self._upload_paths = upload_paths
+        self._max_upload_bytes = max(max_upload_bytes, max_body_bytes)
+
+    def _limit(self, scope: Scope) -> int:
+        if self._upload_paths is not None and self._upload_paths.fullmatch(scope["path"]):
+            return self._max_upload_bytes
+        return self._max_body_bytes
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -24,13 +40,14 @@ class RequestSafetyMiddleware:
         if scope["path"] == "/health":
             await self._app(scope, receive, safe_send)
             return
+        limit = self._limit(scope)
         headers = Headers(scope=scope)
         try:
             length = int(headers.get("content-length", "0"))
         except ValueError:
             await JSONResponse({"detail": "Invalid content length"}, 400)(scope, receive, safe_send)
             return
-        if length < 0 or length > self._max_body_bytes:
+        if length < 0 or length > limit:
             await JSONResponse({"detail": "Request body too large"}, 413)(scope, receive, safe_send)
             return
         body = bytearray()
@@ -39,7 +56,7 @@ class RequestSafetyMiddleware:
             if message["type"] == "http.disconnect":
                 return
             chunk = message.get("body", b"")
-            if len(body) + len(chunk) > self._max_body_bytes:
+            if len(body) + len(chunk) > limit:
                 await JSONResponse({"detail": "Request body too large"}, 413)(
                     scope, receive, safe_send
                 )

@@ -3,6 +3,7 @@ import { DEFAULT_BOARD_SIZE } from '../../boards/draft'
 import { useAdminBoard } from '../../boards/hooks/useBoards'
 import { useCards } from '../../cards/hooks/useCards'
 import { useEvents } from '../../events/hooks/useEvents'
+import { usePendingReviews } from '../../submissions/hooks/usePendingReviews'
 import { useDraftRegistrationCounts } from '../../teams/hooks/useDraftRegistrationCounts'
 import { fetchUsers } from '../api/administrationApi'
 
@@ -13,6 +14,8 @@ export interface AdminOverview {
   /** Most recently created draft event's board fill; null when there is no draft event. */
   draftBoard: { eventName: string; filled: number; total: number } | null
   administrators: number | null
+  /** Pending submissions of the active event; null without an active event. */
+  reviews: number | null
 }
 
 /** Status badges for the administration overview. Each value is null when unavailable. */
@@ -20,6 +23,7 @@ export function useAdminOverview(): AdminOverview {
   const events = useEvents()
   const cards = useCards(true)
   const registrations = useDraftRegistrationCounts(true)
+  const reviews = usePendingReviews(true)
   const latestDraft = events.data?.find((event) => event.status === 'draft') ?? null
   const board = useAdminBoard(latestDraft?.id ?? null)
   const directory = useQuery({
@@ -54,5 +58,6 @@ export function useAdminOverview(): AdminOverview {
           }
         : null,
     administrators: directory.data?.admin_count ?? null,
+    reviews,
   }
 }

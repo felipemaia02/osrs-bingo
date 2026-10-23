@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom'
 
+// jsdom has no object URLs; the screenshot preview only needs a stable string.
+if (!URL.createObjectURL) {
+  URL.createObjectURL = () => 'blob:preview'
+  URL.revokeObjectURL = () => undefined
+}
+
 vi.mock('../src/features/events/api/eventsApi', () => ({
   fetchEvents: vi.fn().mockResolvedValue([]),
   createEvent: vi.fn(),
@@ -55,4 +61,22 @@ vi.mock('../src/features/boards/api/boardsApi', () => ({
   fetchAdminBoard: vi.fn().mockResolvedValue(null),
   fetchPublicBoard: vi.fn().mockResolvedValue(null),
   saveBoard: vi.fn(),
+}))
+
+vi.mock('../src/features/submissions/api/submissionsApi', () => ({
+  fetchOwnSubmissions: vi.fn().mockResolvedValue({
+    items: [],
+    counts: { all: 0, pending: 0, accepted: 0, rejected: 0 },
+  }),
+  createSubmission: vi.fn(),
+  screenshotUrl: (id: string) => `http://localhost:8000/submissions/${id}/screenshot`,
+  fetchReviewQueue: vi.fn().mockResolvedValue({
+    items: [],
+    total: 0,
+    offset: 0,
+    limit: 50,
+    counts: { pending: 0, pending_preverification: 0, pending_drop: 0 },
+  }),
+  acceptSubmission: vi.fn(),
+  rejectSubmission: vi.fn(),
 }))

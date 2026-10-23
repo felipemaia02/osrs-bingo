@@ -15,6 +15,7 @@ export interface Tile {
   requirement: number
   drops: AcceptedDrop[]
   ruleNote: string | null
+  requiresPreverification: boolean
   imageUrl?: string | null
   imageSourceUrl?: string | null
   imageAttribution?: string | null

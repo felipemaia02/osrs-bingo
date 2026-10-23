@@ -197,6 +197,12 @@ class PlayerRepository:
         )
         return cast(PlayerDocument | None, document)
 
+    async def get_many(self, player_ids: builtin_list[ObjectId]) -> dict[ObjectId, PlayerDocument]:
+        if not player_ids:
+            return {}
+        cursor = self._collection.find({"_id": {"$in": player_ids}})
+        return {document["_id"]: cast(PlayerDocument, document) async for document in cursor}
+
     async def get_for_user(self, event_id: str, user_id: str) -> PlayerDocument | None:
         event_object_id, user_object_id = self._object_id(event_id), self._object_id(user_id)
         if event_object_id is None or user_object_id is None:

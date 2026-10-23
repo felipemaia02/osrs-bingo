@@ -403,7 +403,9 @@
       "cardsActive": "{{count}} active",
       "retired": "{{count}} retired",
       "administrators_one": "{{count}} administrator",
-      "administrators_other": "{{count}} administrators"
+      "administrators_other": "{{count}} administrators",
+      "reviews_one": "{{count}} pending",
+      "reviews_other": "{{count}} pending"
     },
     "you": "You",
     "grantShort": "Grant access",
@@ -418,7 +420,9 @@
       "action": "Action"
     },
     "directoryCount_one": "{{count}} registered user",
-    "directoryCount_other": "{{count}} registered users"
+    "directoryCount_other": "{{count}} registered users",
+    "review": "Drop review",
+    "reviewDescription": "Accept or reject players' submissions with the screenshot."
   },
   "cards": {
     "title": "Card catalog",
@@ -456,7 +460,9 @@
       "resolveImage": "Find image",
       "ruleNote": "Rule or verification note",
       "changeReason": "Reason for this revision",
-      "fallbackImage": "No image: the fallback shield will be used."
+      "fallbackImage": "No image: the fallback shield will be used.",
+      "requiresPreverification": "Requires pre-verification",
+      "requiresPreverificationHint": "Players send a starting screenshot for this card (for example their kill count) before their drops can be accepted."
     },
     "feedback": {
       "created": "Card created.",
@@ -522,7 +528,8 @@
     "source": {
       "workbook": "Approved workbook",
       "admin": "Administrator"
-    }
+    },
+    "preverification": "Pre-verification"
   },
   "boards": {
     "title": "Build board",
@@ -622,5 +629,145 @@
       "startsIn": "Starts in {{time}}",
       "ended": "Scheduled end reached"
     }
+  },
+  "submissions": {
+    "title": "My submissions",
+    "description": "Only yours. Each submission is checked by an administrator against its screenshot.",
+    "submit": "Submit with screenshot",
+    "filterLabel": "Filter by status",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "empty": "You haven't sent anything yet.",
+    "emptyFilter": "Nothing here with this filter.",
+    "blocked": {
+      "login": "Log in to send your drops.",
+      "noEvent": "There's no active event right now.",
+      "notRegistered": "You're not registered in the active event.",
+      "notApproved": "Your registration is waiting for an administrator.",
+      "noTeam": "You'll be able to submit once an administrator puts you on a team."
+    },
+    "preverificationTitle": "Pre-verification · {{card}}",
+    "kind": {
+      "drop": "With screenshot",
+      "preverification": "Pre-verification"
+    },
+    "reviewedBy": "reviewed by {{name}}",
+    "progressAdded_one": "+{{count}} progress on {{card}}",
+    "progressAdded_other": "+{{count}} progress on {{card}}",
+    "progressOnAccept_one": "+{{count}} progress on {{card}} once accepted",
+    "progressOnAccept_other": "+{{count}} progress on {{card}} once accepted",
+    "preverificationPendingHint": "Until it's accepted, drops for this card don't count yet.",
+    "reason": "Reason:",
+    "reasons": {
+      "unreadable_screenshot": "unreadable screenshot",
+      "item_mismatch": "the item doesn't match the screenshot",
+      "outside_event_period": "outside the event period",
+      "other": "other"
+    },
+    "viewScreenshot": "View screenshot",
+    "openScreenshot": "Open the screenshot",
+    "screenshotAlt": "Submission screenshot",
+    "screenshotUnavailable": "Screenshot unavailable",
+    "submitTitle": "Submit with screenshot",
+    "gate": {
+      "required": "Pre-verification required",
+      "pending": "Pre-verification pending",
+      "accepted": "Pre-verified",
+      "rejected": "Pre-verification rejected"
+    },
+    "form": {
+      "card": "Card",
+      "searchCard": "Search card",
+      "positionLabel": "Row {{row}} · column {{column}}",
+      "noCards": "No card matches.",
+      "preverificationFirst": "{{card}} needs a pre-verification first: send a screenshot of your starting point (for example your kill count). After that you can send its drops.",
+      "preverificationAgain": "Your pre-verification for {{card}} was rejected. Send a new screenshot of your starting point.",
+      "item": "Item you got on {{card}}",
+      "gatePending": "Your pre-verification is pending: these drops are accepted only after it.",
+      "screenshot": "Screenshot (proof)",
+      "chooseScreenshot": "Choose a screenshot",
+      "screenshotHint": "PNG, JPEG or WebP, up to 5 MB. One item per submission.",
+      "preview": "Screenshot preview",
+      "note": "Note (optional)",
+      "send": "Send",
+      "sendPreverification": "Send pre-verification"
+    },
+    "feedback": {
+      "sent": "Sent. An administrator will review it.",
+      "preverificationSent": "Pre-verification sent. You can now send this card's drops."
+    },
+    "errors": {
+      "notActive": "Submissions are only open while the event is active.",
+      "notEligible": "Only approved players with a team can submit.",
+      "position": "This card is no longer on the board.",
+      "drop": "This item isn't accepted by this card.",
+      "dropRequired": "Choose the item you got.",
+      "preverificationRequired": "Send this card's pre-verification first.",
+      "preverificationNotNeeded": "This card doesn't need a pre-verification.",
+      "preverificationExists": "You already have a pending or accepted pre-verification for this card.",
+      "preverificationNotAccepted": "Accept this player's pre-verification for the card first.",
+      "alreadyReviewed": "Someone already reviewed this submission.",
+      "reviewClosed": "Submissions can only be reviewed for active or finished events.",
+      "imageType": "Use a PNG, JPEG or WebP image.",
+      "imageSize": "The screenshot must be 5 MB or smaller.",
+      "storage": "Screenshots can't be saved right now. Try again in a moment.",
+      "cardRequired": "Choose a card.",
+      "screenshotRequired": "Attach a screenshot."
+    }
+  },
+  "review": {
+    "title": "Drop review",
+    "description": "Every submission lands here: check the screenshot, then accept or reject it.",
+    "queue": "Pending submissions",
+    "initialScreenshot": "Initial screenshot",
+    "preverificationOf": "Pre-verification · {{card}}",
+    "selected": "Selected submission",
+    "position": "{{index}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next",
+    "openOriginal": "Click the image to open the original.",
+    "player": "Player",
+    "card": "Card",
+    "item": "Item",
+    "sent": "Sent",
+    "period": "Period",
+    "withinEvent": "Within the event",
+    "outsideEvent": "Outside the event period",
+    "preverification": "Pre-verification",
+    "preverificationMissing": "Not sent",
+    "note": "Player note",
+    "waitingPreverification": "Waiting for pre-verification: accept this player's pre-verification for the card before accepting this drop.",
+    "reasonLabel": "Rejection reason",
+    "reasonHint": "(required only to reject)",
+    "chooseReason": "Choose a reason…",
+    "otherNote": "Describe the reason",
+    "accept": "Accept",
+    "reject": "Reject",
+    "skip": "Skip",
+    "feedback": {
+      "accepted": "Submission accepted.",
+      "rejected": "Submission rejected. The player sees the reason."
+    },
+    "event": "Event",
+    "shortcuts": "J / K navigate · A accept · R reason",
+    "noEvent": "No active or finished event to review.",
+    "filter": "Filter by type",
+    "filters": {
+      "all": "All",
+      "preverification": "Pre-verification",
+      "drop": "Drops"
+    },
+    "oldestFirst": "Oldest first",
+    "empty": "Nothing to review. 🎉",
+    "backToQueue": "Back to the queue"
   }
 }

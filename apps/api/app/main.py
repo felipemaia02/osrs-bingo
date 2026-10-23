@@ -12,6 +12,7 @@ from starlette.responses import Response
 from app.core.config import settings
 from app.core.exceptions import AppException, app_exception_handler
 from app.core.logging import OAuthAccessLogFilter, get_logger, log_event
+from app.core.storage import build_storage, uses_bucket
 from app.database.indexes import IndexManager
 from app.database.mongodb import DatabaseClient
 from app.modules.administration.repository import AdministrationRepository
@@ -22,6 +23,12 @@ from app.modules.boards.router import public_router as public_boards_router
 from app.modules.events.router import router as events_router
 from app.modules.players.router import router as players_router
 from app.modules.security.middleware import RequestSafetyMiddleware
+from app.modules.submissions.router import (
+    MULTIPART_OVERHEAD_BYTES,
+    UPLOAD_PATH_PATTERN,
+)
+from app.modules.submissions.router import admin_router as admin_submissions_router
+from app.modules.submissions.router import player_router as submissions_router
 from app.modules.teams.router import router as teams_router
 from app.modules.tiles.router import router as tiles_router
 from app.modules.tiles.router import wiki_router
@@ -37,6 +44,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     try:
         await db_client.connect(settings)
         app.state.db_client = db_client
+        app.state.screenshot_storage = build_storage(settings)
+        if settings.app_env != "development" and not uses_bucket(settings):
+            # A container folder is wiped on every deploy: screenshots would be lost.
+            log_event(logger, 30, "screenshot_storage_local_outside_development")
         await IndexManager().ensure_all(db_client.database)
         await AdministrationRepository(db_client.database).initialize(settings.admin_discord_ids)
         log_event(logger, 20, "application_ready")
@@ -88,7 +99,12 @@ app = FastAPI(
 
 app.middleware("http")(request_logging)
 
-app.add_middleware(RequestSafetyMiddleware, max_body_bytes=settings.max_request_body_bytes)
+app.add_middleware(
+    RequestSafetyMiddleware,
+    max_body_bytes=settings.max_request_body_bytes,
+    upload_paths=UPLOAD_PATH_PATTERN,
+    max_upload_bytes=settings.max_screenshot_bytes + MULTIPART_OVERHEAD_BYTES,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -108,6 +124,8 @@ app.include_router(tiles_router)
 app.include_router(wiki_router)
 app.include_router(public_boards_router)
 app.include_router(admin_boards_router)
+app.include_router(submissions_router)
+app.include_router(admin_submissions_router)
 
 
 @app.get("/health", tags=["infra"])

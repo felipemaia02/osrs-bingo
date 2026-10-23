@@ -21,6 +21,7 @@ export interface BoardCardSnapshot {
   fallback_image_accepted: boolean
   rule_note: string | null
   provenance: CardProvenance
+  requires_preverification?: boolean
 }
 
 export interface BoardPosition {

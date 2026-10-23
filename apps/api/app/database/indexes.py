@@ -67,6 +67,30 @@ class IndexManager:
             [("event_id", 1)],
             {"name": "event_boards_event_unique", "unique": True},
         ),
+        (
+            "submissions",
+            [("event_id", 1), ("status", 1), ("kind", 1), ("submitted_at", 1)],
+            {"name": "submissions_event_status_kind_time"},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("user_id", 1), ("submitted_at", -1)],
+            {"name": "submissions_event_user_time"},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("kind", 1), ("player_id", 1), ("position", 1)],
+            {"name": "submissions_event_preverification"},
+        ),
+        (
+            "submissions",
+            [("preverification_gate", 1)],
+            {
+                "name": "submissions_preverification_gate_unique",
+                "unique": True,
+                "partialFilterExpression": {"preverification_gate": {"$exists": True}},
+            },
+        ),
     ]
 
     async def ensure_all(self, db: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]

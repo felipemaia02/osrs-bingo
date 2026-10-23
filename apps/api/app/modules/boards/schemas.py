@@ -64,6 +64,7 @@ class BoardCardSnapshot(BaseModel):
     fallback_image_accepted: bool
     rule_note: str | None
     provenance: CardProvenance
+    requires_preverification: bool = False
 
 
 class BoardPositionResponse(BaseModel):

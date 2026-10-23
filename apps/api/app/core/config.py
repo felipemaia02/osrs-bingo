@@ -36,6 +36,17 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:5173"
     admin_discord_ids: Annotated[list[str], NoDecode] = []
 
+    # Screenshot storage: an S3-compatible bucket when every storage_* value is set
+    # (Railway Storage Bucket in production), otherwise a local folder for development.
+    storage_endpoint: str = ""
+    storage_bucket: str = ""
+    storage_access_key_id: str = ""
+    storage_secret_access_key: SecretStr = SecretStr("")
+    storage_region: str = "auto"
+    storage_local_path: str = ".storage"
+    max_screenshot_bytes: int = Field(default=5 * 1024 * 1024, ge=1024)
+    screenshot_url_ttl_seconds: int = Field(default=300, ge=30, le=3600)
+
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
 
     @field_validator("cors_origins", "admin_discord_ids", mode="before")

@@ -21,9 +21,16 @@ const HEAD =
 
 function RetiredBadge({ card }: { card: CardSummary }) {
   const { t } = useTranslation()
-  return card.status === 'retired' ? (
-    <Badge tone="danger-outline">{t('cards.status.retired')}</Badge>
-  ) : null
+  return (
+    <>
+      {card.revision.requires_preverification && (
+        <Badge tone="info">{t('cards.preverification')}</Badge>
+      )}
+      {card.status === 'retired' && (
+        <Badge tone="danger-outline">{t('cards.status.retired')}</Badge>
+      )}
+    </>
+  )
 }
 
 /** Desktop table; clicking or pressing Enter on a row selects it for the detail panel. */

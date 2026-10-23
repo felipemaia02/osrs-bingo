@@ -3,6 +3,8 @@ import AdminPanelSettingsOutlined from '@mui/icons-material/AdminPanelSettingsOu
 import CalendarMonth from '@mui/icons-material/CalendarMonth'
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined'
 import EventNote from '@mui/icons-material/EventNote'
+import FactCheck from '@mui/icons-material/FactCheck'
+import FactCheckOutlined from '@mui/icons-material/FactCheckOutlined'
 import EventNoteOutlined from '@mui/icons-material/EventNoteOutlined'
 import GridView from '@mui/icons-material/GridView'
 import GridViewOutlined from '@mui/icons-material/GridViewOutlined'
@@ -13,6 +15,7 @@ import SpaceDashboard from '@mui/icons-material/SpaceDashboard'
 import SpaceDashboardOutlined from '@mui/icons-material/SpaceDashboardOutlined'
 import Style from '@mui/icons-material/Style'
 import StyleOutlined from '@mui/icons-material/StyleOutlined'
+import UploadFile from '@mui/icons-material/UploadFile'
 import UploadFileOutlined from '@mui/icons-material/UploadFileOutlined'
 import ViewModule from '@mui/icons-material/ViewModule'
 import ViewModuleOutlined from '@mui/icons-material/ViewModuleOutlined'
@@ -51,9 +54,9 @@ export const PLAY_ENTRIES: NavEntry[] = [
   {
     key: 'submissions',
     labelKey: 'navigation.mySubmissions',
-    to: null,
+    to: '/submissions',
     icon: UploadFileOutlined,
-    activeIcon: UploadFileOutlined,
+    activeIcon: UploadFile,
   },
 ]
 
@@ -65,6 +68,13 @@ export const ADMIN_ENTRIES: NavEntry[] = [
     icon: SpaceDashboardOutlined,
     activeIcon: SpaceDashboard,
     exact: true,
+  },
+  {
+    key: 'review',
+    labelKey: 'admin.review',
+    to: '/admin/review',
+    icon: FactCheckOutlined,
+    activeIcon: FactCheck,
   },
   {
     key: 'adminEvents',

@@ -55,6 +55,9 @@ export function CardDetailPanel({ card, onClose }: CardDetailPanelProps) {
               <Badge tone={TIER_TONE[card.revision.difficulty]}>
                 {t(`tile.tier.${card.revision.difficulty}`)}
               </Badge>
+              {card.revision.requires_preverification && (
+                <Badge tone="info">{t('cards.preverification')}</Badge>
+              )}
               {card.status === 'retired' && (
                 <Badge tone="danger-outline">{t('cards.status.retired')}</Badge>
               )}

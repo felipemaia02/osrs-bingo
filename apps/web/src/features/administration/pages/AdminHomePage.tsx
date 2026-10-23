@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined'
+import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined'
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
@@ -32,7 +33,7 @@ interface Section {
 
 function useSections(overview: AdminOverview): Section[] {
   const { t } = useTranslation()
-  const { events, registrations, cards, draftBoard, administrators } = overview
+  const { events, registrations, cards, draftBoard, administrators, reviews } = overview
   const nonZero = (items: Array<StatusItem & { count: number }>) =>
     items.filter((item) => item.count > 0).map(({ label, tone }) => ({ label, tone }))
   const joined = (items: StatusItem[]) =>
@@ -96,6 +97,9 @@ function useSections(overview: AdminOverview): Section[] {
           tone: 'neutral' as const,
         }
       : null
+  const reviewBadge = reviews
+    ? { label: t('admin.overviewStatus.reviews', { count: reviews }), tone: 'gold' as const }
+    : null
   const present = (...items: Array<StatusItem | null>) =>
     items.filter((item): item is StatusItem => item !== null)
 
@@ -109,6 +113,16 @@ function useSections(overview: AdminOverview): Section[] {
       badges: eventBadges,
       mobileDetail: joined(eventBadges.slice(0, 2)),
       mobileBadge: null,
+    },
+    {
+      key: 'review',
+      to: '/admin/review',
+      titleKey: 'admin.review',
+      descriptionKey: 'admin.reviewDescription',
+      icon: <FactCheckOutlinedIcon sx={{ fontSize: 20 }} />,
+      badges: present(reviewBadge),
+      mobileDetail: null,
+      mobileBadge: reviewBadge,
     },
     {
       key: 'teams',

@@ -750,3 +750,26 @@ describe('card catalog v2', () => {
     expect(within(dialog).getByRole('option', { name: 'Hard' })).toHaveValue('High')
   })
 })
+
+it('publishes the pre-verification flag from the card editor', async () => {
+  vi.mocked(createCardRevision).mockResolvedValue({
+    ...CARD,
+    revisions: [CARD.revision],
+    retired_by: null,
+    retired_at: null,
+    retirement_reason: null,
+  })
+  const user = userEvent.setup()
+  renderApp(<AppRouter />, '/admin/cards')
+
+  await user.click(await screen.findByRole('button', { name: 'Edit Vorkath' }))
+  const dialog = screen.getByRole('dialog', { name: 'Publish a new card revision' })
+  const flag = within(dialog).getByRole('checkbox', { name: /Requires pre-verification/ })
+  expect(flag).not.toBeChecked()
+  await user.click(flag)
+  await user.type(within(dialog).getByLabelText('Reason for this revision'), 'KC proof')
+  await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+  await waitFor(() => expect(createCardRevision).toHaveBeenCalledOnce())
+  expect(vi.mocked(createCardRevision).mock.calls[0][0].payload.requires_preverification).toBe(true)
+})

@@ -403,7 +403,9 @@
       "cardsActive": "{{count}} ativo",
       "retired": "{{count}} retirado",
       "administrators_one": "{{count}} administrador",
-      "administrators_other": "{{count}} administradores"
+      "administrators_other": "{{count}} administradores",
+      "reviews_one": "{{count}} pendente",
+      "reviews_other": "{{count}} pendentes"
     },
     "you": "Você",
     "grantShort": "Conceder acesso",
@@ -418,7 +420,9 @@
       "action": "Ação"
     },
     "directoryCount_one": "{{count}} usuário registrado",
-    "directoryCount_other": "{{count}} usuários registrados"
+    "directoryCount_other": "{{count}} usuários registrados",
+    "review": "Revisão de drops",
+    "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot."
   },
   "cards": {
     "title": "Catálogo de cards",
@@ -456,7 +460,9 @@
       "resolveImage": "Buscar imagem",
       "ruleNote": "Observação de regra ou verificação",
       "changeReason": "Motivo desta revisão",
-      "fallbackImage": "Sem imagem: o escudo padrão será usado."
+      "fallbackImage": "Sem imagem: o escudo padrão será usado.",
+      "requiresPreverification": "Exige pré-verificação",
+      "requiresPreverificationHint": "Os jogadores enviam um screenshot inicial deste card (por exemplo o kill count) antes de os drops serem aceitos."
     },
     "feedback": {
       "created": "Card criado.",
@@ -522,7 +528,8 @@
     "source": {
       "workbook": "Planilha aprovada",
       "admin": "Administrador"
-    }
+    },
+    "preverification": "Pré-verificação"
   },
   "boards": {
     "title": "Montar tabuleiro",
@@ -622,5 +629,145 @@
       "startsIn": "Começa em {{time}}",
       "ended": "Fim programado atingido"
     }
+  },
+  "submissions": {
+    "title": "Minhas submissões",
+    "description": "Só as suas. Cada submissão é conferida por um administrador pelo screenshot.",
+    "submit": "Enviar com screenshot",
+    "filterLabel": "Filtrar por status",
+    "tabs": {
+      "all": "Todas",
+      "pending": "Pendentes",
+      "accepted": "Aceitas",
+      "rejected": "Rejeitadas"
+    },
+    "status": {
+      "pending": "Pendente",
+      "accepted": "Aceita",
+      "rejected": "Rejeitada"
+    },
+    "empty": "Você ainda não enviou nada.",
+    "emptyFilter": "Nada aqui com este filtro.",
+    "blocked": {
+      "login": "Entre para enviar seus drops.",
+      "noEvent": "Não há evento ativo agora.",
+      "notRegistered": "Você não está inscrito no evento ativo.",
+      "notApproved": "Sua inscrição está aguardando um administrador.",
+      "noTeam": "Você poderá enviar quando um administrador te colocar em um time."
+    },
+    "preverificationTitle": "Pré-verificação · {{card}}",
+    "kind": {
+      "drop": "Com screenshot",
+      "preverification": "Pré-verificação"
+    },
+    "reviewedBy": "revisado por {{name}}",
+    "progressAdded_one": "+{{count}} de progresso em {{card}}",
+    "progressAdded_other": "+{{count}} de progresso em {{card}}",
+    "progressOnAccept_one": "+{{count}} de progresso em {{card}} quando aceito",
+    "progressOnAccept_other": "+{{count}} de progresso em {{card}} quando aceito",
+    "preverificationPendingHint": "Enquanto não for aceita, os drops deste card ainda não contam.",
+    "reason": "Motivo:",
+    "reasons": {
+      "unreadable_screenshot": "screenshot ilegível",
+      "item_mismatch": "o item não confere com o screenshot",
+      "outside_event_period": "fora do período do evento",
+      "other": "outro"
+    },
+    "viewScreenshot": "Ver screenshot",
+    "openScreenshot": "Abrir o screenshot",
+    "screenshotAlt": "Screenshot da submissão",
+    "screenshotUnavailable": "Screenshot indisponível",
+    "submitTitle": "Enviar com screenshot",
+    "gate": {
+      "required": "Exige pré-verificação",
+      "pending": "Pré-verificação pendente",
+      "accepted": "Pré-verificado",
+      "rejected": "Pré-verificação rejeitada"
+    },
+    "form": {
+      "card": "Card",
+      "searchCard": "Buscar card",
+      "positionLabel": "Linha {{row}} · coluna {{column}}",
+      "noCards": "Nenhum card encontrado.",
+      "preverificationFirst": "{{card}} precisa de uma pré-verificação primeiro: envie um screenshot do seu ponto de partida (por exemplo o kill count). Depois disso você pode enviar os drops.",
+      "preverificationAgain": "Sua pré-verificação de {{card}} foi rejeitada. Envie um novo screenshot do seu ponto de partida.",
+      "item": "Item que você pegou em {{card}}",
+      "gatePending": "Sua pré-verificação está pendente: estes drops só são aceitos depois dela.",
+      "screenshot": "Screenshot (prova)",
+      "chooseScreenshot": "Escolher screenshot",
+      "screenshotHint": "PNG, JPEG ou WebP, até 5 MB. Um item por submissão.",
+      "preview": "Prévia do screenshot",
+      "note": "Observação (opcional)",
+      "send": "Enviar",
+      "sendPreverification": "Enviar pré-verificação"
+    },
+    "feedback": {
+      "sent": "Enviado. Um administrador vai revisar.",
+      "preverificationSent": "Pré-verificação enviada. Agora você pode enviar os drops deste card."
+    },
+    "errors": {
+      "notActive": "As submissões só ficam abertas com o evento ativo.",
+      "notEligible": "Só jogadores aprovados e com time podem enviar.",
+      "position": "Este card não está mais no tabuleiro.",
+      "drop": "Este item não é aceito por este card.",
+      "dropRequired": "Escolha o item que você pegou.",
+      "preverificationRequired": "Envie primeiro a pré-verificação deste card.",
+      "preverificationNotNeeded": "Este card não precisa de pré-verificação.",
+      "preverificationExists": "Você já tem uma pré-verificação pendente ou aceita para este card.",
+      "preverificationNotAccepted": "Aceite antes a pré-verificação deste jogador para o card.",
+      "alreadyReviewed": "Alguém já revisou esta submissão.",
+      "reviewClosed": "Só dá para revisar submissões de eventos ativos ou encerrados.",
+      "imageType": "Use uma imagem PNG, JPEG ou WebP.",
+      "imageSize": "O screenshot precisa ter até 5 MB.",
+      "storage": "Não foi possível salvar o screenshot agora. Tente de novo em instantes.",
+      "cardRequired": "Escolha um card.",
+      "screenshotRequired": "Anexe um screenshot."
+    }
+  },
+  "review": {
+    "title": "Revisão de drops",
+    "description": "Toda submissão chega aqui: confira o screenshot e aceite ou rejeite.",
+    "queue": "Submissões pendentes",
+    "initialScreenshot": "Screenshot inicial",
+    "preverificationOf": "Pré-verificação · {{card}}",
+    "selected": "Submissão selecionada",
+    "position": "{{index}} de {{total}}",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "openOriginal": "Clique na imagem para abrir a original.",
+    "player": "Jogador",
+    "card": "Card",
+    "item": "Item",
+    "sent": "Enviado",
+    "period": "Período",
+    "withinEvent": "Dentro do evento",
+    "outsideEvent": "Fora do período do evento",
+    "preverification": "Pré-verificação",
+    "preverificationMissing": "Não enviada",
+    "note": "Observação do jogador",
+    "waitingPreverification": "Aguardando pré-verificação: aceite a pré-verificação deste jogador para o card antes de aceitar este drop.",
+    "reasonLabel": "Motivo da rejeição",
+    "reasonHint": "(obrigatório só para rejeitar)",
+    "chooseReason": "Escolha um motivo…",
+    "otherNote": "Descreva o motivo",
+    "accept": "Aceitar",
+    "reject": "Rejeitar",
+    "skip": "Pular",
+    "feedback": {
+      "accepted": "Submissão aceita.",
+      "rejected": "Submissão rejeitada. O jogador vê o motivo."
+    },
+    "event": "Evento",
+    "shortcuts": "J / K navegar · A aceitar · R motivo",
+    "noEvent": "Nenhum evento ativo ou encerrado para revisar.",
+    "filter": "Filtrar por tipo",
+    "filters": {
+      "all": "Todas",
+      "preverification": "Pré-verificação",
+      "drop": "Drops"
+    },
+    "oldestFirst": "Mais antigas primeiro",
+    "empty": "Nada para revisar. 🎉",
+    "backToQueue": "Voltar para a fila"
   }
 }

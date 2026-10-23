@@ -217,6 +217,18 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               className={TEXTAREA}
             />
           </Field>
+          <label className="flex items-start gap-2.5 rounded-[3px] border border-rs-border bg-rs-inset p-3 text-[13px] md:col-span-2">
+            <input
+              type="checkbox"
+              checked={form.requiresPreverification}
+              onChange={(event) => update('requiresPreverification', event.target.checked)}
+              className="mt-0.5 size-[18px] shrink-0 accent-rs-gold"
+            />
+            <span className="flex flex-col gap-0.5">
+              <strong>{t('cards.form.requiresPreverification')}</strong>
+              <span className="text-rs-muted">{t('cards.form.requiresPreverificationHint')}</span>
+            </span>
+          </label>
           <Field label={t('cards.form.changeReason')} wide>
             <input
               required

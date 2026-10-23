@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AuthControls } from '../../features/auth/components/AuthControls'
 import { useSession } from '../../features/auth/hooks/useSession'
 import { ActiveEventStatus } from '../../features/events/components/ActiveEventStatus'
+import { usePendingReviews } from '../../features/submissions/hooks/usePendingReviews'
 import { useDraftRegistrationCounts } from '../../features/teams/hooks/useDraftRegistrationCounts'
 import { LanguageMenuButton, LanguageSwitcher } from './LanguageSwitcher'
 import { MobileBottomBar } from './shell/MobileBottomBar'
@@ -23,6 +24,7 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
   const session = useSession()
   const isAdmin = session.data?.is_admin === true
   const registrations = useDraftRegistrationCounts(isAdmin)
+  const pendingReviews = usePendingReviews(isAdmin)
 
   return (
     <div className="min-h-screen bg-rs-canvas text-rs-text">
@@ -48,7 +50,11 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
       </div>
 
       <div className="md:flex">
-        <ShellSidebar isAdmin={isAdmin} pendingRegistrations={registrations?.pending ?? null} />
+        <ShellSidebar
+          isAdmin={isAdmin}
+          pendingRegistrations={registrations?.pending ?? null}
+          pendingReviews={pendingReviews}
+        />
         <main
           aria-label={t('shell.main')}
           className={`min-w-0 flex-1 px-4 pb-[90px] pt-4 md:pb-8 ${desktopPadding}`}

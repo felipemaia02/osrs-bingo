@@ -48,7 +48,7 @@ describe('App shell v2', () => {
     mockEvents([running])
   })
 
-  it('shows players only the Play group, with My submissions disabled', async () => {
+  it('shows players only the Play group, with My submissions enabled', async () => {
     vi.mocked(fetchSession).mockResolvedValue(PLAYER)
     renderApp(<AppShell>Board content</AppShell>)
 
@@ -59,17 +59,20 @@ describe('App shell v2', () => {
       'page',
     )
     expect(within(sidebar).getByRole('link', { name: 'Events' })).toHaveAttribute('href', '/events')
-    const submissions = within(sidebar)
-      .getByText('My submissions')
-      .closest('[aria-disabled="true"]')
-    expect(submissions).toHaveTextContent('Soon')
+    expect(within(sidebar).getByRole('link', { name: 'My submissions' })).toHaveAttribute(
+      'href',
+      '/submissions',
+    )
     expect(screen.queryByText('Ranking')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Overview' })).not.toBeInTheDocument()
     expect(fetchPlayers).not.toHaveBeenCalled()
 
     const bottomBar = screen.getByRole('navigation', { name: 'Mobile navigation' })
     expect(within(bottomBar).queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
-    expect(within(bottomBar).getByText('Submissions · soon')).toBeInTheDocument()
+    expect(within(bottomBar).getByRole('link', { name: 'My submissions' })).toHaveAttribute(
+      'href',
+      '/submissions',
+    )
   })
 
   it('groups administration, marks the current page and shows pending registrations', async () => {

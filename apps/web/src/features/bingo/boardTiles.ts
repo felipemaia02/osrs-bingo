@@ -16,6 +16,7 @@ export function boardToTiles(board: EventBoard): Tile[] {
     requirement: card.completion_requirement,
     drops: card.drops,
     ruleNote: card.rule_note,
+    requiresPreverification: card.requires_preverification ?? false,
     imageUrl: card.wiki_image?.image_url ?? null,
     imageSourceUrl: card.wiki_image?.file_page_url ?? null,
     imageAttribution: card.wiki_image?.attribution ?? null,

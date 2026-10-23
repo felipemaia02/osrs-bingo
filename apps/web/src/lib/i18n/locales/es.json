@@ -403,7 +403,9 @@
       "cardsActive": "{{count}} activa",
       "retired": "{{count}} retirada",
       "administrators_one": "{{count}} administrador",
-      "administrators_other": "{{count}} administradores"
+      "administrators_other": "{{count}} administradores",
+      "reviews_one": "{{count}} pendiente",
+      "reviews_other": "{{count}} pendientes"
     },
     "you": "Tú",
     "grantShort": "Dar acceso",
@@ -418,7 +420,9 @@
       "action": "Acción"
     },
     "directoryCount_one": "{{count}} usuario registrado",
-    "directoryCount_other": "{{count}} usuarios registrados"
+    "directoryCount_other": "{{count}} usuarios registrados",
+    "review": "Revisión de drops",
+    "reviewDescription": "Acepta o rechaza los envíos de los jugadores con la captura."
   },
   "cards": {
     "title": "Catálogo de tarjetas",
@@ -456,7 +460,9 @@
       "resolveImage": "Buscar imagen",
       "ruleNote": "Nota de regla o verificación",
       "changeReason": "Motivo de esta revisión",
-      "fallbackImage": "Sin imagen: se usará el escudo por defecto."
+      "fallbackImage": "Sin imagen: se usará el escudo por defecto.",
+      "requiresPreverification": "Requiere preverificación",
+      "requiresPreverificationHint": "Los jugadores envían una captura inicial de esta carta (por ejemplo su kill count) antes de que se acepten sus drops."
     },
     "feedback": {
       "created": "Tarjeta creada.",
@@ -522,7 +528,8 @@
     "source": {
       "workbook": "Hoja aprobada",
       "admin": "Administrador"
-    }
+    },
+    "preverification": "Preverificación"
   },
   "boards": {
     "title": "Armar tablero",
@@ -622,5 +629,145 @@
       "startsIn": "Empieza en {{time}}",
       "ended": "Fin programado alcanzado"
     }
+  },
+  "submissions": {
+    "title": "Mis envíos",
+    "description": "Solo los tuyos. Un administrador revisa cada envío con su captura.",
+    "submit": "Enviar con captura",
+    "filterLabel": "Filtrar por estado",
+    "tabs": {
+      "all": "Todos",
+      "pending": "Pendientes",
+      "accepted": "Aceptados",
+      "rejected": "Rechazados"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "accepted": "Aceptado",
+      "rejected": "Rechazado"
+    },
+    "empty": "Todavía no enviaste nada.",
+    "emptyFilter": "Nada aquí con este filtro.",
+    "blocked": {
+      "login": "Inicia sesión para enviar tus drops.",
+      "noEvent": "No hay un evento activo ahora.",
+      "notRegistered": "No estás inscrito en el evento activo.",
+      "notApproved": "Tu inscripción espera a un administrador.",
+      "noTeam": "Podrás enviar cuando un administrador te asigne un equipo."
+    },
+    "preverificationTitle": "Preverificación · {{card}}",
+    "kind": {
+      "drop": "Con captura",
+      "preverification": "Preverificación"
+    },
+    "reviewedBy": "revisado por {{name}}",
+    "progressAdded_one": "+{{count}} de progreso en {{card}}",
+    "progressAdded_other": "+{{count}} de progreso en {{card}}",
+    "progressOnAccept_one": "+{{count}} de progreso en {{card}} al aceptarse",
+    "progressOnAccept_other": "+{{count}} de progreso en {{card}} al aceptarse",
+    "preverificationPendingHint": "Mientras no se acepte, los drops de esta carta todavía no cuentan.",
+    "reason": "Motivo:",
+    "reasons": {
+      "unreadable_screenshot": "captura ilegible",
+      "item_mismatch": "el objeto no coincide con la captura",
+      "outside_event_period": "fuera del período del evento",
+      "other": "otro"
+    },
+    "viewScreenshot": "Ver captura",
+    "openScreenshot": "Abrir la captura",
+    "screenshotAlt": "Captura del envío",
+    "screenshotUnavailable": "Captura no disponible",
+    "submitTitle": "Enviar con captura",
+    "gate": {
+      "required": "Requiere preverificación",
+      "pending": "Preverificación pendiente",
+      "accepted": "Preverificado",
+      "rejected": "Preverificación rechazada"
+    },
+    "form": {
+      "card": "Carta",
+      "searchCard": "Buscar carta",
+      "positionLabel": "Fila {{row}} · columna {{column}}",
+      "noCards": "Ninguna carta coincide.",
+      "preverificationFirst": "{{card}} necesita una preverificación primero: envía una captura de tu punto de partida (por ejemplo tu kill count). Después podrás enviar sus drops.",
+      "preverificationAgain": "Tu preverificación de {{card}} fue rechazada. Envía una nueva captura de tu punto de partida.",
+      "item": "Objeto que conseguiste en {{card}}",
+      "gatePending": "Tu preverificación está pendiente: estos drops se aceptan solo después de ella.",
+      "screenshot": "Captura (prueba)",
+      "chooseScreenshot": "Elegir captura",
+      "screenshotHint": "PNG, JPEG o WebP, hasta 5 MB. Un objeto por envío.",
+      "preview": "Vista previa de la captura",
+      "note": "Nota (opcional)",
+      "send": "Enviar",
+      "sendPreverification": "Enviar preverificación"
+    },
+    "feedback": {
+      "sent": "Enviado. Un administrador lo revisará.",
+      "preverificationSent": "Preverificación enviada. Ya puedes enviar los drops de esta carta."
+    },
+    "errors": {
+      "notActive": "Los envíos solo están abiertos con el evento activo.",
+      "notEligible": "Solo jugadores aprobados y con equipo pueden enviar.",
+      "position": "Esta carta ya no está en el tablero.",
+      "drop": "Esta carta no acepta este objeto.",
+      "dropRequired": "Elige el objeto que conseguiste.",
+      "preverificationRequired": "Primero envía la preverificación de esta carta.",
+      "preverificationNotNeeded": "Esta carta no necesita preverificación.",
+      "preverificationExists": "Ya tienes una preverificación pendiente o aceptada para esta carta.",
+      "preverificationNotAccepted": "Primero acepta la preverificación de este jugador para la carta.",
+      "alreadyReviewed": "Alguien ya revisó este envío.",
+      "reviewClosed": "Solo se pueden revisar envíos de eventos activos o terminados.",
+      "imageType": "Usa una imagen PNG, JPEG o WebP.",
+      "imageSize": "La captura debe pesar 5 MB o menos.",
+      "storage": "No se pudo guardar la captura ahora. Inténtalo de nuevo en un momento.",
+      "cardRequired": "Elige una carta.",
+      "screenshotRequired": "Adjunta una captura."
+    }
+  },
+  "review": {
+    "title": "Revisión de drops",
+    "description": "Todos los envíos llegan aquí: revisa la captura y acéptalo o recházalo.",
+    "queue": "Envíos pendientes",
+    "initialScreenshot": "Captura inicial",
+    "preverificationOf": "Preverificación · {{card}}",
+    "selected": "Envío seleccionado",
+    "position": "{{index}} de {{total}}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "openOriginal": "Haz clic en la imagen para abrir la original.",
+    "player": "Jugador",
+    "card": "Carta",
+    "item": "Objeto",
+    "sent": "Enviado",
+    "period": "Período",
+    "withinEvent": "Dentro del evento",
+    "outsideEvent": "Fuera del período del evento",
+    "preverification": "Preverificación",
+    "preverificationMissing": "No enviada",
+    "note": "Nota del jugador",
+    "waitingPreverification": "Esperando preverificación: acepta la preverificación de este jugador para la carta antes de aceptar este drop.",
+    "reasonLabel": "Motivo del rechazo",
+    "reasonHint": "(obligatorio solo para rechazar)",
+    "chooseReason": "Elige un motivo…",
+    "otherNote": "Describe el motivo",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "skip": "Omitir",
+    "feedback": {
+      "accepted": "Envío aceptado.",
+      "rejected": "Envío rechazado. El jugador ve el motivo."
+    },
+    "event": "Evento",
+    "shortcuts": "J / K navegar · A aceptar · R motivo",
+    "noEvent": "No hay eventos activos o terminados para revisar.",
+    "filter": "Filtrar por tipo",
+    "filters": {
+      "all": "Todos",
+      "preverification": "Preverificación",
+      "drop": "Drops"
+    },
+    "oldestFirst": "Más antiguos primero",
+    "empty": "Nada que revisar. 🎉",
+    "backToQueue": "Volver a la cola"
   }
 }
