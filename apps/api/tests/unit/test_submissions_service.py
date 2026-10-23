@@ -46,6 +46,7 @@ def card(name: str, requires: bool) -> dict[str, Any]:
         "name": name,
         "drops": VORKATH_DROPS,
         "requires_preverification": requires,
+        "rule_note": "Screenshot your kill count before the event" if requires else None,
     }
 
 
@@ -186,6 +187,7 @@ async def test_preverification_rules(deps: dict[str, Any]) -> None:
     document = deps["submissions"].insert.await_args.args[0]
     assert result.drop_key is None and result.progress_weight is None
     assert document["preverification_gate"] == f"{EVENT_ID}:{PLAYER_ID}:2"
+    assert result.preverification_note == "Screenshot your kill count before the event"
 
     deps["submissions"].preverification_statuses.return_value = {(PLAYER_ID, 2): "accepted"}
     with pytest.raises(AppException, match="already pending or accepted"):

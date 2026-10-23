@@ -14,7 +14,7 @@ from app.modules.events.service import EventService
 NOW = datetime(2026, 8, 30, 12, tzinfo=UTC)
 
 
-def event_document(status: EventStatus = EventStatus.DRAFT, rules: bool = True) -> EventDocument:
+def event_document(status: EventStatus = EventStatus.DRAFT) -> EventDocument:
     document: EventDocument = {
         "_id": ObjectId("66d000000000000000000001"),
         "name": "Summer Bingo",
@@ -25,9 +25,6 @@ def event_document(status: EventStatus = EventStatus.DRAFT, rules: bool = True) 
         "created_at": NOW,
         "updated_at": NOW,
     }
-    if rules:
-        document["row_bonus"] = 25
-        document["column_bonus"] = 30
     return document
 
 
@@ -53,7 +50,9 @@ def boards() -> AsyncMock:
                 },
             }
             for position in range(1, 37)
-        ]
+        ],
+        "row_bonus": 25,
+        "column_bonus": 30,
     }
     return repository
 
@@ -146,12 +145,13 @@ async def test_finish_returns_finished_event(repository: AsyncMock, service: Eve
     assert finished.status is EventStatus.FINISHED
 
 
-async def test_activation_requires_row_and_column_bonuses(
-    repository: AsyncMock, service: EventService
+async def test_activation_requires_the_board_line_bonuses(
+    repository: AsyncMock, boards: AsyncMock, service: EventService
 ) -> None:
-    repository.get.return_value = event_document(rules=False)
+    repository.get.return_value = event_document()
+    boards.get_by_event.return_value = {**boards.get_by_event.return_value, "column_bonus": None}
 
-    with pytest.raises(ConflictError, match="row and column bonuses"):
+    with pytest.raises(ConflictError, match="bonuses on the board"):
         await service.activate("event-id")
 
     repository.activate.assert_not_awaited()
@@ -160,13 +160,14 @@ async def test_activation_requires_row_and_column_bonuses(
 async def test_rules_are_editable_only_while_draft(
     repository: AsyncMock, service: EventService
 ) -> None:
-    rules = EventRules(row_bonus=25, column_bonus=0)
-    repository.get.return_value = event_document(rules=False)
-    repository.update_rules.return_value = {**event_document(), "column_bonus": 0}
+    rules = EventRules(rules_text="  Drops only count during the event.\r\n\nBe nice.  ")
+    repository.get.return_value = event_document()
+    repository.update_rules.return_value = {**event_document(), "rules_text": rules.rules_text}
 
     result = await service.set_rules("event-id", rules)
 
-    assert (result.row_bonus, result.column_bonus) == (25, 0)
+    assert rules.rules_text == "Drops only count during the event.\n\nBe nice."
+    assert result.rules_text == rules.rules_text
     repository.update_rules.assert_awaited_once_with("event-id", rules)
 
     repository.get.return_value = event_document(EventStatus.ACTIVE)
@@ -174,9 +175,5 @@ async def test_rules_are_editable_only_while_draft(
         await service.set_rules("event-id", rules)
 
 
-@pytest.mark.parametrize("value", [-1, 1001])
-def test_line_bonuses_are_bounded(value: int) -> None:
-    from pydantic import ValidationError
-
-    with pytest.raises(ValidationError):
-        EventRules(row_bonus=value, column_bonus=0)
+def test_empty_rules_text_is_stored_as_none() -> None:
+    assert EventRules(rules_text=" \n ").rules_text is None

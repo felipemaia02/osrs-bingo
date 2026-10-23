@@ -14,6 +14,7 @@ from app.modules.tiles.schemas import (
 MIN_BOARD_SIZE = 3
 MAX_BOARD_SIZE = 6
 DEFAULT_BOARD_SIZE = MAX_BOARD_SIZE
+LINE_BONUS_MAX = 1000
 
 
 class BoardStatus(StrEnum):
@@ -34,6 +35,9 @@ class BoardSave(BaseModel):
 
     expected_revision: int = Field(ge=0)
     size: int = Field(default=DEFAULT_BOARD_SIZE, ge=MIN_BOARD_SIZE, le=MAX_BOARD_SIZE)
+    # Points per completed row/column (features 006/019); required before activation.
+    row_bonus: int | None = Field(default=None, ge=0, le=LINE_BONUS_MAX)
+    column_bonus: int | None = Field(default=None, ge=0, le=LINE_BONUS_MAX)
     positions: list[BoardPositionInput] = Field(default_factory=list, max_length=MAX_BOARD_SIZE**2)
 
     @model_validator(mode="after")
@@ -79,6 +83,8 @@ class BoardResponse(BaseModel):
     status: BoardStatus
     revision: int
     size: int
+    row_bonus: int | None = None
+    column_bonus: int | None = None
     complete: bool
     positions: list[BoardPositionResponse]
     created_at: datetime

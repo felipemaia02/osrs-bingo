@@ -137,12 +137,24 @@ class CardRevisionFields(BaseModel):
         return self
 
 
-class CardCreate(CardRevisionFields):
+class PreverificationInstructionsRequired(BaseModel):
+    """Input-only rule (feature 019): stored revisions from before it must still load."""
+
+    @model_validator(mode="after")
+    def preverification_needs_instructions(self) -> "PreverificationInstructionsRequired":
+        if getattr(self, "requires_preverification", False) and not getattr(
+            self, "rule_note", None
+        ):
+            raise ValueError("Describe the pre-verification players must send")
+        return self
+
+
+class CardCreate(CardRevisionFields, PreverificationInstructionsRequired):
     slug: str = Field(min_length=1, max_length=120, pattern=SLUG_PATTERN.pattern)
     change_reason: str = Field(min_length=1, max_length=500)
 
 
-class CardRevisionCreate(CardRevisionFields):
+class CardRevisionCreate(CardRevisionFields, PreverificationInstructionsRequired):
     expected_revision: int = Field(ge=1)
     change_reason: str = Field(min_length=1, max_length=500)
 

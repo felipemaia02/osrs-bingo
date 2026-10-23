@@ -65,6 +65,7 @@ const SPECIAL: Record<number, Partial<BoardCardSnapshot>> = {
       drop('Jar of Stone', 3),
     ],
     rule_note: 'Any Slayer master task counts.',
+    requires_preverification: true,
   },
   2: {
     name: 'Stone Collector',
@@ -218,7 +219,7 @@ describe('Board v2', () => {
       const maul = within(panel).getByText('Granite Maul').closest('li')!
       expect(within(maul).getByText('+1 progress')).toBeInTheDocument()
       expect(within(maul).getByText('Verification: Screenshot required')).toBeInTheDocument()
-      expect(within(panel).getByText('Any Slayer master task counts.')).toBeInTheDocument()
+      expect(within(panel).getByText(/Any Slayer master task counts\./)).toBeInTheDocument()
       expect(tileButton('Grotesque Guardians')).toHaveAttribute('aria-pressed', 'true')
       expect(screen.getByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
 
@@ -312,7 +313,7 @@ describe('Board v2', () => {
 
       await user.click(screen.getByRole('button', { name: 'How tiles are completed' }))
       const dialog = screen.getByRole('dialog', { name: 'How tiles are completed' })
-      expect(within(dialog).getByText(/defined by the event rules/)).toBeInTheDocument()
+      expect(within(dialog).getByText(/aren't set for this board yet/)).toBeInTheDocument()
       expect(dialog.querySelector('ul')?.textContent).not.toMatch(/\d/)
       await user.keyboard('{Escape}')
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())

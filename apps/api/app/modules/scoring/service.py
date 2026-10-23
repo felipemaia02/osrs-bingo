@@ -186,7 +186,10 @@ class ScoringService:
             tiles=tiles,
             size=int(board.get("size", DEFAULT_BOARD_SIZE)) if board else DEFAULT_BOARD_SIZE,
             drops=drops,
-            bonuses=LineBonuses(row=event.get("row_bonus"), column=event.get("column_bonus")),
+            bonuses=LineBonuses(
+                row=board.get("row_bonus") if board else None,
+                column=board.get("column_bonus") if board else None,
+            ),
         )
 
     @staticmethod

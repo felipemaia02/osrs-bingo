@@ -16,5 +16,4 @@ class EventDocument(TypedDict):
     created_at: datetime
     updated_at: datetime
     active_slot: NotRequired[int]
-    row_bonus: NotRequired[int]
-    column_bonus: NotRequired[int]
+    rules_text: NotRequired[str | None]

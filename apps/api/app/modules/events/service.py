@@ -15,7 +15,7 @@ from app.modules.events.schemas import (
 ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
-RULES_REQUIRED_DETAIL = "Set the row and column bonuses before activating"
+LINE_BONUSES_REQUIRED_DETAIL = "Set the row and column bonuses on the board before activating"
 
 
 class EventService:
@@ -74,11 +74,11 @@ class EventService:
     async def activate(self, event_id: str, actor_id: str = "system") -> EventResponse:
         event = await self._require_event(event_id)
         self._require_status(event, EventStatus.DRAFT)
-        if event.get("row_bonus") is None or event.get("column_bonus") is None:
-            raise ConflictError(RULES_REQUIRED_DETAIL)
         board = await self._boards.get_by_event(event_id)
         if not is_publishable_board(board):
             raise ConflictError(BOARD_REQUIRED_DETAIL)
+        if board is None or board.get("row_bonus") is None or board.get("column_bonus") is None:
+            raise ConflictError(LINE_BONUSES_REQUIRED_DETAIL)
         activated, limit_reached = await self._repository.activate(event_id)
         if activated is not None:
             await self._boards.publish(event_id, actor_id)
@@ -132,8 +132,7 @@ class EventService:
             start_at=document["start_at"],
             end_at=document["end_at"],
             status=document["status"],
-            row_bonus=document.get("row_bonus"),
-            column_bonus=document.get("column_bonus"),
+            rules_text=document.get("rules_text"),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

@@ -153,6 +153,12 @@ export function ReviewDetail({
                 </dd>
               </>
             )}
+            {preverification && item.preverification_note && (
+              <>
+                <dt className={label}>{t('review.instructions')}</dt>
+                <dd className="m-0 whitespace-pre-line">{item.preverification_note}</dd>
+              </>
+            )}
             {item.note && (
               <>
                 <dt className={label}>{t('review.note')}</dt>

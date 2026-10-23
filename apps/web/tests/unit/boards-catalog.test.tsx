@@ -125,6 +125,8 @@ it('saves selected exact card revisions for a draft event board', async () => {
     payload: {
       expected_revision: 0,
       size: 6,
+      row_bonus: null,
+      column_bonus: null,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
     },
   })
@@ -242,6 +244,8 @@ describe('board builder v2', () => {
       payload: {
         expected_revision: 4,
         size: 6,
+        row_bonus: null,
+        column_bonus: null,
         positions: [
           { position: 1, card_id: CARD.id, card_revision: 1 },
           { position: 4, card_id: HYDRA.id, card_revision: 1 },
@@ -329,7 +333,29 @@ describe('board builder v2', () => {
     expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toEqual({
       expected_revision: 4,
       size: 4,
+      row_bonus: null,
+      column_bonus: null,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
+    })
+  })
+
+  it('saves the row and column bonuses with the board', async () => {
+    vi.mocked(saveBoard).mockResolvedValue({
+      ...boardWith([[1, CARD]]),
+      row_bonus: 25,
+      column_bonus: 0,
+    })
+    const user = await openBuilder()
+    expect(screen.getByText('Both are required to activate')).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText('Row bonus'), '25')
+    await user.type(screen.getByLabelText('Column bonus'), '0')
+    expect(screen.queryByText('Both are required to activate')).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+
+    expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toMatchObject({
+      row_bonus: 25,
+      column_bonus: 0,
     })
   })
 
@@ -766,10 +792,17 @@ it('publishes the pre-verification flag from the card editor', async () => {
   const dialog = screen.getByRole('dialog', { name: 'Publish a new card revision' })
   const flag = within(dialog).getByRole('checkbox', { name: /Requires pre-verification/ })
   expect(flag).not.toBeChecked()
+  expect(within(dialog).queryByLabelText('Pre-verification instructions')).toBeNull()
   await user.click(flag)
+  await user.type(
+    within(dialog).getByLabelText('Pre-verification instructions'),
+    'Screenshot your Vorkath KC before the event.',
+  )
   await user.type(within(dialog).getByLabelText('Reason for this revision'), 'KC proof')
   await user.click(within(dialog).getByRole('button', { name: 'Save' }))
 
   await waitFor(() => expect(createCardRevision).toHaveBeenCalledOnce())
-  expect(vi.mocked(createCardRevision).mock.calls[0][0].payload.requires_preverification).toBe(true)
+  const payload = vi.mocked(createCardRevision).mock.calls[0][0].payload
+  expect(payload.requires_preverification).toBe(true)
+  expect(payload.rule_note).toBe('Screenshot your Vorkath KC before the event.')
 })

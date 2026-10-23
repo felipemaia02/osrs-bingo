@@ -48,8 +48,9 @@
       "progress": "Each accepted drop adds its progress value to the tile for your team.",
       "completion": "When your team's progress reaches the tile requirement, the team earns the tile points once.",
       "excess": "Progress beyond the requirement does not award extra tile points.",
-      "bonuses": "Row, column and special bonuses are defined by the event rules.",
-      "details": "Select a tile to see its accepted drops, progress values and notes."
+      "details": "Select a tile to see its accepted drops, progress values and notes.",
+      "lines": "Completing all {{size}} tiles of a row gives +{{row}} points; of a column, +{{column}} points.",
+      "linesNotSet": "Row and column bonuses aren't set for this board yet."
     },
     "activeEvent": "Active event",
     "yourTeam": "Your team",
@@ -191,7 +192,7 @@
       "invalidTransition": "This event cannot perform that status change.",
       "notFound": "The event was not found.",
       "boardRequired": "Complete and save every board position before activating the event.",
-      "rulesRequired": "Set the row and column bonuses (Rules) before activating the event."
+      "rulesRequired": "Set the row and column bonuses in the board builder before activating the event."
     },
     "publicEyebrow": "Community events",
     "publicDescription": "Discover Bingo events and follow your registration.",
@@ -207,14 +208,12 @@
     "durationDays_other": "{{count}} days",
     "rules": {
       "title": "Rules · {{name}}",
-      "lines": "Row and column bonuses",
-      "row": "Per completed row (points)",
-      "column": "Per completed column (points)",
-      "linesHint": "No default value: each event sets its own (0 is allowed). A row or column counts once all of its tiles are complete.",
-      "formula": "Official team score = tiles + rows + columns. Individual contribution is a separate metric.",
       "editableUntil": "Editable until the event is activated.",
       "save": "Save rules",
-      "missing": "Rules missing"
+      "text": "Rules of the bingo",
+      "placeholder": "Write how this bingo works: dates, what counts, screenshots, team rules…",
+      "hint": "Plain text; line breaks are kept. Players read it on the Events page and in the board's help.",
+      "section": "Rules"
     }
   },
   "teams": {
@@ -471,11 +470,12 @@
       "dropsPlaceholder": "Drop name | progress weight",
       "wikiArticle": "OSRS Wiki article",
       "resolveImage": "Find image",
-      "ruleNote": "Rule or verification note",
       "changeReason": "Reason for this revision",
       "fallbackImage": "No image: the fallback shield will be used.",
       "requiresPreverification": "Requires pre-verification",
-      "requiresPreverificationHint": "Players send a starting screenshot for this card (for example their kill count) before their drops can be accepted."
+      "requiresPreverificationHint": "Players send a starting screenshot for this card before their drops can be accepted. Describe below what it must show.",
+      "preverificationNote": "Pre-verification instructions",
+      "preverificationNotePlaceholder": "e.g. Screenshot your Theatre of Blood KC before your first raid of the event."
     },
     "feedback": {
       "created": "Card created.",
@@ -621,6 +621,12 @@
       "shrinkConfirm": "Shrink and remove",
       "shrinkConfirmation_one": "{{count}} card is outside the {{size}}×{{size}} area and will be removed from the draft: {{names}}. Nothing is saved until you save the board.",
       "shrinkConfirmation_other": "{{count}} cards are outside the {{size}}×{{size}} area and will be removed from the draft: {{names}}. Nothing is saved until you save the board."
+    },
+    "bonuses": {
+      "row": "Row bonus",
+      "column": "Column bonus",
+      "required": "Both are required to activate",
+      "readOnly": "Row +{{row}} · Column +{{column}}"
     }
   },
   "brand": {
@@ -702,8 +708,7 @@
       "searchCard": "Search card",
       "positionLabel": "Row {{row}} · column {{column}}",
       "noCards": "No card matches.",
-      "preverificationFirst": "{{card}} needs a pre-verification first: send a screenshot of your starting point (for example your kill count). After that you can send its drops.",
-      "preverificationAgain": "Your pre-verification for {{card}} was rejected. Send a new screenshot of your starting point.",
+      "preverificationFirst": "Send a screenshot of your starting point (for example your kill count). After that you can send its drops.",
       "item": "Item you got on {{card}}",
       "gatePending": "Your pre-verification is pending: these drops are accepted only after it.",
       "screenshot": "Screenshot (proof)",
@@ -712,7 +717,9 @@
       "preview": "Screenshot preview",
       "note": "Note (optional)",
       "send": "Send",
-      "sendPreverification": "Send pre-verification"
+      "sendPreverification": "Send pre-verification",
+      "preverificationNeeded": "{{card}} needs a pre-verification first",
+      "preverificationRejected": "Your pre-verification for {{card}} was rejected — send a new one"
     },
     "feedback": {
       "sent": "Sent. An administrator will review it.",
@@ -781,7 +788,8 @@
     },
     "oldestFirst": "Oldest first",
     "empty": "Nothing to review. 🎉",
-    "backToQueue": "Back to the queue"
+    "backToQueue": "Back to the queue",
+    "instructions": "Instructions"
   },
   "score": {
     "tileComplete": "Complete +{{points}}",

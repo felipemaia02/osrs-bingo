@@ -55,6 +55,8 @@ class SubmissionResponse(BaseModel):
     progress_weight: float | None
     quantity: int
     note: str | None
+    # The card's pre-verification instructions, for pre-verification submissions.
+    preverification_note: str | None = None
     submitted_at: datetime
     reviewed_at: datetime | None
     reviewer_name: str | None

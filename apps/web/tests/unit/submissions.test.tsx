@@ -76,7 +76,12 @@ const BOARD: EventBoard = {
   published_at: EVENT.created_at,
   positions: [
     { position: 1, row: 1, column: 1, card: snapshot('Vorkath', false) },
-    { position: 2, row: 1, column: 2, card: snapshot('Theatre', true) },
+    {
+      position: 2,
+      row: 1,
+      column: 2,
+      card: { ...snapshot('Theatre', true), rule_note: 'Screenshot your ToB KC before the event.' },
+    },
   ],
 }
 
@@ -175,7 +180,8 @@ describe('My submissions', () => {
     await user.click(await screen.findByRole('button', { name: 'Submit with screenshot' }))
     const dialog = screen.getByRole('dialog', { name: 'Submit with screenshot' })
     await user.click(within(dialog).getByRole('radio', { name: /Theatre/ }))
-    expect(within(dialog).getByText(/Theatre needs a pre-verification first/)).toBeInTheDocument()
+    expect(within(dialog).getByText('Theatre needs a pre-verification first')).toBeInTheDocument()
+    expect(within(dialog).getByText('Screenshot your ToB KC before the event.')).toBeInTheDocument()
     expect(within(dialog).queryByRole('radio', { name: /Theatre Unique/ })).toBeNull()
 
     await user.click(within(dialog).getByRole('button', { name: 'Send pre-verification' }))

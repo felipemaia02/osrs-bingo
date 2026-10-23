@@ -70,7 +70,13 @@ class BoardService:
                 )
             )
         document = await self._boards.save_draft(
-            event_id, positions, payload.expected_revision, actor.id, size=payload.size
+            event_id,
+            positions,
+            payload.expected_revision,
+            actor.id,
+            size=payload.size,
+            row_bonus=payload.row_bonus,
+            column_bonus=payload.column_bonus,
         )
         if document is None:
             raise ConflictError(BOARD_CHANGED_DETAIL)
@@ -114,6 +120,8 @@ class BoardService:
             status=document["status"],
             revision=document["revision"],
             size=board_size(document),
+            row_bonus=document.get("row_bonus"),
+            column_bonus=document.get("column_bonus"),
             complete=is_publishable_board(document),
             positions=positions,
             created_at=document["created_at"],

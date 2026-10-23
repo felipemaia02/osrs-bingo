@@ -25,8 +25,7 @@ const EVENT: BingoEvent = {
   status: 'active',
   start_at: '2026-10-01T12:00:00Z',
   end_at: '2026-12-01T12:00:00Z',
-  row_bonus: 25,
-  column_bonus: 30,
+  rules_text: 'Drops only count during the event.\nOne screenshot per item.',
   created_at: '2026-10-01T12:00:00Z',
   updated_at: '2026-10-01T12:00:00Z',
 }
@@ -80,6 +79,8 @@ const BOARD: EventBoard = {
   status: 'published',
   revision: 1,
   size: 3,
+  row_bonus: 25,
+  column_bonus: 30,
   complete: true,
   created_at: EVENT.created_at,
   updated_at: EVENT.updated_at,
@@ -175,6 +176,20 @@ describe('team progress on the board', () => {
 
     expect((await screen.findAllByText(/Progress unavailable/)).length).toBeGreaterThan(0)
     expect(screen.queryByRole('region', { name: "Your team's score" })).toBeNull()
+  })
+})
+
+describe('board help', () => {
+  it('explains this board line bonuses and shows the written rules', async () => {
+    const user = userEvent.setup()
+    renderApp(<HomePage />, '/')
+
+    await user.click(await screen.findByRole('button', { name: 'How tiles are completed' }))
+    const dialog = screen.getByRole('dialog', { name: 'How tiles are completed' })
+    expect(dialog).toHaveTextContent(
+      'Completing all 3 tiles of a row gives +25 points; of a column, +30 points.',
+    )
+    expect(within(dialog).getByText(/Drops only count during the event\./)).toBeInTheDocument()
   })
 })
 
@@ -293,8 +308,7 @@ describe('event rules', () => {
     id: 'draft-1',
     name: 'Winter Bingo',
     status: 'draft',
-    row_bonus: null,
-    column_bonus: null,
+    rules_text: null,
   }
 
   beforeEach(() => {
@@ -307,38 +321,36 @@ describe('event rules', () => {
     vi.mocked(fetchEvents).mockResolvedValue([DRAFT])
   })
 
-  it('flags missing rules, saves them and explains a refused activation', async () => {
-    vi.mocked(updateEventRules).mockResolvedValue({ ...DRAFT, row_bonus: 25, column_bonus: 0 })
+  it('saves the written rules and explains a refused activation', async () => {
+    vi.mocked(updateEventRules).mockResolvedValue({ ...DRAFT, rules_text: 'Be nice.' })
     vi.mocked(activateEvent).mockRejectedValue(
       new AxiosError('Conflict', '409', undefined, undefined, {
         status: 409,
-        data: { detail: 'Set the row and column bonuses before activating' },
+        data: { detail: 'Set the row and column bonuses on the board before activating' },
       } as never),
     )
     const user = userEvent.setup()
     renderApp(<AdminEventsPage />, '/admin/events')
 
-    expect(await screen.findByText('Rules missing')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Activate event · Winter Bingo' }))
+    await user.click(await screen.findByRole('button', { name: 'Activate event · Winter Bingo' }))
     const confirm = screen.getByRole('dialog', { name: 'Activate event?' })
     await user.click(within(confirm).getByRole('button', { name: 'Activate' }))
     expect(
       await within(confirm).findByText(
-        'Set the row and column bonuses (Rules) before activating the event.',
+        'Set the row and column bonuses in the board builder before activating the event.',
       ),
     ).toBeInTheDocument()
     await user.click(within(confirm).getByRole('button', { name: 'Cancel' }))
 
     await user.click(screen.getByRole('button', { name: 'Rules · Winter Bingo' }))
     const dialog = screen.getByRole('dialog', { name: 'Rules · Winter Bingo' })
-    await user.type(within(dialog).getByLabelText('Per completed row (points)'), '25')
-    await user.type(within(dialog).getByLabelText('Per completed column (points)'), '0')
+    await user.type(within(dialog).getByLabelText('Rules of the bingo'), '  Be nice.  ')
     await user.click(within(dialog).getByRole('button', { name: 'Save rules' }))
 
     await waitFor(() => expect(updateEventRules).toHaveBeenCalledOnce())
     expect(vi.mocked(updateEventRules).mock.calls[0][0]).toEqual({
       eventId: 'draft-1',
-      rules: { row_bonus: 25, column_bonus: 0 },
+      rules: { rules_text: 'Be nice.' },
     })
     expect(await screen.findByText('Rules saved.')).toBeInTheDocument()
   })

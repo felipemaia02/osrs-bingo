@@ -12,6 +12,7 @@ import { FormModal } from '../../../components/ui/FormModal'
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { useSession } from '../../auth/hooks/useSession'
+import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { BulkBar } from '../components/BulkBar'
@@ -37,8 +38,10 @@ export function TeamsPage() {
   const isDesktop = useIsDesktop()
   const session = useSession()
   const events = useEvents()
-  const [eventId, setEventId] = useState('')
-  const selectedEvent = events.data?.find((event) => event.id === eventId)
+  const [chosenEventId, setEventId] = useState<string | null>(null)
+  const options = workingEvents(events.data ?? [])
+  const eventId = chosenEventId ?? defaultWorkingEvent(options)?.id ?? ''
+  const selectedEvent = options.find((event) => event.id === eventId)
 
   const eventSelect = (
     <label className={`flex flex-col gap-1 ${isDesktop ? 'w-[360px]' : ''}`}>
@@ -50,7 +53,7 @@ export function TeamsPage() {
           className={`${FIELD} appearance-none pl-3 pr-9`}
         >
           <option value="">{t('teams.selectEvent')}</option>
-          {events.data?.map((event) => (
+          {options.map((event) => (
             <option key={event.id} value={event.id}>
               {event.name} · {t(`events.status.${event.status}`)}
             </option>

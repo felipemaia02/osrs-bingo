@@ -3,7 +3,7 @@ import type { CardRevision } from '../types'
 
 type RuleFields = Pick<
   CardRevision,
-  'tile_score' | 'completion_requirement' | 'drops' | 'rule_note'
+  'tile_score' | 'completion_requirement' | 'drops' | 'rule_note' | 'requires_preverification'
 >
 
 /** Read-only card rules: drop weights are progress units, never direct team points. */
@@ -42,7 +42,11 @@ export function CardRuleDetails({ card }: { card: RuleFields }) {
           </li>
         ))}
       </ul>
-      {card.rule_note && <p className="m-0 text-xs text-rs-muted">{card.rule_note}</p>}
+      {card.requires_preverification && card.rule_note && (
+        <p className="m-0 rounded-[3px] border border-rs-info bg-rs-info-bg px-2.5 py-2 text-xs text-rs-info-banner-text">
+          <strong>{t('cards.preverification')}:</strong> {card.rule_note}
+        </p>
+      )}
     </div>
   )
 }

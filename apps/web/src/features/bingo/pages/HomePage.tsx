@@ -28,6 +28,8 @@ import type { TierFilter, Tile, TileMatch } from '../types'
 
 interface BoardState {
   tiles: Tile[]
+  rowBonus: number | null
+  columnBonus: number | null
   /** The viewer's own team score; null for visitors and players without a team. */
   score: TeamScore | null
   /** Rows (and columns) of the published board. */
@@ -70,6 +72,8 @@ export function HomePage() {
     tiles,
     score,
     size: board.data?.size ?? DEFAULT_BOARD_SIZE,
+    rowBonus: board.data?.row_bonus ?? null,
+    columnBonus: board.data?.column_bonus ?? null,
     matches,
     summary,
     search,
@@ -157,7 +161,15 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
           onClose={() => state.setSelectedId(null)}
         />
       </div>
-      {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
+      {helpOpen && (
+        <HelpDialog
+          size={state.size}
+          rowBonus={state.rowBonus}
+          columnBonus={state.columnBonus}
+          rulesText={event.rules_text ?? null}
+          onClose={() => setHelpOpen(false)}
+        />
+      )}
     </>
   )
 }

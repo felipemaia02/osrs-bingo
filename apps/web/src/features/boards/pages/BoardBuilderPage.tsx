@@ -12,9 +12,11 @@ import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { useCards } from '../../cards/hooks/useCards'
 import type { CardDifficulty } from '../../cards/types'
+import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { BoardSizeControl } from '../components/BoardSizeControl'
+import { LineBonusFields } from '../components/LineBonusFields'
 import { BuilderCatalog } from '../components/BuilderCatalog'
 import { BuilderGrid } from '../components/BuilderGrid'
 import { BuilderStatusPanel } from '../components/BuilderStatusPanel'
@@ -55,8 +57,11 @@ export function BoardBuilderPage() {
   const events = useEvents()
   const [params] = useSearchParams()
   // `?event=<id>` preselects an event (Events page "Board" shortcut, feature 015).
-  const [eventId, setEventId] = useState(() => params.get('event') ?? '')
-  const event = events.data?.find((candidate) => candidate.id === eventId) ?? null
+  // `?event=` (Events "Board" shortcut) wins; otherwise the active event or the oldest draft.
+  const [chosenEventId, setEventId] = useState<string | null>(() => params.get('event'))
+  const options = workingEvents(events.data ?? [])
+  const eventId = chosenEventId ?? defaultWorkingEvent(options)?.id ?? ''
+  const event = options.find((candidate) => candidate.id === eventId) ?? null
 
   const eventSelect = (
     <label className={`flex flex-col gap-1 ${isDesktop ? 'w-[360px]' : ''}`}>
@@ -68,7 +73,7 @@ export function BoardBuilderPage() {
           className="min-h-11 w-full appearance-none rounded-[3px] border border-rs-border bg-rs-inset pl-3 pr-9 text-base text-rs-text md:min-h-10 md:text-sm"
         >
           <option value="">{t('boards.selectEvent')}</option>
-          {events.data?.map((candidate) => (
+          {options.map((candidate) => (
             <option key={candidate.id} value={candidate.id}>
               {candidate.name} · {t(`events.status.${candidate.status}`)}
             </option>
@@ -280,6 +285,9 @@ function EventBoardBuilder({
           variant="chip"
         />
       )}
+      {board.isFetched && !board.isError && (
+        <LineBonusFields bonuses={draft.bonuses} editable={editable} onChange={draft.setBonus} />
+      )}
     </>
   )
 
@@ -354,6 +362,8 @@ function EventBoardBuilder({
         <BuilderStatusPanel
           editable={draftEvent}
           size={draft.size}
+          bonuses={draft.bonuses}
+          onBonusChange={draft.setBonus}
           filled={filled}
           tierCounts={tierCounts}
           fillCount={fillCount}

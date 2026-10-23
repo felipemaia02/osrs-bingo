@@ -24,6 +24,7 @@ class SubmissionDocument(TypedDict):
     progress_weight: float | None
     quantity: int
     note: str | None
+    preverification_note: NotRequired[str | None]
     screenshot_key: str
     screenshot_type: str
     submitted_at: datetime

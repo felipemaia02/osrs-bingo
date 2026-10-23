@@ -24,6 +24,8 @@ def board() -> dict[str, Any]:
     # 3x3 board, every tile worth 10 with requirement 2.
     return {
         "size": 3,
+        "row_bonus": 25,
+        "column_bonus": 30,
         "positions": [
             {
                 "position": (row - 1) * 3 + column,
@@ -60,8 +62,6 @@ def deps() -> dict[str, Any]:
         "_id": EVENT_ID,
         "name": "Autumn",
         "status": "active",
-        "row_bonus": 25,
-        "column_bonus": 30,
         "start_at": datetime.now(UTC),
         "end_at": datetime.now(UTC),
     }

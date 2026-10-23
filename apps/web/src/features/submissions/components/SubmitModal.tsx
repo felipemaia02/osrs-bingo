@@ -175,15 +175,20 @@ export function SubmitModal({
         {slot && sendsPreverification && (
           <p className="m-0 flex gap-2.5 rounded border border-rs-info bg-rs-info-bg px-3.5 py-2.5 text-[13px] text-rs-info-banner-text">
             <InfoOutlinedIcon fontSize="small" aria-hidden="true" />
-            <span>
-              {t(
-                gate === 'rejected'
-                  ? 'submissions.form.preverificationAgain'
-                  : 'submissions.form.preverificationFirst',
-                {
-                  card: slot.card.name,
-                },
-              )}
+            <span className="flex flex-col gap-1">
+              <strong>
+                {t(
+                  gate === 'rejected'
+                    ? 'submissions.form.preverificationRejected'
+                    : 'submissions.form.preverificationNeeded',
+                  { card: slot.card.name },
+                )}
+              </strong>
+              {/* The card's own instructions; older cards fall back to the generic text. */}
+              <span className="whitespace-pre-line">
+                {slot.card.rule_note ??
+                  t('submissions.form.preverificationFirst', { card: slot.card.name })}
+              </span>
             </span>
           </p>
         )}

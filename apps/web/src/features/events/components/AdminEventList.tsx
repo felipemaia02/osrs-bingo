@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { Badge } from '../../../components/ui/Badge'
 import type { BingoEvent } from '../types'
 import { EventActions, type EventTransition } from './EventActions'
 import { EventSchedule } from './EventSchedule'
@@ -10,15 +9,6 @@ interface AdminEventListProps {
   onEdit: (event: BingoEvent) => void
   onRules: (event: BingoEvent) => void
   onTransition: (event: BingoEvent, action: EventTransition) => void
-}
-
-/** Drafts can't be activated until both line bonuses are set (feature 006). */
-function RulesBadge({ event }: { event: BingoEvent }) {
-  const { t } = useTranslation()
-  const missing = event.row_bonus == null || event.column_bonus == null
-  return event.status === 'draft' && missing ? (
-    <Badge tone="gold">{t('events.rules.missing')}</Badge>
-  ) : null
 }
 
 const CELL = 'border-b border-rs-border/45 px-3 py-2.5 align-middle'
@@ -50,10 +40,7 @@ export function AdminEventTable({ events, onEdit, onRules, onTransition }: Admin
               )}
             </td>
             <td className={CELL}>
-              <span className="flex flex-wrap items-center gap-1.5">
-                <EventStatusBadge status={event.status} />
-                <RulesBadge event={event} />
-              </span>
+              <EventStatusBadge status={event.status} />
             </td>
             <td className={CELL}>
               <EventSchedule event={event} />
@@ -85,10 +72,7 @@ export function AdminEventCards({ events, onEdit, onRules, onTransition }: Admin
         >
           <div className="flex items-start justify-between gap-2">
             <strong className="min-w-0 break-words">{event.name}</strong>
-            <span className="flex flex-wrap justify-end gap-1.5">
-              <EventStatusBadge status={event.status} />
-              <RulesBadge event={event} />
-            </span>
+            <EventStatusBadge status={event.status} />
           </div>
           <EventSchedule event={event} />
           {event.description && (

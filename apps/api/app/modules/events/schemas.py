@@ -54,16 +54,24 @@ class EventUpdate(EventFields):
     pass
 
 
-LINE_BONUS_MAX = 1000
+RULES_TEXT_MAX_LENGTH = 5000
 
 
 class EventRules(BaseModel):
-    """Points per completed row and column (feature 006); set per event while it's a draft."""
+    """The event's written rules (feature 019); plain text, line breaks kept."""
 
     model_config = ConfigDict(extra="forbid")
 
-    row_bonus: int = Field(ge=0, le=LINE_BONUS_MAX)
-    column_bonus: int = Field(ge=0, le=LINE_BONUS_MAX)
+    rules_text: str | None = Field(default=None, max_length=RULES_TEXT_MAX_LENGTH)
+
+    @field_validator("rules_text")
+    @classmethod
+    def normalize_rules_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        lines = [line.rstrip() for line in value.replace("\r\n", "\n").split("\n")]
+        text = "\n".join(lines).strip()
+        return text or None
 
 
 class EventResponse(BaseModel):
@@ -75,8 +83,7 @@ class EventResponse(BaseModel):
     start_at: datetime
     end_at: datetime
     status: EventStatus
-    row_bonus: int | None = None
-    column_bonus: int | None = None
+    rules_text: str | None = None
     created_at: datetime
     updated_at: datetime
 

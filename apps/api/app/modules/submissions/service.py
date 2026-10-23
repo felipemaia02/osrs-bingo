@@ -136,6 +136,7 @@ class SubmissionService:
             "submitted_at": datetime.now(UTC),
         }
         if kind == SubmissionKind.PREVERIFICATION:
+            document["preverification_note"] = card.get("rule_note")
             document["preverification_gate"] = preverification_gate(
                 event["_id"], player["_id"], position
             )
@@ -320,6 +321,7 @@ class SubmissionService:
             progress_weight=document["progress_weight"],
             quantity=document["quantity"],
             note=document["note"],
+            preverification_note=document.get("preverification_note"),
             submitted_at=document["submitted_at"],
             reviewed_at=document.get("reviewed_at"),
             reviewer_name=document.get("reviewer_name"),

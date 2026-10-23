@@ -7,9 +7,8 @@ export interface BingoEvent {
   start_at: string
   end_at: string
   status: EventStatus
-  /** Points per completed row/column (feature 006); null until set. */
-  row_bonus?: number | null
-  column_bonus?: number | null
+  /** The event's written rules (feature 019); null when not written. */
+  rules_text?: string | null
   created_at: string
   updated_at: string
 }
@@ -26,6 +25,5 @@ export interface EventListResponse {
 }
 
 export interface EventRules {
-  row_bonus: number
-  column_bonus: number
+  rules_text: string | null
 }

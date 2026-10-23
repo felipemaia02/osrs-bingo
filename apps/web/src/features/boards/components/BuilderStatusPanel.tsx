@@ -8,13 +8,17 @@ import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
 import type { CardDifficulty } from '../../cards/types'
 import { TIER_TONE } from '../../bingo/tierTone'
+import type { LineBonuses } from '../hooks/useBoardDraft'
 import { BoardSizeControl } from './BoardSizeControl'
+import { LineBonusFields } from './LineBonusFields'
 
 const TIERS: CardDifficulty[] = ['Low', 'Mid', 'High']
 
 interface BuilderStatusPanelProps {
   editable: boolean
   size: number
+  bonuses: LineBonuses
+  onBonusChange: (line: keyof LineBonuses, value: number | null) => void
   filled: number
   tierCounts: Record<CardDifficulty, number>
   fillCount: number
@@ -30,6 +34,8 @@ interface BuilderStatusPanelProps {
 export function BuilderStatusPanel({
   editable,
   size,
+  bonuses,
+  onBonusChange,
   filled,
   tierCounts,
   fillCount,
@@ -70,6 +76,7 @@ export function BuilderStatusPanel({
         </div>
       </div>
       <BoardSizeControl size={size} editable={editable && !saving} onChange={onResize} />
+      <LineBonusFields bonuses={bonuses} editable={editable && !saving} onChange={onBonusChange} />
       <div className="flex items-center gap-2 text-[13px]">
         <span className="text-rs-muted">{t('boards.difficulty')}</span>
         {TIERS.map((tier) => (

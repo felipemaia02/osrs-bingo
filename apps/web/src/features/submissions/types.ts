@@ -26,6 +26,8 @@ export interface Submission {
   progress_weight: number | null
   quantity: number
   note: string | null
+  /** The card's pre-verification instructions (pre-verification submissions). */
+  preverification_note?: string | null
   submitted_at: string
   reviewed_at: string | null
   reviewer_name: string | null

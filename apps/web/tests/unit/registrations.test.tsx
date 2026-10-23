@@ -222,25 +222,29 @@ it.each([
   expect(await screen.findByText(text)).toBeInTheDocument()
 })
 
-it('keeps participant queries scoped to the selected administrative event', async () => {
-  const other = { ...EVENT, id: 'event-2', name: 'Winter Bingo' }
+it('opens the oldest draft, hides finished events and keeps queries scoped', async () => {
+  const other = {
+    ...EVENT,
+    id: 'event-2',
+    name: 'Winter Bingo',
+    created_at: '2026-10-05T12:00:00Z',
+  }
+  const finished = { ...EVENT, id: 'event-3', name: 'Old Bingo', status: 'finished' as const }
   vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: true })
   vi.mocked(fetchEvents).mockImplementation(async (status) =>
-    status === 'active' ? [] : [EVENT, other],
+    status === 'active' ? [] : [other, EVENT, finished],
   )
   vi.mocked(api.fetchPlayers).mockImplementation(async (eventId, filters) =>
     pageOf(eventId === EVENT.id ? [PLAYER] : [], filters),
   )
   const user = userEvent.setup()
   renderApp(<TeamsPage />, '/teams')
-  await screen.findByRole('option', { name: 'Winter Bingo · Draft' })
-  // The shell only reads draft-event counts (limit 1); no roster page loads before selection.
-  expect(api.fetchPlayers).not.toHaveBeenCalledWith(
-    expect.anything(),
-    expect.objectContaining({ limit: 25 }),
-  )
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  await screen.findByText('Thunder Crab')
+
+  // No active event: the draft created first is opened without choosing.
+  expect(await screen.findByText('Thunder Crab')).toBeInTheDocument()
+  expect(screen.getByLabelText('Event')).toHaveValue(EVENT.id)
+  expect(screen.queryByRole('option', { name: 'Old Bingo · Finished' })).toBeNull()
+
   await user.selectOptions(screen.getByLabelText('Event'), other.id)
   expect(await screen.findByText('No pending requests.')).toBeInTheDocument()
   expect(screen.queryByText('Thunder Crab')).not.toBeInTheDocument()
@@ -248,6 +252,15 @@ it('keeps participant queries scoped to the selected administrative event', asyn
     other.id,
     expect.objectContaining({ offset: 0, group: 'pending' }),
   )
+})
+
+it('opens the active event before any draft', async () => {
+  const active = { ...EVENT, id: 'event-9', name: 'Live Bingo', status: 'active' as const }
+  vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: true })
+  vi.mocked(fetchEvents).mockResolvedValue([EVENT, active])
+  renderApp(<TeamsPage />, '/teams')
+
+  await waitFor(() => expect(screen.getByLabelText('Event')).toHaveValue(active.id))
 })
 
 it('shows active events as read-only even to administrators', async () => {

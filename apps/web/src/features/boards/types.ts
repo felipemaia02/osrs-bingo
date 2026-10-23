@@ -36,6 +36,9 @@ export interface EventBoard {
   status: 'draft' | 'published'
   revision: number
   size: number
+  /** Points per completed row/column (features 006/019); null until set. */
+  row_bonus?: number | null
+  column_bonus?: number | null
   complete: boolean
   positions: BoardPosition[]
   created_at: string
@@ -46,6 +49,8 @@ export interface EventBoard {
 export interface BoardSavePayload {
   expected_revision: number
   size: number
+  row_bonus: number | null
+  column_bonus: number | null
   positions: Array<{ position: number; card_id: string; card_revision: number }>
 }
 

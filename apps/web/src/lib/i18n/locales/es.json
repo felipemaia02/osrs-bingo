@@ -48,8 +48,9 @@
       "progress": "Cada drop aceptado suma su valor de progreso a la casilla de tu equipo.",
       "completion": "Cuando el progreso del equipo alcanza el requisito, el equipo gana los puntos de la casilla una sola vez.",
       "excess": "El progreso por encima del requisito no da puntos extra.",
-      "bonuses": "Los bonos de fila, columna y especiales los definen las reglas del evento.",
-      "details": "Selecciona una casilla para ver los drops aceptados, valores de progreso y notas."
+      "details": "Selecciona una casilla para ver los drops aceptados, valores de progreso y notas.",
+      "lines": "Completar las {{size}} casillas de una fila da +{{row}} puntos; de una columna, +{{column}} puntos.",
+      "linesNotSet": "Los bonos de fila y columna aún no están definidos en este tablero."
     },
     "activeEvent": "Evento activo",
     "yourTeam": "Tu equipo",
@@ -191,7 +192,7 @@
       "invalidTransition": "Este evento no permite ese cambio de estado.",
       "notFound": "No se encontró el evento.",
       "boardRequired": "Completa y guarda todas las posiciones del tablero antes de activar el evento.",
-      "rulesRequired": "Define los bonos de fila y columna (Reglas) antes de activar el evento."
+      "rulesRequired": "Define los bonos de fila y columna en el constructor del tablero antes de activar el evento."
     },
     "publicEyebrow": "Eventos de la comunidad",
     "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción.",
@@ -207,14 +208,12 @@
     "durationDays_other": "{{count}} días",
     "rules": {
       "title": "Reglas · {{name}}",
-      "lines": "Bonos de fila y columna",
-      "row": "Por fila completa (puntos)",
-      "column": "Por columna completa (puntos)",
-      "linesHint": "Sin valor por defecto: cada evento define el suyo (0 está permitido). Una fila o columna cuenta cuando todas sus casillas están completas.",
-      "formula": "Puntuación oficial del equipo = casillas + filas + columnas. La contribución individual es una métrica aparte.",
       "editableUntil": "Editable hasta que se active el evento.",
       "save": "Guardar reglas",
-      "missing": "Faltan reglas"
+      "text": "Reglas del bingo",
+      "placeholder": "Escribe cómo funciona este bingo: fechas, qué cuenta, capturas, reglas de equipos…",
+      "hint": "Texto simple; se mantienen los saltos de línea. Los jugadores lo leen en la página de Eventos y en la ayuda del tablero.",
+      "section": "Reglas"
     }
   },
   "teams": {
@@ -471,11 +470,12 @@
       "dropsPlaceholder": "Nombre del drop | peso de progreso",
       "wikiArticle": "Artículo de OSRS Wiki",
       "resolveImage": "Buscar imagen",
-      "ruleNote": "Nota de regla o verificación",
       "changeReason": "Motivo de esta revisión",
       "fallbackImage": "Sin imagen: se usará el escudo por defecto.",
       "requiresPreverification": "Requiere preverificación",
-      "requiresPreverificationHint": "Los jugadores envían una captura inicial de esta carta (por ejemplo su kill count) antes de que se acepten sus drops."
+      "requiresPreverificationHint": "Los jugadores envían una captura inicial de esta carta antes de que se acepten sus drops. Describe abajo qué debe mostrar.",
+      "preverificationNote": "Instrucciones de la preverificación",
+      "preverificationNotePlaceholder": "p. ej. Haz una captura de tu KC de Theatre of Blood antes de tu primera raid del evento."
     },
     "feedback": {
       "created": "Tarjeta creada.",
@@ -621,6 +621,12 @@
       "shrinkConfirm": "Reducir y quitar",
       "shrinkConfirmation_one": "{{count}} carta está fuera del área {{size}}×{{size}} y se quitará del borrador: {{names}}. Nada se guarda hasta que guardes el tablero.",
       "shrinkConfirmation_other": "{{count}} cartas están fuera del área {{size}}×{{size}} y se quitarán del borrador: {{names}}. Nada se guarda hasta que guardes el tablero."
+    },
+    "bonuses": {
+      "row": "Bono de fila",
+      "column": "Bono de columna",
+      "required": "Ambos son obligatorios para activar",
+      "readOnly": "Fila +{{row}} · Columna +{{column}}"
     }
   },
   "brand": {
@@ -702,8 +708,7 @@
       "searchCard": "Buscar carta",
       "positionLabel": "Fila {{row}} · columna {{column}}",
       "noCards": "Ninguna carta coincide.",
-      "preverificationFirst": "{{card}} necesita una preverificación primero: envía una captura de tu punto de partida (por ejemplo tu kill count). Después podrás enviar sus drops.",
-      "preverificationAgain": "Tu preverificación de {{card}} fue rechazada. Envía una nueva captura de tu punto de partida.",
+      "preverificationFirst": "Envía una captura de tu punto de partida (por ejemplo tu kill count). Después podrás enviar sus drops.",
       "item": "Objeto que conseguiste en {{card}}",
       "gatePending": "Tu preverificación está pendiente: estos drops se aceptan solo después de ella.",
       "screenshot": "Captura (prueba)",
@@ -712,7 +717,9 @@
       "preview": "Vista previa de la captura",
       "note": "Nota (opcional)",
       "send": "Enviar",
-      "sendPreverification": "Enviar preverificación"
+      "sendPreverification": "Enviar preverificación",
+      "preverificationNeeded": "{{card}} necesita una preverificación primero",
+      "preverificationRejected": "Tu preverificación de {{card}} fue rechazada — envía una nueva"
     },
     "feedback": {
       "sent": "Enviado. Un administrador lo revisará.",
@@ -781,7 +788,8 @@
     },
     "oldestFirst": "Más antiguos primero",
     "empty": "Nada que revisar. 🎉",
-    "backToQueue": "Volver a la cola"
+    "backToQueue": "Volver a la cola",
+    "instructions": "Instrucciones"
   },
   "score": {
     "tileComplete": "Completa +{{points}}",

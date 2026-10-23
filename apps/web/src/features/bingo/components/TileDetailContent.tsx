@@ -129,7 +129,11 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
             })}
           </ul>
         </div>
-        {tile.ruleNote && <p className="m-0 text-xs text-rs-muted">{tile.ruleNote}</p>}
+        {tile.requiresPreverification && tile.ruleNote && (
+          <p className="m-0 rounded-[3px] border border-rs-info bg-rs-info-bg px-3 py-2 text-xs text-rs-info-banner-text">
+            <strong>{t('cards.preverification')}:</strong> {tile.ruleNote}
+          </p>
+        )}
         {tile.imageSourceUrl && (
           <a
             href={tile.imageSourceUrl}

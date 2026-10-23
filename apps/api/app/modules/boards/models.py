@@ -12,6 +12,8 @@ class BoardDocument(TypedDict, total=False):
     status: BoardStatus
     revision: int
     size: int
+    row_bonus: int | None
+    column_bonus: int | None
     positions: list[dict[str, Any]]
     created_by: str
     updated_by: str

@@ -6,7 +6,7 @@ const ERROR_TRANSLATION: Record<string, string> = {
   'Event status does not allow this transition': 'events.errors.invalidTransition',
   'Event not found': 'events.errors.notFound',
   'A complete valid board is required': 'events.errors.boardRequired',
-  'Set the row and column bonuses before activating': 'events.errors.rulesRequired',
+  'Set the row and column bonuses on the board before activating': 'events.errors.rulesRequired',
 }
 
 /** Translation key for an events API error. */

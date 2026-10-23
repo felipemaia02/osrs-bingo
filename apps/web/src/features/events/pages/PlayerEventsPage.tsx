@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { EventRegistration } from '../../teams/components/EventRegistration'
+import { EventRulesText } from '../components/EventRulesText'
 import { EventSchedule } from '../components/EventSchedule'
 import { EventStatusBadge } from '../components/EventStatusBadge'
 import { EVENT_PANEL_ID, EventTabs } from '../components/EventTabs'
@@ -81,6 +82,7 @@ export function PlayerEventsPage() {
                   {event.description && (
                     <p className="m-0 text-sm text-rs-muted">{event.description}</p>
                   )}
+                  {event.rules_text && <EventRulesText text={event.rules_text} />}
                   <EventRegistration event={event} />
                 </article>
               ))}

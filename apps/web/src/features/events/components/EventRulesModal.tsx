@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui/Button'
 import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { FormModal } from '../../../components/ui/FormModal'
-import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { eventErrorKey } from '../errors'
 import type { BingoEvent, EventRules } from '../types'
 
-const LINE_BONUS_MAX = 1000
+const RULES_TEXT_MAX_LENGTH = 5000
 
 interface EventRulesModalProps {
   event: BingoEvent
@@ -17,39 +16,21 @@ interface EventRulesModalProps {
   onClose: () => void
 }
 
-/** Row and column bonuses of one draft event (future-rules, without special bonuses). */
+/** The event's written rules (feature 019): plain text players read on Events and the board. */
 export function EventRulesModal({ event, saving, onSave, onClose }: EventRulesModalProps) {
   const { t } = useTranslation()
-  const [row, setRow] = useState(event.row_bonus?.toString() ?? '')
-  const [column, setColumn] = useState(event.column_bonus?.toString() ?? '')
+  const [text, setText] = useState(event.rules_text ?? '')
   const [errorKey, setErrorKey] = useState<string | null>(null)
 
   async function submit(submitEvent: FormEvent) {
     submitEvent.preventDefault()
     setErrorKey(null)
     try {
-      await onSave({ row_bonus: Number(row), column_bonus: Number(column) })
+      await onSave({ rules_text: text.trim() || null })
     } catch (error) {
       setErrorKey(eventErrorKey(error))
     }
   }
-
-  const field = (label: string, value: string, change: (value: string) => void) => (
-    <label className="flex flex-1 flex-col gap-1 text-[13px] font-semibold">
-      {label}
-      <input
-        required
-        type="number"
-        inputMode="numeric"
-        min={0}
-        max={LINE_BONUS_MAX}
-        step={1}
-        value={value}
-        onChange={(input) => change(input.target.value)}
-        className={`${FIELD_CLASS} font-normal`}
-      />
-    </label>
-  )
 
   return (
     <FormModal
@@ -57,18 +38,19 @@ export function EventRulesModal({ event, saving, onSave, onClose }: EventRulesMo
       busy={saving}
       onClose={onClose}
     >
-      <form onSubmit={(submitEvent) => void submit(submitEvent)} className="flex flex-col gap-4">
-        <h3 className="m-0 font-display text-base text-rs-gold-bright">
-          {t('events.rules.lines')}
-        </h3>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          {field(t('events.rules.row'), row, setRow)}
-          {field(t('events.rules.column'), column, setColumn)}
-        </div>
-        <p className="m-0 text-[13px] text-rs-muted">{t('events.rules.linesHint')}</p>
-        <InfoBanner>
-          <span className="text-[13px]">{t('events.rules.formula')}</span>
-        </InfoBanner>
+      <form onSubmit={(submitEvent) => void submit(submitEvent)} className="flex flex-col gap-3">
+        <label className="flex flex-col gap-1 text-[13px] font-semibold">
+          {t('events.rules.text')}
+          <textarea
+            rows={12}
+            maxLength={RULES_TEXT_MAX_LENGTH}
+            value={text}
+            onChange={(change) => setText(change.target.value)}
+            placeholder={t('events.rules.placeholder')}
+            className={`${FIELD_CLASS} resize-y py-2 font-normal`}
+          />
+        </label>
+        <p className="m-0 text-xs text-rs-muted">{t('events.rules.hint')}</p>
         {errorKey && (
           <p
             role="alert"

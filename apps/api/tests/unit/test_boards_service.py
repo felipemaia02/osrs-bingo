@@ -142,7 +142,7 @@ async def test_retired_card_already_on_draft_board_can_be_saved_again(
             }
         ]
     )
-    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, size: saved_board(
+    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, **_: saved_board(
         [position.model_dump(mode="python") for position in positions]
     )
     service = BoardService(boards, cards, events)
@@ -172,8 +172,7 @@ async def test_save_pins_exact_card_revision_values(
         positions: list[object],
         expected_revision: int,
         actor_id: str,
-        *,
-        size: int,
+        **_: object,
     ) -> BoardDocument:
         serialized = [position.model_dump(mode="python") for position in positions]
         return saved_board(serialized)
@@ -251,9 +250,9 @@ async def test_save_computes_row_and_column_from_board_size(
     repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
 ) -> None:
     boards, cards, events = repositories
-    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, size: {
+    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, **_: {
         **saved_board([position.model_dump(mode="python") for position in positions]),
-        "size": size,
+        "size": _["size"],
     }
     payload = BoardSave(
         expected_revision=0,
@@ -295,3 +294,24 @@ def test_board_without_size_is_six_by_six() -> None:
 
     assert is_publishable_board(legacy) is True
     assert BoardService._response(saved_board([])).size == 6
+
+
+async def test_save_stores_the_line_bonuses(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    boards.save_draft.side_effect = lambda event_id, positions, revision, actor, **settings: {
+        **saved_board([position.model_dump(mode="python") for position in positions]),
+        **settings,
+    }
+    payload = BoardSave(expected_revision=0, row_bonus=25, column_bonus=0, positions=[])
+
+    result = await BoardService(boards, cards, events).save(EVENT_ID, payload, ADMIN)
+
+    assert (result.row_bonus, result.column_bonus) == (25, 0)
+    assert boards.save_draft.await_args.kwargs["row_bonus"] == 25
+
+
+def test_line_bonuses_are_bounded() -> None:
+    with pytest.raises(ValidationError):
+        BoardSave(expected_revision=0, row_bonus=1001, positions=[])
