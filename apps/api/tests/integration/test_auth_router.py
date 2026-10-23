@@ -37,7 +37,8 @@ async def test_login_callback_and_logout_cookie_contract(
     assert response.status_code == 303
     assert response.headers["location"].startswith("https://discord.com/oauth2/authorize")
     cookie = response.headers["set-cookie"]
-    assert "HttpOnly" in cookie and "SameSite=lax" in cookie and "Path=/auth" in cookie
+    assert "HttpOnly" in cookie and "SameSite=lax" in cookie
+    assert "Path=/auth/discord/callback" in cookie
     response = await client.get("/auth/discord/callback?code=code&state=test")
     assert response.status_code == 303
     auth.complete_login.assert_awaited_once_with("code", "test", "test")
@@ -68,6 +69,22 @@ async def test_production_cookie_is_secure(
     monkeypatch.setattr(settings, "app_env", "production")
     response = await client.get("/auth/discord/login")
     assert "Secure" in response.headers["set-cookie"]
+
+
+async def test_state_cookie_follows_the_public_callback_path_behind_a_proxy(
+    client: AsyncClient, auth: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        settings,
+        "discord_redirect_uri",
+        "https://bingo.example/api/auth/discord/callback",
+    )
+    response = await client.get("/auth/discord/login")
+    assert "Path=/api/auth/discord/callback" in response.headers["set-cookie"]
+
+    response = await client.get("/auth/discord/callback?code=code&state=test")
+    cleared = [c for c in response.headers.get_list("set-cookie") if "osrs_oauth_state" in c]
+    assert cleared and "Path=/api/auth/discord/callback" in cleared[0]
 
 
 async def test_logout_rejects_untrusted_origin(client: AsyncClient, auth: AsyncMock) -> None:

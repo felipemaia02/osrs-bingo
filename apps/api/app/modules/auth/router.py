@@ -1,3 +1,5 @@
+from urllib.parse import urlsplit
+
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import RedirectResponse
 
@@ -17,6 +19,15 @@ from app.modules.security.dependencies import limit_authentication
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+def state_cookie_path() -> str:
+    """The public callback path, which includes any proxy prefix (``/api`` on Railway).
+
+    The browser only returns the OAuth state cookie on this path, so it must match the
+    URL the browser sees, not the path the API receives after the proxy strips the prefix.
+    """
+    return urlsplit(settings.discord_redirect_uri).path or "/auth/discord/callback"
+
+
 def set_auth_cookie(response: Response, key: str, value: str, max_age: int) -> None:
     response.set_cookie(
         key,
@@ -25,7 +36,7 @@ def set_auth_cookie(response: Response, key: str, value: str, max_age: int) -> N
         httponly=True,
         secure=settings.app_env != "development",
         samesite="lax",
-        path="/auth" if key == STATE_COOKIE else "/",
+        path=state_cookie_path() if key == STATE_COOKIE else "/",
     )
 
 
@@ -65,7 +76,7 @@ async def callback(
         await service.logout(request.cookies.get(SESSION_COOKIE))
         response = RedirectResponse(f"{settings.frontend_url.rstrip('/')}/login", 303)
         set_auth_cookie(response, SESSION_COOKIE, token, SESSION_MAX_AGE)
-    response.delete_cookie(STATE_COOKIE, path="/auth")
+    response.delete_cookie(STATE_COOKIE, path=state_cookie_path())
     response.headers["Cache-Control"] = "no-store"
     response.headers["Referrer-Policy"] = "no-referrer"
     return response
