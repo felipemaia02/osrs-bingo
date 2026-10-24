@@ -302,6 +302,30 @@ describe('Drop review', () => {
     expect(await screen.findByText('Submission accepted.')).toBeInTheDocument()
   })
 
+  it('marks DropTracker drops and handles drops without an image', async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [
+        reviewItem({
+          id: 'auto-1',
+          source: 'droptracker',
+          has_screenshot: false,
+          note: 'Automatic · Alchemical Hydra · x1 · 2026-10-24 20:38 UTC',
+        }),
+      ],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(within(detail).getByText('DropTracker')).toBeInTheDocument()
+    expect(within(detail).getByText('No screenshot from DropTracker')).toBeInTheDocument()
+    expect(within(detail).getByRole('button', { name: /Accept/ })).toBeEnabled()
+    expect(screen.getByRole('list', { name: 'Pending submissions' })).toHaveTextContent('DropTracker')
+  })
+
   it("doesn't let admins review their own team", async () => {
     vi.mocked(fetchReviewQueue).mockResolvedValue({
       items: [reviewItem({ id: 'own-1', own_team: true })],

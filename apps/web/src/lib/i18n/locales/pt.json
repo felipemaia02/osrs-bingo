@@ -840,7 +840,11 @@
       "storage": "Não foi possível salvar o screenshot agora. Tente de novo em instantes.",
       "cardRequired": "Escolha um card.",
       "screenshotRequired": "Anexe um screenshot."
-    }
+    },
+    "source": {
+      "droptracker": "DropTracker"
+    },
+    "noDropTrackerImage": "Sem screenshot do DropTracker"
   },
   "review": {
     "title": "Revisão de drops",

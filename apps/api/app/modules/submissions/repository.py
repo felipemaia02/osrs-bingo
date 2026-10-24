@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, cast
 
 from bson import ObjectId
@@ -28,6 +28,31 @@ class SubmissionRepository:
         except DuplicateKeyError:
             return False
         return True
+
+    async def has_recent_manual_drop(
+        self,
+        event_id: ObjectId,
+        player_id: ObjectId,
+        position: int,
+        drop_key: str,
+        around: datetime,
+        window: timedelta,
+    ) -> bool:
+        """A manual, pending or accepted submission of this item on this card near `around`."""
+        found = await self._collection.find_one(
+            {
+                "event_id": event_id,
+                "player_id": player_id,
+                "position": position,
+                "drop_key": drop_key,
+                "kind": SubmissionKind.DROP,
+                "source": {"$ne": "droptracker"},
+                "status": {"$in": [SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED]},
+                "submitted_at": {"$gte": around - window, "$lte": around + window},
+            },
+            {"_id": 1},
+        )
+        return found is not None
 
     async def get(self, submission_id: str) -> SubmissionDocument | None:
         object_id = self._object_id(submission_id)

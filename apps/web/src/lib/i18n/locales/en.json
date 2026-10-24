@@ -840,7 +840,11 @@
       "storage": "Screenshots can't be saved right now. Try again in a moment.",
       "cardRequired": "Choose a card.",
       "screenshotRequired": "Attach a screenshot."
-    }
+    },
+    "source": {
+      "droptracker": "DropTracker"
+    },
+    "noDropTrackerImage": "No screenshot from DropTracker"
   },
   "review": {
     "title": "Drop review",

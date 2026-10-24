@@ -248,6 +248,17 @@ class PlayerRepository:
         )
         return builtin_list(ids)
 
+    async def approved_with_team(self, event_id: str) -> builtin_list[PlayerDocument]:
+        """Registrations that can score: approved and on a team (feature 030)."""
+        cursor = self._collection.find(
+            {
+                "event_id": self._object_id(event_id),
+                "status": RegistrationStatus.APPROVED,
+                "team_id": {"$ne": None},
+            }
+        )
+        return [cast(PlayerDocument, document) async for document in cursor]
+
     async def captains(self, event_id: str) -> builtin_list[RosterDocument]:
         """Approved captains with their profile experience (feature 024)."""
         pipeline: builtin_list[dict[str, Any]] = [

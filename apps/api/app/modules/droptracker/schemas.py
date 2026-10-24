@@ -17,6 +17,8 @@ class DropTrackerStatus(BaseModel):
     newest_received_at: datetime | None
     last_added: int | None
     stored_drops: int
+    # Phase 2 (feature 030): how processed drops ended up.
+    bingo_outcomes: dict[str, int] = Field(default_factory=dict)
 
 
 class DropRecord(BaseModel):

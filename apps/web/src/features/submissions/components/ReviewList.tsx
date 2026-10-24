@@ -2,6 +2,7 @@ import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined'
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
+import { SourceBadge } from './SubmissionParts'
 import { TeamEmblem } from '../../teams/components/TeamEmblem'
 import { useSubmissionTime } from '../hooks/useSubmissionTime'
 import type { ReviewItem } from '../types'
@@ -47,7 +48,8 @@ export function ReviewList({ items, selectedId, onSelect }: ReviewListProps) {
                 />
                 {item.player_name}
               </span>
-              <span>
+              <span className="flex flex-wrap gap-1">
+                <SourceBadge submission={item} />
                 <Badge tone={preverification ? 'info' : 'gold'}>
                   <Icon sx={{ fontSize: 13 }} aria-hidden="true" />
                   {preverification

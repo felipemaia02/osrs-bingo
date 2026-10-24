@@ -16,7 +16,7 @@ import {
   type RejectionReason,
   type ReviewItem,
 } from '../types'
-import { Screenshot, SubmissionStatusBadge } from './SubmissionParts'
+import { Screenshot, SourceBadge, SubmissionStatusBadge } from './SubmissionParts'
 
 interface ReviewDetailProps {
   item: ReviewItem
@@ -61,9 +61,12 @@ export function ReviewDetail({
     >
       <div className="flex items-center justify-between gap-3 border-b border-rs-border px-4 py-3">
         <div className="min-w-0">
-          <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold">
-            {t('review.position', { index: index + 1, total })}
-            {preverification ? ` · ${t('submissions.kind.preverification')}` : ''}
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold">
+              {t('review.position', { index: index + 1, total })}
+              {preverification ? ` · ${t('submissions.kind.preverification')}` : ''}
+            </span>
+            <SourceBadge submission={item} />
           </span>
           <h2 className="m-0 mt-0.5 truncate font-display text-[21px] text-rs-gold-bright">
             {preverification ? t('review.initialScreenshot') : item.drop_name} — {item.player_name}

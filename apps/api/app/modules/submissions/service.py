@@ -27,6 +27,7 @@ from app.modules.submissions.schemas import (
     SubmissionKind,
     SubmissionReject,
     SubmissionResponse,
+    SubmissionSource,
     SubmissionStatus,
 )
 from app.modules.teams.repository import TeamRepository
@@ -233,6 +234,11 @@ class SubmissionService:
         document = await self._submissions.get(submission_id)
         if document is None or (not user.is_admin and str(document["user_id"]) != user.id):
             raise NotFoundError("Submission")
+        if document.get("source") == SubmissionSource.DROPTRACKER:
+            # DropTracker hosts the image; some drops arrive without one.
+            if not document.get("screenshot_url"):
+                raise NotFoundError("Screenshot")
+            return document["screenshot_url"], None, document["screenshot_type"]
         url = await self._storage.signed_url(document["screenshot_key"])
         if url is not None:
             return url, None, document["screenshot_type"]
@@ -345,4 +351,6 @@ class SubmissionService:
             reviewer_name=document.get("reviewer_name"),
             rejection_reason=document.get("rejection_reason"),
             rejection_note=document.get("rejection_note"),
+            source=SubmissionSource(document.get("source", SubmissionSource.MANUAL)),
+            has_screenshot=bool(document.get("screenshot_key") or document.get("screenshot_url")),
         )

@@ -19,22 +19,27 @@ from app.database.mongodb import DatabaseClient
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.router import router as administration_router
 from app.modules.auth.router import router as auth_router
+from app.modules.boards.repository import BoardRepository
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
+from app.modules.droptracker.bingo import DropTrackerBingo
 from app.modules.droptracker.client import DropTrackerClient
 from app.modules.droptracker.poller import DropTrackerPoller
 from app.modules.droptracker.repository import DropRepository
 from app.modules.droptracker.router import router as droptracker_router
 from app.modules.droptracker.service import DropTrackerService
+from app.modules.events.repository import EventRepository
 from app.modules.events.router import router as events_router
 from app.modules.maintenance.gate import maintenance_gate
 from app.modules.maintenance.router import router as maintenance_router
+from app.modules.players.repository import PlayerRepository
 from app.modules.players.router import router as players_router
 from app.modules.profiles.router import router as profile_router
 from app.modules.profiles.wom import WomClient
 from app.modules.scoring.router import admin_router as admin_scoring_router
 from app.modules.scoring.router import player_router as scoring_router
 from app.modules.security.middleware import RequestSafetyMiddleware
+from app.modules.submissions.repository import SubmissionRepository
 from app.modules.submissions.router import (
     MULTIPART_OVERHEAD_BYTES,
     UPLOAD_PATH_PATTERN,
@@ -58,7 +63,18 @@ def start_droptracker(database: Any) -> DropTrackerPoller | None:
         return None
     drops = DropRepository(database)
     service = DropTrackerService(drops, DropTrackerClient(settings), settings)
-    poller = DropTrackerPoller(service, drops, settings)
+    bingo = (
+        DropTrackerBingo(
+            drops,
+            EventRepository(database),
+            PlayerRepository(database),
+            BoardRepository(database),
+            SubmissionRepository(database),
+        )
+        if settings.droptracker_bingo_enabled
+        else None
+    )
+    poller = DropTrackerPoller(service, drops, settings, bingo)
     poller.start()
     return poller
 

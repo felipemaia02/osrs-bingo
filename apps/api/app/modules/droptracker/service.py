@@ -72,6 +72,7 @@ class DropTrackerService:
             newest_received_at=self._utc(state.get("newest_received_at")),
             last_added=state.get("last_added"),
             stored_drops=await self._drops.count(),
+            bingo_outcomes=await self._drops.outcome_counts(),
         )
 
     async def drops(self, query: DropQuery) -> DropPage:

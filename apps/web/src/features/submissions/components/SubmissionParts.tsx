@@ -1,3 +1,4 @@
+import SyncOutlinedIcon from '@mui/icons-material/SyncOutlined'
 import { useState } from 'react'
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
@@ -30,6 +31,18 @@ export function SubmissionStatusBadge({ status }: { status: SubmissionStatus }) 
   )
 }
 
+/** Marks drops that came from DropTracker instead of a manual screenshot (feature 030). */
+export function SourceBadge({ submission }: { submission: Submission }) {
+  const { t } = useTranslation()
+  if (submission.source !== 'droptracker') return null
+  return (
+    <Badge tone="info">
+      <SyncOutlinedIcon sx={{ fontSize: 13 }} aria-hidden="true" />
+      {t('submissions.source.droptracker')}
+    </Badge>
+  )
+}
+
 /** The screenshot from the API (owner or administrator only); opens the original on click. */
 export function Screenshot({
   submission,
@@ -41,6 +54,15 @@ export function Screenshot({
   const { t } = useTranslation()
   const [failed, setFailed] = useState(false)
   const url = screenshotUrl(submission.id)
+  if (submission.has_screenshot === false)
+    return (
+      <span
+        className={`flex flex-col items-center justify-center gap-1 rounded-[3px] border border-rs-border bg-rs-inset text-xs text-rs-muted ${className}`}
+      >
+        <ImageOutlinedIcon aria-hidden="true" />
+        {t('submissions.noDropTrackerImage')}
+      </span>
+    )
   return (
     <a
       href={url}

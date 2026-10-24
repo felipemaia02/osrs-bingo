@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useSubmissionTime } from '../hooks/useSubmissionTime'
 import { useSubmissionTitle } from '../hooks/useSubmissionTitle'
 import type { Submission } from '../types'
-import { SubmissionStatusBadge } from './SubmissionParts'
+import { SourceBadge, SubmissionStatusBadge } from './SubmissionParts'
 import { screenshotUrl } from '../api/submissionsApi'
 
 /** One of the player's own submissions (future-my-submissions card). */
@@ -37,7 +37,10 @@ export function SubmissionCard({ submission }: { submission: Submission }) {
     >
       <div className="flex items-start justify-between gap-2">
         <strong className="min-w-0 break-words">{title(submission)}</strong>
-        <SubmissionStatusBadge status={submission.status} />
+        <span className="flex shrink-0 flex-wrap justify-end gap-1">
+          <SourceBadge submission={submission} />
+          <SubmissionStatusBadge status={submission.status} />
+        </span>
       </div>
       <span className="text-xs text-rs-muted">{meta}</span>
       {isPreverification && submission.status === 'pending' && (
@@ -52,14 +55,16 @@ export function SubmissionCard({ submission }: { submission: Submission }) {
         </span>
       )}
       {submission.note && <span className="text-xs text-rs-muted">“{submission.note}”</span>}
-      <a
-        href={screenshotUrl(submission.id)}
-        target="_blank"
-        rel="noreferrer"
-        className="self-start text-xs text-rs-gold-bright hover:text-rs-gold-hover"
-      >
-        {t('submissions.viewScreenshot')}
-      </a>
+      {submission.has_screenshot !== false && (
+        <a
+          href={screenshotUrl(submission.id)}
+          target="_blank"
+          rel="noreferrer"
+          className="self-start text-xs text-rs-gold-bright hover:text-rs-gold-hover"
+        >
+          {t('submissions.viewScreenshot')}
+        </a>
+      )}
     </article>
   )
 }

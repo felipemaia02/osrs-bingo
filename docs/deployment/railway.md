@@ -90,9 +90,9 @@ DropTracker drop ingestion (feature 029), optional on **api**:
 | `DROPTRACKER_INGEST_ENABLED` | `true` starts pulling the clan's drops; `false` (default) makes no request |
 | `DROPTRACKER_POLL_SECONDS` | Seconds between polls; default `300` (5 minutes), minimum `30` |
 | `DROPTRACKER_RETENTION_DAYS` | Days raw drops are kept; default `30` |
-| `DROPTRACKER_BINGO_ENABLED` | Reserved for phase 2 (counting drops toward the bingo); leave `false` |
+| `DROPTRACKER_BINGO_ENABLED` | `true` turns drops of active-event players into **pending** submissions in the review queue (feature 030); needs ingestion on |
 
-Admins check what arrived at `/api/admin/droptracker/status` and `/api/admin/droptracker/drops` (filters `player`, `npc`, `item`, `min_value`). Phase 1 never changes events, submissions or scores. Only one API instance polls at a time.
+Admins check what arrived at `/api/admin/droptracker/status` and `/api/admin/droptracker/drops` (filters `player`, `npc`, `item`, `min_value`). With only ingestion on, nothing in events, submissions or scores changes. With the bingo flag on, each new drop is checked once: the bingo account (RSN chosen when joining) of an approved player with a team, an item a board card accepts, inside the event window. It becomes a Pending submission marked "DropTracker" (never auto-accepted), unless the player sent the same item manually on that card within 24 h. Only one API instance polls at a time.
 
 **web**
 

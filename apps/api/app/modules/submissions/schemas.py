@@ -39,6 +39,11 @@ class SubmissionReject(BaseModel):
         return self
 
 
+class SubmissionSource(StrEnum):
+    MANUAL = "manual"
+    DROPTRACKER = "droptracker"
+
+
 class SubmissionResponse(BaseModel):
     id: str
     event_id: str
@@ -62,6 +67,8 @@ class SubmissionResponse(BaseModel):
     reviewer_name: str | None
     rejection_reason: RejectionReason | None
     rejection_note: str | None
+    source: SubmissionSource = SubmissionSource.MANUAL
+    has_screenshot: bool = True
 
 
 class SubmissionCounts(BaseModel):

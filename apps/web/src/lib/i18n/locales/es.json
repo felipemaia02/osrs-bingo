@@ -840,7 +840,11 @@
       "storage": "No se pudo guardar la captura ahora. Inténtalo de nuevo en un momento.",
       "cardRequired": "Elige una carta.",
       "screenshotRequired": "Adjunta una captura."
-    }
+    },
+    "source": {
+      "droptracker": "DropTracker"
+    },
+    "noDropTrackerImage": "Sin captura de DropTracker"
   },
   "review": {
     "title": "Revisión de drops",

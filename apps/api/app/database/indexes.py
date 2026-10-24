@@ -120,6 +120,21 @@ class IndexManager:
         ),
         (
             "submissions",
+            [("droptracker_drop_id", 1), ("position", 1)],
+            {
+                # One automatic submission per DropTracker drop and card (feature 030).
+                "name": "submissions_droptracker_drop_unique",
+                "unique": True,
+                "partialFilterExpression": {"droptracker_drop_id": {"$exists": True}},
+            },
+        ),
+        (
+            "droptracker_drops",
+            [("bingo_outcome", 1), ("received_at", 1)],
+            {"name": "droptracker_drops_bingo_pending"},
+        ),
+        (
+            "submissions",
             [("preverification_gate", 1)],
             {
                 "name": "submissions_preverification_gate_unique",

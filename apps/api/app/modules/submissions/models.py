@@ -36,3 +36,8 @@ class SubmissionDocument(TypedDict):
     # Present only while a pre-verification is pending or accepted (unique per
     # event, player and position), so a rejected one can be sent again.
     preverification_gate: NotRequired[str]
+    # Automatic drops from DropTracker (feature 030): no stored screenshot, the
+    # DropTracker image instead, and the drop id (unique per board position).
+    source: NotRequired[str]
+    droptracker_drop_id: NotRequired[int]
+    screenshot_url: NotRequired[str | None]

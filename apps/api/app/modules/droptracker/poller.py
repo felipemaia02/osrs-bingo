@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from app.core.config import Settings
 from app.core.logging import get_logger, log_event
+from app.modules.droptracker.bingo import DropTrackerBingo
 from app.modules.droptracker.client import DropTrackerError
 from app.modules.droptracker.repository import DropRepository
 from app.modules.droptracker.service import DropTrackerService
@@ -16,9 +17,17 @@ LEASE_FACTOR = 2
 
 
 class DropTrackerPoller:
-    def __init__(self, service: DropTrackerService, drops: DropRepository, settings: Settings):
+    def __init__(
+        self,
+        service: DropTrackerService,
+        drops: DropRepository,
+        settings: Settings,
+        bingo: DropTrackerBingo | None = None,
+    ):
         self._service = service
         self._drops = drops
+        # Phase 2: only when DROPTRACKER_BINGO_ENABLED (feature 030).
+        self._bingo = bingo
         self._interval = settings.droptracker_poll_seconds
         self._owner = uuid4().hex
         self._task: asyncio.Task[None] | None = None
@@ -43,6 +52,9 @@ class DropTrackerPoller:
                 if await self._drops.acquire_lease(self._owner, lease):
                     added = await self._service.poll_once()
                     log_event(logger, 20, "droptracker_poll_succeeded", added=added)
+                    if self._bingo is not None:
+                        outcomes = await self._bingo.process()
+                        log_event(logger, 20, "droptracker_bingo_processed", **outcomes)
             except DropTrackerError as exc:
                 # The message never contains the key (it travels only in a header).
                 log_event(logger, 30, "droptracker_poll_failed", status=exc.status, error=str(exc))

@@ -33,6 +33,10 @@ export interface Submission {
   reviewer_name: string | null
   rejection_reason: RejectionReason | null
   rejection_note: string | null
+  /** "droptracker" for drops pulled automatically from DropTracker (feature 030). */
+  source?: 'manual' | 'droptracker'
+  /** DropTracker drops can arrive without an image. */
+  has_screenshot?: boolean
 }
 
 export interface SubmissionCounts {

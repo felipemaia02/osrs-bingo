@@ -40,6 +40,34 @@ class DropRepository:
         )
         return [document async for document in cursor], int(total)
 
+    async def unprocessed(self, limit: int) -> list[dict[str, Any]]:
+        """Drops the bingo hasn't looked at yet (feature 030), oldest first."""
+        cursor = (
+            self._drops.find({"bingo_outcome": {"$exists": False}})
+            .sort([("received_at", 1), ("drop_id", 1)])
+            .limit(limit)
+        )
+        return [document async for document in cursor]
+
+    async def mark(self, drop_id: int, outcome: str, event_id: Any) -> None:
+        await self._drops.update_one(
+            {"drop_id": drop_id},
+            {
+                "$set": {
+                    "bingo_outcome": outcome,
+                    "bingo_event_id": event_id,
+                    "bingo_processed_at": datetime.now(UTC),
+                }
+            },
+        )
+
+    async def outcome_counts(self) -> dict[str, int]:
+        pipeline: list[dict[str, Any]] = [
+            {"$match": {"bingo_outcome": {"$exists": True}}},
+            {"$group": {"_id": "$bingo_outcome", "count": {"$sum": 1}}},
+        ]
+        return {row["_id"]: row["count"] async for row in self._drops.aggregate(pipeline)}
+
     async def count(self) -> int:
         return int(await self._drops.estimated_document_count())
 
