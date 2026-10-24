@@ -80,8 +80,12 @@ class LocalScreenshotStorage:
 
     async def put(self, key: str, data: bytes, content_type: str) -> None:
         path = self._path(key)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        await run_in_threadpool(path.write_bytes, data)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            await run_in_threadpool(path.write_bytes, data)
+        except OSError as exc:
+            # e.g. a read-only container when the bucket variables are missing.
+            raise AppException(503, STORAGE_UNAVAILABLE_DETAIL) from exc
 
     async def signed_url(self, key: str) -> str | None:
         return None

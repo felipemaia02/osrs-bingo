@@ -289,3 +289,14 @@ async def test_screenshots_are_only_visible_to_their_owner_and_admins(
         await deps["service"].screenshot("id", stranger)
     assert await deps["service"].screenshot("id", USER) == (None, PNG, "image/png")
     assert (await deps["service"].screenshot("id", ADMIN))[1] == PNG
+
+
+async def test_unwritable_local_storage_reports_storage_unavailable(tmp_path: Path) -> None:
+    blocked = tmp_path / "blocked"
+    blocked.write_text("a file, not a folder")
+    storage = LocalScreenshotStorage(blocked)
+
+    with pytest.raises(AppException) as error:
+        await storage.put("events/e/submissions/s.png", b"png", "image/png")
+
+    assert error.value.status_code == 503
