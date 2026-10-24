@@ -168,7 +168,10 @@
       "name": "Nome",
       "description": "Descrição",
       "start": "Data e hora de início",
-      "end": "Data e hora de término"
+      "end": "Data e hora de término",
+      "buyIn": "Buy-in",
+      "buyInPlaceholder": "ex.: 5M gp",
+      "buyInHint": "Opcional. Aparece quando os jogadores entram; os admins registram os pagamentos."
     },
     "schedule": {
       "title": "Período do evento",
@@ -233,7 +236,6 @@
     "teams": "Times",
     "players": "Inscrições no evento",
     "teamName": "Nome do time",
-    "playerName": "Nome de exibição do OSRS",
     "selectTeam": "Selecione um time",
     "create": "Criar",
     "description": "Aprove pedidos e distribua os jogadores aprovados entre os times.",
@@ -356,9 +358,7 @@
   },
   "registration": {
     "loginToRegister": "Entre com Discord para se inscrever",
-    "formFor": "Inscrever-se em {{name}}",
     "approvalHint": "Sua solicitação será analisada por um administrador.",
-    "request": "Solicitar inscrição",
     "status": {
       "pending": "Inscrição aguardando aprovação",
       "approved": "Inscrição aprovada",
@@ -369,6 +369,13 @@
       "pending": "Pendente",
       "approved": "Aprovada",
       "removed": "Removida"
+    },
+    "join": "Entrar no evento",
+    "joinFor": "Entrar em {{name}}",
+    "playingAs": "Jogando com",
+    "buyIn": {
+      "pending": "Buy-in ainda não pago",
+      "paid": "Buy-in pago"
     }
   },
   "admin": {
@@ -956,6 +963,105 @@
       "ranged": "Distância",
       "prayer": "Oração",
       "magic": "Magia"
+    }
+  },
+  "join": {
+    "eyebrow": "Entrar no evento",
+    "open": "inscrições abertas",
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "nextNeedAccount": "Próximo · escolha uma conta",
+    "nextNeedAgreements": "Próximo · confirme os 3",
+    "progress": "Passo {{step}} de {{total}}",
+    "backToEvents": "Voltar aos eventos",
+    "changeIn": "altere em",
+    "timezone": "Fuso horário:",
+    "sent": "Pedido enviado para {{name}} — aguardando um admin.",
+    "blocked": {
+      "login": "Entre com o Discord para participar de um evento.",
+      "notFound": "Este evento não existe.",
+      "closed": "As inscrições deste evento estão encerradas.",
+      "registered": "Você já pediu para entrar neste evento."
+    },
+    "account": {
+      "title": "Com qual conta você vai jogar?",
+      "group": "Conta do bingo",
+      "manage": "Gerenciar contas em Meu perfil",
+      "main": "Main",
+      "alt": "Alt",
+      "wom": "Wise Old Man",
+      "stats": "EHB {{ehb}} · KC de bosses {{kc}} · Total {{total}}",
+      "othersCount": "Suas outras contas continuam contando para sua experiência no equilíbrio dos times.",
+      "none": "Adicione primeiro uma conta encontrada no Wise Old Man em Meu perfil.",
+      "foundSummary": "encontrada no Wise Old Man"
+    },
+    "availability": {
+      "title": "Disponibilidade e companheiros"
+    },
+    "activity": {
+      "label": "Atividade esperada durante este evento",
+      "fromProfile": "(do seu perfil)",
+      "options": {
+        "under_1h": "Menos de 1 h/dia",
+        "one_to_three_h": "1 a 3 h/dia",
+        "over_3h": "Mais de 3 h/dia"
+      },
+      "short": {
+        "under_1h": "<1 h/dia",
+        "one_to_three_h": "1–3 h/dia",
+        "over_3h": ">3 h/dia"
+      }
+    },
+    "teammates": {
+      "label": "Com quem você gostaria de jogar?",
+      "count": "Até {{max}} membros do clã · {{count}} de {{max}}",
+      "placeholder": "Busque pelo nome do Discord ou RSN",
+      "full": "3 de 3 escolhidos",
+      "results": "Membros do clã",
+      "remove": "Remover {{name}}",
+      "onDiscord": "{{name}} no Discord",
+      "enter": "Enter para adicionar",
+      "none": "Nenhum membro do clã encontrado.",
+      "hint": "É uma preferência, não uma garantia — admins e capitães equilibram os times."
+    },
+    "rules": {
+      "title": "Como o bingo funciona",
+      "event": "Regras do evento",
+      "confirm": "Para continuar, confirme que:",
+      "confirmed": "Regras confirmadas",
+      "yourAccount": "sua conta",
+      "summary": {
+        "board": "Todos os times jogam o mesmo board. Ele fica congelado quando o evento começa.",
+        "progress": "Cada drop aceito adiciona <b>progresso</b> a um card. O card vale seus pontos uma vez, quando o progresso atinge o requisito.",
+        "screenshots": "Você envia seus drops com uma screenshot, e um admin revisa.",
+        "teams": "Os admins definem os times. Você só vê o progresso do seu time.",
+        "buyIn": "O buy-in é pago a um admin, que registra o pagamento."
+      },
+      "agreements": {
+        "rules": "Li as regras do bingo acima.",
+        "dropAccount": "Só drops de <b>{{rsn}}</b> durante o período do evento vão contar para mim.",
+        "team": "Aceito o time em que os admins me colocarem."
+      }
+    },
+    "buyIn": {
+      "title": "Buy-in e envio",
+      "amount": "Buy-in: <b>{{amount}}</b>. Pague a qualquer admin no jogo; ele marca como recebido aqui.",
+      "none": "Este evento não tem buy-in.",
+      "notPaid": "Ainda não pago",
+      "summary": "Buy-in: ainda não pago"
+    },
+    "send": {
+      "button": "Pedir para entrar",
+      "needAccount": "Escolha uma conta no passo 1 primeiro.",
+      "needAgreements": "Confirme os 3 itens do passo 3 primeiro.",
+      "pending": "Seu pedido fica <b>Pendente</b> até um admin aprovar."
+    },
+    "errors": {
+      "account": "Escolha uma conta do seu perfil.",
+      "accountNotOnWom": "Esta conta não foi encontrada no Wise Old Man. Atualize em Meu perfil.",
+      "teammateSelf": "Você não pode escolher a si mesmo.",
+      "teammateUnknown": "Um dos companheiros não foi encontrado. Remova e escolha de novo."
     }
   }
 }

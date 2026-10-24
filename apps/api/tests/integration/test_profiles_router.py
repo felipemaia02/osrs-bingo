@@ -82,3 +82,13 @@ async def test_requires_a_signed_in_user(client: AsyncClient, profiles: AsyncMoc
 
     assert (await client.get("/profile/me")).status_code == 401
     profiles.get.assert_not_awaited()
+
+
+async def test_member_search_needs_two_characters(client: AsyncClient, profiles: AsyncMock) -> None:
+    profiles.members.return_value = []
+
+    assert (await client.get("/profile/members", params={"search": "m"})).status_code == 422
+    found = await client.get("/profile/members", params={"search": "mo"})
+
+    assert found.status_code == 200 and found.json() == []
+    assert profiles.members.await_args.args[1] == "mo"

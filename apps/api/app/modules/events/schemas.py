@@ -10,11 +10,16 @@ class EventStatus(StrEnum):
     FINISHED = "finished"
 
 
+BUY_IN_MAX_LENGTH = 80
+
+
 class EventFields(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=2000)
     start_at: datetime
     end_at: datetime
+    # Free text such as "5M gp" (feature 022); None means no buy-in.
+    buy_in: str | None = Field(default=None, max_length=BUY_IN_MAX_LENGTH)
 
     @field_validator("name")
     @classmethod
@@ -24,9 +29,9 @@ class EventFields(BaseModel):
             raise ValueError("Event name must contain visible content")
         return stripped
 
-    @field_validator("description")
+    @field_validator("description", "buy_in")
     @classmethod
-    def normalize_description(cls, value: str | None) -> str | None:
+    def strip_optional_text(cls, value: str | None) -> str | None:
         if value is None:
             return None
         stripped = value.strip()
@@ -84,6 +89,7 @@ class EventResponse(BaseModel):
     end_at: datetime
     status: EventStatus
     rules_text: str | None = None
+    buy_in: str | None = None
     created_at: datetime
     updated_at: datetime
 

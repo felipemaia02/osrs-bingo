@@ -12,6 +12,7 @@ import { RankingPage } from '../../features/scoring/pages/RankingPage'
 import { BoardBuilderPage } from '../../features/boards/pages/BoardBuilderPage'
 import { CardCatalogPage } from '../../features/cards/pages/CardCatalogPage'
 import { MySubmissionsPage } from '../../features/submissions/pages/MySubmissionsPage'
+import { JoinEventPage } from '../../features/join/pages/JoinEventPage'
 import { ProfilePage } from '../../features/profiles/pages/ProfilePage'
 import { ReviewPage } from '../../features/submissions/pages/ReviewPage'
 
@@ -21,6 +22,7 @@ export function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/events" element={<PlayerEventsPage />} />
+      <Route path="/events/:eventId/join" element={<JoinEventPage />} />
       <Route path="/submissions" element={<MySubmissionsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/teams" element={<Navigate to="/admin/teams" replace />} />

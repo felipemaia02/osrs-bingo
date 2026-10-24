@@ -12,8 +12,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
-from app.modules.players.models import PlayerDocument
-from app.modules.players.schemas import PlayerCreate, PlayerUpdate, RegistrationStatus
+from app.modules.players.models import NewRegistration, PlayerDocument
+from app.modules.players.schemas import BuyInStatus, PlayerUpdate, RegistrationStatus
 
 PLAYERS_COLLECTION = "players"
 USERS_COLLECTION = "users"
@@ -24,7 +24,7 @@ class PlayerRepository:
         self._collection = database[PLAYERS_COLLECTION]
 
     async def create(
-        self, event_id: str, payload: PlayerCreate, user_id: str
+        self, event_id: str, registration: NewRegistration, user_id: str
     ) -> PlayerDocument | None:
         event_object_id = self._object_id(event_id)
         user_object_id = self._object_id(user_id)
@@ -37,8 +37,13 @@ class PlayerRepository:
             "team_id": None,
             "user_id": user_object_id,
             "status": RegistrationStatus.PENDING,
-            "display_name": payload.display_name,
-            "normalized_display_name": self._normalize(payload.display_name),
+            "display_name": registration.display_name,
+            "normalized_display_name": self._normalize(registration.display_name),
+            "account_id": registration.account_id,
+            "activity": registration.activity,
+            "teammate_ids": [ObjectId(item) for item in registration.teammate_ids],
+            "agreements_accepted_at": now,
+            "buy_in": {"status": BuyInStatus.PENDING, "admin_id": None, "updated_at": now},
             "created_at": now,
             "updated_at": now,
         }

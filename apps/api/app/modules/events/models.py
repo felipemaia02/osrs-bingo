@@ -17,3 +17,4 @@ class EventDocument(TypedDict):
     updated_at: datetime
     active_slot: NotRequired[int]
     rules_text: NotRequired[str | None]
+    buy_in: NotRequired[str | None]

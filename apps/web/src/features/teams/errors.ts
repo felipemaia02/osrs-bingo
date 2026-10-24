@@ -15,6 +15,10 @@ const ERROR_TRANSLATION: Record<string, string> = {
   'Event not found': 'events.errors.notFound',
   'Player not found': 'teams.errors.playerNotFound',
   'Team not found': 'teams.errors.teamNotFound',
+  'Choose an account from your profile': 'join.errors.account',
+  "This account isn't found on Wise Old Man": 'join.errors.accountNotOnWom',
+  "You can't pick yourself as a teammate": 'join.errors.teammateSelf',
+  'Preferred teammate not found': 'join.errors.teammateUnknown',
 }
 
 export function teamErrorKey(error: unknown): string {

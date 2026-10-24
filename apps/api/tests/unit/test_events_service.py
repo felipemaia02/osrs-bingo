@@ -177,3 +177,24 @@ async def test_rules_are_editable_only_while_draft(
 
 def test_empty_rules_text_is_stored_as_none() -> None:
     assert EventRules(rules_text=" \n ").rules_text is None
+
+
+async def test_buy_in_is_optional_text_returned_with_the_event(
+    repository: AsyncMock, service: EventService
+) -> None:
+    payload = EventUpdate(
+        name="Summer Bingo", start_at=NOW, end_at=NOW + timedelta(days=7), buy_in="  5M gp "
+    )
+    repository.get.return_value = event_document()
+    repository.update_draft.return_value = {**event_document(), "buy_in": payload.buy_in}
+
+    updated = await service.update("66d000000000000000000001", payload)
+
+    assert payload.buy_in == "5M gp" and updated.buy_in == "5M gp"
+    assert event_payload().buy_in is None
+    assert (
+        EventCreate(name="x", start_at=NOW, end_at=NOW + timedelta(days=1), buy_in=" ").buy_in
+        is None
+    )
+    with pytest.raises(ValueError):
+        EventCreate(name="x", start_at=NOW, end_at=NOW + timedelta(days=1), buy_in="g" * 81)

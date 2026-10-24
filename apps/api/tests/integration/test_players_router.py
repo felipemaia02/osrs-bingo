@@ -18,6 +18,15 @@ EVENT_ID = str(ObjectId())
 PLAYER_ID = str(ObjectId())
 TEAM_ID = str(ObjectId())
 USER_ID = str(ObjectId())
+ACCOUNT_ID = str(ObjectId())
+JOIN = {
+    "account_id": ACCOUNT_ID,
+    "activity": "under_1h",
+    "teammate_ids": [],
+    "accept_rules": True,
+    "accept_drop_account": True,
+    "accept_team": True,
+}
 
 
 @pytest.fixture
@@ -47,7 +56,19 @@ def repositories() -> Iterator[tuple[AsyncMock, AsyncMock, AsyncMock]]:
     players.approve.return_value = {**registration, "status": "approved"}
     players.approve_all.return_value = 2
     players.remove.return_value = {**registration, "status": "removed"}
-    service = PlayerService(players, teams, events)
+    profiles = AsyncMock()
+    profiles.get.return_value = {
+        "accounts": [
+            {
+                "id": ACCOUNT_ID,
+                "rsn": "Thunder Crab",
+                "is_main": True,
+                "wom_status": "found",
+                "boss_kc": 5,
+            }
+        ]
+    }
+    service = PlayerService(players, teams, events, profiles)
 
     async def override_service() -> PlayerService:
         return service
@@ -74,9 +95,7 @@ async def test_register_list_then_assign_existing_player(
 ) -> None:
     players, teams, _ = repositories
     client.headers["Origin"] = "http://localhost:5173"
-    response = await client.post(
-        f"/events/{EVENT_ID}/players", json={"display_name": "Thunder Crab"}
-    )
+    response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 201
     assert response.json()["team_id"] is None
     teams.get.assert_not_awaited()
@@ -105,7 +124,7 @@ async def test_registration_cannot_bypass_separate_assignment(
     client.headers["Origin"] = "http://localhost:5173"
     response = await client.post(
         f"/events/{EVENT_ID}/players",
-        json={"display_name": "Thunder Crab", "team_id": TEAM_ID},
+        json={**JOIN, "team_id": TEAM_ID},
     )
     assert response.status_code == 422
     repositories[0].create.assert_not_awaited()
@@ -116,9 +135,7 @@ async def test_registration_in_active_event_returns_conflict(
 ) -> None:
     client.headers["Origin"] = "http://localhost:5173"
     repositories[2].get.return_value = {"status": EventStatus.ACTIVE}
-    response = await client.post(
-        f"/events/{EVENT_ID}/players", json={"display_name": "Thunder Crab"}
-    )
+    response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 409
     assert response.json() == {"detail": "Only draft events can be changed"}
     repositories[0].create.assert_not_awaited()
@@ -144,7 +161,7 @@ async def test_player_can_only_request_and_read_own_registration(
     auth = await app.dependency_overrides[get_auth_service]()
     auth.current_user.return_value.is_admin = False
     client.headers["Origin"] = "http://localhost:5173"
-    response = await client.post(f"/events/{EVENT_ID}/players", json={"display_name": "Crab"})
+    response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 201
     assert repositories[0].create.call_args.args[2] == USER_ID
     response = await client.get(f"/events/{EVENT_ID}/players/me")
@@ -170,19 +187,19 @@ async def test_player_can_only_request_and_read_own_registration(
 async def test_missing_session_untrusted_origin_and_forged_owner_rejected(
     client: AsyncClient, repositories: tuple[AsyncMock, AsyncMock, AsyncMock]
 ) -> None:
-    response = await client.post(f"/events/{EVENT_ID}/players", json={"display_name": "Crab"})
+    response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 403
     client.headers["Origin"] = "https://untrusted.example"
-    response = await client.post(f"/events/{EVENT_ID}/players", json={"display_name": "Crab"})
+    response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 403
     client.headers["Origin"] = "http://localhost:5173"
     response = await client.post(
-        f"/events/{EVENT_ID}/players", json={"display_name": "Crab", "user_id": str(ObjectId())}
+        f"/events/{EVENT_ID}/players", json={**JOIN, "user_id": str(ObjectId())}
     )
     assert response.status_code == 422
     auth = await app.dependency_overrides[get_auth_service]()
     auth.current_user.side_effect = AppException(401, "Authentication required")
-    response = await client.post(f"/events/{EVENT_ID}/players", json={"display_name": "Crab"})
+    response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 401
     repositories[0].create.assert_not_awaited()
 

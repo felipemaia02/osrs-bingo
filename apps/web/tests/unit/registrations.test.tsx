@@ -79,24 +79,28 @@ async function openAdministration() {
   return user
 }
 
-it('requests registration without a team and refreshes pending status', async () => {
-  const user = userEvent.setup()
-  vi.mocked(api.createPlayer).mockImplementation(async () => {
-    vi.mocked(api.fetchOwnRegistration).mockResolvedValue(PLAYER)
-    return PLAYER
+it('links unregistered players to the join page instead of a nickname form', async () => {
+  renderApp(<PlayerEventsPage />, '/events')
+
+  const join = await screen.findByRole('link', { name: 'Join Summer Bingo' })
+  expect(join).toHaveAttribute('href', `/events/${EVENT.id}/join`)
+  expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
+})
+
+it('shows the account and buy-in status of a joined registration', async () => {
+  vi.mocked(api.fetchOwnRegistration).mockResolvedValue({
+    ...PLAYER,
+    account_id: 'acc-1',
+    activity: 'over_3h',
+    buy_in_status: 'pending',
   })
   renderApp(<PlayerEventsPage />, '/events')
-  await user.type(await screen.findByLabelText('OSRS display name'), 'Thunder Crab')
-  await user.click(screen.getByRole('button', { name: 'Request registration' }))
+
   expect(await screen.findByText('Registration pending approval')).toBeInTheDocument()
-  expect(screen.getByText('Pending')).toBeInTheDocument()
-  expect(vi.mocked(api.createPlayer).mock.calls[0][0]).toEqual({
-    eventId: EVENT.id,
-    payload: { display_name: 'Thunder Crab' },
-  })
-  expect(screen.queryByRole('button', { name: 'New event' })).not.toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
-  expect(screen.queryByLabelText('Team for Thunder Crab')).not.toBeInTheDocument()
+  expect(screen.getByText('Playing as')).toBeInTheDocument()
+  expect(screen.getByText('Thunder Crab')).toBeInTheDocument()
+  expect(screen.getByText('Buy-in not paid yet')).toBeInTheDocument()
 })
 
 it('requires login and prevents participant administration', async () => {

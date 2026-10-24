@@ -205,3 +205,29 @@ async def test_accounts_without_combat_levels_can_update_right_away(
     refreshed = await service.refresh(USER, profile.accounts[0].id)
 
     assert refreshed.accounts[0].combat == {"attack": 99, "strength": 99, "defence": 90}
+
+
+async def test_member_search_shows_username_and_main_rsn() -> None:
+    friend, loner = ObjectId(), ObjectId()
+    repository = AsyncMock()
+    repository.search_members.return_value = [
+        (
+            {"_id": friend, "username": "monk.mateus"},
+            {
+                "accounts": [
+                    {"rsn": "Alt", "is_main": False},
+                    {"rsn": "Monk Mateus", "is_main": True},
+                ]
+            },
+        ),
+        ({"_id": loner, "username": "mo.fish"}, None),
+    ]
+    service = ProfileService(repository, AsyncMock())
+
+    members = await service.members(USER, " Monk_M ")
+
+    repository.search_members.assert_awaited_once_with("Monk_M", "monk m", USER.id, 10)
+    assert [(m.user_id, m.username, m.main_rsn) for m in members] == [
+        (str(friend), "monk.mateus", "Monk Mateus"),
+        (str(loner), "mo.fish", None),
+    ]

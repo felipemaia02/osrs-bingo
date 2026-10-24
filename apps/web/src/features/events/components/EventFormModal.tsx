@@ -11,10 +11,12 @@ import { EventScheduleFields } from './EventScheduleFields'
 
 const DEFAULT_DURATION_DAYS = 7
 const QUARTER_HOUR = 15
+const BUY_IN_MAX_LENGTH = 80
 
 interface EventFormState {
   name: string
   description: string
+  buyIn: string
   startAt: Dayjs | null
   endAt: Dayjs | null
 }
@@ -24,13 +26,20 @@ function initialForm(event: BingoEvent | null): EventFormState {
     return {
       name: event.name,
       description: event.description ?? '',
+      buyIn: event.buy_in ?? '',
       startAt: dayjs(event.start_at),
       endAt: dayjs(event.end_at),
     }
   const now = dayjs()
   const toQuarter = (QUARTER_HOUR - (now.minute() % QUARTER_HOUR)) % QUARTER_HOUR
   const startAt = now.add(toQuarter, 'minute').second(0).millisecond(0)
-  return { name: '', description: '', startAt, endAt: startAt.add(DEFAULT_DURATION_DAYS, 'day') }
+  return {
+    name: '',
+    description: '',
+    buyIn: '',
+    startAt,
+    endAt: startAt.add(DEFAULT_DURATION_DAYS, 'day'),
+  }
 }
 
 interface EventFormModalProps {
@@ -58,6 +67,7 @@ export function EventFormModal({ event, saving, onSave, onClose }: EventFormModa
       await onSave({
         name: form.name,
         description: form.description || null,
+        buy_in: form.buyIn.trim() || null,
         start_at: form.startAt.toISOString(),
         end_at: form.endAt.toISOString(),
       })
@@ -93,6 +103,23 @@ export function EventFormModal({ event, saving, onSave, onClose }: EventFormModa
             className={`${FIELD_CLASS} resize-y py-2 font-normal`}
           />
         </label>
+        <div className="flex flex-col gap-1 text-[13px]">
+          <label htmlFor="event-buy-in" className="font-semibold">
+            {t('events.form.buyIn')}
+          </label>
+          <input
+            id="event-buy-in"
+            maxLength={BUY_IN_MAX_LENGTH}
+            value={form.buyIn}
+            placeholder={t('events.form.buyInPlaceholder')}
+            aria-describedby="event-buy-in-hint"
+            onChange={(change) => setForm({ ...form, buyIn: change.target.value })}
+            className={FIELD_CLASS}
+          />
+          <span id="event-buy-in-hint" className="text-xs text-rs-muted">
+            {t('events.form.buyInHint')}
+          </span>
+        </div>
         <EventScheduleFields
           start={form.startAt}
           end={form.endAt}

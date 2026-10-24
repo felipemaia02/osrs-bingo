@@ -26,6 +26,7 @@ class EventRepository:
             "_id": ObjectId(),
             "name": payload.name,
             "description": payload.description,
+            "buy_in": payload.buy_in,
             "start_at": payload.start_at,
             "end_at": payload.end_at,
             "status": EventStatus.DRAFT,

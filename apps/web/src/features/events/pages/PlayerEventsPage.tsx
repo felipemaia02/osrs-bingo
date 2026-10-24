@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
+import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
+import { JOINED_STATE } from '../../join/state'
 import { EventRegistration } from '../../teams/components/EventRegistration'
 import { EventRulesText } from '../components/EventRulesText'
 import { EventSchedule } from '../components/EventSchedule'
@@ -15,6 +17,8 @@ export function PlayerEventsPage() {
   const { t } = useTranslation()
   const isDesktop = useIsDesktop()
   const [params] = useSearchParams()
+  const location = useLocation()
+  const joined = (location.state as Record<string, string> | null)?.[JOINED_STATE]
   const events = useEvents()
   const tabs = useEventTabs(events.data ?? [])
 
@@ -30,6 +34,7 @@ export function PlayerEventsPage() {
           </h1>
           <span className="text-rs-muted">{t('events.publicDescription')}</span>
         </div>
+        {joined && <InfoBanner>{t('join.sent', { name: joined })}</InfoBanner>}
         {params.get('login') === 'failed' && (
           <p
             role="alert"

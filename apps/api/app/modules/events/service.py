@@ -133,6 +133,7 @@ class EventService:
             end_at=document["end_at"],
             status=document["status"],
             rules_text=document.get("rules_text"),
+            buy_in=document.get("buy_in"),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

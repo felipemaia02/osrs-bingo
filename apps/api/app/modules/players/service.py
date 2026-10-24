@@ -1,13 +1,14 @@
 from builtins import list as builtin_list
 
-from app.core.exceptions import ConflictError, NotFoundError
+from app.core.exceptions import ConflictError, DomainValidationError, NotFoundError
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
-from app.modules.players.models import PlayerDocument
+from app.modules.players.models import NewRegistration, PlayerDocument
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
+    BuyInStatus,
+    JoinRequest,
     PlayerCounts,
-    PlayerCreate,
     PlayerListQuery,
     PlayerListResponse,
     PlayerResponse,
@@ -15,24 +16,42 @@ from app.modules.players.schemas import (
     RegistrationStatus,
     SelectionResult,
 )
+from app.modules.profiles.repository import ProfileRepository
+from app.modules.profiles.schemas import Activity
+from app.modules.profiles.service import has_wom_stats
 from app.modules.teams.repository import TeamRepository
 
 READ_ONLY_EVENT_DETAIL = "Only draft events can be changed"
+ACCOUNT_NOT_LINKED = "Choose an account from your profile"
+ACCOUNT_NOT_ON_WOM = "This account isn't found on Wise Old Man"
+TEAMMATE_IS_SELF = "You can't pick yourself as a teammate"
+TEAMMATE_UNKNOWN = "Preferred teammate not found"
 
 
 class PlayerService:
     def __init__(
-        self, players: PlayerRepository, teams: TeamRepository, events: EventRepository
+        self,
+        players: PlayerRepository,
+        teams: TeamRepository,
+        events: EventRepository,
+        profiles: ProfileRepository,
     ) -> None:
         self._players = players
         self._teams = teams
         self._events = events
+        self._profiles = profiles
 
-    async def create(self, event_id: str, payload: PlayerCreate, user_id: str) -> PlayerResponse:
+    async def create(self, event_id: str, payload: JoinRequest, user_id: str) -> PlayerResponse:
         await self._require_draft_event(event_id)
         if await self._players.get_for_user(event_id, user_id) is not None:
             raise ConflictError("Already registered in this event")
-        document = await self._players.create(event_id, payload, user_id)
+        registration = NewRegistration(
+            display_name=await self._account_rsn(user_id, payload.account_id),
+            account_id=payload.account_id,
+            activity=payload.activity,
+            teammate_ids=await self._teammates(user_id, payload.teammate_ids),
+        )
+        document = await self._players.create(event_id, registration, user_id)
         if document is None:
             raise ConflictError("Registration already exists in this event")
         return self._to_response(document)
@@ -135,6 +154,25 @@ class PlayerService:
         if await self._events.get(event_id) is None:
             raise NotFoundError("Event")
 
+    async def _account_rsn(self, user_id: str, account_id: str) -> str:
+        """The RSN of a profile account usable for bingo (has WOM stats), stored as a snapshot."""
+        profile = await self._profiles.get(user_id)
+        accounts = profile["accounts"] if profile else []
+        account = next((item for item in accounts if item["id"] == account_id), None)
+        if account is None:
+            raise DomainValidationError(ACCOUNT_NOT_LINKED)
+        if not has_wom_stats(account):
+            raise DomainValidationError(ACCOUNT_NOT_ON_WOM)
+        return account["rsn"]
+
+    async def _teammates(self, user_id: str, teammate_ids: builtin_list[str]) -> builtin_list[str]:
+        ids = [item.lower() for item in teammate_ids]
+        if user_id.lower() in ids:
+            raise DomainValidationError(TEAMMATE_IS_SELF)
+        if ids and await self._profiles.existing_user_ids(ids) != set(ids):
+            raise DomainValidationError(TEAMMATE_UNKNOWN)
+        return ids
+
     async def _require_draft_event(self, event_id: str) -> None:
         event = await self._events.get(event_id)
         if event is None:
@@ -147,6 +185,16 @@ class PlayerService:
             raise NotFoundError("Team")
 
     @staticmethod
+    def _activity(document: PlayerDocument) -> Activity | None:
+        activity = document.get("activity")
+        return Activity(activity) if activity else None
+
+    @staticmethod
+    def _buy_in_status(document: PlayerDocument) -> BuyInStatus | None:
+        buy_in = document.get("buy_in")
+        return BuyInStatus(buy_in["status"]) if buy_in else None
+
+    @staticmethod
     def _to_response(document: PlayerDocument) -> PlayerResponse:
         return PlayerResponse(
             id=str(document["_id"]),
@@ -155,6 +203,9 @@ class PlayerService:
             team_id=str(document["team_id"]) if document["team_id"] is not None else None,
             display_name=document["display_name"],
             discord_username=document.get("discord_username"),
+            account_id=document.get("account_id"),
+            activity=PlayerService._activity(document),
+            buy_in_status=PlayerService._buy_in_status(document),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

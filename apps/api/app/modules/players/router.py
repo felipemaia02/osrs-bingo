@@ -7,7 +7,7 @@ from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
     ApprovalResponse,
-    PlayerCreate,
+    JoinRequest,
     PlayerListQuery,
     PlayerListResponse,
     PlayerResponse,
@@ -16,6 +16,7 @@ from app.modules.players.schemas import (
     SelectionResult,
 )
 from app.modules.players.service import PlayerService
+from app.modules.profiles.repository import ProfileRepository
 from app.modules.teams.repository import TeamRepository
 
 router = APIRouter(prefix="/events/{event_id}/players", tags=["players"])
@@ -24,7 +25,10 @@ router = APIRouter(prefix="/events/{event_id}/players", tags=["players"])
 async def get_player_service(request: Request) -> PlayerService:
     database = request.app.state.db_client.database
     return PlayerService(
-        PlayerRepository(database), TeamRepository(database), EventRepository(database)
+        PlayerRepository(database),
+        TeamRepository(database),
+        EventRepository(database),
+        ProfileRepository(database),
     )
 
 
@@ -33,7 +37,7 @@ PlayerServiceDependency = Annotated[PlayerService, Depends(get_player_service)]
 
 @router.post("", response_model=PlayerResponse, status_code=status.HTTP_201_CREATED)
 async def create_player(
-    event_id: str, payload: PlayerCreate, user: UserDependency, service: PlayerServiceDependency
+    event_id: str, payload: JoinRequest, user: UserDependency, service: PlayerServiceDependency
 ) -> PlayerResponse:
     return await service.create(event_id, payload, user.id)
 

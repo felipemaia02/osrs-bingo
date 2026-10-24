@@ -3,8 +3,12 @@ from unittest.mock import AsyncMock, MagicMock
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 
+from app.modules.players.models import NewRegistration
 from app.modules.players.repository import PlayerRepository
-from app.modules.players.schemas import PlayerCreate, PlayerUpdate, RegistrationStatus
+from app.modules.players.schemas import PlayerUpdate, RegistrationStatus
+
+TEAMMATE = str(ObjectId())
+REGISTRATION = NewRegistration("Thunder Crab", str(ObjectId()), "over_3h", [TEAMMATE])
 
 
 async def test_registration_is_persisted_without_team() -> None:
@@ -14,9 +18,7 @@ async def test_registration_is_persisted_without_team() -> None:
     repository = PlayerRepository(database)
     event_id = str(ObjectId())
 
-    result = await repository.create(
-        event_id, PlayerCreate(display_name="Thunder Crab"), str(ObjectId())
-    )
+    result = await repository.create(event_id, REGISTRATION, str(ObjectId()))
 
     assert result is not None
     assert result["event_id"] == ObjectId(event_id)
@@ -24,6 +26,9 @@ async def test_registration_is_persisted_without_team() -> None:
     assert result["status"] == RegistrationStatus.PENDING
     assert isinstance(result["user_id"], ObjectId)
     assert result["normalized_display_name"] == "thunder crab"
+    assert result["teammate_ids"] == [ObjectId(TEAMMATE)]
+    assert result["buy_in"]["status"] == "pending" and result["buy_in"]["admin_id"] is None
+    assert result["agreements_accepted_at"] == result["created_at"]
     collection.insert_one.assert_awaited_once_with(result)
 
 
@@ -31,9 +36,7 @@ async def test_concurrent_duplicate_registration_is_reported() -> None:
     database = MagicMock()
     database.__getitem__.return_value.insert_one = AsyncMock(side_effect=DuplicateKeyError("name"))
 
-    result = await PlayerRepository(database).create(
-        str(ObjectId()), PlayerCreate(display_name="Thunder Crab"), str(ObjectId())
-    )
+    result = await PlayerRepository(database).create(str(ObjectId()), REGISTRATION, str(ObjectId()))
 
     assert result is None
 

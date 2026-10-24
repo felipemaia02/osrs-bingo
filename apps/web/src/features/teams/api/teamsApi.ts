@@ -4,7 +4,7 @@ import type {
   PlayerPage,
   Player,
   PlayerAssignmentPayload,
-  PlayerPayload,
+  JoinPayload,
   SelectionResult,
   Team,
   TeamPayload,
@@ -21,7 +21,7 @@ export const createPlayer = async ({
   payload,
 }: {
   eventId: string
-  payload: PlayerPayload
+  payload: JoinPayload
 }) => (await apiClient.post<Player>(`/events/${eventId}/players`, payload)).data
 export const updatePlayer = async ({
   eventId,

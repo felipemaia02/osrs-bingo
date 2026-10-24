@@ -168,7 +168,10 @@
       "name": "Name",
       "description": "Description",
       "start": "Start date and time",
-      "end": "End date and time"
+      "end": "End date and time",
+      "buyIn": "Buy-in",
+      "buyInPlaceholder": "e.g. 5M gp",
+      "buyInHint": "Optional. Shown when players join; admins record payments."
     },
     "schedule": {
       "title": "Event schedule",
@@ -233,7 +236,6 @@
     "teams": "Teams",
     "players": "Event registrations",
     "teamName": "Team name",
-    "playerName": "OSRS display name",
     "selectTeam": "Select a team",
     "create": "Create",
     "description": "Approve requests and distribute approved players across teams.",
@@ -356,9 +358,7 @@
   },
   "registration": {
     "loginToRegister": "Log in with Discord to register",
-    "formFor": "Register for {{name}}",
     "approvalHint": "Your request will be reviewed by an administrator.",
-    "request": "Request registration",
     "status": {
       "pending": "Registration pending approval",
       "approved": "Registration approved",
@@ -369,6 +369,13 @@
       "pending": "Pending",
       "approved": "Approved",
       "removed": "Removed"
+    },
+    "join": "Join event",
+    "joinFor": "Join {{name}}",
+    "playingAs": "Playing as",
+    "buyIn": {
+      "pending": "Buy-in not paid yet",
+      "paid": "Buy-in paid"
     }
   },
   "admin": {
@@ -958,6 +965,105 @@
       "ranged": "Ranged",
       "prayer": "Prayer",
       "magic": "Magic"
+    }
+  },
+  "join": {
+    "eyebrow": "Join event",
+    "open": "registrations open",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "nextNeedAccount": "Next · choose an account",
+    "nextNeedAgreements": "Next · confirm all 3",
+    "progress": "Step {{step}} of {{total}}",
+    "backToEvents": "Back to events",
+    "changeIn": "change it in",
+    "timezone": "Time zone:",
+    "sent": "Request sent for {{name}} — waiting for an admin.",
+    "blocked": {
+      "login": "Log in with Discord to join an event.",
+      "notFound": "This event doesn't exist.",
+      "closed": "Registrations are closed for this event.",
+      "registered": "You've already requested to join this event."
+    },
+    "account": {
+      "title": "Which account will you play with?",
+      "group": "Bingo account",
+      "manage": "Manage accounts in My profile",
+      "main": "Main",
+      "alt": "Alt",
+      "wom": "Wise Old Man",
+      "stats": "EHB {{ehb}} · Boss KC {{kc}} · Total {{total}}",
+      "othersCount": "Your other accounts still count toward your experience for team balance.",
+      "none": "Add an account found on Wise Old Man in My profile first.",
+      "foundSummary": "found on Wise Old Man"
+    },
+    "availability": {
+      "title": "Availability and teammates"
+    },
+    "activity": {
+      "label": "Expected activity during this event",
+      "fromProfile": "(from your profile)",
+      "options": {
+        "under_1h": "Less than 1 h/day",
+        "one_to_three_h": "1 to 3 h/day",
+        "over_3h": "More than 3 h/day"
+      },
+      "short": {
+        "under_1h": "<1 h/day",
+        "one_to_three_h": "1–3 h/day",
+        "over_3h": ">3 h/day"
+      }
+    },
+    "teammates": {
+      "label": "Who would you like to team up with?",
+      "count": "Up to {{max}} clan members · {{count}} of {{max}}",
+      "placeholder": "Search by Discord name or RSN",
+      "full": "3 of 3 chosen",
+      "results": "Clan members",
+      "remove": "Remove {{name}}",
+      "onDiscord": "{{name}} on Discord",
+      "enter": "Enter to add",
+      "none": "No clan member found.",
+      "hint": "A preference, not a guarantee — admins and captains balance teams."
+    },
+    "rules": {
+      "title": "How the bingo works",
+      "event": "Event rules",
+      "confirm": "To continue, confirm that:",
+      "confirmed": "Rules confirmed",
+      "yourAccount": "your account",
+      "summary": {
+        "board": "Every team plays the same board. It's frozen once the event starts.",
+        "progress": "Each accepted drop adds <b>progress</b> to a tile. A tile is worth its points once, when progress reaches its requirement.",
+        "screenshots": "You submit your drops with a screenshot, and an admin reviews them.",
+        "teams": "Admins set the teams. You only see your own team's progress.",
+        "buyIn": "The buy-in is paid to an admin, who records it."
+      },
+      "agreements": {
+        "rules": "I've read the bingo rules above.",
+        "dropAccount": "Only drops from <b>{{rsn}}</b> during the event period will count for me.",
+        "team": "I accept the team I'm placed in by the admins."
+      }
+    },
+    "buyIn": {
+      "title": "Buy-in and send",
+      "amount": "Buy-in: <b>{{amount}}</b>. Pay any admin in game; they'll mark it as received here.",
+      "none": "No buy-in for this event.",
+      "notPaid": "Not paid yet",
+      "summary": "Buy-in status: not paid yet"
+    },
+    "send": {
+      "button": "Request to join",
+      "needAccount": "Choose an account in step 1 first.",
+      "needAgreements": "Confirm all 3 items in step 3 first.",
+      "pending": "Your request stays <b>Pending</b> until an admin approves it."
+    },
+    "errors": {
+      "account": "Choose an account from your profile.",
+      "accountNotOnWom": "This account isn't found on Wise Old Man. Update it in My profile.",
+      "teammateSelf": "You can't pick yourself as a teammate.",
+      "teammateUnknown": "One of the teammates wasn't found. Remove and pick them again."
     }
   }
 }

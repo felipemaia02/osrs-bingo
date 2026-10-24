@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, datetime
 from typing import Any, cast
 
@@ -16,6 +17,43 @@ class RsnTakenError(Exception):
 class ProfileRepository:
     def __init__(self, database: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
         self._collection = database["player_profiles"]
+        self._users = database["users"]
+
+    async def get(self, user_id: str) -> ProfileDocument | None:
+        return cast(
+            ProfileDocument | None, await self._collection.find_one({"_id": ObjectId(user_id)})
+        )
+
+    async def existing_user_ids(self, user_ids: list[str]) -> set[str]:
+        cursor = self._users.find({"_id": {"$in": [ObjectId(i) for i in user_ids]}}, {"_id": 1})
+        return {str(user["_id"]) async for user in cursor}
+
+    async def search_members(
+        self, username_or_rsn: str, normalized_rsn: str, exclude_user_id: str, limit: int
+    ) -> list[tuple[dict[str, Any], ProfileDocument | None]]:
+        """Users whose Discord username or any linked RSN contains the search, with profiles."""
+        by_rsn = self._collection.find(
+            {"accounts.normalized": {"$regex": re.escape(normalized_rsn)}}, {"_id": 1}
+        ).limit(limit)
+        rsn_ids = [profile["_id"] async for profile in by_rsn]
+        users = await (
+            self._users.find(
+                {
+                    "_id": {"$ne": ObjectId(exclude_user_id)},
+                    "$or": [
+                        {"username": {"$regex": re.escape(username_or_rsn), "$options": "i"}},
+                        {"_id": {"$in": rsn_ids}},
+                    ],
+                },
+                {"username": 1},
+            )
+            .sort("username", 1)
+            .limit(limit)
+            .to_list(limit)
+        )
+        profiles = self._collection.find({"_id": {"$in": [user["_id"] for user in users]}})
+        by_user = {profile["_id"]: cast(ProfileDocument, profile) async for profile in profiles}
+        return [(user, by_user.get(user["_id"])) for user in users]
 
     async def get_or_create(self, user_id: str) -> ProfileDocument:
         now = datetime.now(UTC)

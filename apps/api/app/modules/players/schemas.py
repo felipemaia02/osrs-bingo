@@ -4,6 +4,11 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.modules.profiles.schemas import Activity
+
+OBJECT_ID_PATTERN = r"^[0-9a-fA-F]{24}$"
+MAX_TEAMMATES = 3
+
 
 class RegistrationStatus(StrEnum):
     PENDING = "pending"
@@ -25,8 +30,33 @@ class PlayerFields(BaseModel):
         return normalized
 
 
-class PlayerCreate(PlayerFields):
+class BuyInStatus(StrEnum):
+    """Extensible on purpose (design decision 4); admins change it in feature 023."""
+
+    PENDING = "pending"
+    PAID = "paid"
+
+
+class JoinRequest(BaseModel):
+    """A player's request to join a draft event (feature 022)."""
+
     model_config = ConfigDict(extra="forbid")
+
+    account_id: str = Field(pattern=OBJECT_ID_PATTERN)
+    activity: Activity | None = None
+    teammate_ids: list[Annotated[str, Field(pattern=OBJECT_ID_PATTERN)]] = Field(
+        default_factory=list, max_length=MAX_TEAMMATES
+    )
+    accept_rules: Literal[True]
+    accept_drop_account: Literal[True]
+    accept_team: Literal[True]
+
+    @field_validator("teammate_ids")
+    @classmethod
+    def distinct_teammates(cls, value: list[str]) -> list[str]:
+        if len({item.lower() for item in value}) != len(value):
+            raise ValueError("Pick each teammate only once")
+        return value
 
 
 class PlayerUpdate(BaseModel):
@@ -40,6 +70,10 @@ class PlayerResponse(PlayerFields):
 
     id: str
     discord_username: str | None = None
+    # None for registrations made before feature 022 (typed nickname).
+    account_id: str | None = None
+    activity: Activity | None = None
+    buy_in_status: BuyInStatus | None = None
     status: RegistrationStatus
     event_id: str
     team_id: str | None
@@ -70,7 +104,6 @@ class PlayerListResponse(BaseModel):
 
 
 MAX_SELECTION = 25
-OBJECT_ID_PATTERN = r"^[0-9a-fA-F]{24}$"
 
 
 class PlayerSelection(BaseModel):

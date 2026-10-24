@@ -16,6 +16,10 @@ export interface Player {
   discord_username?: string | null
   /** When the registration was requested. */
   created_at?: string
+  /** Profile account playing the event; null for nickname registrations (before 022). */
+  account_id?: string | null
+  activity?: 'under_1h' | 'one_to_three_h' | 'over_3h' | null
+  buy_in_status?: 'pending' | 'paid' | null
 }
 
 export interface TeamPayload {
@@ -23,8 +27,14 @@ export interface TeamPayload {
   color: string | null
 }
 
-export interface PlayerPayload {
-  display_name: string
+/** Join request (feature 022); the three agreements must be true. */
+export interface JoinPayload {
+  account_id: string
+  activity: 'under_1h' | 'one_to_three_h' | 'over_3h' | null
+  teammate_ids: string[]
+  accept_rules: true
+  accept_drop_account: true
+  accept_team: true
 }
 
 export interface PlayerAssignmentPayload {

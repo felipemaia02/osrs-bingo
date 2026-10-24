@@ -9,9 +9,11 @@ from app.modules.profiles.models import LinkedAccount, ProfileDocument
 from app.modules.profiles.repository import ProfileRepository, RsnTakenError
 from app.modules.profiles.schemas import (
     MAX_ACCOUNTS,
+    MEMBER_SEARCH_LIMIT,
     AccountAdd,
     AccountResponse,
     BalanceTotals,
+    MemberResponse,
     Preferences,
     ProfileResponse,
     WomStatus,
@@ -29,6 +31,19 @@ MAIN_NEEDS_REPLACEMENT = "Make another account the main before removing this one
 REFRESHED_RECENTLY = "Updated less than an hour ago"
 
 
+def has_wom_stats(account: LinkedAccount) -> bool:
+    """Counts for team balance and can join events: WOM stats stored and not marked not found.
+
+    While WOM is unreachable, the last stored stats still count (feature 021).
+    """
+    return account["wom_status"] != WomStatus.NOT_FOUND and account.get("boss_kc") is not None
+
+
+def main_rsn(profile: ProfileDocument | None) -> str | None:
+    accounts = profile["accounts"] if profile else []
+    return next((account["rsn"] for account in accounts if account["is_main"]), None)
+
+
 class ProfileService:
     """Linked OSRS accounts with cached Wise Old Man stats (feature 021)."""
 
@@ -38,6 +53,17 @@ class ProfileService:
 
     async def get(self, user: CurrentUser) -> ProfileResponse:
         return self._response(user, await self._profiles.get_or_create(user.id))
+
+    async def members(self, user: CurrentUser, search: str) -> list[MemberResponse]:
+        rows = await self._profiles.search_members(
+            search.strip(), normalize_rsn(search), user.id, MEMBER_SEARCH_LIMIT
+        )
+        return [
+            MemberResponse(
+                user_id=str(row["_id"]), username=row["username"], main_rsn=main_rsn(profile)
+            )
+            for row, profile in rows
+        ]
 
     async def set_preferences(self, user: CurrentUser, preferences: Preferences) -> ProfileResponse:
         await self._profiles.get_or_create(user.id)
@@ -142,15 +168,10 @@ class ProfileService:
     def _utc_or_none(cls, moment: datetime | None) -> datetime | None:
         return cls._utc(moment) if moment else None
 
-    @staticmethod
-    def _counts(account: LinkedAccount) -> bool:
-        """Found accounts count; while WOM is unreachable, the last stored stats still count."""
-        return account["wom_status"] != WomStatus.NOT_FOUND and account.get("boss_kc") is not None
-
     @classmethod
     def _response(cls, user: CurrentUser, document: ProfileDocument) -> ProfileResponse:
         accounts = sorted(document["accounts"], key=lambda item: not item["is_main"])
-        counted = [item for item in accounts if cls._counts(item)]
+        counted = [item for item in accounts if has_wom_stats(item)]
         return ProfileResponse(
             discord_id=user.discord_id,
             username=user.username,

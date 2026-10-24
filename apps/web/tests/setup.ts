@@ -93,4 +93,5 @@ vi.mock('../src/features/profiles/api/profileApi', () => ({
   savePreferences: vi.fn(),
   addAccount: vi.fn(),
   runAccountAction: vi.fn(),
+  searchMembers: vi.fn().mockResolvedValue([]),
 }))

@@ -51,12 +51,14 @@ describe('Events feature', () => {
 
     await user.click(await screen.findByRole('button', { name: 'New event' }))
     await user.type(screen.getByLabelText('Name'), 'Autumn Bingo')
+    await user.type(screen.getByLabelText('Buy-in'), ' 5M gp ')
     await user.click(screen.getByRole('button', { name: '+1 day' }))
     await user.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => expect(createEvent).toHaveBeenCalledOnce())
     const payload = vi.mocked(createEvent).mock.calls[0][0]
     expect(payload.start_at).toMatch(/Z$/)
+    expect(payload.buy_in).toBe('5M gp')
     expect(dayjs(payload.end_at).diff(dayjs(payload.start_at), 'day', true)).toBe(1)
     expect(await screen.findByText('Event created.')).toBeInTheDocument()
   })

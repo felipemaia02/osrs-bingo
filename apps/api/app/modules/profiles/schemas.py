@@ -11,6 +11,9 @@ RSN_INPUT_MAX_LENGTH = 32
 RSN_PATTERN = re.compile(rf"^[A-Za-z0-9 _-]{{1,{RSN_MAX_LENGTH}}}$")
 MAX_ACCOUNTS = 10
 TIMEZONES = frozenset(available_timezones())
+MEMBER_SEARCH_MIN_LENGTH = 2
+MEMBER_SEARCH_MAX_LENGTH = 40
+MEMBER_SEARCH_LIMIT = 10
 COMBAT_SKILLS = ("attack", "strength", "defence", "hitpoints", "ranged", "prayer", "magic")
 
 
@@ -89,3 +92,11 @@ class ProfileResponse(BaseModel):
     activity: Activity | None
     accounts: list[AccountResponse]
     totals: BalanceTotals
+
+
+class MemberResponse(BaseModel):
+    """A clan member for the preferred-teammates search (feature 022)."""
+
+    user_id: str
+    username: str
+    main_rsn: str | None

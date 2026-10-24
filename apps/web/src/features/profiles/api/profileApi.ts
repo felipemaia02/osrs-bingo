@@ -1,5 +1,5 @@
 import { apiClient } from '../../../lib/api'
-import type { AccountAction, Preferences, Profile } from '../types'
+import type { AccountAction, Member, Preferences, Profile } from '../types'
 
 const PROFILE_URL = '/profile/me'
 
@@ -25,4 +25,8 @@ export async function runAccountAction({
   const url = `${PROFILE_URL}/accounts/${accountId}`
   if (action === 'remove') return (await apiClient.delete<Profile>(url)).data
   return (await apiClient.post<Profile>(`${url}/${action}`)).data
+}
+
+export async function searchMembers(search: string): Promise<Member[]> {
+  return (await apiClient.get<Member[]>('/profile/members', { params: { search } })).data
 }
