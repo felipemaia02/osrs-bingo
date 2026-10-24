@@ -206,8 +206,8 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
   const { t } = useTranslation()
   const tierOptions = useTierOptions()
   const reason = useProgressReason(event.id)
-  // The first tile is shown until one is tapped on the mini-map (feature 025).
-  const tile = state.selected ?? state.tiles[0] ?? null
+  // Nothing is shown until a tile is tapped; tapping it again closes it (feature 025).
+  const tile = state.selected
   const index = tile ? state.tiles.indexOf(tile) : -1
   const step = (offset: number) => {
     const next = state.tiles[index + offset]
@@ -239,16 +239,21 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
         matches={state.matches}
         summary={state.summary}
         currentId={tile?.id ?? null}
-        onSelect={(selected) => state.setSelectedId(selected.id)}
+        onSelect={(selected) => state.setSelectedId(selected.id === tile?.id ? null : selected.id)}
       />
-      {tile && (
+      {tile ? (
         <MobileTileDetail
           tile={tile}
           match={state.matches?.get(tile.id)}
           unavailableReason={reason}
           onPrevious={step(-1)}
           onNext={step(1)}
+          onClose={() => state.setSelectedId(null)}
         />
+      ) : (
+        <p className="m-0 rounded border border-dashed border-rs-border px-3 py-4 text-center text-[13px] text-rs-muted">
+          {t('board.miniMap.hint')}
+        </p>
       )}
     </>
   )

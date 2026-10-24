@@ -445,7 +445,7 @@ describe('Board v2', () => {
   })
 
   describe('mobile', () => {
-    it('shows short names on the mini-map and the first tile below it', async () => {
+    it('shows short names and difficulty stars, with no tile open until one is tapped', async () => {
       useMobileViewport()
       const user = userEvent.setup()
       await renderBoard()
@@ -461,11 +461,10 @@ describe('Board v2', () => {
       const hydra = within(map).getByRole('button', { name: /^Alchemical Hydra, row 1 column 3/ })
       expect(hydra).toHaveTextContent('Alchemical')
       expect(screen.queryByRole('heading', { level: 2, name: /^Row \d$/ })).toBeNull()
-      const panel = screen.getByRole('region', { name: 'Tile detail' })
-      expect(
-        within(panel).getByRole('heading', { name: 'Grotesque Guardians' }),
-      ).toBeInTheDocument()
-      expect(within(panel).getByRole('button', { name: 'Previous tile' })).toBeDisabled()
+      expect(screen.queryByRole('region', { name: 'Tile detail' })).toBeNull()
+      expect(screen.getByText('Tap a tile on the map to see its details here.')).toBeInTheDocument()
+      expect(within(map).queryByText('M')).toBeNull()
+      expect(within(map).getByText(/Bronze = Easy/)).toBeInTheDocument()
 
       // The mobile search waits behind a button (feature 026).
       expect(screen.queryByRole('searchbox')).toBeNull()
@@ -498,6 +497,14 @@ describe('Board v2', () => {
       await user.click(within(panel).getByRole('button', { name: 'Next tile' }))
       expect(panel).toHaveTextContent('Row 1 · Column 4')
       expect(cell).toHaveAttribute('aria-pressed', 'false')
+
+      const next = within(map).getByRole('button', { pressed: true })
+      await user.click(next)
+      expect(screen.queryByRole('region', { name: 'Tile detail' })).toBeNull()
+
+      await user.click(cell)
+      await user.click(screen.getByRole('button', { name: 'Close tile' }))
+      expect(screen.queryByRole('region', { name: 'Tile detail' })).toBeNull()
     })
   })
 

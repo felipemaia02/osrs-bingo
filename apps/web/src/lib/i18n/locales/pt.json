@@ -93,7 +93,8 @@
       "weightHint": "peso = progresso",
       "imageSource": "Imagem: OSRS Wiki — {{name}}",
       "previous": "Card anterior",
-      "next": "Próximo card"
+      "next": "Próximo card",
+      "closeTile": "Fechar card"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} correspondem à busca",
@@ -103,8 +104,9 @@
       "label": "Minimapa do tabuleiro",
       "title": "Mapa {{size}}×{{size}}",
       "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: ver detalhes",
-      "legend": "E = Fácil · M = Médio · H = Difícil. Toque num card para vê-lo abaixo.",
-      "bonusCell": "{{name}}, card bônus, {{tier}}: ver detalhes"
+      "legend": "★ Bronze = Fácil · ★ Prata = Médio · ★ Ouro = Difícil. Toque num card para vê-lo abaixo; toque de novo para fechar.",
+      "bonusCell": "{{name}}, card bônus, {{tier}}: ver detalhes",
+      "hint": "Toque num card do mapa para ver os detalhes aqui."
     },
     "bonus": {
       "badge": "Bônus",

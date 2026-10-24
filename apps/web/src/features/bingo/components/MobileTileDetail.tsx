@@ -1,3 +1,4 @@
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
@@ -12,12 +13,14 @@ export function MobileTileDetail({
   unavailableReason,
   onPrevious,
   onNext,
+  onClose,
 }: {
   tile: Tile
   match?: TileMatch
   unavailableReason: string
   onPrevious: (() => void) | null
   onNext: (() => void) | null
+  onClose: () => void
 }) {
   const { t } = useTranslation()
   const position = tile.bonus
@@ -41,14 +44,19 @@ export function MobileTileDetail({
         <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold">
           {position}
         </span>
-        <Button
-          size="icon"
-          disabled={!onNext}
-          onClick={onNext ?? undefined}
-          aria-label={t('board.panel.next')}
-        >
-          <ChevronRightOutlinedIcon fontSize="small" aria-hidden="true" />
-        </Button>
+        <span className="flex gap-1.5">
+          <Button
+            size="icon"
+            disabled={!onNext}
+            onClick={onNext ?? undefined}
+            aria-label={t('board.panel.next')}
+          >
+            <ChevronRightOutlinedIcon fontSize="small" aria-hidden="true" />
+          </Button>
+          <Button size="icon" onClick={onClose} aria-label={t('board.panel.closeTile')}>
+            <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
+          </Button>
+        </span>
       </div>
       <TileDetailContent tile={tile} match={match} showName unavailableReason={unavailableReason} />
     </section>

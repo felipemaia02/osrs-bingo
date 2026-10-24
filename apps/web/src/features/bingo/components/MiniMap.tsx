@@ -1,3 +1,4 @@
+import StarIcon from '@mui/icons-material/Star'
 import { useTranslation } from 'react-i18next'
 import { shortNameOf } from '../../../lib/text/shortName'
 import { axisOf } from '../../boards/draft'
@@ -6,10 +7,11 @@ import type { FilterSummary } from '../hooks/useFilterSummary'
 import type { Tile, TileMatch, TileTier } from '../types'
 
 const AXIS_PX = 14
-const LETTER_COLOR: Record<TileTier, string> = {
-  Low: 'text-rs-success-text',
-  Mid: 'text-rs-gold-bright',
-  High: 'text-rs-danger-text',
+/** Difficulty as a medal star: bronze Easy, silver Medium, gold Hard (feature 025). */
+const STAR_COLOR: Record<TileTier, string> = {
+  Low: 'text-rs-bronze',
+  Mid: 'text-rs-silver',
+  High: 'text-rs-gold',
 }
 
 interface MiniMapProps {
@@ -21,7 +23,6 @@ interface MiniMapProps {
   onSelect: (tile: Tile) => void
 }
 
-/** Mobile size×size overview: short name and difficulty letter per cell; tap to show it (feature 025). */
 const LONG_WORD = 8
 
 /** Two short words wrap; one long word shrinks a little and ends in "…" instead of breaking. */
@@ -31,6 +32,7 @@ function shortNameClass(name: string): string {
   return `max-w-full truncate text-center ${short.length > LONG_WORD ? 'text-[9px]' : ''}`
 }
 
+/** Mobile size×size overview: short name and a difficulty star per cell; tap to show it (025). */
 export function MiniMap({ tiles, size, matches, summary, currentId, onSelect }: MiniMapProps) {
   const { t } = useTranslation()
   const positions = axisOf(size)
@@ -53,7 +55,7 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onSelect }: 
           tier: t(`tile.tier.${tile.tier}`),
         })}
         aria-pressed={tile.id === currentId}
-        className={`flex min-h-[52px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-[3px] border px-0.5 py-1 text-[10px] font-bold leading-[1.1] ${
+        className={`relative flex min-h-[48px] min-w-0 flex-col items-center justify-center rounded-[3px] border px-0.5 pb-1 pt-2.5 text-[10px] font-bold leading-[1.1] ${
           hit
             ? 'border-rs-gold-bright bg-rs-gold-bright text-rs-canvas'
             : tile.progress?.complete
@@ -63,12 +65,12 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onSelect }: 
           tile.id === currentId ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright' : ''
         }`}
       >
+        <StarIcon
+          aria-hidden="true"
+          sx={{ fontSize: 10 }}
+          className={`absolute right-0.5 top-0.5 ${hit ? 'text-rs-canvas' : STAR_COLOR[tile.tier]}`}
+        />
         <span className={shortNameClass(tile.name)}>{shortNameOf(tile.name)}</span>
-        <span
-          className={`text-[10px] font-semibold ${hit ? 'text-rs-canvas' : LETTER_COLOR[tile.tier]}`}
-        >
-          {t(`tile.tierLetter.${tile.tier}`)}
-        </span>
       </button>
     )
   }

@@ -93,7 +93,8 @@
       "weightHint": "peso = progreso",
       "imageSource": "Imagen: OSRS Wiki — {{name}}",
       "previous": "Casilla anterior",
-      "next": "Siguiente casilla"
+      "next": "Siguiente casilla",
+      "closeTile": "Cerrar casilla"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} coinciden con la búsqueda",
@@ -103,8 +104,9 @@
       "label": "Minimapa del tablero",
       "title": "Mapa {{size}}×{{size}}",
       "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver detalles",
-      "legend": "E = Fácil · M = Media · H = Difícil. Toca una casilla para verla abajo.",
-      "bonusCell": "{{name}}, casilla bonus, {{tier}}: ver detalles"
+      "legend": "★ Bronce = Fácil · ★ Plata = Media · ★ Oro = Difícil. Toca una casilla para verla abajo; tócala otra vez para cerrar.",
+      "bonusCell": "{{name}}, casilla bonus, {{tier}}: ver detalles",
+      "hint": "Toca una casilla del mapa para ver sus detalles aquí."
     },
     "bonus": {
       "badge": "Bonus",

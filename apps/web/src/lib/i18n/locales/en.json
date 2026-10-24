@@ -93,7 +93,8 @@
       "weightHint": "weight = progress",
       "imageSource": "Image: OSRS Wiki — {{name}}",
       "previous": "Previous tile",
-      "next": "Next tile"
+      "next": "Next tile",
+      "closeTile": "Close tile"
     },
     "rowSummary": {
       "some": "{{count}} of {{total}} match the search",
@@ -103,8 +104,9 @@
       "label": "Board mini-map",
       "title": "{{size}}×{{size}} map",
       "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show details",
-      "legend": "E = Easy · M = Medium · H = Hard. Tap a tile to see it below.",
-      "bonusCell": "{{name}}, bonus card, {{tier}}: show details"
+      "legend": "★ Bronze = Easy · ★ Silver = Medium · ★ Gold = Hard. Tap a tile to see it below; tap it again to close.",
+      "bonusCell": "{{name}}, bonus card, {{tier}}: show details",
+      "hint": "Tap a tile on the map to see its details here."
     },
     "bonus": {
       "badge": "Bonus",
