@@ -6,7 +6,8 @@
     "events": "Eventos",
     "team": "Equipe",
     "play": "Jogar",
-    "mySubmissions": "Meus envios"
+    "mySubmissions": "Meus envios",
+    "profile": "Meu perfil"
   },
   "board": {
     "noActiveEvent": "Não há um evento ativo para exibir.",
@@ -861,5 +862,100 @@
     "noTeams": "Este evento ainda não tem times.",
     "bonus": "Bônus",
     "bonusShort": "bônus {{points}}"
+  },
+  "profile": {
+    "eyebrow": "Conta",
+    "title": "Meu perfil",
+    "description": "Seus dados do Discord e do OSRS. Usamos quando você entra em um evento e para equilibrar os times.",
+    "login": "Entre para ver seu perfil.",
+    "discord": {
+      "id": "ID do Discord {{id}}",
+      "automatic": "Automático · do seu login no Discord"
+    },
+    "accounts": {
+      "title": "Contas OSRS",
+      "description": "Os dados vêm do Wise Old Man e não podem ser editados aqui.",
+      "add": "Adicionar conta",
+      "empty": "Nenhuma conta ainda. Adicione primeiro sua conta principal."
+    },
+    "account": {
+      "main": "Main · padrão no bingo",
+      "alt": "Alt · só experiência",
+      "mainLabel": "Conta principal {{rsn}}",
+      "altLabel": "Conta alt {{rsn}}",
+      "updated": "Atualizado no Wise Old Man {{ago}}",
+      "openWom": "Abrir perfil no WOM",
+      "altNote": "Alts contam só para sua experiência no equilíbrio dos times.",
+      "notFoundHint": "Confira o nome ou rastreie o jogador no Wise Old Man primeiro. Esta conta não conta até ser encontrada."
+    },
+    "wom": {
+      "found": "Encontrado no Wise Old Man",
+      "notFound": "Não encontrado no Wise Old Man",
+      "unavailable": "Não foi possível acessar o Wise Old Man, tente mais tarde"
+    },
+    "stats": {
+      "totalLevel": "Nível total",
+      "ehp": "EHP",
+      "ehb": "EHB",
+      "bossKc": "KC de bosses (todos)"
+    },
+    "actions": {
+      "refresh": "Atualizar do WOM",
+      "main": "Tornar main",
+      "track": "Rastrear no WOM",
+      "remove": "Remover",
+      "more": "Mais opções para {{rsn}}"
+    },
+    "add": {
+      "title": "Adicionar conta",
+      "rsn": "Nome no RuneScape (RSN)",
+      "firstHint": "Sua primeira conta vira a main, a padrão no bingo.",
+      "altHint": "Contas extras são alts: contam só para sua experiência.",
+      "submit": "Adicionar conta",
+      "checking": "Consultando o Wise Old Man…",
+      "added": "{{rsn}} adicionada."
+    },
+    "balance": {
+      "title": "Experiência para equilíbrio dos times",
+      "description": "Main + alts encontradas no Wise Old Man. Os admins usam isso para equilibrar os times.",
+      "bossKc": "Total de KC de bosses",
+      "ehb": "Total de EHB",
+      "counted": "{{counted}} de {{total}} contas contadas",
+      "notFound": "{{names}} não encontrada(s)"
+    },
+    "preferences": {
+      "title": "Preferências do clã",
+      "description": "Salvas no seu perfil e reaproveitadas nos próximos eventos.",
+      "activity": "Atividade habitual durante eventos",
+      "save": "Salvar preferências",
+      "saved": "Preferências salvas.",
+      "timezone": "Fuso horário",
+      "noTimezone": "Não definido",
+      "detected": "Detectado pelo seu navegador. Salve para manter."
+    },
+    "activities": {
+      "under_1h": "Menos de 1 h por dia",
+      "one_to_three_h": "1 a 3 h por dia",
+      "over_3h": "Mais de 3 h por dia"
+    },
+    "errors": {
+      "rsnTaken": "Esta conta já está ligada a outro jogador.",
+      "rsnAlreadyYours": "Esta conta já está no seu perfil.",
+      "rsnInvalid": "Use de 1 a 12 letras, números, espaços, - ou _.",
+      "tooMany": "Você pode ligar até 10 contas.",
+      "mainNeeded": "Torne outra conta a main antes de remover esta.",
+      "cooldown": "Atualizado há menos de uma hora. Tente mais tarde.",
+      "accountMissing": "Esta conta não está mais no seu perfil. Recarregue a página."
+    },
+    "combat": {
+      "title": "Níveis de combate",
+      "attack": "Ataque",
+      "strength": "Força",
+      "defence": "Defesa",
+      "hitpoints": "Vida",
+      "ranged": "Distância",
+      "prayer": "Oração",
+      "magic": "Magia"
+    }
   }
 }

@@ -42,7 +42,8 @@ function BottomItem({ entry }: { entry: NavEntry }) {
 /** Mobile bottom bar: Board, Events, My submissions and Admin for administrators. */
 export function MobileBottomBar({ isAdmin }: { isAdmin: boolean }) {
   const { t } = useTranslation()
-  const entries = isAdmin ? [...PLAY_ENTRIES, ADMIN_TAB] : PLAY_ENTRIES
+  const play = PLAY_ENTRIES.filter((entry) => !entry.desktopOnly)
+  const entries = isAdmin ? [...play, ADMIN_TAB] : play
   return (
     <nav
       aria-label={t('navigation.mobile')}

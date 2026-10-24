@@ -6,7 +6,8 @@
     "events": "Eventos",
     "team": "Equipo",
     "play": "Jugar",
-    "mySubmissions": "Mis envíos"
+    "mySubmissions": "Mis envíos",
+    "profile": "Mi perfil"
   },
   "board": {
     "noActiveEvent": "No hay un evento activo para mostrar.",
@@ -861,5 +862,100 @@
     "noTeams": "Este evento todavía no tiene equipos.",
     "bonus": "Bonus",
     "bonusShort": "bonus {{points}}"
+  },
+  "profile": {
+    "eyebrow": "Cuenta",
+    "title": "Mi perfil",
+    "description": "Tus datos de Discord y OSRS. Los usamos cuando te unes a un evento y para equilibrar los equipos.",
+    "login": "Inicia sesión para ver tu perfil.",
+    "discord": {
+      "id": "ID de Discord {{id}}",
+      "automatic": "Automático · de tu inicio de sesión en Discord"
+    },
+    "accounts": {
+      "title": "Cuentas de OSRS",
+      "description": "Los datos vienen de Wise Old Man y no se pueden editar aquí.",
+      "add": "Añadir cuenta",
+      "empty": "Aún no hay cuentas. Añade primero tu cuenta principal."
+    },
+    "account": {
+      "main": "Main · predeterminada en el bingo",
+      "alt": "Alt · solo experiencia",
+      "mainLabel": "Cuenta principal {{rsn}}",
+      "altLabel": "Cuenta alt {{rsn}}",
+      "updated": "Actualizado en Wise Old Man {{ago}}",
+      "openWom": "Abrir perfil en WOM",
+      "altNote": "Las alts solo cuentan para tu experiencia en el equilibrio de equipos.",
+      "notFoundHint": "Revisa el nombre o rastrea al jugador en Wise Old Man primero. Esta cuenta no cuenta hasta que se encuentre."
+    },
+    "wom": {
+      "found": "Encontrado en Wise Old Man",
+      "notFound": "No encontrado en Wise Old Man",
+      "unavailable": "No se pudo conectar con Wise Old Man, inténtalo más tarde"
+    },
+    "stats": {
+      "totalLevel": "Nivel total",
+      "ehp": "EHP",
+      "ehb": "EHB",
+      "bossKc": "KC de jefes (todos)"
+    },
+    "actions": {
+      "refresh": "Actualizar desde WOM",
+      "main": "Hacer main",
+      "track": "Rastrear en WOM",
+      "remove": "Quitar",
+      "more": "Más opciones para {{rsn}}"
+    },
+    "add": {
+      "title": "Añadir cuenta",
+      "rsn": "Nombre en RuneScape (RSN)",
+      "firstHint": "Tu primera cuenta será la main, la predeterminada en el bingo.",
+      "altHint": "Las cuentas extra son alts: solo cuentan para tu experiencia.",
+      "submit": "Añadir cuenta",
+      "checking": "Consultando Wise Old Man…",
+      "added": "{{rsn}} añadida."
+    },
+    "balance": {
+      "title": "Experiencia para equilibrar equipos",
+      "description": "Main + alts encontradas en Wise Old Man. Los admins lo usan para equilibrar los equipos.",
+      "bossKc": "Total de KC de jefes",
+      "ehb": "Total de EHB",
+      "counted": "{{counted}} de {{total}} cuentas contadas",
+      "notFound": "{{names}} no encontrada(s)"
+    },
+    "preferences": {
+      "title": "Preferencias del clan",
+      "description": "Se guardan en tu perfil y se reutilizan en próximos eventos.",
+      "activity": "Actividad habitual durante eventos",
+      "save": "Guardar preferencias",
+      "saved": "Preferencias guardadas.",
+      "timezone": "Zona horaria",
+      "noTimezone": "Sin definir",
+      "detected": "Detectada por tu navegador. Guarda para mantenerla."
+    },
+    "activities": {
+      "under_1h": "Menos de 1 h al día",
+      "one_to_three_h": "De 1 a 3 h al día",
+      "over_3h": "Más de 3 h al día"
+    },
+    "errors": {
+      "rsnTaken": "Esta cuenta ya está vinculada a otro jugador.",
+      "rsnAlreadyYours": "Esta cuenta ya está en tu perfil.",
+      "rsnInvalid": "Usa de 1 a 12 letras, números, espacios, - o _.",
+      "tooMany": "Puedes vincular hasta 10 cuentas.",
+      "mainNeeded": "Haz main otra cuenta antes de quitar esta.",
+      "cooldown": "Actualizado hace menos de una hora. Inténtalo más tarde.",
+      "accountMissing": "Esta cuenta ya no está en tu perfil. Recarga la página."
+    },
+    "combat": {
+      "title": "Niveles de combate",
+      "attack": "Ataque",
+      "strength": "Fuerza",
+      "defence": "Defensa",
+      "hitpoints": "Vida",
+      "ranged": "Distancia",
+      "prayer": "Plegaria",
+      "magic": "Magia"
+    }
   }
 }

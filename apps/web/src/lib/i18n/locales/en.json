@@ -6,7 +6,8 @@
     "events": "Events",
     "team": "Team",
     "play": "Play",
-    "mySubmissions": "My submissions"
+    "mySubmissions": "My submissions",
+    "profile": "My profile"
   },
   "board": {
     "noActiveEvent": "There is no active event to display.",
@@ -863,5 +864,100 @@
     "noTeams": "This event has no teams yet.",
     "bonus": "Bonus",
     "bonusShort": "bonus {{points}}"
+  },
+  "profile": {
+    "eyebrow": "Account",
+    "title": "My profile",
+    "description": "Your Discord and OSRS details. We use them when you join an event and to balance teams.",
+    "login": "Log in to see your profile.",
+    "discord": {
+      "id": "Discord ID {{id}}",
+      "automatic": "Automatic · from your Discord login"
+    },
+    "accounts": {
+      "title": "OSRS accounts",
+      "description": "Stats come from Wise Old Man and can't be edited here.",
+      "add": "Add account",
+      "empty": "No accounts yet. Add your main account first."
+    },
+    "account": {
+      "main": "Main · default for bingo",
+      "alt": "Alt · experience only",
+      "mainLabel": "Main account {{rsn}}",
+      "altLabel": "Alt account {{rsn}}",
+      "updated": "Updated on Wise Old Man {{ago}}",
+      "openWom": "Open profile on WOM",
+      "altNote": "Alts only count toward your experience for team balance.",
+      "notFoundHint": "Check the spelling, or track the player on Wise Old Man first. This account won't count until it's found."
+    },
+    "wom": {
+      "found": "Found on Wise Old Man",
+      "notFound": "Not found on Wise Old Man",
+      "unavailable": "Couldn't reach Wise Old Man, try again later"
+    },
+    "stats": {
+      "totalLevel": "Total level",
+      "ehp": "EHP",
+      "ehb": "EHB",
+      "bossKc": "Boss KC (all bosses)"
+    },
+    "actions": {
+      "refresh": "Update from WOM",
+      "main": "Make main",
+      "track": "Track on WOM",
+      "remove": "Remove",
+      "more": "More options for {{rsn}}"
+    },
+    "add": {
+      "title": "Add account",
+      "rsn": "RuneScape name (RSN)",
+      "firstHint": "Your first account becomes your main, the default for bingo.",
+      "altHint": "Extra accounts are alts: they only count toward your experience.",
+      "submit": "Add account",
+      "checking": "Checking Wise Old Man…",
+      "added": "{{rsn}} added."
+    },
+    "balance": {
+      "title": "Experience for team balance",
+      "description": "Main + alts found on Wise Old Man. Admins use this to balance teams.",
+      "bossKc": "Boss KC total",
+      "ehb": "EHB total",
+      "counted": "{{counted}} of {{total}} accounts counted",
+      "notFound": "{{names}} not found"
+    },
+    "preferences": {
+      "title": "Clan preferences",
+      "description": "Saved on your profile and reused in future events.",
+      "activity": "Usual activity during events",
+      "save": "Save preferences",
+      "saved": "Preferences saved.",
+      "timezone": "Time zone",
+      "noTimezone": "Not set",
+      "detected": "Detected from your browser. Save to keep it."
+    },
+    "activities": {
+      "under_1h": "Less than 1 h per day",
+      "one_to_three_h": "1 to 3 h per day",
+      "over_3h": "More than 3 h per day"
+    },
+    "errors": {
+      "rsnTaken": "This account is already linked to another player.",
+      "rsnAlreadyYours": "This account is already on your profile.",
+      "rsnInvalid": "Use 1–12 letters, numbers, spaces, - or _.",
+      "tooMany": "You can link up to 10 accounts.",
+      "mainNeeded": "Make another account the main before removing this one.",
+      "cooldown": "Updated less than an hour ago. Try again later.",
+      "accountMissing": "This account is no longer on your profile. Reload the page."
+    },
+    "combat": {
+      "title": "Combat levels",
+      "attack": "Attack",
+      "strength": "Strength",
+      "defence": "Defence",
+      "hitpoints": "Hitpoints",
+      "ranged": "Ranged",
+      "prayer": "Prayer",
+      "magic": "Magic"
+    }
   }
 }

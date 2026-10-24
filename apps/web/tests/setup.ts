@@ -87,3 +87,10 @@ vi.mock('../src/features/scoring/api/scoringApi', () => ({
   fetchOwnTeamScore: vi.fn().mockRejectedValue(new Error('Not on a team')),
   fetchRanking: vi.fn(),
 }))
+
+vi.mock('../src/features/profiles/api/profileApi', () => ({
+  fetchProfile: vi.fn(),
+  savePreferences: vi.fn(),
+  addAccount: vi.fn(),
+  runAccountAction: vi.fn(),
+}))

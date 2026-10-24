@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     max_screenshot_bytes: int = Field(default=5 * 1024 * 1024, ge=1024)
     screenshot_url_ttl_seconds: int = Field(default=300, ge=30, le=3600)
 
+    # Wise Old Man (feature 021). An API key raises the limit from 20 to 100 requests/min.
+    wom_base_url: str = "https://api.wiseoldman.net/v2"
+    wom_api_key: SecretStr = SecretStr("")
+    wom_user_agent: str = "osrs-bingo (Thunder Crabs clan bingo)"
+    wom_timeout_seconds: float = Field(default=10, gt=0, le=60)
+
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
 
     @field_validator("cors_origins", "admin_discord_ids", mode="before")

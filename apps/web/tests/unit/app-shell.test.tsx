@@ -59,6 +59,10 @@ describe('App shell v2', () => {
       'page',
     )
     expect(within(sidebar).getByRole('link', { name: 'Events' })).toHaveAttribute('href', '/events')
+    expect(within(sidebar).getByRole('link', { name: 'My profile' })).toHaveAttribute(
+      'href',
+      '/profile',
+    )
     expect(within(sidebar).getByRole('link', { name: 'My submissions' })).toHaveAttribute(
       'href',
       '/submissions',
@@ -69,6 +73,7 @@ describe('App shell v2', () => {
 
     const bottomBar = screen.getByRole('navigation', { name: 'Mobile navigation' })
     expect(within(bottomBar).queryByRole('link', { name: 'Admin' })).not.toBeInTheDocument()
+    expect(within(bottomBar).queryByRole('link', { name: 'My profile' })).not.toBeInTheDocument()
     expect(within(bottomBar).getByRole('link', { name: 'My submissions' })).toHaveAttribute(
       'href',
       '/submissions',

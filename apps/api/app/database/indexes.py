@@ -83,6 +83,16 @@ class IndexManager:
             {"name": "submissions_event_preverification"},
         ),
         (
+            "player_profiles",
+            [("accounts.normalized", 1)],
+            {
+                # An RSN can be linked to only one user (feature 021).
+                "name": "player_profiles_rsn_unique",
+                "unique": True,
+                "partialFilterExpression": {"accounts.normalized": {"$exists": True}},
+            },
+        ),
+        (
             "submissions",
             [("preverification_gate", 1)],
             {

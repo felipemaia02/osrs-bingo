@@ -1,3 +1,5 @@
+import AccountCircle from '@mui/icons-material/AccountCircle'
+import AccountCircleOutlined from '@mui/icons-material/AccountCircleOutlined'
 import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings'
 import AdminPanelSettingsOutlined from '@mui/icons-material/AdminPanelSettingsOutlined'
 import CalendarMonth from '@mui/icons-material/CalendarMonth'
@@ -33,6 +35,8 @@ export interface NavEntry {
   activeIcon: IconComponent
   /** Exact match only (index routes such as `/` and `/admin`). */
   exact?: boolean
+  /** Hidden from the mobile bottom bar (reached from the account menu instead). */
+  desktopOnly?: boolean
 }
 
 export const PLAY_ENTRIES: NavEntry[] = [
@@ -51,6 +55,14 @@ export const PLAY_ENTRIES: NavEntry[] = [
     icon: CalendarMonthOutlined,
     activeIcon: CalendarMonth,
     exact: true,
+  },
+  {
+    key: 'profile',
+    labelKey: 'navigation.profile',
+    to: '/profile',
+    icon: AccountCircleOutlined,
+    activeIcon: AccountCircle,
+    desktopOnly: true,
   },
   {
     key: 'submissions',

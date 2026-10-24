@@ -22,6 +22,8 @@ from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
 from app.modules.events.router import router as events_router
 from app.modules.players.router import router as players_router
+from app.modules.profiles.router import router as profile_router
+from app.modules.profiles.wom import WomClient
 from app.modules.scoring.router import admin_router as admin_scoring_router
 from app.modules.scoring.router import player_router as scoring_router
 from app.modules.security.middleware import RequestSafetyMiddleware
@@ -47,6 +49,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await db_client.connect(settings)
         app.state.db_client = db_client
         app.state.screenshot_storage = build_storage(settings)
+        app.state.wom_client = WomClient(settings)
         if settings.app_env != "development" and not uses_bucket(settings):
             # A container folder is wiped on every deploy: screenshots would be lost.
             log_event(logger, 30, "screenshot_storage_local_outside_development")
@@ -56,6 +59,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         yield
     finally:
         log_event(logger, 20, "application_stopping")
+        if hasattr(app.state, "wom_client"):
+            await app.state.wom_client.close()
         await db_client.disconnect()
 
 
@@ -130,6 +135,7 @@ app.include_router(submissions_router)
 app.include_router(admin_submissions_router)
 app.include_router(scoring_router)
 app.include_router(admin_scoring_router)
+app.include_router(profile_router)
 
 
 @app.get("/health", tags=["infra"])
