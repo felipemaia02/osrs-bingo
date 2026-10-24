@@ -51,7 +51,8 @@ class Settings(BaseSettings):
     wom_base_url: str = "https://api.wiseoldman.net/v2"
     wom_api_key: SecretStr = SecretStr("")
     wom_user_agent: str = "osrs-bingo (Thunder Crabs clan bingo)"
-    wom_timeout_seconds: float = Field(default=10, gt=0, le=60)
+    # Tracking a player WOM never saw makes it read the hiscores, which can take a while.
+    wom_timeout_seconds: float = Field(default=20, gt=0, le=60)
 
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
 

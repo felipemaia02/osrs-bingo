@@ -121,9 +121,12 @@ class ProfileService:
         return await self._save(user, accounts)
 
     async def _sync(self, account: LinkedAccount, track: bool) -> None:
-        """Reads (or tracks) the RSN on WOM; on failure the last stats are kept."""
+        """Reads the RSN on WOM, asking WOM to track it when it isn't tracked yet (players
+        WOM never saw read as not found); on failure the last stats are kept."""
         try:
-            stats = await (self._wom.track if track else self._wom.player)(account["rsn"])
+            stats = None if track else await self._wom.player(account["rsn"])
+            if stats is None:
+                stats = await self._wom.track(account["rsn"])
         except WomUnavailableError:
             account["wom_status"] = WomStatus.UNAVAILABLE
             return

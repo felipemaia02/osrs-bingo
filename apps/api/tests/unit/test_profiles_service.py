@@ -103,6 +103,7 @@ async def test_not_found_accounts_are_listed_and_excluded_from_totals(
 ) -> None:
     await service.add_account(USER, AccountAdd(rsn="Main"))
     wom.player.return_value = None
+    wom.track.return_value = None  # the RSN doesn't exist in OSRS either
     profile = await service.add_account(USER, AccountAdd(rsn="Ghost"))
 
     assert profile.accounts[1].wom_status == "not_found"
@@ -231,3 +232,15 @@ async def test_member_search_shows_username_and_main_rsn() -> None:
         (str(friend), "monk.mateus", "Monk Mateus"),
         (str(loner), "mo.fish", None),
     ]
+
+
+async def test_untracked_players_are_tracked_when_added(
+    service: ProfileService, wom: AsyncMock
+) -> None:
+    wom.player.return_value = None  # WOM never saw this RSN
+    wom.track.return_value = stats(boss_kc=42)
+
+    profile = await service.add_account(USER, AccountAdd(rsn="Newbie"))
+
+    assert profile.accounts[0].wom_status == "found" and profile.accounts[0].boss_kc == 42
+    wom.track.assert_awaited_once_with("Newbie")
