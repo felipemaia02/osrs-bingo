@@ -1199,5 +1199,35 @@
     "browseEvents": "Ver eventos",
     "notPlaying": "Evento activo — no estás jugando en él.",
     "browseBoard": "Ver tablero"
+  },
+  "status": {
+    "home": "Teletransportarse al inicio",
+    "notFound": {
+      "eyebrow": "404",
+      "title": "I can't reach that!",
+      "message": "Esta página no existe. Puede haberse movido, o la dirección es incorrecta."
+    },
+    "noAccess": {
+      "eyebrow": "Zona de miembros",
+      "title": "Necesitas más nivel para entrar",
+      "message": "Esta zona es para los administradores del clan. Habla con un admin si crees que deberías tener acceso."
+    },
+    "login": {
+      "eyebrow": "Solo miembros",
+      "title": "Inicia sesión para continuar",
+      "message": "Inicia sesión con Discord para entrar en esta zona."
+    },
+    "crash": {
+      "eyebrow": "Oh dear…",
+      "title": "You are dead!",
+      "message": "Algo salió mal y esta página falló. Tu progreso está a salvo — haz respawn para intentarlo de nuevo.",
+      "respawn": "Respawn"
+    },
+    "offline": {
+      "eyebrow": "Conexión perdida",
+      "title": "El mundo está offline",
+      "message": "No podemos conectar con el servidor del bingo ahora. Inténtalo de nuevo en un momento.",
+      "retry": "Intentar de nuevo"
+    }
   }
 }

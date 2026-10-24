@@ -23,3 +23,8 @@ apiClient.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+/** True when the request never got an answer (server down, offline, CORS/network failure). */
+export function isNetworkError(error: unknown): boolean {
+  return axios.isAxiosError(error) && !error.response
+}

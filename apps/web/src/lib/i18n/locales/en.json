@@ -1201,5 +1201,35 @@
     "browseEvents": "Browse events",
     "notPlaying": "Active event — you're not playing in it.",
     "browseBoard": "Browse board"
+  },
+  "status": {
+    "home": "Teleport home",
+    "notFound": {
+      "eyebrow": "404",
+      "title": "I can't reach that!",
+      "message": "This page doesn't exist. It may have moved, or the path is wrong."
+    },
+    "noAccess": {
+      "eyebrow": "Members' area",
+      "title": "You need a higher level to enter",
+      "message": "This area is for clan administrators. Ask an admin if you think you should have access."
+    },
+    "login": {
+      "eyebrow": "Members only",
+      "title": "Log in to continue",
+      "message": "Log in with Discord to enter this area."
+    },
+    "crash": {
+      "eyebrow": "Oh dear…",
+      "title": "You are dead!",
+      "message": "Something went wrong and this page crashed. Your progress is safe — respawn to try again.",
+      "respawn": "Respawn"
+    },
+    "offline": {
+      "eyebrow": "Connection lost",
+      "title": "The world is offline",
+      "message": "We can't reach the bingo server right now. Try again in a moment.",
+      "retry": "Try again"
+    }
   }
 }

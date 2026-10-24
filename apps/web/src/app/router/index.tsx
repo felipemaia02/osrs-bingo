@@ -5,6 +5,7 @@ import { PlayerEventsPage } from '../../features/events/pages/PlayerEventsPage'
 import { LoginPage } from '../../features/auth/pages/LoginPage'
 import { TeamsPage } from '../../features/teams/pages/TeamsPage'
 
+import { NotFoundPage } from '../../components/common/status/StatusScreens'
 import { AdminRoute } from '../../features/administration/components/AdminRoute'
 import { AdministratorsPage } from '../../features/administration/pages/AdministratorsPage'
 import { AdminHomePage } from '../../features/administration/pages/AdminHomePage'
@@ -37,7 +38,9 @@ export function AppRouter() {
         <Route path="boards" element={<BoardBuilderPage />} />
         <Route path="administrators" element={<AdministratorsPage />} />
         <Route path="ranking" element={<RankingPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

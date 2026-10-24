@@ -5,7 +5,9 @@ import { useSession } from '../../features/auth/hooks/useSession'
 import { ActiveEventStatus } from '../../features/events/components/ActiveEventStatus'
 import { usePendingReviews } from '../../features/submissions/hooks/usePendingReviews'
 import { useDraftRegistrationCounts } from '../../features/teams/hooks/useDraftRegistrationCounts'
+import { isNetworkError } from '../../lib/api'
 import { LanguageMenuButton, LanguageSwitcher } from './LanguageSwitcher'
+import { OfflineScreen } from './status/StatusScreens'
 import { MobileBottomBar } from './shell/MobileBottomBar'
 import { ShellSidebar } from './shell/ShellSidebar'
 import { Wordmark } from './shell/Wordmark'
@@ -59,7 +61,12 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
           aria-label={t('shell.main')}
           className={`min-w-0 flex-1 px-4 pb-[90px] pt-4 md:pb-8 ${desktopPadding}`}
         >
-          {children}
+          {/* Nothing works without the server: say so once instead of every section failing. */}
+          {session.isError && isNetworkError(session.error) ? (
+            <OfflineScreen onRetry={() => void session.refetch()} />
+          ) : (
+            children
+          )}
         </main>
       </div>
 

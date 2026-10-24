@@ -1,8 +1,14 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useSession } from '../../auth/hooks/useSession'
 import { AppShell } from '../../../components/common/AppShell'
+import {
+  LoginRequiredScreen,
+  NoAccessScreen,
+  OfflineScreen,
+} from '../../../components/common/status/StatusScreens'
 
+/** Admin pages: visitors are asked to log in, players see "no access" (feature 027). */
 export function AdminRoute() {
   const { t } = useTranslation()
   const session = useSession()
@@ -15,14 +21,19 @@ export function AdminRoute() {
   if (session.isError)
     return (
       <AppShell>
-        <p role="alert">{t('common.apiError')}</p>
+        <OfflineScreen onRetry={() => void session.refetch()} />
       </AppShell>
     )
-  if (!session.data) return <Navigate to="/login" replace />
+  if (!session.data)
+    return (
+      <AppShell>
+        <LoginRequiredScreen />
+      </AppShell>
+    )
   if (!session.data.is_admin)
     return (
       <AppShell>
-        <p role="alert">{t('auth.adminRequired')}</p>
+        <NoAccessScreen />
       </AppShell>
     )
   return <Outlet />
