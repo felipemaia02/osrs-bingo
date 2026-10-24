@@ -103,6 +103,22 @@ class IndexManager:
             },
         ),
         (
+            "droptracker_drops",
+            [("drop_id", 1)],
+            {"name": "droptracker_drops_id_unique", "unique": True},
+        ),
+        (
+            "droptracker_drops",
+            [("received_at", -1), ("drop_id", -1)],
+            {"name": "droptracker_drops_recent"},
+        ),
+        (
+            "droptracker_drops",
+            [("expires_at", 1)],
+            # Raw drops expire after DROPTRACKER_RETENTION_DAYS (stored per drop).
+            {"name": "droptracker_drops_ttl", "expireAfterSeconds": 0},
+        ),
+        (
             "submissions",
             [("preverification_gate", 1)],
             {

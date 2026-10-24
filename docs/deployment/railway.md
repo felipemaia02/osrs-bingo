@@ -81,6 +81,19 @@ Maintenance mode (feature 028), optional on **api**:
 
 Changing them restarts the `api` service (about a minute). Players then see "The world is being updated" with the message, and the API answers their requests with 503; `/health`, `/status` and the Discord login stay open so admins can log in and test before reopening. Admins see a "Maintenance mode is on" banner.
 
+DropTracker drop ingestion (feature 029), optional on **api**:
+
+| Variable | Value |
+|---|---|
+| `DROPTRACKER_API_KEY` | The group's export key (droptracker.io → group settings). Secret: set it only here |
+| `DROPTRACKER_GROUP_ID` | `126` (AstralStar) |
+| `DROPTRACKER_INGEST_ENABLED` | `true` starts pulling the clan's drops; `false` (default) makes no request |
+| `DROPTRACKER_POLL_SECONDS` | Seconds between polls; default `300` (5 minutes), minimum `30` |
+| `DROPTRACKER_RETENTION_DAYS` | Days raw drops are kept; default `30` |
+| `DROPTRACKER_BINGO_ENABLED` | Reserved for phase 2 (counting drops toward the bingo); leave `false` |
+
+Admins check what arrived at `/api/admin/droptracker/status` and `/api/admin/droptracker/drops` (filters `player`, `npc`, `item`, `min_value`). Phase 1 never changes events, submissions or scores. Only one API instance polls at a time.
+
 **web**
 
 | Variable | Value |

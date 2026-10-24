@@ -2,6 +2,7 @@ import logging
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from time import perf_counter
+from typing import Any
 from uuid import uuid4
 
 from fastapi import Depends, FastAPI
@@ -20,6 +21,11 @@ from app.modules.administration.router import router as administration_router
 from app.modules.auth.router import router as auth_router
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
+from app.modules.droptracker.client import DropTrackerClient
+from app.modules.droptracker.poller import DropTrackerPoller
+from app.modules.droptracker.repository import DropRepository
+from app.modules.droptracker.router import router as droptracker_router
+from app.modules.droptracker.service import DropTrackerService
 from app.modules.events.router import router as events_router
 from app.modules.maintenance.gate import maintenance_gate
 from app.modules.maintenance.router import router as maintenance_router
@@ -43,6 +49,20 @@ logger = get_logger(__name__)
 logging.getLogger("uvicorn.access").addFilter(OAuthAccessLogFilter())
 
 
+def start_droptracker(database: Any) -> DropTrackerPoller | None:
+    """Starts pulling the clan's drops when enabled and a key is set (feature 029)."""
+    if not settings.droptracker_ingest_enabled:
+        return None
+    if not settings.droptracker_api_key.get_secret_value():
+        log_event(logger, 30, "droptracker_enabled_without_key")
+        return None
+    drops = DropRepository(database)
+    service = DropTrackerService(drops, DropTrackerClient(settings), settings)
+    poller = DropTrackerPoller(service, drops, settings)
+    poller.start()
+    return poller
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     log_event(logger, 20, "application_starting")
@@ -57,12 +77,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             log_event(logger, 30, "screenshot_storage_local_outside_development")
         await IndexManager().ensure_all(db_client.database)
         await AdministrationRepository(db_client.database).initialize(settings.admin_discord_ids)
+        app.state.droptracker_poller = start_droptracker(db_client.database)
         log_event(logger, 20, "application_ready")
         yield
     finally:
         log_event(logger, 20, "application_stopping")
         if hasattr(app.state, "wom_client"):
             await app.state.wom_client.close()
+        poller = getattr(app.state, "droptracker_poller", None)
+        if poller is not None:
+            await poller.stop()
         await db_client.disconnect()
 
 
@@ -140,6 +164,7 @@ app.include_router(scoring_router)
 app.include_router(admin_scoring_router)
 app.include_router(profile_router)
 app.include_router(maintenance_router)
+app.include_router(droptracker_router)
 
 
 @app.get("/health", tags=["infra"])
