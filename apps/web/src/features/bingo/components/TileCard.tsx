@@ -34,7 +34,9 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
           ? 'border-rs-gold-bright shadow-[inset_0_0_0_1px_theme(colors.rs.gold-bright)]'
           : tile.progress?.complete
             ? 'border-rs-success'
-            : 'border-rs-border'
+            : tile.bonus
+              ? 'border-rs-gold'
+              : 'border-rs-border'
       } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-[3px] outline-rs-gold-bright' : ''}`}
     >
       <span className="relative block">
@@ -42,6 +44,15 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
         <span className="absolute left-1 top-1">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
         </span>
+        {tile.bonus && (
+          <span
+            className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-[2px] border border-rs-border-strong bg-rs-warning-bg text-[11px] text-rs-gold-bright"
+            title={t('board.bonus.card')}
+            aria-hidden="true"
+          >
+            ★
+          </span>
+        )}
       </span>
       <span className="line-clamp-2 min-h-8 text-[13px] font-semibold leading-tight">
         {tile.name}

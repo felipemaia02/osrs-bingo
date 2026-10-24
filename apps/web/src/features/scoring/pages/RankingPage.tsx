@@ -53,6 +53,9 @@ function TeamTable({ ranking }: { ranking: Ranking }) {
           <th className={`${HEAD} text-right`}>{t('ranking.tiles')}</th>
           <th className={`${HEAD} text-right`}>{t('ranking.rows')}</th>
           <th className={`${HEAD} text-right`}>{t('ranking.columns')}</th>
+          {ranking.bonus_count > 0 && (
+            <th className={`${HEAD} text-right`}>{t('ranking.bonus')}</th>
+          )}
           <th className={`${HEAD} text-right`}>{t('ranking.total')}</th>
         </tr>
       </thead>
@@ -79,6 +82,14 @@ function TeamTable({ ranking }: { ranking: Ranking }) {
               {team.column_points}
               <span className="block text-xs text-rs-muted">×{team.completed_columns}</span>
             </td>
+            {ranking.bonus_count > 0 && (
+              <td className={`${CELL} text-right tabular-nums`}>
+                {team.bonus_points}
+                <span className="block text-xs text-rs-muted">
+                  {team.completed_bonus}/{ranking.bonus_count}
+                </span>
+              </td>
+            )}
             <td className={`${CELL} text-right font-display text-xl font-bold text-rs-gold-bright`}>
               {team.total}
             </td>
@@ -114,6 +125,8 @@ function TeamCards({ ranking }: { ranking: Ranking }) {
               rows: team.row_points,
               columns: team.column_points,
             })}
+            {ranking.bonus_count > 0 &&
+              ` · ${t('ranking.bonusShort', { points: team.bonus_points })}`}
           </span>
         </li>
       ))}

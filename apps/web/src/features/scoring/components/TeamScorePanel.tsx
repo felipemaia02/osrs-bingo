@@ -26,6 +26,18 @@ export function TeamScorePanel({
       label: `${t('score.columns')} · ${line(score.completed_columns.length, score.column_bonus)}`,
       points: score.column_points,
     },
+    // Bonus row (feature 020), only when the board has one.
+    ...(score.bonus_count > 0
+      ? [
+          {
+            label: t('score.bonusCards', {
+              count: score.completed_bonus,
+              total: score.bonus_count,
+            }),
+            points: score.bonus_points,
+          },
+        ]
+      : []),
   ]
   return (
     <section
@@ -47,7 +59,7 @@ export function TeamScorePanel({
         </div>
       </div>
       <dl
-        className={`m-0 grid gap-x-6 gap-y-1 text-[13px] ${compact ? 'grid-cols-[1fr_auto]' : 'flex-1 grid-cols-[repeat(3,auto_auto)] justify-start'}`}
+        className={`m-0 grid gap-x-6 gap-y-1 text-[13px] ${compact ? 'grid-cols-[1fr_auto]' : 'flex-1 grid-cols-[repeat(4,auto_auto)] justify-start'}`}
       >
         {items.map((item) => (
           <div key={item.label} className="contents">

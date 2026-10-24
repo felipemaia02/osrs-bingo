@@ -101,7 +101,14 @@
       "label": "Minimapa del tablero",
       "title": "Mapa {{size}}×{{size}}",
       "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver en la lista",
-      "legend": "F = Fácil · M = Medio · D = Difícil. Toca una celda para ir a ella en la lista."
+      "legend": "F = Fácil · M = Medio · D = Difícil. Toca una celda para ir a ella en la lista.",
+      "bonusCell": "{{name}}, carta bonus, {{tier}}: ver en la lista"
+    },
+    "bonus": {
+      "badge": "Bonus",
+      "card": "Carta bonus",
+      "row": "Cartas bonus",
+      "section": "Cartas bonus"
     }
   },
   "tile": {
@@ -116,7 +123,8 @@
       "Low": "F",
       "Mid": "M",
       "High": "D"
-    }
+    },
+    "bonusLabel": "{{name}}, carta bonus, {{tier}}, {{points}} puntos"
   },
   "common": {
     "loading": "Cargando…",
@@ -627,6 +635,21 @@
       "column": "Bono de columna",
       "required": "Ambos son obligatorios para activar",
       "readOnly": "Fila +{{row}} · Columna +{{column}}"
+    },
+    "bonusRow": {
+      "add": "Añadir fila de bonus",
+      "label": "Fila de bonus",
+      "cell": "Bonus {{slot}}",
+      "slots_one": "Fila de bonus · {{count}} carta",
+      "slots_other": "Fila de bonus · {{count}} cartas",
+      "fewer": "Una carta bonus menos",
+      "more": "Una carta bonus más",
+      "remove": "Quitar fila de bonus",
+      "shrinkTitle": "¿Quitar casillas de bonus?",
+      "removeTitle": "¿Quitar la fila de bonus?",
+      "shrinkConfirm": "Quitar cartas",
+      "shrinkConfirmation_one": "{{count}} carta saldrá de la fila de bonus: {{names}}. Nada se guarda hasta que guardes el tablero.",
+      "shrinkConfirmation_other": "{{count}} cartas saldrán de la fila de bonus: {{names}}. Nada se guarda hasta que guardes el tablero."
     }
   },
   "brand": {
@@ -805,7 +828,8 @@
     "labelComplete": "completa",
     "labelProgress": "progreso {{value}} de {{requirement}}",
     "detailProgress": "Progreso del equipo: {{value}} de {{requirement}} · vale {{points}} pts una vez",
-    "dropCount": "{{name}} × {{count}}"
+    "dropCount": "{{name}} × {{count}}",
+    "bonusCards": "Cartas bonus ({{count}} de {{total}})"
   },
   "ranking": {
     "eyebrow": "Administración · privado",
@@ -834,6 +858,8 @@
     "player": "Jugador",
     "contributionShort": "Contribución",
     "noPlayers": "No hay jugadores en este equipo.",
-    "noTeams": "Este evento todavía no tiene equipos."
+    "noTeams": "Este evento todavía no tiene equipos.",
+    "bonus": "Bonus",
+    "bonusShort": "bonus {{points}}"
   }
 }

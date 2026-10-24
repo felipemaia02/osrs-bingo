@@ -102,6 +102,9 @@ const SCORE: TeamScore = {
   tile_points: 30,
   completed_tiles: 3,
   tile_count: 9,
+  bonus_points: 0,
+  completed_bonus: 0,
+  bonus_count: 0,
   completed_rows: [1],
   completed_columns: [],
   row_points: 25,
@@ -113,6 +116,7 @@ const SCORE: TeamScore = {
       position,
       row: 1,
       column: position,
+      bonus: false,
       progress: 8,
       requirement: 8,
       complete: true,
@@ -123,6 +127,7 @@ const SCORE: TeamScore = {
       position: 4,
       row: 2,
       column: 1,
+      bonus: false,
       progress: 6,
       requirement: 8,
       complete: false,
@@ -193,6 +198,37 @@ describe('board help', () => {
   })
 })
 
+describe('bonus row on the board', () => {
+  it('shows bonus cards under the grid and in the score panel', async () => {
+    vi.mocked(fetchPublicBoard).mockResolvedValue({
+      ...BOARD,
+      bonus_slots: 1,
+      positions: [
+        ...BOARD.positions,
+        { position: 10, row: 4, column: 1, bonus: true, card: card('Nex') },
+      ],
+    })
+    vi.mocked(fetchOwnTeamScore).mockResolvedValue({
+      ...SCORE,
+      total: 75,
+      bonus_points: 20,
+      completed_bonus: 1,
+      bonus_count: 1,
+    })
+    renderApp(<HomePage />, '/')
+
+    const bonusRow = await screen.findByRole('group', { name: 'Bonus cards' })
+    expect(
+      within(bonusRow).getByRole('button', { name: /^Nex, bonus card, Medium/ }),
+    ).toBeInTheDocument()
+    const grid = screen.getByRole('region', { name: '3 by 3 board' })
+    expect(within(grid).getAllByRole('button')).toHaveLength(10)
+    expect(screen.getByRole('region', { name: "Your team's score" })).toHaveTextContent(
+      'Bonus cards (1 of 1)20',
+    )
+  })
+})
+
 describe('private ranking', () => {
   const RANKING: Ranking = {
     event_id: EVENT.id,
@@ -200,6 +236,7 @@ describe('private ranking', () => {
     event_status: 'active',
     size: 3,
     tile_count: 9,
+    bonus_count: 0,
     row_bonus: 25,
     column_bonus: 30,
     calculated_at: '2026-10-23T12:00:00Z',
@@ -218,6 +255,8 @@ describe('private ranking', () => {
         row_points: 25,
         completed_columns: 0,
         column_points: 0,
+        bonus_points: 0,
+        completed_bonus: 0,
       },
       {
         position: 2,
@@ -233,6 +272,8 @@ describe('private ranking', () => {
         row_points: 0,
         completed_columns: 1,
         column_points: 30,
+        bonus_points: 0,
+        completed_bonus: 0,
       },
       {
         position: 2,
@@ -248,6 +289,8 @@ describe('private ranking', () => {
         row_points: 25,
         completed_columns: 0,
         column_points: 0,
+        bonus_points: 0,
+        completed_bonus: 0,
       },
       {
         position: 4,
@@ -263,6 +306,8 @@ describe('private ranking', () => {
         row_points: 0,
         completed_columns: 0,
         column_points: 0,
+        bonus_points: 0,
+        completed_bonus: 0,
       },
     ],
     players: [

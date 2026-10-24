@@ -17,6 +17,8 @@ const TIERS: CardDifficulty[] = ['Low', 'Mid', 'High']
 interface BuilderStatusPanelProps {
   editable: boolean
   size: number
+  /** Grid plus bonus-row positions (feature 020). */
+  total: number
   bonuses: LineBonuses
   onBonusChange: (line: keyof LineBonuses, value: number | null) => void
   filled: number
@@ -34,6 +36,7 @@ interface BuilderStatusPanelProps {
 export function BuilderStatusPanel({
   editable,
   size,
+  total,
   bonuses,
   onBonusChange,
   filled,
@@ -47,7 +50,6 @@ export function BuilderStatusPanel({
   onSave,
 }: BuilderStatusPanelProps) {
   const { t } = useTranslation()
-  const total = size * size
   const empty = total - filled
   return (
     <div className="flex flex-wrap items-center gap-[18px] rounded border border-rs-border bg-rs-surface px-3.5 py-2.5">

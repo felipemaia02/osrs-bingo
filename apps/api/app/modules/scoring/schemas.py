@@ -16,6 +16,7 @@ class TileProgressResponse(BaseModel):
     position: int
     row: int
     column: int
+    bonus: bool
     progress: float
     requirement: float
     complete: bool
@@ -32,6 +33,9 @@ class TeamScoreResponse(BaseModel):
     tile_points: float
     completed_tiles: int
     tile_count: int
+    bonus_points: float
+    completed_bonus: int
+    bonus_count: int
     completed_rows: list[int]
     completed_columns: list[int]
     row_points: float
@@ -56,6 +60,8 @@ class RankingTeam(BaseModel):
     row_points: float
     completed_columns: int
     column_points: float
+    bonus_points: float
+    completed_bonus: int
 
 
 class PlayerContribution(BaseModel):
@@ -71,6 +77,7 @@ class RankingResponse(BaseModel):
     event_status: EventStatus
     size: int
     tile_count: int
+    bonus_count: int
     row_bonus: int | None
     column_bonus: int | None
     teams: list[RankingTeam]

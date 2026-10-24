@@ -31,6 +31,7 @@ class BoardRepository:
         size: int,
         row_bonus: int | None = None,
         column_bonus: int | None = None,
+        bonus_slots: int = 0,
     ) -> BoardDocument | None:
         object_id = self._object_id(event_id)
         if object_id is None:
@@ -46,6 +47,7 @@ class BoardRepository:
                 "size": size,
                 "row_bonus": row_bonus,
                 "column_bonus": column_bonus,
+                "bonus_slots": bonus_slots,
                 "positions": serialized,
                 "created_by": actor_id,
                 "updated_by": actor_id,
@@ -68,6 +70,7 @@ class BoardRepository:
                     "size": size,
                     "row_bonus": row_bonus,
                     "column_bonus": column_bonus,
+                    "bonus_slots": bonus_slots,
                     "positions": serialized,
                     "updated_by": actor_id,
                     "updated_at": now,

@@ -157,7 +157,12 @@ export function SubmitModal({
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="truncate font-semibold">{item.card.name}</span>
                     <span className="text-xs text-rs-muted">
-                      {t('submissions.form.positionLabel', { row: item.row, column: item.column })}
+                      {item.bonus
+                        ? `★ ${t('board.bonus.card')}`
+                        : t('submissions.form.positionLabel', {
+                            row: item.row,
+                            column: item.column,
+                          })}
                     </span>
                   </span>
                   {gateLabel(item)}

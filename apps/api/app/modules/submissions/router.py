@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.core.storage import ScreenshotStorage
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
+from app.modules.boards.schemas import MAX_BOARD_POSITIONS
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.submissions.repository import SubmissionRepository
@@ -58,7 +59,7 @@ async def submit(
     user: UserDependency,
     service: SubmissionServiceDependency,
     kind: Annotated[SubmissionKind, Form()],
-    position: Annotated[int, Form(ge=1, le=36)],
+    position: Annotated[int, Form(ge=1, le=MAX_BOARD_POSITIONS)],
     screenshot: Annotated[UploadFile, File()],
     drop_key: Annotated[str | None, Form(max_length=120)] = None,
     note: Annotated[str | None, Form(max_length=NOTE_MAX_LENGTH)] = None,

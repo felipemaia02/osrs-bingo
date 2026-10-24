@@ -4,7 +4,7 @@ import type { Tile, TileMatch } from '../types'
 /** Accessible name: "Alchemical Hydra, row 1 column 3, Hard, 20 points, matches search: …". */
 export function useTileLabel(tile: Tile, match?: TileMatch): string {
   const { t } = useTranslation()
-  const base = t('tile.label', {
+  const base = t(tile.bonus ? 'tile.bonusLabel' : 'tile.label', {
     name: tile.name,
     row: tile.row,
     column: tile.col,

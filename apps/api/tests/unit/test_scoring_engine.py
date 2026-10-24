@@ -112,3 +112,26 @@ def test_ties_share_the_position_and_skip_the_next() -> None:
 
 def test_decimal_keeps_short_float_values() -> None:
     assert decimal(0.1) + decimal(0.2) == Decimal("0.3")
+
+
+def test_bonus_cards_score_on_their_own_and_never_complete_lines() -> None:
+    bonus_row = [
+        Tile(
+            position=9 + slot,
+            row=4,
+            column=slot,
+            score=Decimal(20),
+            requirement=Decimal(1),
+            bonus=True,
+        )
+        for slot in (1, 2, 3)
+    ]
+    tiles = [*grid(3, requirement=1), *bonus_row]
+    first_row_and_bonus_row = [drop(position) for position in (1, 2, 3, 10, 11, 12)]
+
+    score = score_team(SA, tiles, 3, first_row_and_bonus_row, BONUSES)
+
+    assert score.completed_rows == [1] and score.completed_columns == []
+    assert (score.completed_tiles, score.tile_points) == (3, 30)
+    assert (score.completed_bonus, score.bonus_points) == (3, 60)
+    assert score.total == 30 + 25 + 60

@@ -28,6 +28,8 @@ export interface BoardPosition {
   position: number
   row: number
   column: number
+  /** Bonus-row card (feature 020). */
+  bonus?: boolean
   card: BoardCardSnapshot
 }
 
@@ -39,6 +41,8 @@ export interface EventBoard {
   /** Points per completed row/column (features 006/019); null until set. */
   row_bonus?: number | null
   column_bonus?: number | null
+  /** Bonus cards under the grid (feature 020); 0 when there is no bonus row. */
+  bonus_slots?: number
   complete: boolean
   positions: BoardPosition[]
   created_at: string
@@ -51,6 +55,7 @@ export interface BoardSavePayload {
   size: number
   row_bonus: number | null
   column_bonus: number | null
+  bonus_slots: number
   positions: Array<{ position: number; card_id: string; card_revision: number }>
 }
 

@@ -23,7 +23,8 @@ import { BuilderStatusPanel } from '../components/BuilderStatusPanel'
 import { CardRulesSummary } from '../components/CardRulesSummary'
 import { MobileFilledPosition, MobilePickCard } from '../components/MobileCardStep'
 import { MobilePositionMap } from '../components/MobilePositionMap'
-import { columnOf, emptyPositions, rowOf } from '../draft'
+import { emptyPositions } from '../draft'
+import { usePositionLabel } from '../hooks/usePositionLabel'
 import { useAdminBoard, useSaveBoard } from '../hooks/useBoards'
 import { useBoardDraft } from '../hooks/useBoardDraft'
 import { useBuilderCards, type BuilderCard } from '../hooks/useBuilderCards'
@@ -188,8 +189,8 @@ function EventBoardBuilder({
   const [query, setQuery] = useState('')
   const [swapping, setSwapping] = useState(false)
   const [pendingResize, setPendingResize] = useState<PendingResize | null>(null)
-  const positionLabel = (position: number) =>
-    `${rowOf(position, draft.size)}·${columnOf(position, draft.size)}`
+  const [pendingBonus, setPendingBonus] = useState<PendingResize | null>(null)
+  const positionLabel = usePositionLabel(draft.size)
 
   const catalog = useMemo(
     () => filterCatalog(builder.catalogCards, draft.draft, { mode, difficulty, query }),
@@ -202,7 +203,7 @@ function EventBoardBuilder({
       card ? { ...counts, [card.difficulty]: counts[card.difficulty] + 1 } : counts,
     { Low: 0, Mid: 0, High: 0 },
   )
-  const empty = emptyPositions(draft.draft, draft.size).length
+  const empty = emptyPositions(draft.draft, draft.size, draft.bonusSlots).length
   const fillCount = Math.min(empty, catalog.available.length)
   const rulesCard =
     builder.cardFor(selectedKey ?? undefined) ??
@@ -237,6 +238,25 @@ function EventBoardBuilder({
       return
     }
     applyResize(size)
+  }
+
+  function applyBonusSlots(slots: number) {
+    draft.setBonusSlots(slots)
+    setSelectedPosition(null)
+    setPendingBonus(null)
+  }
+
+  /** Shrinking or removing the bonus row with cards in it asks first (feature 020). */
+  function requestBonusSlots(slots: number) {
+    const removed = draft.cardsOutsideBonusRow(slots)
+    if (removed.length) {
+      setPendingBonus({
+        size: slots,
+        names: removed.map((key) => builder.cardFor(key)?.name ?? key),
+      })
+      return
+    }
+    applyBonusSlots(slots)
   }
 
   function dropOn(position: number) {
@@ -356,12 +376,30 @@ function EventBoardBuilder({
     />
   )
 
+  const bonusDialog = pendingBonus && (
+    <ConfirmDialog
+      title={t(pendingBonus.size ? 'boards.bonusRow.shrinkTitle' : 'boards.bonusRow.removeTitle')}
+      message={t('boards.bonusRow.shrinkConfirmation', {
+        count: pendingBonus.names.length,
+        names: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(
+          pendingBonus.names,
+        ),
+      })}
+      confirmLabel={t('boards.bonusRow.shrinkConfirm')}
+      danger
+      busy={false}
+      onConfirm={() => applyBonusSlots(pendingBonus.size)}
+      onClose={() => setPendingBonus(null)}
+    />
+  )
+
   if (desktop) {
     return (
       <>
         <BuilderStatusPanel
           editable={draftEvent}
           size={draft.size}
+          total={draft.total}
           bonuses={draft.bonuses}
           onBonusChange={draft.setBonus}
           filled={filled}
@@ -380,6 +418,8 @@ function EventBoardBuilder({
           <BuilderGrid
             draft={draft.draft}
             size={draft.size}
+            bonusSlots={draft.bonusSlots}
+            onBonusSlotsChange={requestBonusSlots}
             cardFor={builder.cardFor}
             editable={editable}
             selectedPosition={selectedPosition}
@@ -419,6 +459,7 @@ function EventBoardBuilder({
         </div>
         {clearDialog}
         {resizeDialog}
+        {bonusDialog}
       </>
     )
   }
@@ -433,6 +474,8 @@ function EventBoardBuilder({
       <MobilePositionMap
         draft={draft.draft}
         size={draft.size}
+        bonusSlots={draft.bonusSlots}
+        onBonusSlotsChange={requestBonusSlots}
         cardFor={builder.cardFor}
         current={current}
         editable={editable}
@@ -487,6 +530,7 @@ function EventBoardBuilder({
       )}
       {clearDialog}
       {resizeDialog}
+      {bonusDialog}
     </>
   )
 }

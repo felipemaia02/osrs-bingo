@@ -61,11 +61,13 @@ class BoardService:
                     exclude={"revision", "change_reason", "created_by", "created_at"}
                 ),
             )
+            row, column, bonus = grid_place(selected.position, payload.size)
             positions.append(
                 BoardPositionResponse(
                     position=selected.position,
-                    row=(selected.position - 1) // payload.size + 1,
-                    column=(selected.position - 1) % payload.size + 1,
+                    row=row,
+                    column=column,
+                    bonus=bonus,
                     card=snapshot,
                 )
             )
@@ -77,6 +79,7 @@ class BoardService:
             size=payload.size,
             row_bonus=payload.row_bonus,
             column_bonus=payload.column_bonus,
+            bonus_slots=payload.bonus_slots,
         )
         if document is None:
             raise ConflictError(BOARD_CHANGED_DETAIL)
@@ -122,6 +125,7 @@ class BoardService:
             size=board_size(document),
             row_bonus=document.get("row_bonus"),
             column_bonus=document.get("column_bonus"),
+            bonus_slots=board_bonus_slots(document),
             complete=is_publishable_board(document),
             positions=positions,
             created_at=document["created_at"],
@@ -135,10 +139,22 @@ def board_size(document: BoardDocument | dict[str, Any]) -> int:
     return int(document.get("size", DEFAULT_BOARD_SIZE))
 
 
+def board_bonus_slots(document: BoardDocument | dict[str, Any]) -> int:
+    """Boards saved before feature 020 have no bonus row."""
+    return int(document.get("bonus_slots") or 0)
+
+
+def grid_place(position: int, size: int) -> tuple[int, int, bool]:
+    """(row, column, bonus): positions after the grid form the bonus row (row size + 1)."""
+    if position > size * size:
+        return size + 1, position - size * size, True
+    return (position - 1) // size + 1, (position - 1) % size + 1, False
+
+
 def is_publishable_board(document: BoardDocument | dict[str, Any] | None) -> bool:
     if document is None:
         return False
-    total = board_size(document) ** 2
+    total = board_size(document) ** 2 + board_bonus_slots(document)
     positions = document.get("positions", [])
     if len(positions) != total:
         return False

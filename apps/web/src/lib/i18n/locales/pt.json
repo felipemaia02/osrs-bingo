@@ -101,7 +101,14 @@
       "label": "Minimapa do tabuleiro",
       "title": "Mapa {{size}}×{{size}}",
       "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: mostrar na lista",
-      "legend": "F = Fácil · M = Médio · D = Difícil. Toque numa célula para ir até ela na lista."
+      "legend": "F = Fácil · M = Médio · D = Difícil. Toque numa célula para ir até ela na lista.",
+      "bonusCell": "{{name}}, card bônus, {{tier}}: mostrar na lista"
+    },
+    "bonus": {
+      "badge": "Bônus",
+      "card": "Card bônus",
+      "row": "Cards bônus",
+      "section": "Cards bônus"
     }
   },
   "tile": {
@@ -116,7 +123,8 @@
       "Low": "F",
       "Mid": "M",
       "High": "D"
-    }
+    },
+    "bonusLabel": "{{name}}, card bônus, {{tier}}, {{points}} pontos"
   },
   "common": {
     "loading": "Carregando…",
@@ -627,6 +635,21 @@
       "column": "Bônus de coluna",
       "required": "Os dois são obrigatórios para ativar",
       "readOnly": "Linha +{{row}} · Coluna +{{column}}"
+    },
+    "bonusRow": {
+      "add": "Adicionar linha bônus",
+      "label": "Linha bônus",
+      "cell": "Bônus {{slot}}",
+      "slots_one": "Linha bônus · {{count}} card",
+      "slots_other": "Linha bônus · {{count}} cards",
+      "fewer": "Um card bônus a menos",
+      "more": "Um card bônus a mais",
+      "remove": "Remover linha bônus",
+      "shrinkTitle": "Remover vagas bônus?",
+      "removeTitle": "Remover a linha bônus?",
+      "shrinkConfirm": "Remover cards",
+      "shrinkConfirmation_one": "{{count}} card vai sair da linha bônus: {{names}}. Nada é salvo até você salvar o tabuleiro.",
+      "shrinkConfirmation_other": "{{count}} cards vão sair da linha bônus: {{names}}. Nada é salvo até você salvar o tabuleiro."
     }
   },
   "brand": {
@@ -805,7 +828,8 @@
     "labelComplete": "completo",
     "labelProgress": "progresso {{value}} de {{requirement}}",
     "detailProgress": "Progresso do time: {{value}} de {{requirement}} · vale {{points}} pts uma vez",
-    "dropCount": "{{name}} × {{count}}"
+    "dropCount": "{{name}} × {{count}}",
+    "bonusCards": "Cards bônus ({{count}} de {{total}})"
   },
   "ranking": {
     "eyebrow": "Administração · privado",
@@ -834,6 +858,8 @@
     "player": "Jogador",
     "contributionShort": "Contribuição",
     "noPlayers": "Nenhum jogador neste time.",
-    "noTeams": "Este evento ainda não tem times."
+    "noTeams": "Este evento ainda não tem times.",
+    "bonus": "Bônus",
+    "bonusShort": "bônus {{points}}"
   }
 }

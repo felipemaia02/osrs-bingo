@@ -49,6 +49,10 @@ class ScoringInputs:
     drops: list[AcceptedDrop]
     bonuses: LineBonuses
 
+    @property
+    def grid_count(self) -> int:
+        return sum(1 for tile in self.tiles if not tile.bonus)
+
 
 class ScoringService:
     """Loads one event's inputs and delegates every rule to `scoring.engine`."""
@@ -117,6 +121,8 @@ class ScoringService:
                     row_points=float(score.row_points),
                     completed_columns=len(score.completed_columns),
                     column_points=float(score.column_points),
+                    bonus_points=float(score.bonus_points),
+                    completed_bonus=score.completed_bonus,
                 )
             )
         return RankingResponse(
@@ -124,7 +130,8 @@ class ScoringService:
             event_name=inputs.event["name"],
             event_status=inputs.event["status"],
             size=inputs.size,
-            tile_count=len(inputs.tiles),
+            tile_count=inputs.grid_count,
+            bonus_count=len(inputs.tiles) - inputs.grid_count,
             row_bonus=inputs.bonuses.row,
             column_bonus=inputs.bonuses.column,
             teams=team_rows,
@@ -166,6 +173,7 @@ class ScoringService:
                 column=item["column"],
                 score=decimal(item["card"]["tile_score"]),
                 requirement=decimal(item["card"]["completion_requirement"]),
+                bonus=bool(item.get("bonus", False)),
             )
             for item in positions
         ]
@@ -204,7 +212,10 @@ class ScoringService:
             total=float(score.total),
             tile_points=float(score.tile_points),
             completed_tiles=score.completed_tiles,
-            tile_count=len(inputs.tiles),
+            tile_count=inputs.grid_count,
+            bonus_points=float(score.bonus_points),
+            completed_bonus=score.completed_bonus,
+            bonus_count=len(inputs.tiles) - inputs.grid_count,
             completed_rows=score.completed_rows,
             completed_columns=score.completed_columns,
             row_points=float(score.row_points),
@@ -216,6 +227,7 @@ class ScoringService:
                     position=result.tile.position,
                     row=result.tile.row,
                     column=result.tile.column,
+                    bonus=result.tile.bonus,
                     progress=float(result.progress),
                     requirement=float(result.tile.requirement),
                     complete=result.complete,

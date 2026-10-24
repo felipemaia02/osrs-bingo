@@ -28,6 +28,44 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: Mi
   const grid = gridColumns(AXIS_PX, size)
   const axis = 'text-center text-[11px] font-semibold text-rs-muted'
 
+  function renderCell(tile: Tile) {
+    const match = matches?.get(tile.id)
+    const hit = match?.matches === true
+    const dimmed = match !== undefined && !match.matches
+    return (
+      <button
+        key={tile.id}
+        type="button"
+        onClick={() => onJump(tile)}
+        aria-label={t('board.miniMap.cell', {
+          name: tile.name,
+          row: tile.row,
+          column: tile.col,
+          tier: t(`tile.tier.${tile.tier}`),
+        })}
+        aria-current={tile.id === currentId ? 'location' : undefined}
+        className={`flex h-[46px] min-w-0 flex-col items-center justify-center rounded-[3px] border p-0 text-[11px] font-bold leading-[1.1] ${
+          hit
+            ? 'border-rs-gold-bright bg-rs-gold-bright text-rs-canvas'
+            : tile.progress?.complete
+              ? 'border-rs-success bg-rs-success-bg text-rs-success-text'
+              : 'border-rs-border bg-rs-surface text-rs-text'
+        } ${dimmed ? 'opacity-35' : ''} ${
+          tile.id === currentId ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright' : ''
+        }`}
+      >
+        <span>{initialsOf(tile.name)}</span>
+        <span
+          className={`text-[10px] font-semibold ${hit ? 'text-rs-canvas' : LETTER_COLOR[tile.tier]}`}
+        >
+          {t(`tile.tierLetter.${tile.tier}`)}
+        </span>
+      </button>
+    )
+  }
+
+  const bonusTiles = tiles.filter((tile) => tile.bonus).sort((a, b) => a.col - b.col)
+
   return (
     <section
       aria-label={t('board.miniMap.label')}
@@ -51,46 +89,25 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: Mi
             {row}
           </span>
           {positions.map((col) => {
-            const tile = tiles.find((item) => item.row === row && item.col === col)
+            const tile = tiles.find((item) => !item.bonus && item.row === row && item.col === col)
             if (!tile) return <span key={col} aria-hidden="true" />
-            const match = matches?.get(tile.id)
-            const hit = match?.matches === true
-            const dimmed = match !== undefined && !match.matches
-            return (
-              <button
-                key={tile.id}
-                type="button"
-                onClick={() => onJump(tile)}
-                aria-label={t('board.miniMap.cell', {
-                  name: tile.name,
-                  row: tile.row,
-                  column: tile.col,
-                  tier: t(`tile.tier.${tile.tier}`),
-                })}
-                aria-current={tile.id === currentId ? 'location' : undefined}
-                className={`flex h-[46px] min-w-0 flex-col items-center justify-center rounded-[3px] border p-0 text-[11px] font-bold leading-[1.1] ${
-                  hit
-                    ? 'border-rs-gold-bright bg-rs-gold-bright text-rs-canvas'
-                    : tile.progress?.complete
-                      ? 'border-rs-success bg-rs-success-bg text-rs-success-text'
-                      : 'border-rs-border bg-rs-surface text-rs-text'
-                } ${dimmed ? 'opacity-35' : ''} ${
-                  tile.id === currentId
-                    ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright'
-                    : ''
-                }`}
-              >
-                <span>{initialsOf(tile.name)}</span>
-                <span
-                  className={`text-[10px] font-semibold ${hit ? 'text-rs-canvas' : LETTER_COLOR[tile.tier]}`}
-                >
-                  {t(`tile.tierLetter.${tile.tier}`)}
-                </span>
-              </button>
-            )
+            return renderCell(tile)
           })}
         </div>
       ))}
+      {bonusTiles.length > 0 && (
+        <div
+          role="group"
+          aria-label={t('board.bonus.row')}
+          className="mt-1 grid gap-1 border-t border-dashed border-rs-gold/60 pt-1.5"
+          style={grid}
+        >
+          <span className="self-center text-center text-xs text-rs-gold" aria-hidden="true">
+            ★
+          </span>
+          {bonusTiles.map(renderCell)}
+        </div>
+      )}
       <span className="text-[11px] text-rs-muted">{t('board.miniMap.legend')}</span>
     </section>
   )

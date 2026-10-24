@@ -11,6 +11,7 @@ export interface TileProgressResponse {
   position: number
   row: number
   column: number
+  bonus: boolean
   progress: number
   requirement: number
   complete: boolean
@@ -27,6 +28,9 @@ export interface TeamScore {
   tile_points: number
   completed_tiles: number
   tile_count: number
+  bonus_points: number
+  completed_bonus: number
+  bonus_count: number
   completed_rows: number[]
   completed_columns: number[]
   row_points: number
@@ -51,6 +55,8 @@ export interface RankingTeam {
   row_points: number
   completed_columns: number
   column_points: number
+  bonus_points: number
+  completed_bonus: number
 }
 
 export interface PlayerContribution {
@@ -66,6 +72,7 @@ export interface Ranking {
   event_status: EventStatus
   size: number
   tile_count: number
+  bonus_count: number
   row_bonus: number | null
   column_bonus: number | null
   teams: RankingTeam[]

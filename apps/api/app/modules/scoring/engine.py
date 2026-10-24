@@ -29,6 +29,8 @@ class Tile:
     column: int
     score: Decimal
     requirement: Decimal
+    # Bonus-row card (feature 020): scores like a tile, never part of a row or column.
+    bonus: bool = False
 
 
 @dataclass(frozen=True)
@@ -82,17 +84,28 @@ class TeamScore:
     row_points: Decimal
     column_points: Decimal
 
+    def _results(self, bonus: bool) -> list[TileResult]:
+        return [result for result in self.tiles.values() if result.tile.bonus is bonus]
+
     @property
     def completed_tiles(self) -> int:
-        return sum(1 for result in self.tiles.values() if result.complete)
+        return sum(1 for result in self._results(bonus=False) if result.complete)
 
     @property
     def tile_points(self) -> Decimal:
-        return sum((result.points for result in self.tiles.values()), ZERO)
+        return sum((result.points for result in self._results(bonus=False)), ZERO)
+
+    @property
+    def completed_bonus(self) -> int:
+        return sum(1 for result in self._results(bonus=True) if result.complete)
+
+    @property
+    def bonus_points(self) -> Decimal:
+        return sum((result.points for result in self._results(bonus=True)), ZERO)
 
     @property
     def total(self) -> Decimal:
-        return self.tile_points + self.row_points + self.column_points
+        return self.tile_points + self.row_points + self.column_points + self.bonus_points
 
 
 def score_team(
@@ -116,7 +129,8 @@ def score_team(
     def complete_lines(axis: str) -> list[int]:
         by_line: dict[int, list[bool]] = defaultdict(list)
         for result in results.values():
-            by_line[getattr(result.tile, axis)].append(result.complete)
+            if not result.tile.bonus:
+                by_line[getattr(result.tile, axis)].append(result.complete)
         return sorted(line for line, flags in by_line.items() if len(flags) == size and all(flags))
 
     rows, columns = complete_lines("row"), complete_lines("column")

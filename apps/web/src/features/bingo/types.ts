@@ -25,6 +25,8 @@ export interface Tile {
   drops: AcceptedDrop[]
   ruleNote: string | null
   requiresPreverification: boolean
+  /** Bonus-row card (feature 020): shown under the grid, never part of a row or column. */
+  bonus: boolean
   /** Present only for players on a team in an active or finished event. */
   progress?: TileProgress | null
   imageUrl?: string | null

@@ -127,6 +127,7 @@ it('saves selected exact card revisions for a draft event board', async () => {
       size: 6,
       row_bonus: null,
       column_bonus: null,
+      bonus_slots: 0,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
     },
   })
@@ -246,6 +247,7 @@ describe('board builder v2', () => {
         size: 6,
         row_bonus: null,
         column_bonus: null,
+        bonus_slots: 0,
         positions: [
           { position: 1, card_id: CARD.id, card_revision: 1 },
           { position: 4, card_id: HYDRA.id, card_revision: 1 },
@@ -335,6 +337,7 @@ describe('board builder v2', () => {
       size: 4,
       row_bonus: null,
       column_bonus: null,
+      bonus_slots: 0,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
     })
   })
@@ -357,6 +360,43 @@ describe('board builder v2', () => {
       row_bonus: 25,
       column_bonus: 0,
     })
+  })
+
+  it('adds a bonus row, fills a bonus slot and confirms before removing it', async () => {
+    vi.mocked(saveBoard).mockResolvedValue(boardWith([[1, CARD]]))
+    const user = await openBuilder()
+
+    await user.click(screen.getByRole('button', { name: 'Add bonus row' }))
+    const bonusRow = screen.getByRole('group', { name: 'Bonus row' })
+    await user.click(screen.getByRole('button', { name: 'One bonus card more' }))
+    expect(within(bonusRow).getAllByRole('button', { name: /empty — choose card$/ })).toHaveLength(
+      2,
+    )
+    expect(screen.getByText('1 of 38')).toBeInTheDocument()
+
+    await user.click(
+      within(bonusRow).getByRole('button', { name: 'Position Bonus 1 empty — choose card' }),
+    )
+    await user.click(screen.getByRole('button', { name: 'Add Alchemical Hydra' }))
+    expect(
+      within(bonusRow).getByRole('button', { name: /^Position Bonus 1: Alchemical Hydra/ }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+    expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toMatchObject({
+      bonus_slots: 2,
+      positions: [
+        { position: 1, card_id: CARD.id, card_revision: 1 },
+        { position: 37, card_id: HYDRA.id, card_revision: 1 },
+      ],
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Remove bonus row' }))
+    const dialog = screen.getByRole('dialog', { name: 'Remove the bonus row?' })
+    expect(dialog).toHaveTextContent('1 card will leave the bonus row: Alchemical Hydra.')
+    await user.click(within(dialog).getByRole('button', { name: 'Remove cards' }))
+    expect(screen.queryByRole('group', { name: 'Bonus row' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Add bonus row' })).toBeInTheDocument()
   })
 
   it('keeps rows and columns when the size changes without removing cards', async () => {

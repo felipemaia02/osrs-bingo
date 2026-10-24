@@ -315,3 +315,40 @@ async def test_save_stores_the_line_bonuses(
 def test_line_bonuses_are_bounded() -> None:
     with pytest.raises(ValidationError):
         BoardSave(expected_revision=0, row_bonus=1001, positions=[])
+
+
+def test_bonus_row_positions_follow_the_grid() -> None:
+    from app.modules.boards.service import grid_place
+
+    assert grid_place(9, 3) == (3, 3, False)
+    assert grid_place(10, 3) == (4, 1, True)
+    assert grid_place(12, 3) == (4, 3, True)
+
+
+def test_bonus_row_is_bounded_by_the_board_size() -> None:
+    with pytest.raises(ValidationError, match="longer than the board size"):
+        BoardSave(expected_revision=0, size=3, bonus_slots=4, positions=[])
+    with pytest.raises(ValidationError, match="fit the board size"):
+        BoardSave(
+            expected_revision=0,
+            size=3,
+            bonus_slots=2,
+            positions=[{"position": 12, "card_id": CARD_ID, "card_revision": 1}],
+        )
+
+
+def test_publishable_board_needs_every_created_bonus_slot() -> None:
+    board = full_board(3)
+    board["bonus_slots"] = 2
+    assert is_publishable_board(board) is False
+    board["positions"] = [
+        *board["positions"],  # type: ignore[list-item]
+        *(
+            {
+                "position": position,
+                "card": {"card_id": f"bonus-{position}", "fallback_image_accepted": True},
+            }
+            for position in (10, 11)
+        ),
+    ]
+    assert is_publishable_board(board) is True

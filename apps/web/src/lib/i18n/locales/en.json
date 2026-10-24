@@ -101,7 +101,14 @@
       "label": "Board mini-map",
       "title": "{{size}}×{{size}} map",
       "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show in the list",
-      "legend": "E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list."
+      "legend": "E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list.",
+      "bonusCell": "{{name}}, bonus card, {{tier}}: show in the list"
+    },
+    "bonus": {
+      "badge": "Bonus",
+      "card": "Bonus card",
+      "row": "Bonus cards",
+      "section": "Bonus cards"
     }
   },
   "tile": {
@@ -116,7 +123,8 @@
       "Low": "E",
       "Mid": "M",
       "High": "H"
-    }
+    },
+    "bonusLabel": "{{name}}, bonus card, {{tier}}, {{points}} points"
   },
   "common": {
     "loading": "Loading…",
@@ -627,6 +635,21 @@
       "column": "Column bonus",
       "required": "Both are required to activate",
       "readOnly": "Row +{{row}} · Column +{{column}}"
+    },
+    "bonusRow": {
+      "add": "Add bonus row",
+      "label": "Bonus row",
+      "cell": "Bonus {{slot}}",
+      "slots_one": "Bonus row · {{count}} card",
+      "slots_other": "Bonus row · {{count}} cards",
+      "fewer": "One bonus card fewer",
+      "more": "One bonus card more",
+      "remove": "Remove bonus row",
+      "shrinkTitle": "Remove bonus slots?",
+      "removeTitle": "Remove the bonus row?",
+      "shrinkConfirm": "Remove cards",
+      "shrinkConfirmation_one": "{{count}} card will leave the bonus row: {{names}}. Nothing is saved until you save the board.",
+      "shrinkConfirmation_other": "{{count}} cards will leave the bonus row: {{names}}. Nothing is saved until you save the board."
     }
   },
   "brand": {
@@ -805,7 +828,8 @@
     "labelComplete": "complete",
     "labelProgress": "progress {{value}} of {{requirement}}",
     "detailProgress": "Team progress: {{value}} of {{requirement}} · worth {{points}} pts once",
-    "dropCount": "{{name}} × {{count}}"
+    "dropCount": "{{name}} × {{count}}",
+    "bonusCards": "Bonus cards ({{count}} of {{total}})"
   },
   "ranking": {
     "eyebrow": "Administration · private",
@@ -836,6 +860,8 @@
     "player": "Player",
     "contributionShort": "Contribution",
     "noPlayers": "No players on this team.",
-    "noTeams": "This event has no teams yet."
+    "noTeams": "This event has no teams yet.",
+    "bonus": "Bonus",
+    "bonusShort": "bonus {{points}}"
   }
 }
