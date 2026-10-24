@@ -72,6 +72,15 @@ Screenshot storage (feature 008) â€” create a **Bucket** in the project (+ New â
 
 Without all four storage values the API keeps screenshots in a local folder, which is wiped on every deploy; it logs `screenshot_storage_local_outside_development` at startup when that happens outside development. Buckets are private: the app shows screenshots through short-lived signed links.
 
+Maintenance mode (feature 028), optional on **api**:
+
+| Variable | Value |
+|---|---|
+| `MAINTENANCE_MODE` | `true` closes the site for everyone but logged-in admins; `false` (default) reopens it |
+| `MAINTENANCE_MESSAGE` | Optional text for players, up to 280 characters (e.g. `Back at 20:00 UTC.`) |
+
+Changing them restarts the `api` service (about a minute). Players then see "The world is being updated" with the message, and the API answers their requests with 503; `/health`, `/status` and the Discord login stay open so admins can log in and test before reopening. Admins see a "Maintenance mode is on" banner.
+
 **web**
 
 | Variable | Value |

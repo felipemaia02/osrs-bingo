@@ -1,3 +1,4 @@
+import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined'
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined'
 import GppBadOutlinedIcon from '@mui/icons-material/GppBadOutlined'
 import HeartBrokenOutlinedIcon from '@mui/icons-material/HeartBrokenOutlined'
@@ -114,5 +115,31 @@ export function CrashScreen() {
         }
       />
     </div>
+  )
+}
+
+/** The admins closed the site for maintenance (feature 028). */
+export function MaintenanceScreen({
+  message,
+  onRetry,
+}: {
+  message: string | null
+  onRetry: () => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <StatusScreen
+      icon={<ConstructionOutlinedIcon />}
+      eyebrow={t('status.maintenance.eyebrow')}
+      title={t('status.maintenance.title')}
+      message={
+        message ? `${message} ${t('status.maintenance.soon')}` : t('status.maintenance.soon')
+      }
+      actions={
+        <button type="button" onClick={onRetry} className={STATUS_BUTTON_CLASS.primary}>
+          {t('status.offline.retry')}
+        </button>
+      }
+    />
   )
 }

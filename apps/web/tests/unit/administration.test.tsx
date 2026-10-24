@@ -6,6 +6,7 @@ import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import { AxiosError } from 'axios'
 import { fetchUsers, changeRole } from '../../src/features/administration/api/administrationApi'
 import { AppRouter } from '../../src/app/router'
+import { fetchSiteStatus } from '../../src/features/maintenance/siteStatusApi'
 import { ErrorBoundary } from '../../src/components/common/status/ErrorBoundary'
 import { fetchAdminBoard } from '../../src/features/boards/api/boardsApi'
 import type { EventBoard } from '../../src/features/boards/types'
@@ -281,5 +282,33 @@ describe('administration overview status', () => {
       .closest('a')!
     expect(boards).not.toHaveTextContent('/36')
     expect(screen.queryByText(/pending/)).not.toBeInTheDocument()
+  })
+})
+
+describe('maintenance mode (feature 028)', () => {
+  beforeEach(() => {
+    vi.mocked(fetchSiteStatus).mockResolvedValue({
+      maintenance: true,
+      message: 'Back at 20:00 UTC.',
+    })
+  })
+
+  it('closes the site for players with the admins message', async () => {
+    vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: false })
+    renderApp(<AppRouter />, '/events')
+
+    expect(
+      await screen.findByRole('heading', { name: 'The world is being updated' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Back at 20:00 UTC. Please come back soon.')).toBeInTheDocument()
+  })
+
+  it('lets admins in with a banner', async () => {
+    renderApp(<AppRouter />, '/events')
+
+    expect(
+      await screen.findByText("Maintenance mode is on — players can't use the site."),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'The world is being updated' })).toBeNull()
   })
 })

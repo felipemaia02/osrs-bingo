@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from time import perf_counter
 from uuid import uuid4
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -21,6 +21,8 @@ from app.modules.auth.router import router as auth_router
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
 from app.modules.events.router import router as events_router
+from app.modules.maintenance.gate import maintenance_gate
+from app.modules.maintenance.router import router as maintenance_router
 from app.modules.players.router import router as players_router
 from app.modules.profiles.router import router as profile_router
 from app.modules.profiles.wom import WomClient
@@ -98,6 +100,7 @@ async def request_logging(
 
 
 app = FastAPI(
+    dependencies=[Depends(maintenance_gate)],
     title="OSRS Bingo API",
     version="0.1.0",
     description="Platform for managing OSRS Bingo events",
@@ -136,6 +139,7 @@ app.include_router(admin_submissions_router)
 app.include_router(scoring_router)
 app.include_router(admin_scoring_router)
 app.include_router(profile_router)
+app.include_router(maintenance_router)
 
 
 @app.get("/health", tags=["infra"])

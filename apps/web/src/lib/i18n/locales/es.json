@@ -1228,6 +1228,12 @@
       "title": "El mundo está offline",
       "message": "No podemos conectar con el servidor del bingo ahora. Inténtalo de nuevo en un momento.",
       "retry": "Intentar de nuevo"
+    },
+    "maintenance": {
+      "eyebrow": "Mantenimiento",
+      "title": "El mundo se está actualizando",
+      "soon": "Vuelve pronto.",
+      "adminBanner": "El modo mantenimiento está activo — los jugadores no pueden usar el sitio."
     }
   }
 }

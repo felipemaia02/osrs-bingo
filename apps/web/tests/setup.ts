@@ -101,3 +101,7 @@ vi.mock('../src/features/profiles/api/profileApi', () => ({
   runAccountAction: vi.fn(),
   searchMembers: vi.fn().mockResolvedValue([]),
 }))
+
+vi.mock('../src/features/maintenance/siteStatusApi', () => ({
+  fetchSiteStatus: vi.fn().mockResolvedValue({ maintenance: false, message: null }),
+}))

@@ -7,7 +7,9 @@ import { usePendingReviews } from '../../features/submissions/hooks/usePendingRe
 import { useDraftRegistrationCounts } from '../../features/teams/hooks/useDraftRegistrationCounts'
 import { isNetworkError } from '../../lib/api'
 import { LanguageMenuButton, LanguageSwitcher } from './LanguageSwitcher'
-import { OfflineScreen } from './status/StatusScreens'
+import { MaintenanceScreen, OfflineScreen } from './status/StatusScreens'
+import { useSiteStatus } from '../../features/maintenance/siteStatus'
+import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined'
 import { MobileBottomBar } from './shell/MobileBottomBar'
 import { ShellSidebar } from './shell/ShellSidebar'
 import { Wordmark } from './shell/Wordmark'
@@ -25,6 +27,8 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
   const { t } = useTranslation()
   const session = useSession()
   const isAdmin = session.data?.is_admin === true
+  const siteStatus = useSiteStatus()
+  const maintenance = siteStatus.data?.maintenance === true
   const registrations = useDraftRegistrationCounts(isAdmin)
   const pendingReviews = usePendingReviews(isAdmin)
 
@@ -64,8 +68,24 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
           {/* Nothing works without the server: say so once instead of every section failing. */}
           {session.isError && isNetworkError(session.error) ? (
             <OfflineScreen onRetry={() => void session.refetch()} />
+          ) : maintenance && !isAdmin ? (
+            <MaintenanceScreen
+              message={siteStatus.data?.message ?? null}
+              onRetry={() => void siteStatus.refetch()}
+            />
           ) : (
-            children
+            <>
+              {maintenance && (
+                <p
+                  role="status"
+                  className="mb-4 flex items-center gap-2 rounded border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-sm text-rs-gold-bright"
+                >
+                  <ConstructionOutlinedIcon fontSize="small" aria-hidden="true" />
+                  {t('status.maintenance.adminBanner')}
+                </p>
+              )}
+              {children}
+            </>
           )}
         </main>
       </div>

@@ -16,10 +16,19 @@ export const apiClient = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+const MAINTENANCE_DETAIL = 'Maintenance in progress'
+const SERVICE_UNAVAILABLE = 503
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Centralised error handling – expand per auth/error spec.
+    // A request refused for maintenance makes the app re-check the site status (feature 028).
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === SERVICE_UNAVAILABLE &&
+      error.response.data?.detail === MAINTENANCE_DETAIL
+    )
+      window.dispatchEvent(new Event('bingo:maintenance'))
     return Promise.reject(error)
   },
 )

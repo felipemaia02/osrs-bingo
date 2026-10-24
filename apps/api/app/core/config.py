@@ -51,6 +51,15 @@ class Settings(BaseSettings):
     wom_base_url: str = "https://api.wiseoldman.net/v2"
     wom_api_key: SecretStr = SecretStr("")
     wom_user_agent: str = "osrs-bingo (Thunder Crabs clan bingo)"
+    # Maintenance mode (feature 028): only admins can use the API while it's on.
+    maintenance_mode: bool = False
+    maintenance_message: str | None = Field(default=None, max_length=280)
+
+    @field_validator("maintenance_message")
+    @classmethod
+    def blank_message_is_none(cls, value: str | None) -> str | None:
+        return value.strip() or None if value else None
+
     # Tracking a player WOM never saw makes it read the hiscores, which can take a while.
     wom_timeout_seconds: float = Field(default=20, gt=0, le=60)
 

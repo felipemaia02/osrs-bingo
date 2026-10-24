@@ -1230,6 +1230,12 @@
       "title": "The world is offline",
       "message": "We can't reach the bingo server right now. Try again in a moment.",
       "retry": "Try again"
+    },
+    "maintenance": {
+      "eyebrow": "Maintenance",
+      "title": "The world is being updated",
+      "soon": "Please come back soon.",
+      "adminBanner": "Maintenance mode is on — players can't use the site."
     }
   }
 }
