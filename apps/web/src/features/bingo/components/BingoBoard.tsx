@@ -60,25 +60,33 @@ export function BingoBoard({ tiles, size, matches, selectedId, onSelect }: Bingo
           </div>
         ))}
         {bonusTiles.length > 0 && (
-          <div
-            role="group"
-            aria-label={t('board.bonus.row')}
-            className="mt-2 grid items-stretch gap-2 border-t border-dashed border-rs-gold/60 pt-3"
-            style={grid}
-          >
-            <span className="self-center text-center text-sm text-rs-gold" aria-hidden="true">
-              ★
-            </span>
-            {bonusTiles.map((tile) => (
-              <TileCard
-                key={tile.id}
-                tile={tile}
-                match={matches?.get(tile.id)}
-                selected={tile.id === selectedId}
-                onSelect={onSelect}
-              />
-            ))}
-          </div>
+          <>
+            {/* Divider starts at the cards, not at the row-number column. */}
+            <div
+              aria-hidden="true"
+              className="mt-2 mb-1 border-t border-dashed border-rs-gold/60"
+              style={{ marginLeft: AXIS_PX + GAP_PX }}
+            />
+            <div
+              role="group"
+              aria-label={t('board.bonus.row')}
+              className="grid items-stretch gap-2"
+              style={grid}
+            >
+              <span className="self-center text-center text-sm text-rs-gold" aria-hidden="true">
+                ★
+              </span>
+              {bonusTiles.map((tile) => (
+                <TileCard
+                  key={tile.id}
+                  tile={tile}
+                  match={matches?.get(tile.id)}
+                  selected={tile.id === selectedId}
+                  onSelect={onSelect}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
       <p className="m-0 ml-7 mt-1.5 text-xs text-rs-muted">

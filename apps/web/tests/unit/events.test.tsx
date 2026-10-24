@@ -78,6 +78,8 @@ describe('Events feature', () => {
     expect(screen.getByText('End must be later than start.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: '+7 days' }))
     expect(onEndChange).toHaveBeenCalledWith(start.add(7, 'day'))
+    await user.click(screen.getByRole('button', { name: '+30 days' }))
+    expect(onEndChange).toHaveBeenCalledWith(start.add(30, 'day'))
   })
 
   it('keeps the activation dialog open and shows the error inside it', async () => {

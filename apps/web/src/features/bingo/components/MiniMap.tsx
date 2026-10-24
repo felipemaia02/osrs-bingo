@@ -96,17 +96,20 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: Mi
         </div>
       ))}
       {bonusTiles.length > 0 && (
-        <div
-          role="group"
-          aria-label={t('board.bonus.row')}
-          className="mt-1 grid gap-1 border-t border-dashed border-rs-gold/60 pt-1.5"
-          style={grid}
-        >
-          <span className="self-center text-center text-xs text-rs-gold" aria-hidden="true">
-            ★
-          </span>
-          {bonusTiles.map(renderCell)}
-        </div>
+        <>
+          {/* Divider starts at the cards, not at the row-number column. */}
+          <div
+            aria-hidden="true"
+            className="mt-1 border-t border-dashed border-rs-gold/60"
+            style={{ marginLeft: AXIS_PX + 4 }}
+          />
+          <div role="group" aria-label={t('board.bonus.row')} className="grid gap-1" style={grid}>
+            <span className="self-center text-center text-xs text-rs-gold" aria-hidden="true">
+              ★
+            </span>
+            {bonusTiles.map(renderCell)}
+          </div>
+        </>
       )}
       <span className="text-[11px] text-rs-muted">{t('board.miniMap.legend')}</span>
     </section>

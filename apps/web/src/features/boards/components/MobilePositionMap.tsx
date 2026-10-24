@@ -17,6 +17,8 @@ import { usePositionLabel } from '../hooks/usePositionLabel'
 import { BonusRowControls } from './BonusRowControls'
 
 const AXIS_PX = 14
+// gap-1 between the row-number column and the cells.
+const MAP_GAP_PX = 4
 const LETTER_COLOR: Record<CardDifficulty, string> = {
   Low: 'text-rs-success-text',
   Mid: 'text-rs-gold-bright',
@@ -128,24 +130,34 @@ export function MobilePositionMap({
         </div>
       ))}
       {bonusSlots > 0 && (
-        <div
-          role="group"
-          aria-label={t('boards.bonusRow.label')}
-          className="mt-1 grid gap-1 border-t border-dashed border-rs-gold/60 pt-2"
-          style={grid}
-        >
-          <span className="self-center text-center text-rs-gold">
-            <StarOutlinedIcon sx={{ fontSize: 14 }} aria-hidden="true" />
-          </span>
-          {bonusPositionsOf(size, bonusSlots).map((position) => renderCell(position, true))}
-        </div>
+        <>
+          {/* Divider starts at the cards, not at the row-number column. */}
+          <div
+            aria-hidden="true"
+            className="mt-1 border-t border-dashed border-rs-gold/60"
+            style={{ marginLeft: AXIS_PX + MAP_GAP_PX }}
+          />
+          <div
+            role="group"
+            aria-label={t('boards.bonusRow.label')}
+            className="grid gap-1"
+            style={grid}
+          >
+            <span className="self-center text-center text-rs-gold">
+              <StarOutlinedIcon sx={{ fontSize: 14 }} aria-hidden="true" />
+            </span>
+            {bonusPositionsOf(size, bonusSlots).map((position) => renderCell(position, true))}
+          </div>
+        </>
       )}
-      <BonusRowControls
-        slots={bonusSlots}
-        max={size}
-        editable={editable}
-        onChange={onBonusSlotsChange}
-      />
+      <div className="flex flex-col" style={{ paddingLeft: AXIS_PX + MAP_GAP_PX }}>
+        <BonusRowControls
+          slots={bonusSlots}
+          max={size}
+          editable={editable}
+          onChange={onBonusSlotsChange}
+        />
+      </div>
       <span className="text-[11px] text-rs-muted">{t('boards.mobile.legend')}</span>
     </section>
   )

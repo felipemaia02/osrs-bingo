@@ -185,23 +185,35 @@ export function BuilderGrid({
           </div>
         ))}
         {bonusSlots > 0 && (
-          <div
-            role="group"
-            aria-label={t('boards.bonusRow.label')}
-            className="mt-2 grid gap-2 border-t border-dashed border-rs-gold/60 pt-3"
-            style={grid}
-          >
-            <span
-              className="self-center text-center text-rs-gold"
-              title={t('boards.bonusRow.label')}
+          <>
+            {/* Divider starts at the cards, not at the row-number column. */}
+            <div
+              aria-hidden="true"
+              className="mt-2 mb-1 border-t border-dashed border-rs-gold/60"
+              style={{ marginLeft: AXIS_PX + GAP_PX }}
+            />
+            <div
+              role="group"
+              aria-label={t('boards.bonusRow.label')}
+              className="grid gap-2"
+              style={grid}
             >
-              <StarOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
-            </span>
-            {bonusPositionsOf(size, bonusSlots).map((position) => renderCell(position, true))}
-          </div>
+              <span
+                className="self-center text-center text-rs-gold"
+                title={t('boards.bonusRow.label')}
+              >
+                <StarOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
+              </span>
+              {bonusPositionsOf(size, bonusSlots).map((position) => renderCell(position, true))}
+            </div>
+          </>
         )}
       </div>
-      <div style={sameCellWidth(AXIS_PX, GAP_PX, size)} className="flex flex-col">
+      {/* Starts after the row-number column so it lines up with the cards. */}
+      <div
+        style={{ ...sameCellWidth(AXIS_PX, GAP_PX, size), paddingLeft: AXIS_PX + GAP_PX }}
+        className="flex flex-col"
+      >
         <BonusRowControls
           slots={bonusSlots}
           max={size}
