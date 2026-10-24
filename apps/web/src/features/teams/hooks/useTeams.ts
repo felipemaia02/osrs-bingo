@@ -9,6 +9,7 @@ import {
   createPlayer,
   createTeam,
   fetchPlayers,
+  fetchDraftPreview,
   fetchTeamBalance,
   fetchTeams,
   updateParticipation,
@@ -30,6 +31,19 @@ export function useTeamBalance(eventId: string | null) {
     queryKey: ['teams', eventId, 'balance'],
     queryFn: () => fetchTeamBalance(eventId!),
     enabled: Boolean(eventId),
+  })
+}
+
+const DRAFT_REFRESH_MS = 30_000
+
+/** Draft preview, re-read every 30 s and on focus so assigned players drop out (feature 024). */
+export function useDraftPreview(eventId: string | null) {
+  return useQuery({
+    queryKey: ['teams', eventId, 'draft-preview'],
+    queryFn: () => fetchDraftPreview(eventId!),
+    enabled: Boolean(eventId),
+    refetchInterval: DRAFT_REFRESH_MS,
+    refetchOnWindowFocus: true,
   })
 }
 

@@ -51,3 +51,31 @@ export function timezoneGroups(saved: string | null, at = new Date()): TimezoneG
   }
   return [...groups].map(([area, options]) => ({ area, zones: options }))
 }
+
+export const REGIONS = ['americas', 'europe', 'africa', 'asia', 'oceania'] as const
+export type Region = (typeof REGIONS)[number]
+
+const AREA_REGION: Record<string, Region> = {
+  America: 'americas',
+  Europe: 'europe',
+  Atlantic: 'europe',
+  Africa: 'africa',
+  Asia: 'asia',
+  Indian: 'asia',
+  Australia: 'oceania',
+  Pacific: 'oceania',
+}
+
+/** Continent of an IANA zone (America/Sao_Paulo → americas); null for UTC and the like. */
+export function regionOf(zone: string | null | undefined): Region | null {
+  return zone ? (AREA_REGION[zone.split('/')[0]] ?? null) : null
+}
+
+/** "Sao Paulo (UTC−03:00)" for a zone; the zone itself when the browser doesn't know it. */
+export function zoneLabel(zone: string, at = new Date()): string {
+  try {
+    return `${cityOf(zone)} (${utcOffset(zone, at)})`
+  } catch {
+    return zone
+  }
+}

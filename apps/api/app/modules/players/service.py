@@ -8,10 +8,10 @@ from app.core.exceptions import ConflictError, DomainValidationError, NotFoundEr
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
-from app.modules.players.models import NewRegistration, PlayerDocument, RosterDocument
+from app.modules.players.models import NewRegistration, PlayerDocument
 from app.modules.players.repository import CaptainTakenError, PlayerRepository
+from app.modules.players.roster import to_player_response, to_roster_entry
 from app.modules.players.schemas import (
-    BuyInStatus,
     JoinRequest,
     ParticipantRole,
     ParticipationUpdate,
@@ -21,11 +21,9 @@ from app.modules.players.schemas import (
     PlayerResponse,
     PlayerUpdate,
     RegistrationStatus,
-    RosterEntry,
     SelectionResult,
 )
 from app.modules.profiles.repository import ProfileRepository
-from app.modules.profiles.schemas import Activity
 from app.modules.profiles.service import has_wom_stats
 from app.modules.teams.repository import TeamRepository
 
@@ -69,7 +67,7 @@ class PlayerService:
         document = await self._players.create(event_id, registration, user_id)
         if document is None:
             raise ConflictError("Registration already exists in this event")
-        return self._to_response(document)
+        return to_player_response(document)
 
     async def list(self, event_id: str, query: PlayerListQuery) -> PlayerListResponse:
         await self._require_event(event_id)
@@ -98,7 +96,7 @@ class PlayerService:
             limit=query.limit,
         )
         return PlayerListResponse(
-            items=[self._to_roster_entry(document) for document in documents],
+            items=[to_roster_entry(document) for document in documents],
             total=total,
             offset=query.offset,
             limit=query.limit,
@@ -129,12 +127,12 @@ class PlayerService:
                 event_id, player_id, "Only approved registrations can be assigned"
             )
         assert document is not None
-        return self._to_response(document)
+        return to_player_response(document)
 
     async def own_registration(self, event_id: str, user_id: str) -> PlayerResponse | None:
         await self._require_event(event_id)
         document = await self._players.get_for_user(event_id, user_id)
-        return self._to_response(document) if document else None
+        return to_player_response(document) if document else None
 
     async def approve(self, event_id: str, player_id: str) -> PlayerResponse:
         await self._require_draft_event(event_id)
@@ -144,7 +142,7 @@ class PlayerService:
                 event_id, player_id, "Only pending registrations can be approved"
             )
         assert document is not None
-        return self._to_response(document)
+        return to_player_response(document)
 
     async def approve_all(self, event_id: str) -> int:
         await self._require_draft_event(event_id)
@@ -158,7 +156,7 @@ class PlayerService:
                 event_id, player_id, "Registration is already removed"
             )
         assert document is not None
-        return self._to_response(document)
+        return to_player_response(document)
 
     async def _raise_transition_error(self, event_id: str, player_id: str, detail: str) -> None:
         if await self._players.get(event_id, player_id) is None:
@@ -191,7 +189,7 @@ class PlayerService:
             raise ConflictError(CAPTAIN_TAKEN) from exc
         if document is None:
             raise ConflictError(PARTICIPANT_CHANGED)
-        return self._to_response(document)
+        return to_player_response(document)
 
     @staticmethod
     def _check_role(player: PlayerDocument, role: ParticipantRole | None) -> None:
@@ -253,63 +251,3 @@ class PlayerService:
     async def _require_team(self, event_id: str, team_id: str) -> None:
         if await self._teams.get(event_id, team_id) is None:
             raise NotFoundError("Team")
-
-    @classmethod
-    def _to_roster_entry(cls, document: RosterDocument) -> RosterEntry:
-        role = document.get("role")
-        accounts = document.get("account_count")
-        admins = document.get("buy_in_admin") or []
-        return RosterEntry(
-            **cls._to_response(document).model_dump(),
-            role=ParticipantRole(role) if role else None,
-            boss_kc_total=document.get("boss_kc_total"),
-            ehb_total=document.get("ehb_total"),
-            alt_count=max(accounts - 1, 0) if accounts else None,
-            timezone=document.get("timezone"),
-            teammates=cls._teammate_names(document),
-            buy_in_admin_name=str(admins[0]["username"]) if admins else None,
-        )
-
-    @staticmethod
-    def _teammate_names(document: RosterDocument) -> builtin_list[str]:
-        """Each wanted teammate's main RSN, or their Discord name without one."""
-        users = {user["_id"]: user for user in document.get("mate_users") or []}
-        mains = {
-            profile["_id"]: next(
-                (acc["rsn"] for acc in profile.get("accounts", []) if acc.get("is_main")),  # type: ignore[attr-defined]
-                None,
-            )
-            for profile in document.get("mate_profiles") or []
-        }
-        names = []
-        for mate_id in document.get("teammate_ids") or []:
-            name = mains.get(mate_id) or users.get(mate_id, {}).get("username")
-            if name:
-                names.append(str(name))
-        return names
-
-    @staticmethod
-    def _activity(document: PlayerDocument) -> Activity | None:
-        activity = document.get("activity")
-        return Activity(activity) if activity else None
-
-    @staticmethod
-    def _buy_in_status(document: PlayerDocument) -> BuyInStatus | None:
-        buy_in = document.get("buy_in")
-        return BuyInStatus(buy_in["status"]) if buy_in else None
-
-    @staticmethod
-    def _to_response(document: PlayerDocument) -> PlayerResponse:
-        return PlayerResponse(
-            id=str(document["_id"]),
-            status=RegistrationStatus(document.get("status", RegistrationStatus.APPROVED)),
-            event_id=str(document["event_id"]),
-            team_id=str(document["team_id"]) if document["team_id"] is not None else None,
-            display_name=document["display_name"],
-            discord_username=document.get("discord_username"),
-            account_id=document.get("account_id"),
-            activity=PlayerService._activity(document),
-            buy_in_status=PlayerService._buy_in_status(document),
-            created_at=document["created_at"],
-            updated_at=document["updated_at"],
-        )

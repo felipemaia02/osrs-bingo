@@ -9,6 +9,7 @@ import type {
   SelectionResult,
   Team,
   TeamBalanceResponse,
+  DraftPreview,
   TeamPayload,
 } from '../types'
 
@@ -73,3 +74,6 @@ export const updateParticipation = async ({
 }) =>
   (await apiClient.patch<Player>(`/events/${eventId}/players/${playerId}/participation`, payload))
     .data
+
+export const fetchDraftPreview = async (eventId: string) =>
+  (await apiClient.get<DraftPreview>(`/events/${eventId}/teams/draft-preview`)).data

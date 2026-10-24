@@ -13,7 +13,7 @@ from app.modules.auth.schemas import CurrentUser
 from app.modules.players.router import get_player_service
 from app.modules.players.schemas import PlayerResponse, RegistrationStatus
 from app.modules.teams.router import get_team_service
-from app.modules.teams.schemas import TeamBalanceResponse
+from app.modules.teams.schemas import DraftPreviewResponse, TeamBalanceResponse
 
 EVENT_ID, PLAYER_ID, ADMIN_ID = (str(ObjectId()) for _ in range(3))
 ORIGIN = {"Origin": "http://localhost:5173"}
@@ -43,6 +43,7 @@ def services() -> Iterator[tuple[AsyncMock, AsyncMock, AsyncMock, AsyncMock]]:
         updated_at=now,
     )
     teams.balance.return_value = TeamBalanceResponse(average_ehb=0, teams=[])
+    teams.draft_preview.return_value = DraftPreviewResponse(captains=[], players=[])
     administration.administrators.return_value = []
     overrides = {
         get_auth_service: auth,
@@ -70,7 +71,9 @@ async def test_admin_updates_participation_and_reads_balance(
     )
     balance = await client.get(f"/events/{EVENT_ID}/teams/balance")
     admins = await client.get("/admin/administrators")
+    preview = await client.get(f"/events/{EVENT_ID}/teams/draft-preview")
 
+    assert preview.status_code == 200 and preview.json() == {"captains": [], "players": []}
     assert updated.status_code == 200
     assert players.update_participation.await_args.args[2].role == "captain"
     assert balance.status_code == 200 and balance.json() == {"average_ehb": 0, "teams": []}
@@ -105,7 +108,8 @@ async def test_players_cannot_see_balance_or_change_participation(
         ),
         await client.get(f"/events/{EVENT_ID}/teams/balance"),
         await client.get("/admin/administrators"),
+        await client.get(f"/events/{EVENT_ID}/teams/draft-preview"),
     ]
 
-    assert [response.status_code for response in responses] == [403, 403, 403]
+    assert [response.status_code for response in responses] == [403, 403, 403, 403]
     services[1].update_participation.assert_not_awaited()

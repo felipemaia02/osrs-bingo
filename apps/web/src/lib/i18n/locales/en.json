@@ -495,7 +495,9 @@
     "directoryCount_one": "{{count}} registered user",
     "directoryCount_other": "{{count}} registered users",
     "review": "Drop review",
-    "reviewDescription": "Accept or reject players' submissions with the screenshot."
+    "reviewDescription": "Accept or reject players' submissions with the screenshot.",
+    "draft": "Draft preview",
+    "draftDescription": "Available players for the captains' pick session."
   },
   "cards": {
     "title": "Card catalog",
@@ -1110,5 +1112,45 @@
       "teammateSelf": "You can't pick yourself as a teammate.",
       "teammateUnknown": "One of the teammates wasn't found. Remove and pick them again."
     }
+  },
+  "draft": {
+    "eyebrow": "Administration · {{event}} · Draft",
+    "title": "Draft preview",
+    "description": "Admins only. Share your screen with the captains during the pick session — players never open this page. Teams are still saved by an admin.",
+    "presentation": "Presentation mode",
+    "exitPresentation": "Exit presentation",
+    "noDraft": "There's no draft event to preview.",
+    "captains": "Captains",
+    "noCaptain": "No captain yet",
+    "captainLine": "{{team}} · EHB Σ {{ehb}}",
+    "region": "Region",
+    "activity": "Activity",
+    "sortBy": "Sort by",
+    "anyActivity": "Any",
+    "regions": {
+      "all": "All regions",
+      "americas": "Americas",
+      "europe": "Europe",
+      "africa": "Africa",
+      "asia": "Asia",
+      "oceania": "Oceania"
+    },
+    "sorts": {
+      "ehb": "EHB total ↓",
+      "kc": "Boss KC total ↓",
+      "name": "Name A–Z"
+    },
+    "count_one": "{{count}} player available · captains not listed",
+    "count_other": "{{count}} players available · captains not listed",
+    "everyoneAssigned": "Every approved player has a team.",
+    "ehb": "EHB Σ",
+    "bossKc": "Boss KC Σ",
+    "alts_one": "{{count}} alt",
+    "alts_other": "{{count}} alts",
+    "noAlts": "no alts",
+    "wants": "Wants:",
+    "noPreference": "No preference",
+    "buyInPending": "Buy-in pending",
+    "sigma": "Σ = main + alts found on Wise Old Man."
   }
 }

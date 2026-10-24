@@ -12,6 +12,7 @@ import { RankingPage } from '../../features/scoring/pages/RankingPage'
 import { BoardBuilderPage } from '../../features/boards/pages/BoardBuilderPage'
 import { CardCatalogPage } from '../../features/cards/pages/CardCatalogPage'
 import { MySubmissionsPage } from '../../features/submissions/pages/MySubmissionsPage'
+import { DraftPreviewPage } from '../../features/draft/pages/DraftPreviewPage'
 import { JoinEventPage } from '../../features/join/pages/JoinEventPage'
 import { ProfilePage } from '../../features/profiles/pages/ProfilePage'
 import { ReviewPage } from '../../features/submissions/pages/ReviewPage'
@@ -31,6 +32,7 @@ export function AppRouter() {
         <Route path="review" element={<ReviewPage />} />
         <Route path="events" element={<AdminEventsPage />} />
         <Route path="teams" element={<TeamsPage />} />
+        <Route path="draft" element={<DraftPreviewPage />} />
         <Route path="cards" element={<CardCatalogPage />} />
         <Route path="boards" element={<BoardBuilderPage />} />
         <Route path="administrators" element={<AdministratorsPage />} />

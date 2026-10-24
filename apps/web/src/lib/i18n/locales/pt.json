@@ -495,7 +495,9 @@
     "directoryCount_one": "{{count}} usuário registrado",
     "directoryCount_other": "{{count}} usuários registrados",
     "review": "Revisão de drops",
-    "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot."
+    "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot.",
+    "draft": "Prévia do draft",
+    "draftDescription": "Jogadores disponíveis para a escolha dos capitães."
   },
   "cards": {
     "title": "Catálogo de cards",
@@ -1108,5 +1110,45 @@
       "teammateSelf": "Você não pode escolher a si mesmo.",
       "teammateUnknown": "Um dos companheiros não foi encontrado. Remova e escolha de novo."
     }
+  },
+  "draft": {
+    "eyebrow": "Administração · {{event}} · Rascunho",
+    "title": "Prévia do draft",
+    "description": "Só para admins. Compartilhe a tela com os capitães durante a escolha — os jogadores nunca abrem esta página. Os times continuam sendo salvos por um admin.",
+    "presentation": "Modo apresentação",
+    "exitPresentation": "Sair da apresentação",
+    "noDraft": "Não há evento em rascunho para mostrar.",
+    "captains": "Capitães",
+    "noCaptain": "Ainda sem capitão",
+    "captainLine": "{{team}} · Σ EHB {{ehb}}",
+    "region": "Região",
+    "activity": "Atividade",
+    "sortBy": "Ordenar por",
+    "anyActivity": "Qualquer",
+    "regions": {
+      "all": "Todas as regiões",
+      "americas": "Américas",
+      "europe": "Europa",
+      "africa": "África",
+      "asia": "Ásia",
+      "oceania": "Oceania"
+    },
+    "sorts": {
+      "ehb": "EHB total ↓",
+      "kc": "KC de bosses total ↓",
+      "name": "Nome A–Z"
+    },
+    "count_one": "{{count}} jogador disponível · capitães não listados",
+    "count_other": "{{count}} jogadores disponíveis · capitães não listados",
+    "everyoneAssigned": "Todos os jogadores aprovados já têm time.",
+    "ehb": "Σ EHB",
+    "bossKc": "Σ KC de bosses",
+    "alts_one": "{{count}} alt",
+    "alts_other": "{{count}} alts",
+    "noAlts": "sem alts",
+    "wants": "Quer:",
+    "noPreference": "Sem preferência",
+    "buyInPending": "Buy-in pendente",
+    "sigma": "Σ = main + alts encontradas no Wise Old Man."
   }
 }

@@ -101,3 +101,18 @@ export interface SelectionResult {
   changed: number
   skipped: number
 }
+
+/** Draft preview (feature 024): captains per team and players still without a team. */
+export interface DraftCaptain {
+  team_id: string
+  team_name: string
+  color: string | null
+  emblem_url?: string | null
+  captain: string | null
+  captain_ehb: number | null
+}
+
+export interface DraftPreview {
+  captains: DraftCaptain[]
+  players: Player[]
+}

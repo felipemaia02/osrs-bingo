@@ -3,9 +3,13 @@ from app.core.exceptions import ConflictError, DomainValidationError, NotFoundEr
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.repository import PlayerRepository
+from app.modules.players.roster import to_roster_entry
+from app.modules.players.schemas import RegistrationStatus
 from app.modules.teams.models import TeamDocument
 from app.modules.teams.repository import TeamRepository
 from app.modules.teams.schemas import (
+    DraftCaptain,
+    DraftPreviewResponse,
     TeamBalance,
     TeamBalanceResponse,
     TeamCreate,
@@ -19,6 +23,8 @@ TEAM_EMBLEMS_DISABLED_DETAIL = "Team emblems are disabled"
 # A team within ±15% of the average EHB per team counts as balanced (feature 023).
 BALANCE_TOLERANCE_PERCENT = 15
 PERCENT = 100
+# More than any clan event; the preview lists every available player at once.
+DRAFT_PREVIEW_LIMIT = 500
 
 
 class TeamService:
@@ -81,6 +87,36 @@ class TeamService:
                 )
             )
         return TeamBalanceResponse(average_ehb=average, teams=balance)
+
+    async def draft_preview(self, event_id: str) -> DraftPreviewResponse:
+        """Captains per team and approved players without a team (feature 024)."""
+        await self._require_event(event_id)
+        teams = await self._teams.list(event_id)
+        captains = {row["team_id"]: row for row in await self._players.captains(event_id)}
+        players, _ = await self._players.page(
+            event_id,
+            status=RegistrationStatus.APPROVED,
+            assigned=False,
+            search="",
+            team_id=None,
+            offset=0,
+            limit=DRAFT_PREVIEW_LIMIT,
+        )
+        return DraftPreviewResponse(
+            captains=[
+                DraftCaptain(
+                    team_id=str(team["_id"]),
+                    team_name=team["name"],
+                    color=team["color"],
+                    emblem_url=team.get("emblem_url"),
+                    captain=captain["display_name"] if captain else None,
+                    captain_ehb=captain.get("ehb_total") if captain else None,
+                )
+                for team in teams
+                for captain in [captains.get(team["_id"])]
+            ],
+            players=[to_roster_entry(player) for player in players],
+        )
 
     async def update(self, event_id: str, team_id: str, payload: TeamUpdate) -> TeamResponse:
         await self._require_draft_event(event_id)

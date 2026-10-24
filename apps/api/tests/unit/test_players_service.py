@@ -11,6 +11,7 @@ from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.models import NewRegistration
 from app.modules.players.repository import CaptainTakenError, PlayerRepository
+from app.modules.players.roster import to_roster_entry
 from app.modules.players.schemas import (
     BuyInStatus,
     JoinRequest,
@@ -391,7 +392,7 @@ def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
         "buy_in_admin": [{"_id": ADMIN_ID, "username": "felps_"}],
     }
 
-    entry = PlayerService._to_roster_entry(document)  # type: ignore[arg-type]
+    entry = to_roster_entry(document)  # type: ignore[arg-type]
 
     assert entry.teammates == ["Ironman Iris", "mo"]
     assert entry.alt_count == 2 and entry.ehb_total == 845.2 and entry.role == "captain"

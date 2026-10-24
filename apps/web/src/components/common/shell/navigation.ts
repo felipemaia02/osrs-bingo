@@ -4,6 +4,8 @@ import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings'
 import AdminPanelSettingsOutlined from '@mui/icons-material/AdminPanelSettingsOutlined'
 import CalendarMonth from '@mui/icons-material/CalendarMonth'
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined'
+import CoPresent from '@mui/icons-material/CoPresent'
+import CoPresentOutlined from '@mui/icons-material/CoPresentOutlined'
 import EventNote from '@mui/icons-material/EventNote'
 import FactCheck from '@mui/icons-material/FactCheck'
 import FactCheckOutlined from '@mui/icons-material/FactCheckOutlined'
@@ -102,6 +104,13 @@ export const ADMIN_ENTRIES: NavEntry[] = [
     to: '/admin/teams',
     icon: GroupsOutlined,
     activeIcon: Groups,
+  },
+  {
+    key: 'draft',
+    labelKey: 'admin.draft',
+    to: '/admin/draft',
+    icon: CoPresentOutlined,
+    activeIcon: CoPresent,
   },
   {
     key: 'cards',

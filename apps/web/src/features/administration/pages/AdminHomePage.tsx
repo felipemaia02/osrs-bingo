@@ -3,6 +3,7 @@ import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettin
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined'
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined'
+import CoPresentOutlinedIcon from '@mui/icons-material/CoPresentOutlined'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined'
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
@@ -133,6 +134,16 @@ function useSections(overview: AdminOverview): Section[] {
       badges: present(pending, unassigned),
       mobileDetail: unassigned?.label ?? null,
       mobileBadge: pending,
+    },
+    {
+      key: 'draft',
+      to: '/admin/draft',
+      titleKey: 'admin.draft',
+      descriptionKey: 'admin.draftDescription',
+      icon: <CoPresentOutlinedIcon sx={{ fontSize: 20 }} />,
+      badges: [],
+      mobileDetail: null,
+      mobileBadge: null,
     },
     {
       key: 'cards',

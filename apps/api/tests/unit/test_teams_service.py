@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -117,3 +118,46 @@ async def test_balance_of_teams_without_players_is_zero() -> None:
 
     assert balance.average_ehb == 0
     assert balance.teams[0].ehb_vs_average == 0 and balance.teams[0].balanced
+
+
+async def test_draft_preview_lists_captains_and_players_without_a_team() -> None:
+    sara, guthix = ObjectId(), ObjectId()
+    now = datetime.now(UTC)
+    teams = AsyncMock(spec=TeamRepository)
+    teams.list.return_value = [
+        {"_id": sara, "name": "Saradomin", "color": "#2F5592"},
+        {"_id": guthix, "name": "Guthix", "color": None},
+    ]
+    players = AsyncMock(spec=PlayerRepository)
+    players.captains.return_value = [
+        {"team_id": sara, "display_name": "felps_", "ehb_total": 1229.1},
+    ]
+    players.page.return_value = (
+        [
+            {
+                "_id": ObjectId(),
+                "event_id": ObjectId(),
+                "team_id": None,
+                "status": "approved",
+                "display_name": "Ironman Iris",
+                "normalized_display_name": "ironman iris",
+                "ehb_total": 845.2,
+                "created_at": now,
+                "updated_at": now,
+            }
+        ],
+        1,
+    )
+    events = AsyncMock(spec=EventRepository)
+    events.get.return_value = draft_event()
+    service = TeamService(teams, players, events, SimpleNamespace(team_emblems_enabled=False))
+
+    preview = await service.draft_preview(str(ObjectId()))
+
+    assert [(c.team_name, c.captain, c.captain_ehb) for c in preview.captains] == [
+        ("Saradomin", "felps_", 1229.1),
+        ("Guthix", None, None),
+    ]
+    assert [p.display_name for p in preview.players] == ["Ironman Iris"]
+    query = players.page.await_args.kwargs
+    assert query["status"] == "approved" and query["assigned"] is False

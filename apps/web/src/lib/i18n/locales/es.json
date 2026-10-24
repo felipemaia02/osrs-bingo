@@ -495,7 +495,9 @@
     "directoryCount_one": "{{count}} usuario registrado",
     "directoryCount_other": "{{count}} usuarios registrados",
     "review": "Revisión de drops",
-    "reviewDescription": "Acepta o rechaza los envíos de los jugadores con la captura."
+    "reviewDescription": "Acepta o rechaza los envíos de los jugadores con la captura.",
+    "draft": "Vista previa del draft",
+    "draftDescription": "Jugadores disponibles para la elección de los capitanes."
   },
   "cards": {
     "title": "Catálogo de tarjetas",
@@ -1108,5 +1110,45 @@
       "teammateSelf": "No puedes elegirte a ti mismo.",
       "teammateUnknown": "No se encontró uno de los compañeros. Quítalo y elígelo de nuevo."
     }
+  },
+  "draft": {
+    "eyebrow": "Administración · {{event}} · Borrador",
+    "title": "Vista previa del draft",
+    "description": "Solo admins. Comparte tu pantalla con los capitanes durante la elección — los jugadores nunca abren esta página. Los equipos los sigue guardando un admin.",
+    "presentation": "Modo presentación",
+    "exitPresentation": "Salir de la presentación",
+    "noDraft": "No hay ningún evento en borrador para mostrar.",
+    "captains": "Capitanes",
+    "noCaptain": "Aún sin capitán",
+    "captainLine": "{{team}} · Σ EHB {{ehb}}",
+    "region": "Región",
+    "activity": "Actividad",
+    "sortBy": "Ordenar por",
+    "anyActivity": "Cualquiera",
+    "regions": {
+      "all": "Todas las regiones",
+      "americas": "Américas",
+      "europe": "Europa",
+      "africa": "África",
+      "asia": "Asia",
+      "oceania": "Oceanía"
+    },
+    "sorts": {
+      "ehb": "EHB total ↓",
+      "kc": "KC de jefes total ↓",
+      "name": "Nombre A–Z"
+    },
+    "count_one": "{{count}} jugador disponible · capitanes no listados",
+    "count_other": "{{count}} jugadores disponibles · capitanes no listados",
+    "everyoneAssigned": "Todos los jugadores aprobados ya tienen equipo.",
+    "ehb": "Σ EHB",
+    "bossKc": "Σ KC de jefes",
+    "alts_one": "{{count}} alt",
+    "alts_other": "{{count}} alts",
+    "noAlts": "sin alts",
+    "wants": "Quiere:",
+    "noPreference": "Sin preferencia",
+    "buyInPending": "Buy-in pendiente",
+    "sigma": "Σ = main + alts encontradas en Wise Old Man."
   }
 }

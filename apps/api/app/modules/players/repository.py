@@ -233,6 +233,23 @@ class PlayerRepository:
             },
         ]
 
+    async def captains(self, event_id: str) -> builtin_list[RosterDocument]:
+        """Approved captains with their profile experience (feature 024)."""
+        pipeline: builtin_list[dict[str, Any]] = [
+            {
+                "$match": {
+                    "event_id": self._object_id(event_id),
+                    "status": RegistrationStatus.APPROVED,
+                    "role": ParticipantRole.CAPTAIN,
+                }
+            },
+            *_experience_stages(),
+        ]
+        return cast(
+            builtin_list[RosterDocument],
+            await self._collection.aggregate(pipeline).to_list(length=None),
+        )
+
     async def team_experience(self, event_id: str) -> builtin_list[TeamExperience]:
         """Per team: approved players, their profile totals and the captain (feature 023)."""
         pipeline: builtin_list[dict[str, Any]] = [

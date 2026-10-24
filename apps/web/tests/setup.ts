@@ -41,6 +41,7 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
   approveSelectedPlayers: vi.fn(),
   removeSelectedPlayers: vi.fn(),
   fetchTeamBalance: vi.fn().mockResolvedValue({ average_ehb: 0, teams: [] }),
+  fetchDraftPreview: vi.fn().mockResolvedValue({ captains: [], players: [] }),
   updateParticipation: vi.fn(),
 }))
 
