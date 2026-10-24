@@ -390,6 +390,20 @@ def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
         "mate_users": [{"_id": mate, "username": "iris.btw"}, {"_id": friend, "username": "mo"}],
         "mate_profiles": [{"_id": mate, "accounts": [{"rsn": "Ironman Iris", "is_main": True}]}],
         "buy_in_admin": [{"_id": ADMIN_ID, "username": "felps_"}],
+        "account_id": "alt-1",
+        "profile_accounts": [
+            {"id": "alt-1", "rsn": "Iris Alt", "is_main": False, "wom_status": "found"},
+            {
+                "id": "main-1",
+                "rsn": "Ironman Iris",
+                "is_main": True,
+                "wom_status": "found",
+                "combat": dict.fromkeys(
+                    ("attack", "strength", "defence", "hitpoints", "ranged", "prayer", "magic"),
+                    99,
+                ),
+            },
+        ],
     }
 
     entry = to_roster_entry(document)  # type: ignore[arg-type]
@@ -397,6 +411,9 @@ def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
     assert entry.teammates == ["Ironman Iris", "mo"]
     assert entry.alt_count == 2 and entry.ehb_total == 845.2 and entry.role == "captain"
     assert entry.buy_in_admin_name == "felps_"
+    assert [account.rsn for account in entry.accounts] == ["Ironman Iris", "Iris Alt"]
+    assert entry.accounts[0].combat_level == 126
+    assert entry.account is not None and entry.account.rsn == "Iris Alt"
 
 
 async def test_events_without_a_buy_in_hide_the_buy_in_status(

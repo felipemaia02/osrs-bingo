@@ -8,6 +8,7 @@ import {
   fetchOwnRegistration,
   createPlayer,
   createTeam,
+  updateTeam,
   fetchPlayers,
   fetchDraftPreview,
   fetchTeamBalance,
@@ -70,6 +71,7 @@ export function useTeamMutations() {
   }
   return {
     createTeam: useMutation({ mutationFn: createTeam, onSuccess: refresh }),
+    updateTeam: useMutation({ mutationFn: updateTeam, onSuccess: refresh }),
     createPlayer: useMutation({ mutationFn: createPlayer, onSuccess: refresh }),
     approvePlayer: useMutation({ mutationFn: approvePlayer, onSuccess: refresh }),
     approveAllPlayers: useMutation({ mutationFn: approveAllPlayers, onSuccess: refresh }),

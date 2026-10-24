@@ -1,8 +1,12 @@
+import type { CombatSkill } from '../profiles/types'
+
 export interface Team {
   id: string
   event_id: string
   name: string
   color: string | null
+  /** Optional emblem image (only when team emblems are enabled). */
+  emblem_url?: string | null
   member_count: number
 }
 
@@ -28,6 +32,22 @@ export interface Player {
   timezone?: string | null
   teammates?: string[]
   buy_in_admin_name?: string | null
+  /** Draft preview (feature 024): the bingo account and every linked account. */
+  account?: AccountSnapshot | null
+  accounts?: AccountSnapshot[]
+}
+
+export interface AccountSnapshot {
+  id: string
+  rsn: string
+  is_main: boolean
+  wom_status: 'found' | 'not_found' | 'unavailable'
+  total_level: number | null
+  combat_level: number | null
+  combat: Partial<Record<CombatSkill, number>> | null
+  ehp: number | null
+  ehb: number | null
+  boss_kc: number | null
 }
 
 export type BuyInStatus = 'pending' | 'paid'
@@ -64,6 +84,8 @@ export interface TeamBalanceResponse {
 export interface TeamPayload {
   name: string
   color: string | null
+  /** Kept as is when renaming (the API replaces every team field). */
+  emblem_url?: string | null
 }
 
 /** Join request (feature 022); the three agreements must be true. */

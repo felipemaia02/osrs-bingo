@@ -285,7 +285,8 @@
       "selectedRemoved_one": "{{count}} eliminado.",
       "selectedRemoved_other": "{{count}} eliminados.",
       "skipped_one": "{{count}} omitido porque ya había cambiado.",
-      "skipped_other": "{{count}} omitidos porque ya habían cambiado."
+      "skipped_other": "{{count}} omitidos porque ya habían cambiado.",
+      "teamUpdated": "Equipo actualizado."
     },
     "errors": {
       "duplicatePlayer": "Tú o este nombre de OSRS ya tenéis una inscripción en este evento.",
@@ -394,7 +395,9 @@
       "receivedBy": "Recibido por",
       "saved": "{{name}} actualizado.",
       "captainHint": "El capitán debe estar aprobado y en un equipo; cada equipo tiene un capitán. Cambiar su equipo quita el rol."
-    }
+    },
+    "edit": "Editar",
+    "editTeam": "Editar {{name}}"
   },
   "language": {
     "label": "Idioma",
@@ -1028,6 +1031,15 @@
       "ranged": "Distancia",
       "prayer": "Plegaria",
       "magic": "Magia"
+    },
+    "combatShort": {
+      "attack": "Ataq",
+      "strength": "Fue",
+      "defence": "Def",
+      "hitpoints": "Vida",
+      "ranged": "Dist",
+      "prayer": "Pleg",
+      "magic": "Mag"
     }
   },
   "join": {
@@ -1168,7 +1180,16 @@
     "wants": "Quiere:",
     "noPreference": "Sin preferencia",
     "buyInPending": "Buy-in pendiente",
-    "sigma": "Σ = main + alts encontradas en Wise Old Man."
+    "sigma": "Σ = main + alts encontradas en Wise Old Man.",
+    "details": "Ver detalles de {{name}}",
+    "totalLevel": "Total",
+    "combatLevel": "Combate",
+    "modal": {
+      "discord": "Discord",
+      "accounts": "Cuentas vinculadas",
+      "noAccounts": "Sin cuentas vinculadas (inscrito antes de los perfiles).",
+      "playing": "Juega el bingo"
+    }
   },
   "home": {
     "eyebrow": "OSRS Bingo",

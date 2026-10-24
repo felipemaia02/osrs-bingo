@@ -34,8 +34,41 @@ function player(name: string, extra: Partial<Player>): Player {
   }
 }
 
+const MAIN = {
+  id: 'acc-main',
+  rsn: 'Ironman Iris',
+  is_main: true,
+  wom_status: 'found' as const,
+  total_level: 2277,
+  combat_level: 126,
+  combat: {
+    attack: 99,
+    strength: 99,
+    defence: 99,
+    hitpoints: 99,
+    ranged: 99,
+    prayer: 99,
+    magic: 99,
+  },
+  ehp: 1402.6,
+  ehb: 700.2,
+  boss_kc: 15000,
+}
+const ALT = {
+  ...MAIN,
+  id: 'acc-alt',
+  rsn: 'Iris Alt',
+  is_main: false,
+  total_level: 1500,
+  combat_level: null,
+  combat: null,
+}
+
 const PLAYERS = [
   player('Ironman Iris', {
+    account: MAIN,
+    accounts: [MAIN, ALT],
+    discord_username: 'iris.btw',
     ehb_total: 845.2,
     boss_kc_total: 17950,
     timezone: 'America/New_York',
@@ -81,6 +114,28 @@ beforeEach(async () => {
 })
 
 describe('Draft preview', () => {
+  it('shows total and combat levels on the card and every account in the details', async () => {
+    const user = userEvent.setup()
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    const iris = await screen.findByRole('article', { name: 'Ironman Iris' })
+    expect(within(iris).getByText('2,277')).toBeInTheDocument()
+    expect(within(iris).getByText('126')).toBeInTheDocument()
+    const skills = within(iris).getByLabelText('Combat levels')
+    expect(within(skills).getByText('Str')).toBeInTheDocument()
+
+    await user.click(within(iris).getByRole('button', { name: 'Show details of Ironman Iris' }))
+    const dialog = screen.getByRole('dialog', { name: 'Ironman Iris' })
+    expect(within(dialog).getByText('iris.btw')).toBeInTheDocument()
+    expect(within(dialog).getByText('Druid Duda')).toBeInTheDocument()
+    const main = within(dialog).getByRole('article', { name: 'Ironman Iris' })
+    expect(within(main).getByText('Plays the bingo')).toBeInTheDocument()
+    expect(within(main).getByText('Strength')).toBeInTheDocument()
+    const alt = within(dialog).getByRole('article', { name: 'Iris Alt' })
+    expect(within(alt).getByText('1,500')).toBeInTheDocument()
+    expect(within(alt).queryByText('Plays the bingo')).toBeNull()
+  })
+
   it('shows captains and the players still without a team', async () => {
     renderApp(<DraftPreviewPage />, '/admin/draft')
 

@@ -35,6 +35,7 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
   fetchOwnRegistration: vi.fn().mockResolvedValue(null),
   createPlayer: vi.fn(),
   createTeam: vi.fn(),
+  updateTeam: vi.fn(),
   updatePlayer: vi.fn(),
   approvePlayer: vi.fn(),
   approveAllPlayers: vi.fn(),

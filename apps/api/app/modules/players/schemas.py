@@ -104,6 +104,21 @@ class PlayerResponse(PlayerFields):
     updated_at: datetime
 
 
+class AccountSnapshot(BaseModel):
+    """A linked account's current WOM stats, for the draft preview (feature 024)."""
+
+    id: str
+    rsn: str
+    is_main: bool
+    wom_status: str
+    total_level: int | None = None
+    combat_level: int | None = None
+    combat: dict[str, int] | None = None
+    ehp: float | None = None
+    ehb: float | None = None
+    boss_kc: int | None = None
+
+
 class RosterEntry(PlayerResponse):
     """Admin roster row: the registration plus the player's current profile (feature 023)."""
 
@@ -115,6 +130,9 @@ class RosterEntry(PlayerResponse):
     timezone: str | None = None
     teammates: list[str] = Field(default_factory=list)
     buy_in_admin_name: str | None = None
+    # The account playing the bingo, then every linked account (main first).
+    account: AccountSnapshot | None = None
+    accounts: list[AccountSnapshot] = Field(default_factory=list)
 
 
 class PlayerListQuery(BaseModel):

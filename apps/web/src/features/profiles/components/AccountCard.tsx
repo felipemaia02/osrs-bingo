@@ -11,7 +11,8 @@ import { Button } from '../../../components/ui/Button'
 import { ThemedMenu, ThemedMenuItem } from '../../../components/ui/ThemedMenu'
 import { useSubmissionTime } from '../../submissions/hooks/useSubmissionTime'
 import { useStatFormat } from '../hooks/useStatFormat'
-import { COMBAT_SKILLS, type AccountAction, type LinkedAccount } from '../types'
+import type { AccountAction, LinkedAccount } from '../types'
+import { CombatLevels } from './CombatLevels'
 
 interface AccountCardProps {
   account: LinkedAccount
@@ -114,26 +115,7 @@ export function AccountCard({ account, removable, busy, error, onAction }: Accou
               <Stat label={t('profile.stats.bossKc')} value={format.whole(account.boss_kc)} />
             </div>
           )}
-          {account.combat && (
-            <dl
-              aria-label={t('profile.combat.title')}
-              className="m-0 grid grid-cols-4 gap-1.5 md:grid-cols-7"
-            >
-              {COMBAT_SKILLS.map((skill) => (
-                <div
-                  key={skill}
-                  className="flex flex-col items-center rounded-[3px] border border-rs-border/40 bg-rs-inset px-1 py-1.5"
-                >
-                  <dt className="max-w-full truncate text-[11px] text-rs-muted">
-                    {t(`profile.combat.${skill}`)}
-                  </dt>
-                  <dd className="m-0 text-[15px] font-bold tabular-nums text-rs-gold-bright">
-                    {format.whole(account.combat?.[skill] ?? null)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          )}
+          {account.combat && <CombatLevels combat={account.combat} />}
           <span className="text-[13px] text-rs-muted">
             {account.wom_updated_at &&
               `${t('profile.account.updated', { ago: time.ago(account.wom_updated_at) })} · `}

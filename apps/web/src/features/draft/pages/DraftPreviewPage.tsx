@@ -14,6 +14,7 @@ import { ACTIVITIES } from '../../profiles/types'
 import { useDraftPreview } from '../../teams/hooks/useTeams'
 import { CaptainStrip } from '../components/CaptainStrip'
 import { DraftPlayerCard } from '../components/DraftPlayerCard'
+import { DraftPlayerModal } from '../components/DraftPlayerModal'
 import { DEFAULT_FILTER, SORTS, visiblePlayers, type DraftFilter } from '../filters'
 
 const byCreation = (a: BingoEvent, b: BingoEvent) => a.created_at.localeCompare(b.created_at)
@@ -112,8 +113,11 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
   const { t } = useTranslation()
   const preview = useDraftPreview(eventId)
   const [filter, setFilter] = useState<DraftFilter>(DEFAULT_FILTER)
+  const [openId, setOpenId] = useState<string | null>(null)
   const players = useMemo(() => preview.data?.players ?? [], [preview.data])
   const shown = useMemo(() => visiblePlayers(players, filter), [players, filter])
+  // Read from the latest data so a refresh while it's open shows current values.
+  const opened = players.find((player) => player.id === openId) ?? null
 
   if (preview.isLoading)
     return (
@@ -181,11 +185,17 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
       ) : (
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {shown.map((player) => (
-            <DraftPlayerCard key={player.id} player={player} large={large} />
+            <DraftPlayerCard
+              key={player.id}
+              player={player}
+              large={large}
+              onOpen={() => setOpenId(player.id)}
+            />
           ))}
         </div>
       )}
       <p className="m-0 text-xs text-rs-muted">{t('draft.sigma')}</p>
+      {opened && <DraftPlayerModal player={opened} onClose={() => setOpenId(null)} />}
     </>
   )
 }

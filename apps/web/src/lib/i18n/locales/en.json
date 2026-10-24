@@ -285,7 +285,8 @@
       "selectedRemoved_one": "{{count}} removed.",
       "selectedRemoved_other": "{{count}} removed.",
       "skipped_one": "{{count}} skipped because it had already changed.",
-      "skipped_other": "{{count}} skipped because they had already changed."
+      "skipped_other": "{{count}} skipped because they had already changed.",
+      "teamUpdated": "Team updated."
     },
     "errors": {
       "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
@@ -394,7 +395,9 @@
       "receivedBy": "Received by",
       "saved": "{{name}} updated.",
       "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role."
-    }
+    },
+    "edit": "Edit",
+    "editTeam": "Edit {{name}}"
   },
   "language": {
     "label": "Language",
@@ -1030,6 +1033,15 @@
       "ranged": "Ranged",
       "prayer": "Prayer",
       "magic": "Magic"
+    },
+    "combatShort": {
+      "attack": "Atk",
+      "strength": "Str",
+      "defence": "Def",
+      "hitpoints": "HP",
+      "ranged": "Rng",
+      "prayer": "Pray",
+      "magic": "Mag"
     }
   },
   "join": {
@@ -1170,7 +1182,16 @@
     "wants": "Wants:",
     "noPreference": "No preference",
     "buyInPending": "Buy-in pending",
-    "sigma": "Σ = main + alts found on Wise Old Man."
+    "sigma": "Σ = main + alts found on Wise Old Man.",
+    "details": "Show details of {{name}}",
+    "totalLevel": "Total",
+    "combatLevel": "Combat",
+    "modal": {
+      "discord": "Discord",
+      "accounts": "Linked accounts",
+      "noAccounts": "No accounts linked (registered before profiles).",
+      "playing": "Plays the bingo"
+    }
   },
   "home": {
     "eyebrow": "OSRS Bingo",

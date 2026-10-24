@@ -363,6 +363,29 @@ it('creates a team in a modal and opens its filtered member list', async () => {
   )
 })
 
+it('renames a team keeping its color', async () => {
+  const colored = { ...TEAM, color: '#2F5592' }
+  vi.mocked(api.fetchTeams).mockResolvedValue([colored])
+  vi.mocked(api.updateTeam).mockResolvedValue({ ...colored, name: 'Lobsters' })
+  const user = await openAdministration()
+  await user.click(await screen.findByRole('tab', { name: /^Teams/ }))
+
+  await user.click(screen.getByRole('button', { name: 'Edit Crabs' }))
+  const dialog = screen.getByRole('dialog', { name: 'Edit Crabs' })
+  const name = within(dialog).getByLabelText('Team name')
+  expect(name).toHaveValue('Crabs')
+  await user.clear(name)
+  await user.type(name, 'Lobsters')
+  await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+  expect(await screen.findByText('Team updated.')).toBeInTheDocument()
+  expect(vi.mocked(api.updateTeam).mock.calls[0][0]).toEqual({
+    eventId: EVENT.id,
+    teamId: TEAM.id,
+    payload: { name: 'Lobsters', color: '#2F5592', emblem_url: null },
+  })
+})
+
 it('returns to the previous page when the last row is removed', async () => {
   const players = Array.from({ length: 26 }, (_, index) => ({
     ...PLAYER,

@@ -68,6 +68,7 @@ def _experience_stages() -> builtin_list[dict[str, Any]]:
                     "$cond": [joined, {"$round": [{"$sum": "$counted_accounts.ehb"}, 2]}, None]
                 },
                 "account_count": {"$cond": [joined, {"$size": accounts}, None]},
+                "profile_accounts": {"$cond": [joined, accounts, []]},
                 "timezone": {"$first": "$profile.timezone"},
             }
         },

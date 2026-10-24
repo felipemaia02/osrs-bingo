@@ -3,12 +3,14 @@
 from app.modules.events.models import EventDocument
 from app.modules.players.models import PlayerDocument, RosterDocument
 from app.modules.players.schemas import (
+    AccountSnapshot,
     BuyInStatus,
     ParticipantRole,
     PlayerResponse,
     RegistrationStatus,
     RosterEntry,
 )
+from app.modules.profiles.combat import combat_level
 from app.modules.profiles.schemas import Activity
 
 
@@ -33,17 +35,20 @@ def to_player_response(document: PlayerDocument) -> PlayerResponse:
 def to_roster_entry(document: RosterDocument) -> RosterEntry:
     """Admin roster row: registration, current profile experience and names (feature 023)."""
     role = document.get("role")
-    accounts = document.get("account_count")
+    account_count = document.get("account_count")
     admins = document.get("buy_in_admin") or []
+    snapshots = account_snapshots(document)
     return RosterEntry(
         **to_player_response(document).model_dump(),
         role=ParticipantRole(role) if role else None,
         boss_kc_total=document.get("boss_kc_total"),
         ehb_total=document.get("ehb_total"),
-        alt_count=max(accounts - 1, 0) if accounts else None,
+        alt_count=max(account_count - 1, 0) if account_count else None,
         timezone=document.get("timezone"),
         teammates=teammate_names(document),
         buy_in_admin_name=str(admins[0]["username"]) if admins else None,
+        account=next((item for item in snapshots if item.id == document.get("account_id")), None),
+        accounts=snapshots,
     )
 
 
@@ -75,3 +80,23 @@ def for_event[Response: (PlayerResponse, RosterEntry)](
     if isinstance(response, RosterEntry):
         hidden["buy_in_admin_name"] = None
     return response.model_copy(update=hidden)
+
+
+def account_snapshots(document: RosterDocument) -> list[AccountSnapshot]:
+    """Linked accounts with their WOM stats and combat level, main first."""
+    rows = sorted(document.get("profile_accounts") or [], key=lambda item: not item["is_main"])
+    return [
+        AccountSnapshot(
+            id=row["id"],
+            rsn=row["rsn"],
+            is_main=row["is_main"],
+            wom_status=row["wom_status"],
+            total_level=row.get("total_level"),
+            combat_level=combat_level(row.get("combat")),
+            combat=row.get("combat"),
+            ehp=row.get("ehp"),
+            ehb=row.get("ehb"),
+            boss_kc=row.get("boss_kc"),
+        )
+        for row in rows
+    ]

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import NotRequired, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 from bson import ObjectId
 
@@ -46,6 +46,7 @@ class RosterDocument(PlayerDocument, total=False):
     boss_kc_total: int | None
     ehb_total: float | None
     account_count: int | None
+    profile_accounts: list[dict[str, Any]]
     timezone: str | None
     mate_users: list[dict[str, object]]
     mate_profiles: list[dict[str, object]]

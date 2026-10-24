@@ -3,6 +3,7 @@ import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined'
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
+import { CombatLevels } from '../../profiles/components/CombatLevels'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { zoneLabel } from '../../profiles/timezones'
 import type { Player } from '../../teams/types'
@@ -28,7 +29,15 @@ function PlayerBadge({ player }: { player: Player }) {
   return null
 }
 
-export function DraftPlayerCard({ player, large }: { player: Player; large: boolean }) {
+export function DraftPlayerCard({
+  player,
+  large,
+  onOpen,
+}: {
+  player: Player
+  large: boolean
+  onOpen: () => void
+}) {
   const { t } = useTranslation()
   const format = useStatFormat()
   const alts =
@@ -40,12 +49,20 @@ export function DraftPlayerCard({ player, large }: { player: Player; large: bool
   return (
     <article
       aria-label={player.display_name}
-      className="flex flex-col gap-2.5 rounded border border-rs-border/70 bg-rs-surface p-3 shadow-rs-panel"
+      className="relative flex flex-col gap-2.5 rounded border border-rs-border/70 bg-rs-surface p-3 shadow-rs-panel hover:border-rs-border-strong"
     >
       <div className="flex items-start justify-between gap-2">
-        <strong className={`min-w-0 truncate ${large ? 'text-lg' : ''}`}>
+        {/* The name is the card's button; its overlay makes the whole card clickable. */}
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={t('draft.details', { name: player.display_name })}
+          className={`min-w-0 truncate text-left font-bold text-rs-text after:absolute after:inset-0 after:content-[''] ${
+            large ? 'text-lg' : ''
+          }`}
+        >
           {player.display_name}
-        </strong>
+        </button>
         <PlayerBadge player={player} />
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -56,6 +73,25 @@ export function DraftPlayerCard({ player, large }: { player: Player; large: bool
           large={large}
         />
       </div>
+      {player.account && (
+        <>
+          <span className="flex gap-3 text-xs">
+            <span>
+              {t('draft.totalLevel')}{' '}
+              <strong className="tabular-nums text-rs-gold-bright">
+                {format.whole(player.account.total_level)}
+              </strong>
+            </span>
+            <span>
+              {t('draft.combatLevel')}{' '}
+              <strong className="tabular-nums text-rs-gold-bright">
+                {format.whole(player.account.combat_level)}
+              </strong>
+            </span>
+          </span>
+          {player.account.combat && <CombatLevels combat={player.account.combat} compact />}
+        </>
+      )}
       <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-rs-muted">
         <span className="inline-flex items-center gap-1">
           <PublicOutlinedIcon sx={{ fontSize: 14 }} aria-hidden="true" />

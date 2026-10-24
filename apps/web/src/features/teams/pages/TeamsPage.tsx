@@ -27,7 +27,7 @@ import { useRosterActions } from '../hooks/useRosterActions'
 import { usePlayers, useTeamBalance, useTeamMutations, useTeams } from '../hooks/useTeams'
 import { ParticipantModal } from '../components/ParticipantModal'
 import { TeamBalanceCards } from '../components/TeamBalanceCards'
-import type { Player } from '../types'
+import type { Player, Team } from '../types'
 
 const PAGE_SIZE = 25
 const SEARCH_DELAY_MS = 300
@@ -143,6 +143,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
   const [editing, setEditing] = useState<Player | null>(null)
+  const [editingTeam, setEditingTeam] = useState<Team | null>(null)
   const teams = useTeams(event.id)
   const balance = useTeamBalance(event.id)
   const group = tab === 'teams' ? 'assigned' : tab
@@ -230,7 +231,13 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   // Names are listed only when every pending request is on screen (no search, single page).
   const allPendingVisible = tab === 'pending' && !search && items.length === (counts?.pending ?? -1)
   const dialogOpen = Boolean(
-    removing || removingSelected || confirmAll || assigning || creatingTeam || editing,
+    removing ||
+    removingSelected ||
+    confirmAll ||
+    assigning ||
+    creatingTeam ||
+    editing ||
+    editingTeam,
   )
   const total = players.data?.total ?? 0
   const rangeEnd = Math.min(offset + PAGE_SIZE, total)
@@ -322,6 +329,14 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             teams={teams.data}
             mobile={!desktop}
             onViewMembers={(team) => changeTab('assigned', team.id)}
+            onEdit={
+              editable
+                ? (team) => {
+                    actions.clearFeedback()
+                    setEditingTeam(team)
+                  }
+                : undefined
+            }
           />
         )}
       </>
@@ -545,12 +560,24 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
         />
       )}
       {creatingTeam && (
-        <CreateTeamDialog
+        <TeamDialog
           eventId={event.id}
+          team={null}
           onClose={() => setCreatingTeam(false)}
-          onCreated={() => {
+          onSaved={() => {
             setCreatingTeam(false)
             actions.notify(t('teams.feedback.teamCreated'))
+          }}
+        />
+      )}
+      {editingTeam && (
+        <TeamDialog
+          eventId={event.id}
+          team={editingTeam}
+          onClose={() => setEditingTeam(null)}
+          onSaved={() => {
+            setEditingTeam(null)
+            actions.notify(t('teams.feedback.teamUpdated'))
           }}
         />
       )}
@@ -576,19 +603,23 @@ function ApproveAllMessage({ pending, visible }: { pending: number; visible: Pla
   )
 }
 
-function CreateTeamDialog({
+/** Creates a team, or renames `team` keeping its color and emblem. */
+function TeamDialog({
   eventId,
+  team,
   onClose,
-  onCreated,
+  onSaved,
 }: {
   eventId: string
+  team: Team | null
   onClose: () => void
-  onCreated: () => void
+  onSaved: () => void
 }) {
   const { t } = useTranslation()
-  const { createTeam } = useTeamMutations()
-  const [name, setName] = useState('')
+  const { createTeam, updateTeam } = useTeamMutations()
+  const [name, setName] = useState(team?.name ?? '')
   const [error, setError] = useState<string | null>(null)
+  const busy = createTeam.isPending || updateTeam.isPending
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -598,8 +629,14 @@ function CreateTeamDialog({
       return
     }
     try {
-      await createTeam.mutateAsync({ eventId, payload: { name, color: null } })
-      onCreated()
+      if (team)
+        await updateTeam.mutateAsync({
+          eventId,
+          teamId: team.id,
+          payload: { name, color: team.color, emblem_url: team.emblem_url ?? null },
+        })
+      else await createTeam.mutateAsync({ eventId, payload: { name, color: null } })
+      onSaved()
     } catch (failure) {
       setError(t(teamErrorKey(failure)))
     }
@@ -607,8 +644,8 @@ function CreateTeamDialog({
 
   return (
     <FormModal
-      title={t('teams.roster.createTeam')}
-      busy={createTeam.isPending}
+      title={team ? t('teams.editTeam', { name: team.name }) : t('teams.roster.createTeam')}
+      busy={busy}
       size="sm"
       onClose={onClose}
     >
@@ -631,11 +668,11 @@ function CreateTeamDialog({
           </p>
         )}
         <div className="flex justify-end gap-2">
-          <Button onClick={onClose} disabled={createTeam.isPending}>
+          <Button onClick={onClose} disabled={busy}>
             {t('common.cancel')}
           </Button>
-          <Button type="submit" variant="primary" disabled={createTeam.isPending}>
-            {t(createTeam.isPending ? 'common.saving' : 'teams.create')}
+          <Button type="submit" variant="primary" disabled={busy}>
+            {t(busy ? 'common.saving' : team ? 'common.save' : 'teams.create')}
           </Button>
         </div>
       </form>

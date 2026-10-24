@@ -17,6 +17,15 @@ export const fetchTeams = async (eventId: string) =>
   (await apiClient.get<{ items: Team[] }>(`/events/${eventId}/teams`)).data.items
 export const createTeam = async ({ eventId, payload }: { eventId: string; payload: TeamPayload }) =>
   (await apiClient.post<Team>(`/events/${eventId}/teams`, payload)).data
+export const updateTeam = async ({
+  eventId,
+  teamId,
+  payload,
+}: {
+  eventId: string
+  teamId: string
+  payload: TeamPayload
+}) => (await apiClient.patch<Team>(`/events/${eventId}/teams/${teamId}`, payload)).data
 export const fetchPlayers = async (eventId: string, filters: PlayerFilters) =>
   (await apiClient.get<PlayerPage>(`/events/${eventId}/players`, { params: filters })).data
 export const createPlayer = async ({

@@ -1,3 +1,4 @@
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui/Button'
 import type { Team } from '../types'
@@ -7,10 +8,12 @@ interface TeamsListProps {
   teams: Team[]
   mobile: boolean
   onViewMembers: (team: Team) => void
+  /** Draft events only: rename the team. */
+  onEdit?: (team: Team) => void
 }
 
 /** Teams tab: emblem, name, member count and a link to the filtered Assigned tab. */
-export function TeamsList({ teams, mobile, onViewMembers }: TeamsListProps) {
+export function TeamsList({ teams, mobile, onViewMembers, onEdit }: TeamsListProps) {
   const { t } = useTranslation()
   const view = (team: Team) => (
     <Button
@@ -22,6 +25,18 @@ export function TeamsList({ teams, mobile, onViewMembers }: TeamsListProps) {
       {t('teams.roster.viewMembersShort')}
     </Button>
   )
+  const edit = (team: Team) =>
+    onEdit && (
+      <Button
+        size={mobile ? 'md' : 'sm'}
+        className={mobile ? 'w-full' : ''}
+        aria-label={t('teams.editTeam', { name: team.name })}
+        onClick={() => onEdit(team)}
+      >
+        <EditOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
+        {t('teams.edit')}
+      </Button>
+    )
   if (mobile) {
     return (
       <div className="flex flex-col gap-3">
@@ -40,7 +55,10 @@ export function TeamsList({ teams, mobile, onViewMembers }: TeamsListProps) {
                 </span>
               </div>
             </div>
-            {view(team)}
+            <div className="flex gap-2">
+              {edit(team)}
+              {view(team)}
+            </div>
           </div>
         ))}
       </div>
@@ -68,7 +86,12 @@ export function TeamsList({ teams, mobile, onViewMembers }: TeamsListProps) {
               </span>
             </td>
             <td className={cell}>{t('teams.memberCount', { count: team.member_count })}</td>
-            <td className={`${cell} text-right`}>{view(team)}</td>
+            <td className={`${cell} text-right`}>
+              <span className="inline-flex gap-1.5">
+                {edit(team)}
+                {view(team)}
+              </span>
+            </td>
           </tr>
         ))}
       </tbody>
