@@ -22,7 +22,9 @@
     },
     "search": {
       "label": "Where does my drop count?",
-      "placeholder": "Where does my drop count? e.g. jar, claw, Vorkath"
+      "placeholder": "Search a drop, e.g. Jar of Stone",
+      "open": "Search drops",
+      "close": "Close search"
     },
     "filter": {
       "label": "Difficulty",
@@ -57,10 +59,8 @@
     "yourTeam": "Your team",
     "startsInLabel": "Starts in",
     "endsInLabel": "Ends in",
-    "progressUnavailableShort": "Progress unavailable for now",
     "progressNotice": {
-      "title": "Progress unavailable.",
-      "body": "Drop submissions don't exist yet — for now, use search to find where each drop counts."
+      "title": "Progress unavailable."
     },
     "status": {
       "search_one": "{{count}} tile accepts “{{query}}”",
@@ -89,10 +89,11 @@
       "close": "Close detail",
       "prompt": "Select a tile to see its accepted drops and how it is completed.",
       "completes": "Completes when progress reaches <strong>{{requirement}}</strong>. Worth <strong>{{points}} pts only once</strong> — extra progress gives no points.",
-      "teamProgress": "Your team's progress: unavailable",
       "drops": "Accepted drops ({{count}})",
       "weightHint": "weight = progress",
-      "imageSource": "Image: OSRS Wiki — {{name}}"
+      "imageSource": "Image: OSRS Wiki — {{name}}",
+      "previous": "Previous tile",
+      "next": "Next tile"
     },
     "rowSummary": {
       "some": "{{count}} of {{total}} match the search",
@@ -101,15 +102,24 @@
     "miniMap": {
       "label": "Board mini-map",
       "title": "{{size}}×{{size}} map",
-      "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show in the list",
-      "legend": "E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list.",
-      "bonusCell": "{{name}}, bonus card, {{tier}}: show in the list"
+      "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show details",
+      "legend": "E = Easy · M = Medium · H = Hard. Tap a tile to see it below.",
+      "bonusCell": "{{name}}, bonus card, {{tier}}: show details"
     },
     "bonus": {
       "badge": "Bonus",
       "card": "Bonus card",
       "row": "Bonus cards",
-      "section": "Bonus cards"
+      "section": "Bonus cards",
+      "slot": "Bonus card {{slot}}"
+    },
+    "progress": {
+      "login": "Log in to see your team's progress.",
+      "notRegistered": "You're not in this event, so there's no team progress to show.",
+      "pending": "Your registration is waiting for an admin's approval.",
+      "removed": "Your registration was removed by an admin.",
+      "unassigned": "You'll see your team's progress once an admin puts you in a team.",
+      "unavailable": "Your team's progress isn't available right now."
     }
   },
   "tile": {
@@ -151,7 +161,8 @@
       "all": "All",
       "draft": "Draft",
       "active": "Active",
-      "finished": "Finished"
+      "finished": "Finished",
+      "mine": "Mine"
     },
     "actions": {
       "create": "New event",
@@ -226,7 +237,11 @@
       "placeholder": "Write how this bingo works: dates, what counts, screenshots, team rules…",
       "hint": "Plain text; line breaks are kept. Players read it on the Events page and in the board's help.",
       "section": "Rules"
-    }
+    },
+    "openBoard": "Open board",
+    "search": "Search events",
+    "noMatch": "No event matches the search.",
+    "noneMine": "You haven't joined any event yet."
   },
   "teams": {
     "eyebrow": "Administration",
@@ -867,7 +882,8 @@
     "oldestFirst": "Oldest first",
     "empty": "Nothing to review. 🎉",
     "backToQueue": "Back to the queue",
-    "instructions": "Instructions"
+    "instructions": "Instructions",
+    "ownTeam": "You play on this team — another admin reviews it."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",
@@ -1104,7 +1120,8 @@
       "button": "Request to join",
       "needAccount": "Choose an account in step 1 first.",
       "needAgreements": "Confirm all 3 items in step 3 first.",
-      "pending": "Your request stays <b>Pending</b> until an admin approves it."
+      "pending": "Your request stays <b>Pending</b> until an admin approves it.",
+      "title": "Send your request"
     },
     "errors": {
       "account": "Choose an account from your profile.",
@@ -1152,5 +1169,14 @@
     "noPreference": "No preference",
     "buyInPending": "Buy-in pending",
     "sigma": "Σ = main + alts found on Wise Old Man."
+  },
+  "home": {
+    "eyebrow": "OSRS Bingo",
+    "title": "My events",
+    "login": "Log in to see the events you're in.",
+    "none": "You aren't in any event yet.",
+    "browseEvents": "Browse events",
+    "notPlaying": "Active event — you're not playing in it.",
+    "browseBoard": "Browse board"
   }
 }

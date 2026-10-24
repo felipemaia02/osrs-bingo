@@ -7,11 +7,12 @@ import { TileDetailContent } from './TileDetailContent'
 interface TileDetailPanelProps {
   tile: Tile | null
   match?: TileMatch
+  unavailableReason: string
   onClose: () => void
 }
 
 /** Fixed desktop panel beside the grid; shows a prompt until a tile is selected. */
-export function TileDetailPanel({ tile, match, onClose }: TileDetailPanelProps) {
+export function TileDetailPanel({ tile, match, unavailableReason, onClose }: TileDetailPanelProps) {
   const { t } = useTranslation()
   return (
     <aside
@@ -34,7 +35,12 @@ export function TileDetailPanel({ tile, match, onClose }: TileDetailPanelProps) 
               <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
             </button>
           </div>
-          <TileDetailContent tile={tile} match={match} showName />
+          <TileDetailContent
+            tile={tile}
+            match={match}
+            showName
+            unavailableReason={unavailableReason}
+          />
         </>
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-rs-muted">

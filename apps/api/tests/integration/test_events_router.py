@@ -6,7 +6,7 @@ from fastapi import status
 from httpx import AsyncClient
 
 from app.main import app
-from app.modules.auth.dependencies import require_admin
+from app.modules.auth.dependencies import require_admin, require_user
 from app.modules.auth.schemas import CurrentUser
 from app.modules.events.router import get_event_service
 from app.modules.events.schemas import EventListResponse, EventResponse, EventStatus
@@ -98,3 +98,27 @@ async def test_invalid_schedule_returns_validation_error(client: AsyncClient) ->
         app.dependency_overrides.clear()
 
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+async def test_my_events_returns_the_users_events(client: AsyncClient) -> None:
+    service = AsyncMock()
+    service.mine.return_value = [event_response()]
+
+    async def provide() -> AsyncMock:
+        return service
+
+    async def player() -> CurrentUser:
+        return CurrentUser(
+            id="66d0000000000000000000aa", discord_id="9", username="p", is_admin=False
+        )
+
+    app.dependency_overrides[get_event_service] = provide
+    try:
+        app.dependency_overrides[require_user] = player
+        response = await client.get("/events/mine")
+        assert response.status_code == 200
+        assert response.json()["items"][0]["name"] == "Summer Bingo"
+        service.mine.assert_awaited_once_with("66d0000000000000000000aa")
+    finally:
+        app.dependency_overrides.pop(require_user, None)
+        app.dependency_overrides.pop(get_event_service, None)

@@ -113,7 +113,8 @@ describe('Join event', () => {
     renderJoin()
 
     expect(await screen.findByRole('heading', { name: 'Winter Bingo 2026' })).toBeInTheDocument()
-    const accounts = screen.getByRole('radiogroup', { name: 'Bingo account' })
+    // The title shows before the profile loads; wait for the accounts themselves.
+    const accounts = await screen.findByRole('radiogroup', { name: 'Bingo account' })
     expect(within(accounts).getByRole('radio', { name: /Holy Hal/ })).toBeChecked()
     expect(within(accounts).getByRole('radio', { name: /Hal Ghost/ })).toBeDisabled()
     expect(
@@ -152,6 +153,16 @@ describe('Join event', () => {
         accept_team: true,
       },
     })
+  })
+
+  it('leaves the buy-in out of events that have none', async () => {
+    vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, buy_in: null }])
+    renderJoin()
+
+    expect(await screen.findByText('No buy-in for this event.')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '4 · Send your request' })).toBeInTheDocument()
+    expect(screen.queryByText('The buy-in is paid to an admin, who records it.')).toBeNull()
+    expect(screen.queryByText('Not paid yet')).toBeNull()
   })
 
   it('limits teammates to three and keeps API errors on the page', async () => {

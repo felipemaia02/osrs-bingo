@@ -302,6 +302,27 @@ describe('Drop review', () => {
     expect(await screen.findByText('Submission accepted.')).toBeInTheDocument()
   })
 
+  it("doesn't let admins review their own team", async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [reviewItem({ id: 'own-1', own_team: true })],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    const user = userEvent.setup()
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(
+      within(detail).getByText('You play on this team — another admin reviews it.'),
+    ).toBeInTheDocument()
+    expect(within(detail).queryByRole('button', { name: /Accept/ })).toBeNull()
+    expect(within(detail).queryByRole('button', { name: /Reject/ })).toBeNull()
+    await user.keyboard('a')
+    expect(acceptSubmission).not.toHaveBeenCalled()
+  })
+
   it('rejects with a reason; Other needs a description', async () => {
     vi.mocked(rejectSubmission).mockResolvedValue(submission({ status: 'rejected' }))
     const user = userEvent.setup()

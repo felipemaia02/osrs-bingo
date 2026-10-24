@@ -340,6 +340,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
       </p>
     ) : desktop ? (
       <RosterTable
+        showBuyIn={Boolean(event.buy_in)}
         players={items}
         group={group}
         teams={teams.data ?? []}

@@ -13,6 +13,7 @@ const ERROR_KEYS: Record<string, string> = {
   "Accept this player's pre-verification for the card first":
     'submissions.errors.preverificationNotAccepted',
   'Submission already reviewed': 'submissions.errors.alreadyReviewed',
+  'You play on this team — another admin reviews it': 'review.ownTeam',
   'Submissions can only be reviewed for active or finished events':
     'submissions.errors.reviewClosed',
   'Screenshot must be a PNG, JPEG or WebP image': 'submissions.errors.imageType',

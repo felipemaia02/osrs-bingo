@@ -3,6 +3,8 @@ import { EVENT_TABS, type EventTab } from '../hooks/useEventTabs'
 
 interface EventTabsProps {
   tab: EventTab
+  /** Defaults to the status tabs; players also get "Mine". */
+  tabs?: EventTab[]
   counts: Record<EventTab, number>
   onChange: (tab: EventTab) => void
   mobile: boolean
@@ -11,7 +13,7 @@ interface EventTabsProps {
 export const EVENT_PANEL_ID = 'events-panel'
 
 /** Status tabs with counts: underline tabs on desktop, chips on mobile (teams v2 pattern). */
-export function EventTabs({ tab, counts, onChange, mobile }: EventTabsProps) {
+export function EventTabs({ tab, tabs = EVENT_TABS, counts, onChange, mobile }: EventTabsProps) {
   const { t } = useTranslation()
   return (
     <div
@@ -21,7 +23,7 @@ export function EventTabs({ tab, counts, onChange, mobile }: EventTabsProps) {
         mobile ? 'flex gap-1.5 overflow-x-auto pb-0.5' : 'flex border-b border-rs-border px-2'
       }
     >
-      {EVENT_TABS.map((value) => {
+      {tabs.map((value) => {
         const active = tab === value
         const className = mobile
           ? `inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] ${

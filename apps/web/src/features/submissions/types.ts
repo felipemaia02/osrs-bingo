@@ -56,6 +56,8 @@ export interface ReviewItem extends Submission {
   requires_preverification: boolean
   preverification_status: SubmissionStatus | null
   within_event: boolean
+  /** The reviewing admin plays on this team: another admin reviews it (feature 026). */
+  own_team?: boolean
 }
 
 export interface ReviewQueue {

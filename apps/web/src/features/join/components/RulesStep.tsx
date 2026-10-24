@@ -19,11 +19,14 @@ const SUMMARY: Array<{ key: string; icon: ReactNode }> = [
 /** Step 3: fixed summary, the event's written rules and the 3 agreements (FR-004). */
 export function RulesStep({
   rulesText,
+  hasBuyIn,
   rsn,
   agreed,
   onAgree,
 }: {
   rulesText: string | null
+  /** Events without a buy-in don't mention it (feature 025 follow-up). */
+  hasBuyIn: boolean
   rsn: string | null
   agreed: Record<Agreement, boolean>
   onAgree: (agreement: Agreement, value: boolean) => void
@@ -32,7 +35,7 @@ export function RulesStep({
   return (
     <>
       <ul className="m-0 flex list-none flex-col gap-2 p-0">
-        {SUMMARY.map((item) => (
+        {SUMMARY.filter((item) => hasBuyIn || item.key !== 'buyIn').map((item) => (
           <li key={item.key} className="flex gap-2.5 text-sm">
             <span className="mt-px text-rs-gold" aria-hidden="true">
               {item.icon}

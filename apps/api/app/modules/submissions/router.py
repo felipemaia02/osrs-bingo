@@ -96,7 +96,7 @@ async def review_queue(
     service: SubmissionServiceDependency,
     query: Annotated[ReviewQueueQuery, Query()],
 ) -> ReviewQueueResponse:
-    return await service.queue(event_id, query)
+    return await service.queue(event_id, query, admin)
 
 
 @admin_router.post("/submissions/{submission_id}/accept", response_model=SubmissionResponse)

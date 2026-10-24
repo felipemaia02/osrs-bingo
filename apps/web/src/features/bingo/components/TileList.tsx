@@ -1,7 +1,6 @@
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
-import { tileListItemId } from '../boardTiles'
 import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
@@ -90,7 +89,6 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
 
   return (
     <button
-      id={tileListItemId(tile)}
       type="button"
       onClick={() => onSelect(tile)}
       aria-label={label}

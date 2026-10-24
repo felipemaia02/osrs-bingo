@@ -16,6 +16,7 @@ import type { BingoEvent } from '../../src/features/events/types'
 import { fetchOwnTeamScore, fetchRanking } from '../../src/features/scoring/api/scoringApi'
 import { RankingPage } from '../../src/features/scoring/pages/RankingPage'
 import type { Ranking, TeamScore } from '../../src/features/scoring/types'
+import { fetchOwnRegistration } from '../../src/features/teams/api/teamsApi'
 import { renderApp } from '../render'
 
 const EVENT: BingoEvent = {
@@ -150,6 +151,14 @@ beforeEach(async () => {
   vi.mocked(fetchEvents).mockResolvedValue([EVENT])
   vi.mocked(fetchPublicBoard).mockResolvedValue(BOARD)
   vi.mocked(fetchOwnTeamScore).mockRejectedValue(new Error('Not on a team'))
+  // The viewer plays this event, so the first screen is its board (feature 026).
+  vi.mocked(fetchOwnRegistration).mockResolvedValue({
+    id: 'p1',
+    event_id: EVENT.id,
+    team_id: null,
+    display_name: 'Holy Hal',
+    status: 'approved',
+  })
 })
 
 describe('team progress on the board', () => {

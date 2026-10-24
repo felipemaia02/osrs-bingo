@@ -45,6 +45,8 @@ export function ParticipantModal({
     session.data?.id ||
     ''
   const busy = updateParticipation.isPending
+  // Events without a buy-in report no status (the API hides it); keep the stored one untouched.
+  const hasBuyIn = player.buy_in_status !== null && player.buy_in_status !== undefined
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
@@ -103,21 +105,23 @@ export function ParticipantModal({
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-[13px] font-semibold">
-          {t('teams.roster.buyIn')}
-          <select
-            value={status}
-            onChange={(event) => setStatus(event.target.value as BuyInStatus)}
-            className={`${FIELD_CLASS} font-normal`}
-          >
-            {BUY_IN_STATUSES.map((option) => (
-              <option key={option} value={option}>
-                {t(`teams.buyIn.${option}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        {status === 'paid' && (
+        {hasBuyIn && (
+          <label className="flex flex-col gap-1 text-[13px] font-semibold">
+            {t('teams.roster.buyIn')}
+            <select
+              value={status}
+              onChange={(event) => setStatus(event.target.value as BuyInStatus)}
+              className={`${FIELD_CLASS} font-normal`}
+            >
+              {BUY_IN_STATUSES.map((option) => (
+                <option key={option} value={option}>
+                  {t(`teams.buyIn.${option}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {hasBuyIn && status === 'paid' && (
           <label className="flex flex-col gap-1 text-[13px] font-semibold">
             {t('teams.participant.receivedBy')}
             <select

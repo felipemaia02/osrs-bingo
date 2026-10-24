@@ -61,8 +61,3 @@ export function matchTile(tile: Tile, search: string, tier: TierFilter): TileMat
 export function isFiltering(search: string, tier: TierFilter): boolean {
   return tier !== 'all' || normalizeSearch(search) !== ''
 }
-
-/** DOM id used by the mini-map to scroll to a tile in the row list. */
-export function tileListItemId(tile: Tile): string {
-  return `board-tile-${tile.position}`
-}

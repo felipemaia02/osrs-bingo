@@ -171,65 +171,77 @@ export function ReviewDetail({
               {t('review.waitingPreverification')}
             </p>
           )}
-          <label className="flex flex-col gap-1">
-            <span className="text-[13px] font-semibold">
-              {t('review.reasonLabel')}{' '}
-              <span className="font-normal text-rs-muted">{t('review.reasonHint')}</span>
-            </span>
-            <select
-              ref={reasonRef}
-              value={reason}
-              onChange={(change) => setReason(change.target.value as RejectionReason | '')}
-              className={FIELD_CLASS}
-            >
-              <option value="">{t('review.chooseReason')}</option>
-              {REJECTION_REASONS.map((value) => (
-                <option key={value} value={value}>
-                  {t(`submissions.reasons.${value}`)}
-                </option>
-              ))}
-            </select>
-          </label>
-          {reason === 'other' && (
-            <label className="flex flex-col gap-1 text-[13px] font-semibold">
-              {t('review.otherNote')}
-              <input
-                value={note}
-                maxLength={280}
-                onChange={(change) => setNote(change.target.value)}
-                className={`${FIELD_CLASS} font-normal`}
-              />
-            </label>
-          )}
-          {error && (
-            <p
-              role="alert"
-              className="m-0 rounded-sm border border-rs-danger/60 bg-rs-danger-bg p-3 text-sm"
-            >
-              {error}
+          {item.own_team ? (
+            <p className="m-0 rounded-[3px] border border-rs-info bg-rs-info-bg px-3 py-2 text-[13px] text-rs-info-banner-text">
+              {t('review.ownTeam')}
             </p>
+          ) : (
+            <>
+              <label className="flex flex-col gap-1">
+                <span className="text-[13px] font-semibold">
+                  {t('review.reasonLabel')}{' '}
+                  <span className="font-normal text-rs-muted">{t('review.reasonHint')}</span>
+                </span>
+                <select
+                  ref={reasonRef}
+                  value={reason}
+                  onChange={(change) => setReason(change.target.value as RejectionReason | '')}
+                  className={FIELD_CLASS}
+                >
+                  <option value="">{t('review.chooseReason')}</option>
+                  {REJECTION_REASONS.map((value) => (
+                    <option key={value} value={value}>
+                      {t(`submissions.reasons.${value}`)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {reason === 'other' && (
+                <label className="flex flex-col gap-1 text-[13px] font-semibold">
+                  {t('review.otherNote')}
+                  <input
+                    value={note}
+                    maxLength={280}
+                    onChange={(change) => setNote(change.target.value)}
+                    className={`${FIELD_CLASS} font-normal`}
+                  />
+                </label>
+              )}
+              {error && (
+                <p
+                  role="alert"
+                  className="m-0 rounded-sm border border-rs-danger/60 bg-rs-danger-bg p-3 text-sm"
+                >
+                  {error}
+                </p>
+              )}
+            </>
           )}
           <div className="mt-1 flex flex-wrap gap-2">
-            <Button variant="success" onClick={onAccept} disabled={busy || waiting}>
-              <CheckOutlinedIcon fontSize="small" aria-hidden="true" />
-              {t('review.accept')}
-              <kbd className="hidden rounded-[3px] border border-rs-canvas px-1.5 text-[11px] md:inline">
-                A
-              </kbd>
-            </Button>
-            <Button
-              variant="danger"
-              disabled={busy || !rejectReady}
-              onClick={() =>
-                reason && onReject({ reason, note: reason === 'other' ? note.trim() : null })
-              }
-            >
-              <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
-              {t('review.reject')}
-              <kbd className="hidden rounded-[3px] border border-rs-border px-1.5 text-[11px] md:inline">
-                R
-              </kbd>
-            </Button>
+            {!item.own_team && (
+              <>
+                <Button variant="success" onClick={onAccept} disabled={busy || waiting}>
+                  <CheckOutlinedIcon fontSize="small" aria-hidden="true" />
+                  {t('review.accept')}
+                  <kbd className="hidden rounded-[3px] border border-rs-canvas px-1.5 text-[11px] md:inline">
+                    A
+                  </kbd>
+                </Button>
+                <Button
+                  variant="danger"
+                  disabled={busy || !rejectReady}
+                  onClick={() =>
+                    reason && onReject({ reason, note: reason === 'other' ? note.trim() : null })
+                  }
+                >
+                  <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
+                  {t('review.reject')}
+                  <kbd className="hidden rounded-[3px] border border-rs-border px-1.5 text-[11px] md:inline">
+                    R
+                  </kbd>
+                </Button>
+              </>
+            )}
             <Button className="ml-auto" onClick={onNext} disabled={index >= total - 1}>
               {t('review.skip')}
             </Button>

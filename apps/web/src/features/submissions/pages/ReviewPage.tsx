@@ -84,7 +84,7 @@ export function ReviewPage() {
       const key = event.key.toLowerCase()
       if (key === 'j') select(index + 1)
       else if (key === 'k') select(index - 1)
-      else if (key === 'a' && selected && !busy) {
+      else if (key === 'a' && selected && !busy && !selected.own_team) {
         const waiting =
           selected.kind === 'drop' &&
           selected.requires_preverification &&

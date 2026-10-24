@@ -397,3 +397,16 @@ def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
     assert entry.teammates == ["Ironman Iris", "mo"]
     assert entry.alt_count == 2 and entry.ehb_total == 845.2 and entry.role == "captain"
     assert entry.buy_in_admin_name == "felps_"
+
+
+async def test_events_without_a_buy_in_hide_the_buy_in_status(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, events = repositories
+    players.get_for_user.return_value = registration()
+
+    events.get.return_value = {"status": EventStatus.DRAFT, "buy_in": None}
+    assert (await service.own_registration(EVENT_ID, USER_ID)).buy_in_status is None  # type: ignore[union-attr]
+
+    events.get.return_value = {"status": EventStatus.DRAFT, "buy_in": "5M gp"}
+    assert (await service.own_registration(EVENT_ID, USER_ID)).buy_in_status == "pending"  # type: ignore[union-attr]

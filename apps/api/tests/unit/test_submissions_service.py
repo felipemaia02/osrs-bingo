@@ -1,3 +1,4 @@
+import contextlib
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -83,7 +84,10 @@ def deps(tmp_path: Path) -> dict[str, Any]:
     events = AsyncMock(spec=EventRepository)
     events.get.return_value = event()
     players = AsyncMock(spec=PlayerRepository)
-    players.get_for_user.return_value = player()
+    # The submitting player is registered; the reviewing admin isn't (unless a test says so).
+    players.get_for_user.side_effect = lambda _event, user_id: (
+        player() if user_id == USER.id else None
+    )
     boards = AsyncMock(spec=BoardRepository)
     boards.get_by_event.return_value = board()
     teams = AsyncMock(spec=TeamRepository)
@@ -147,6 +151,7 @@ async def test_only_approved_players_with_a_team_submit_during_active_events(
     deps: dict[str, Any], event_status: str, registration: Any, status_code: int
 ) -> None:
     deps["events"].get.return_value = event(event_status)
+    deps["players"].get_for_user.side_effect = None
     deps["players"].get_for_user.return_value = registration
 
     with pytest.raises(AppException) as error:
@@ -300,3 +305,30 @@ async def test_unwritable_local_storage_reports_storage_unavailable(tmp_path: Pa
         await storage.put("events/e/submissions/s.png", b"png", "image/png")
 
     assert error.value.status_code == 503
+
+
+async def test_admins_never_review_their_own_team(deps: dict[str, Any]) -> None:
+    pending = {
+        "_id": ObjectId(),
+        "event_id": EVENT_ID,
+        "player_id": PLAYER_ID,
+        "team_id": TEAM_ID,
+        "position": 1,
+        "kind": "drop",
+        "status": "pending",
+        "requires_preverification": False,
+    }
+    deps["submissions"].get.return_value = pending
+    deps["players"].get_for_user.side_effect = None
+    deps["players"].get_for_user.return_value = player()  # the admin plays on TEAM_ID
+
+    with pytest.raises(AppException) as refused:
+        await deps["service"].accept(str(pending["_id"]), ADMIN)
+    assert refused.value.status_code == 403 and "another admin" in refused.value.detail
+    deps["submissions"].review.assert_not_awaited()
+
+    deps["players"].get_for_user.return_value = player(team=ObjectId())  # another team
+    deps["submissions"].review.return_value = {**pending, "status": "accepted"}
+    with contextlib.suppress(Exception):
+        await deps["service"].accept(str(pending["_id"]), ADMIN)
+    deps["submissions"].review.assert_awaited_once()

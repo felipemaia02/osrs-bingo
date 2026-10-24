@@ -8,6 +8,7 @@ if (!URL.createObjectURL) {
 
 vi.mock('../src/features/events/api/eventsApi', () => ({
   fetchEvents: vi.fn().mockResolvedValue([]),
+  fetchMyEvents: vi.fn().mockResolvedValue([]),
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
   updateEventRules: vi.fn(),

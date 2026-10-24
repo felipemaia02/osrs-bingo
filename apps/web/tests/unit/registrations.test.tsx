@@ -4,7 +4,7 @@ import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
 import { fetchAdministrators } from '../../src/features/administration/api/administrationApi'
 import { fetchSession, logout } from '../../src/features/auth/api/authApi'
-import { fetchEvents } from '../../src/features/events/api/eventsApi'
+import { fetchEvents, fetchMyEvents } from '../../src/features/events/api/eventsApi'
 import { PlayerEventsPage } from '../../src/features/events/pages/PlayerEventsPage'
 import type { BingoEvent } from '../../src/features/events/types'
 import * as api from '../../src/features/teams/api/teamsApi'
@@ -87,6 +87,40 @@ it('links unregistered players to the join page instead of a nickname form', asy
   expect(join).toHaveAttribute('href', `/events/${EVENT.id}/join`)
   expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
+})
+
+it('filters my events and searches by name', async () => {
+  const other = { ...EVENT, id: 'winter', name: 'Winter Bingo' }
+  vi.mocked(fetchEvents).mockImplementation(async (status) =>
+    status === 'active' ? [] : [EVENT, other],
+  )
+  vi.mocked(fetchMyEvents).mockResolvedValue([EVENT])
+  const user = userEvent.setup()
+  renderApp(<PlayerEventsPage />, '/events')
+
+  await user.click(await screen.findByRole('tab', { name: /Mine 1/ }))
+  expect(screen.getByRole('heading', { name: 'Summer Bingo' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Winter Bingo' })).toBeNull()
+
+  await user.click(screen.getByRole('tab', { name: /All 2/ }))
+  await user.type(screen.getByRole('searchbox', { name: 'Search events' }), 'wínter')
+  expect(screen.getByRole('heading', { name: 'Winter Bingo' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Summer Bingo' })).toBeNull()
+})
+
+it('makes event cards lead to the board or the join page', async () => {
+  const active = { ...EVENT, id: 'live', name: 'Cyber Event', status: 'active' as const }
+  vi.mocked(fetchEvents).mockImplementation(async (status) =>
+    status === 'active' ? [active] : [active, EVENT],
+  )
+  renderApp(<PlayerEventsPage />, '/events')
+
+  const board = await screen.findByRole('link', { name: /Cyber Event.*Open board/ })
+  expect(board).toHaveAttribute('href', '/')
+  expect(await screen.findByRole('link', { name: /Summer Bingo.*Join event/ })).toHaveAttribute(
+    'href',
+    `/events/${EVENT.id}/join`,
+  )
 })
 
 it('shows the account and buy-in status of a joined registration', async () => {
@@ -466,6 +500,7 @@ describe('teams v2 selection and columns', () => {
 })
 
 describe('participants and team balance (feature 023)', () => {
+  const PAID_EVENT = { ...EVENT, buy_in: '5M gp' }
   const ADMIN = { id: 'admin-1', discord_id: '9', username: 'felps_', is_admin: true }
   const approved = (index: number, extra: Partial<Player> = {}): Player => ({
     ...PLAYER,
@@ -480,6 +515,9 @@ describe('participants and team balance (feature 023)', () => {
   })
 
   beforeEach(() => {
+    vi.mocked(fetchEvents).mockImplementation(async (status) =>
+      status === 'active' ? [] : [PAID_EVENT],
+    )
     vi.mocked(api.fetchTeamBalance).mockResolvedValue({
       average_ehb: 900,
       teams: [

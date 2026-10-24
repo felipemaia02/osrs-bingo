@@ -1,3 +1,5 @@
+from builtins import list as builtin_list
+
 from app.core.exceptions import ConflictError, NotFoundError
 from app.core.logging import get_logger, log_event
 from app.modules.boards.repository import BoardRepository
@@ -11,6 +13,7 @@ from app.modules.events.schemas import (
     EventStatus,
     EventUpdate,
 )
+from app.modules.players.repository import PlayerRepository
 
 ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
@@ -19,9 +22,12 @@ LINE_BONUSES_REQUIRED_DETAIL = "Set the row and column bonuses on the board befo
 
 
 class EventService:
-    def __init__(self, repository: EventRepository, boards: BoardRepository) -> None:
+    def __init__(
+        self, repository: EventRepository, boards: BoardRepository, players: PlayerRepository
+    ) -> None:
         self._repository = repository
         self._boards = boards
+        self._players = players
 
     _logger = get_logger(__name__)
 
@@ -43,6 +49,12 @@ class EventService:
             status=status.value if status else "all",
             count=len(documents),
         )
+        return [self._to_response(document) for document in documents]
+
+    async def mine(self, user_id: str) -> builtin_list[EventResponse]:
+        """Events the user is in (pending or approved registration), newest first (026)."""
+        event_ids = await self._players.event_ids_for_user(user_id)
+        documents = await self._repository.list_by_ids(event_ids) if event_ids else []
         return [self._to_response(document) for document in documents]
 
     async def update(self, event_id: str, payload: EventUpdate) -> EventResponse:

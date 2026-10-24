@@ -1,5 +1,6 @@
 """Registration documents to API responses (shared by the players and teams services)."""
 
+from app.modules.events.models import EventDocument
 from app.modules.players.models import PlayerDocument, RosterDocument
 from app.modules.players.schemas import (
     BuyInStatus,
@@ -62,3 +63,15 @@ def teammate_names(document: RosterDocument) -> list[str]:
         if name:
             names.append(str(name))
     return names
+
+
+def for_event[Response: (PlayerResponse, RosterEntry)](
+    response: Response, event: EventDocument
+) -> Response:
+    """Events without a buy-in show no buy-in status (registrations still start Pending)."""
+    if event.get("buy_in"):
+        return response
+    hidden: dict[str, None] = {"buy_in_status": None}
+    if isinstance(response, RosterEntry):
+        hidden["buy_in_admin_name"] = None
+    return response.model_copy(update=hidden)

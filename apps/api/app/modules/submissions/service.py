@@ -43,6 +43,7 @@ PREVERIFICATION_NOT_NEEDED = "This card doesn't require pre-verification"
 PREVERIFICATION_EXISTS = "A pre-verification for this card is already pending or accepted"
 PREVERIFICATION_NOT_ACCEPTED = "Accept this player's pre-verification for the card first"
 ALREADY_REVIEWED = "Submission already reviewed"
+OWN_TEAM_REVIEW = "You play on this team — another admin reviews it"
 REVIEW_CLOSED = "Submissions can only be reviewed for active or finished events"
 
 REVIEWABLE_EVENT_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
@@ -154,8 +155,11 @@ class SubmissionService:
             items=[self._response(document) for document in documents], counts=counts
         )
 
-    async def queue(self, event_id: str, query: ReviewQueueQuery) -> ReviewQueueResponse:
+    async def queue(
+        self, event_id: str, query: ReviewQueueQuery, admin: CurrentUser
+    ) -> ReviewQueueResponse:
         event = await self._require_event(event_id)
+        own_team = await self._reviewer_team(event_id, admin)
         documents, total = await self._submissions.page(
             event["_id"], query.status, query.kind, query.offset, query.limit
         )
@@ -188,6 +192,7 @@ class SubmissionService:
                     requires_preverification=document["requires_preverification"],
                     preverification_status=SubmissionStatus(gate) if gate else None,
                     within_event=self._within_event(event, document["submitted_at"]),
+                    own_team=own_team is not None and document["team_id"] == own_team,
                 )
             )
         return ReviewQueueResponse(
@@ -203,7 +208,7 @@ class SubmissionService:
         )
 
     async def accept(self, submission_id: str, admin: CurrentUser) -> SubmissionResponse:
-        document = await self._require_reviewable(submission_id)
+        document = await self._require_reviewable(submission_id, admin)
         if document["kind"] == SubmissionKind.DROP and document["requires_preverification"]:
             gates = await self._submissions.preverification_statuses(
                 document["event_id"], {(document["player_id"], document["position"])}
@@ -216,7 +221,7 @@ class SubmissionService:
     async def reject(
         self, submission_id: str, payload: SubmissionReject, admin: CurrentUser
     ) -> SubmissionResponse:
-        document = await self._require_reviewable(submission_id)
+        document = await self._require_reviewable(submission_id, admin)
         return await self._decide(
             document, SubmissionStatus.REJECTED, admin, payload.reason, payload.note
         )
@@ -249,7 +254,16 @@ class SubmissionService:
             raise AppException(409, ALREADY_REVIEWED)
         return self._response(updated)
 
-    async def _require_reviewable(self, submission_id: str) -> SubmissionDocument:
+    async def _reviewer_team(self, event_id: str, admin: CurrentUser) -> ObjectId | None:
+        """The team an admin plays on in this event, if any (feature 026)."""
+        registration = await self._players.get_for_user(event_id, admin.id)
+        if registration is None or registration.get("status") != RegistrationStatus.APPROVED:
+            return None
+        return registration.get("team_id")
+
+    async def _require_reviewable(
+        self, submission_id: str, admin: CurrentUser
+    ) -> SubmissionDocument:
         document = await self._submissions.get(submission_id)
         if document is None:
             raise NotFoundError("Submission")
@@ -258,6 +272,10 @@ class SubmissionService:
         event = await self._events.get(str(document["event_id"]))
         if event is None or event["status"] not in REVIEWABLE_EVENT_STATUSES:
             raise AppException(409, REVIEW_CLOSED)
+        own_team = await self._reviewer_team(str(document["event_id"]), admin)
+        if own_team is not None and own_team == document["team_id"]:
+            # Admins who play never judge their own team (conflict of interest).
+            raise AppException(403, OWN_TEAM_REVIEW)
         return document
 
     async def _require_event(self, event_id: str) -> EventDocument:

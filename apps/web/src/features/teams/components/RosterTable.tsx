@@ -12,6 +12,8 @@ interface RosterTableProps {
   group: RosterGroup
   teams: Team[]
   editable: boolean
+  /** Events without a buy-in hide the Buy-in column. */
+  showBuyIn: boolean
   busy: boolean
   selected: Set<string>
   onToggle: (player: Player) => void
@@ -29,6 +31,7 @@ export function RosterTable({
   group,
   teams,
   editable,
+  showBuyIn,
   busy,
   selected,
   onToggle,
@@ -71,7 +74,7 @@ export function RosterTable({
           <th className={`${HEAD} text-right`}>{t('teams.roster.ehb')}</th>
           <th className={HEAD}>{t('teams.roster.teammates')}</th>
           <th className={HEAD}>{t('teams.roster.role')}</th>
-          <th className={HEAD}>{t('teams.roster.buyIn')}</th>
+          {showBuyIn && <th className={HEAD}>{t('teams.roster.buyIn')}</th>}
           {editable && <th className={`${HEAD} text-right`}>{t('teams.roster.actions')}</th>}
         </tr>
       </thead>
@@ -132,9 +135,11 @@ export function RosterTable({
               <td className={CELL}>
                 <RoleBadge player={player} />
               </td>
-              <td className={CELL}>
-                <BuyInBadge player={player} />
-              </td>
+              {showBuyIn && (
+                <td className={CELL}>
+                  <BuyInBadge player={player} />
+                </td>
+              )}
               {editable && (
                 <td className={`${CELL} text-right`}>
                   <RowActions

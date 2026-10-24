@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
@@ -7,9 +7,10 @@ import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
 import type { BoardCardSnapshot, EventBoard } from '../../src/features/boards/types'
 import { boardToTiles, isFiltering, matchTile } from '../../src/features/bingo/boardTiles'
 import { initialsOf as tileInitials } from '../../src/lib/text/initials'
+import { shortNameOf } from '../../src/lib/text/shortName'
 import { HomePage } from '../../src/features/bingo/pages/HomePage'
 import type { AcceptedDrop } from '../../src/features/cards/types'
-import { fetchEvents } from '../../src/features/events/api/eventsApi'
+import { fetchEvents, fetchMyEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
 import { fetchOwnRegistration, fetchTeams } from '../../src/features/teams/api/teamsApi'
 import { renderApp } from '../render'
@@ -114,9 +115,17 @@ const EVENT: BingoEvent = {
 
 const SEARCH = 'Where does my drop count?'
 
+/** Opens the board; players outside the event first see "My events" and browse it (026). */
 async function renderBoard() {
-  renderApp(<HomePage />)
+  const rendered = renderApp(<HomePage />)
+  const browse = await waitFor(
+    () =>
+      screen.queryByRole('button', { name: 'Browse board' }) ??
+      screen.getByRole('heading', { name: EVENT.name, level: 1 }),
+  )
+  if (browse.tagName === 'BUTTON') fireEvent.click(browse)
   await screen.findByRole('heading', { name: EVENT.name, level: 1 })
+  return rendered
 }
 
 /** Grid tile or list item (not the mini-map cell, whose name ends with "show in the list"). */
@@ -138,6 +147,52 @@ function useMobileViewport() {
     }),
   )
 }
+
+describe('first screen (feature 026)', () => {
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    vi.unstubAllGlobals()
+    await i18n.changeLanguage('en')
+    vi.mocked(fetchEvents).mockResolvedValue([EVENT])
+    vi.mocked(fetchPublicBoard).mockResolvedValue(makeBoard())
+    vi.mocked(fetchTeams).mockResolvedValue([])
+    vi.mocked(fetchSession).mockResolvedValue({
+      id: 'user-1',
+      discord_id: '123',
+      username: 'Player',
+      is_admin: false,
+    })
+  })
+
+  it('shows my events first when the player is not in the active event', async () => {
+    const draft = { ...EVENT, id: 'winter', name: 'Winter Bingo', status: 'draft' as const }
+    vi.mocked(fetchMyEvents).mockResolvedValue([draft])
+    vi.mocked(fetchOwnRegistration).mockResolvedValue(null)
+    renderApp(<HomePage />)
+
+    expect(await screen.findByRole('heading', { name: 'My events', level: 1 })).toBeInTheDocument()
+    expect(await screen.findByText('Winter Bingo')).toBeInTheDocument()
+    expect(screen.getByText("Active event — you're not playing in it.")).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: '6 by 6 board' })).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Browse board' }))
+    expect(await screen.findByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
+  })
+
+  it('opens the board directly for players in the active event', async () => {
+    vi.mocked(fetchOwnRegistration).mockResolvedValue({
+      id: 'p1',
+      event_id: EVENT.id,
+      team_id: null,
+      display_name: 'Zezima',
+      status: 'pending',
+    })
+    renderApp(<HomePage />)
+
+    expect(await screen.findByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'My events' })).toBeNull()
+  })
+})
 
 describe('Board v2', () => {
   beforeEach(async () => {
@@ -178,6 +233,10 @@ describe('Board v2', () => {
       expect(isFiltering('', 'Low')).toBe(true)
       expect(tileInitials('Alchemical Hydra')).toBe('AH')
       expect(tileInitials('DT2 Bosses')).toBe('DB')
+      expect(shortNameOf('Moons of Peril')).toBe('Moons')
+      expect(shortNameOf('The Gauntlet')).toBe('Gauntlet')
+      expect(shortNameOf('DT2 Bosses')).toBe('DT2 Bosses')
+      expect(shortNameOf('Vorkath')).toBe('Vorkath')
     })
   })
 
@@ -187,7 +246,10 @@ describe('Board v2', () => {
 
       expect(screen.getByText('Active event')).toBeInTheDocument()
       expect(screen.getByText('Ends in 13 d 22 h')).toBeInTheDocument()
-      expect(screen.getByText(/Drop submissions don't exist yet/)).toBeInTheDocument()
+      expect(
+        await screen.findByText(/You're not in this event, so there's no team progress to show\./),
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/Drop submissions don't exist yet/)).not.toBeInTheDocument()
       expect(screen.getByRole('searchbox', { name: SEARCH })).toBeInTheDocument()
       const grid = screen.getByRole('region', { name: '6 by 6 board' })
       expect(within(grid).getAllByRole('button')).toHaveLength(36)
@@ -215,7 +277,9 @@ describe('Board v2', () => {
       expect(panel).toHaveTextContent(
         'Completes when progress reaches 8. Worth 10 pts only once — extra progress gives no points.',
       )
-      expect(panel).toHaveTextContent("Your team's progress: unavailable")
+      expect(panel).toHaveTextContent(
+        "You're not in this event, so there's no team progress to show.",
+      )
       const maul = within(panel).getByText('Granite Maul').closest('li')!
       expect(within(maul).getByText('+1 progress')).toBeInTheDocument()
       expect(within(maul).getByText('Verification: Screenshot required')).toBeInTheDocument()
@@ -285,25 +349,42 @@ describe('Board v2', () => {
     })
 
     it.each([
-      [{ status: 'pending' as const, team_id: null }, 'Your registration is awaiting approval'],
-      [{ status: 'approved' as const, team_id: null }, 'Approved, awaiting team assignment'],
-      [{ status: 'removed' as const, team_id: null }, 'You are not participating in this event'],
-    ])('shows a neutral team state (%o)', async (registration, message) => {
-      vi.mocked(fetchOwnRegistration).mockResolvedValue({
-        id: 'p1',
-        event_id: EVENT.id,
-        display_name: 'Zezima',
-        ...registration,
-      })
-      await renderBoard()
-      expect(await screen.findByText(message)).toBeInTheDocument()
-    })
+      [
+        { status: 'pending' as const, team_id: null },
+        'Your registration is awaiting approval',
+        "Your registration is waiting for an admin's approval.",
+      ],
+      [
+        { status: 'approved' as const, team_id: null },
+        'Approved, awaiting team assignment',
+        "You'll see your team's progress once an admin puts you in a team.",
+      ],
+      [
+        { status: 'removed' as const, team_id: null },
+        'You are not participating in this event',
+        'Your registration was removed by an admin.',
+      ],
+    ])(
+      'shows a neutral team state and why progress is hidden (%o)',
+      async (registration, message, reason) => {
+        vi.mocked(fetchOwnRegistration).mockResolvedValue({
+          id: 'p1',
+          event_id: EVENT.id,
+          display_name: 'Zezima',
+          ...registration,
+        })
+        await renderBoard()
+        expect(await screen.findByText(message)).toBeInTheDocument()
+        expect(await screen.findByText(reason)).toBeInTheDocument()
+      },
+    )
 
     it('shows no team card to anonymous visitors', async () => {
       vi.mocked(fetchSession).mockResolvedValue(null)
       await renderBoard()
       await waitFor(() => expect(fetchSession).toHaveBeenCalled())
       expect(screen.queryByText('Your team')).not.toBeInTheDocument()
+      expect(screen.getByText("Log in to see your team's progress.")).toBeInTheDocument()
       expect(fetchOwnRegistration).not.toHaveBeenCalled()
     })
 
@@ -321,8 +402,7 @@ describe('Board v2', () => {
 
     it('switches to the list view, keeps the panel and remembers the choice', async () => {
       const user = userEvent.setup()
-      const { unmount } = renderApp(<HomePage />)
-      await screen.findByRole('heading', { name: EVENT.name, level: 1 })
+      const { unmount } = await renderBoard()
 
       await user.click(screen.getByRole('button', { name: 'List view' }))
       expect(screen.getByRole('heading', { name: 'Row 1', level: 2 })).toBeInTheDocument()
@@ -365,52 +445,66 @@ describe('Board v2', () => {
   })
 
   describe('mobile', () => {
-    it('shows the summary, chips, mini-map and row list', async () => {
+    it('shows short names on the mini-map and the first tile below it', async () => {
       useMobileViewport()
       const user = userEvent.setup()
       await renderBoard()
 
       expect(screen.getByText('Ends in').parentElement).toHaveTextContent('Ends in13 d 22 h')
-      expect(screen.getByText('Progress unavailable for now')).toBeInTheDocument()
+      expect(
+        (await screen.findAllByText(/You're not in this event, so there's no team progress/))
+          .length,
+      ).toBeGreaterThan(0)
       expect(screen.queryByRole('region', { name: '6 by 6 board' })).not.toBeInTheDocument()
       const map = screen.getByRole('region', { name: 'Board mini-map' })
       expect(within(map).getAllByRole('button')).toHaveLength(36)
-      expect(screen.getAllByRole('heading', { level: 2, name: /^Row \d$/ })).toHaveLength(6)
+      const hydra = within(map).getByRole('button', { name: /^Alchemical Hydra, row 1 column 3/ })
+      expect(hydra).toHaveTextContent('Alchemical')
+      expect(screen.queryByRole('heading', { level: 2, name: /^Row \d$/ })).toBeNull()
+      const panel = screen.getByRole('region', { name: 'Tile detail' })
+      expect(
+        within(panel).getByRole('heading', { name: 'Grotesque Guardians' }),
+      ).toBeInTheDocument()
+      expect(within(panel).getByRole('button', { name: 'Previous tile' })).toBeDisabled()
 
+      // The mobile search waits behind a button (feature 026).
+      expect(screen.queryByRole('searchbox')).toBeNull()
+      await user.click(screen.getByRole('button', { name: 'Search drops' }))
+      expect(screen.getByRole('searchbox', { name: SEARCH })).toHaveFocus()
       await user.type(screen.getByRole('searchbox', { name: SEARCH }), 'jar of stone')
       expect(within(map).getByText('2 accept “jar of stone”')).toBeInTheDocument()
-      expect(screen.getByText('2 of 6 match the search')).toBeInTheDocument()
-      expect(screen.getAllByText('none match the search')).toHaveLength(5)
-      expect(screen.getByText('↳ Jar of Stone +3')).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: 'Close search' }))
+      expect(screen.queryByRole('searchbox')).toBeNull()
+      expect(within(map).queryByText('2 accept “jar of stone”')).toBeNull()
 
       await user.click(screen.getByRole('button', { name: 'Hard' }))
       expect(screen.getByRole('button', { name: 'Hard' })).toHaveAttribute('aria-pressed', 'true')
     })
 
-    it('jumps from the mini-map to the list and opens details in a modal', async () => {
+    it('shows a tapped tile below the map and moves with Next', async () => {
       useMobileViewport()
-      const scrollIntoView = vi.fn()
-      Element.prototype.scrollIntoView = scrollIntoView
       const user = userEvent.setup()
       await renderBoard()
 
       const map = screen.getByRole('region', { name: 'Board mini-map' })
       const cell = within(map).getByRole('button', { name: /^Alchemical Hydra, row 1 column 3/ })
       await user.click(cell)
-      expect(cell).toHaveAttribute('aria-current', 'location')
-      expect(scrollIntoView).toHaveBeenCalled()
+      expect(cell).toHaveAttribute('aria-pressed', 'true')
+      const panel = screen.getByRole('region', { name: 'Tile detail' })
+      expect(panel).toHaveTextContent('Row 1 · Column 3')
+      expect(within(panel).getByText("Hydra's Claw").closest('li')).toHaveTextContent('+3 progress')
+      expect(screen.queryByRole('dialog')).toBeNull()
 
-      await user.click(tileButton('Alchemical Hydra'))
-      const dialog = screen.getByRole('dialog', { name: 'Alchemical Hydra' })
-      expect(within(dialog).getByText("Hydra's Claw").closest('li')).toHaveTextContent(
-        '+3 progress',
-      )
+      await user.click(within(panel).getByRole('button', { name: 'Next tile' }))
+      expect(panel).toHaveTextContent('Row 1 · Column 4')
+      expect(cell).toHaveAttribute('aria-pressed', 'false')
     })
   })
 
   it('keeps the unavailable-board state', async () => {
     vi.mocked(fetchPublicBoard).mockResolvedValue(null)
     renderApp(<HomePage />)
+    fireEvent.click(await screen.findByRole('button', { name: 'Browse board' }))
     expect(
       await screen.findByText('The active event board is not available yet.'),
     ).toBeInTheDocument()

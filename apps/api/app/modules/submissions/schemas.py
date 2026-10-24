@@ -86,6 +86,8 @@ class ReviewItem(SubmissionResponse):
     # For drops of cards that require it: the player's pre-verification state.
     preverification_status: SubmissionStatus | None
     within_event: bool
+    # The reviewing admin plays on this submission's team: someone else reviews it (026).
+    own_team: bool = False
 
 
 class ReviewCounts(BaseModel):

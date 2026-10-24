@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { initialsOf } from '../../../lib/text/initials'
+import { shortNameOf } from '../../../lib/text/shortName'
 import { axisOf } from '../../boards/draft'
 import { gridColumns } from '../../boards/gridStyle'
 import type { FilterSummary } from '../hooks/useFilterSummary'
@@ -18,11 +18,20 @@ interface MiniMapProps {
   matches: Map<string, TileMatch> | null
   summary: FilterSummary | null
   currentId: string | null
-  onJump: (tile: Tile) => void
+  onSelect: (tile: Tile) => void
 }
 
-/** Mobile size×size overview (board-b-mobile): initials and difficulty letter per cell; tap to jump. */
-export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: MiniMapProps) {
+/** Mobile size×size overview: short name and difficulty letter per cell; tap to show it (feature 025). */
+const LONG_WORD = 8
+
+/** Two short words wrap; one long word shrinks a little and ends in "…" instead of breaking. */
+function shortNameClass(name: string): string {
+  const short = shortNameOf(name)
+  if (short.includes(' ')) return 'line-clamp-2 max-w-full text-center'
+  return `max-w-full truncate text-center ${short.length > LONG_WORD ? 'text-[9px]' : ''}`
+}
+
+export function MiniMap({ tiles, size, matches, summary, currentId, onSelect }: MiniMapProps) {
   const { t } = useTranslation()
   const positions = axisOf(size)
   const grid = gridColumns(AXIS_PX, size)
@@ -36,15 +45,15 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: Mi
       <button
         key={tile.id}
         type="button"
-        onClick={() => onJump(tile)}
+        onClick={() => onSelect(tile)}
         aria-label={t('board.miniMap.cell', {
           name: tile.name,
           row: tile.row,
           column: tile.col,
           tier: t(`tile.tier.${tile.tier}`),
         })}
-        aria-current={tile.id === currentId ? 'location' : undefined}
-        className={`flex h-[46px] min-w-0 flex-col items-center justify-center rounded-[3px] border p-0 text-[11px] font-bold leading-[1.1] ${
+        aria-pressed={tile.id === currentId}
+        className={`flex min-h-[52px] min-w-0 flex-col items-center justify-center gap-0.5 rounded-[3px] border px-0.5 py-1 text-[10px] font-bold leading-[1.1] ${
           hit
             ? 'border-rs-gold-bright bg-rs-gold-bright text-rs-canvas'
             : tile.progress?.complete
@@ -54,7 +63,7 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onJump }: Mi
           tile.id === currentId ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright' : ''
         }`}
       >
-        <span>{initialsOf(tile.name)}</span>
+        <span className={shortNameClass(tile.name)}>{shortNameOf(tile.name)}</span>
         <span
           className={`text-[10px] font-semibold ${hit ? 'text-rs-canvas' : LETTER_COLOR[tile.tier]}`}
         >

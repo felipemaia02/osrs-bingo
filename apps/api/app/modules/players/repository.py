@@ -233,6 +233,20 @@ class PlayerRepository:
             },
         ]
 
+    async def event_ids_for_user(self, user_id: str) -> builtin_list[ObjectId]:
+        """Events where the user has a pending or approved registration (feature 026)."""
+        user_object_id = self._object_id(user_id)
+        if user_object_id is None:
+            return []
+        ids = await self._collection.distinct(
+            "event_id",
+            {
+                "user_id": user_object_id,
+                "status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]},
+            },
+        )
+        return builtin_list(ids)
+
     async def captains(self, event_id: str) -> builtin_list[RosterDocument]:
         """Approved captains with their profile experience (feature 024)."""
         pipeline: builtin_list[dict[str, Any]] = [

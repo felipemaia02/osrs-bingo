@@ -6,11 +6,12 @@ from bson import ObjectId
 
 from app.core.exceptions import ConflictError, DomainValidationError, NotFoundError
 from app.modules.administration.repository import AdministrationRepository
+from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.models import NewRegistration, PlayerDocument
 from app.modules.players.repository import CaptainTakenError, PlayerRepository
-from app.modules.players.roster import to_player_response, to_roster_entry
+from app.modules.players.roster import for_event, to_player_response, to_roster_entry
 from app.modules.players.schemas import (
     JoinRequest,
     ParticipantRole,
@@ -70,7 +71,7 @@ class PlayerService:
         return to_player_response(document)
 
     async def list(self, event_id: str, query: PlayerListQuery) -> PlayerListResponse:
-        await self._require_event(event_id)
+        event = await self._require_event(event_id)
         if query.team_id:
             await self._require_team(event_id, query.team_id)
         status = None
@@ -96,7 +97,7 @@ class PlayerService:
             limit=query.limit,
         )
         return PlayerListResponse(
-            items=[to_roster_entry(document) for document in documents],
+            items=[for_event(to_roster_entry(document), event) for document in documents],
             total=total,
             offset=query.offset,
             limit=query.limit,
@@ -130,9 +131,9 @@ class PlayerService:
         return to_player_response(document)
 
     async def own_registration(self, event_id: str, user_id: str) -> PlayerResponse | None:
-        await self._require_event(event_id)
+        event = await self._require_event(event_id)
         document = await self._players.get_for_user(event_id, user_id)
-        return to_player_response(document) if document else None
+        return for_event(to_player_response(document), event) if document else None
 
     async def approve(self, event_id: str, player_id: str) -> PlayerResponse:
         await self._require_draft_event(event_id)
@@ -163,9 +164,11 @@ class PlayerService:
             raise NotFoundError("Player")
         raise ConflictError(detail)
 
-    async def _require_event(self, event_id: str) -> None:
-        if await self._events.get(event_id) is None:
+    async def _require_event(self, event_id: str) -> EventDocument:
+        event = await self._events.get(event_id)
+        if event is None:
             raise NotFoundError("Event")
+        return event
 
     async def update_participation(
         self, event_id: str, player_id: str, payload: ParticipationUpdate

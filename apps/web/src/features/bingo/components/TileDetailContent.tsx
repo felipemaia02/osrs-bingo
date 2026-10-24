@@ -13,10 +13,17 @@ interface TileDetailContentProps {
   match?: TileMatch
   /** The dialog already shows the name as its title. */
   showName: boolean
+  /** i18n key: why team progress can't be shown (feature 025). */
+  unavailableReason: string
 }
 
 /** Read-only tile rules (board-a-desktop detail panel). Drop weights are progress, never points. */
-export function TileDetailContent({ tile, match, showName }: TileDetailContentProps) {
+export function TileDetailContent({
+  tile,
+  match,
+  showName,
+  unavailableReason,
+}: TileDetailContentProps) {
   const { t } = useTranslation()
   const highlighted = match?.matches ? match.matchedDrop?.name : undefined
 
@@ -78,7 +85,7 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
               className="text-rs-muted"
               aria-hidden="true"
             />
-            <span className="text-rs-muted">{t('board.panel.teamProgress')}</span>
+            <span className="text-rs-muted">{t(unavailableReason)}</span>
           </p>
         )}
         <div>

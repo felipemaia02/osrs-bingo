@@ -22,7 +22,9 @@
     },
     "search": {
       "label": "¿Dónde cuenta mi drop?",
-      "placeholder": "¿Dónde cuenta mi drop? p. ej. jar, claw, Vorkath"
+      "placeholder": "Busca un drop, p. ej. Jar of Stone",
+      "open": "Buscar drops",
+      "close": "Cerrar búsqueda"
     },
     "filter": {
       "label": "Dificultad",
@@ -57,10 +59,8 @@
     "yourTeam": "Tu equipo",
     "startsInLabel": "Empieza en",
     "endsInLabel": "Termina en",
-    "progressUnavailableShort": "Progreso no disponible por ahora",
     "progressNotice": {
-      "title": "Progreso no disponible.",
-      "body": "El envío de drops aún no existe — por ahora, usa la búsqueda para ver dónde cuenta cada drop."
+      "title": "Progreso no disponible."
     },
     "status": {
       "search_one": "{{count}} casilla acepta “{{query}}”",
@@ -89,10 +89,11 @@
       "close": "Cerrar detalle",
       "prompt": "Selecciona una casilla para ver los drops aceptados y cómo se completa.",
       "completes": "Se completa cuando el progreso llega a <strong>{{requirement}}</strong>. Vale <strong>{{points}} pts una sola vez</strong> — el progreso extra no da puntos.",
-      "teamProgress": "Progreso de tu equipo: no disponible",
       "drops": "Drops aceptados ({{count}})",
       "weightHint": "peso = progreso",
-      "imageSource": "Imagen: OSRS Wiki — {{name}}"
+      "imageSource": "Imagen: OSRS Wiki — {{name}}",
+      "previous": "Casilla anterior",
+      "next": "Siguiente casilla"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} coinciden con la búsqueda",
@@ -101,15 +102,24 @@
     "miniMap": {
       "label": "Minimapa del tablero",
       "title": "Mapa {{size}}×{{size}}",
-      "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver en la lista",
-      "legend": "F = Fácil · M = Medio · D = Difícil. Toca una celda para ir a ella en la lista.",
-      "bonusCell": "{{name}}, carta bonus, {{tier}}: ver en la lista"
+      "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver detalles",
+      "legend": "E = Fácil · M = Media · H = Difícil. Toca una casilla para verla abajo.",
+      "bonusCell": "{{name}}, casilla bonus, {{tier}}: ver detalles"
     },
     "bonus": {
       "badge": "Bonus",
       "card": "Carta bonus",
       "row": "Cartas bonus",
-      "section": "Cartas bonus"
+      "section": "Cartas bonus",
+      "slot": "Casilla bonus {{slot}}"
+    },
+    "progress": {
+      "login": "Inicia sesión para ver el progreso de tu equipo.",
+      "notRegistered": "No estás en este evento, así que no hay progreso de equipo que mostrar.",
+      "pending": "Tu inscripción espera la aprobación de un admin.",
+      "removed": "Un admin eliminó tu inscripción.",
+      "unassigned": "Verás el progreso de tu equipo cuando un admin te ponga en un equipo.",
+      "unavailable": "El progreso de tu equipo no está disponible ahora."
     }
   },
   "tile": {
@@ -151,7 +161,8 @@
       "all": "Todos",
       "draft": "Borrador",
       "active": "Activo",
-      "finished": "Finalizado"
+      "finished": "Finalizado",
+      "mine": "Míos"
     },
     "actions": {
       "create": "Nuevo evento",
@@ -226,7 +237,11 @@
       "placeholder": "Escribe cómo funciona este bingo: fechas, qué cuenta, capturas, reglas de equipos…",
       "hint": "Texto simple; se mantienen los saltos de línea. Los jugadores lo leen en la página de Eventos y en la ayuda del tablero.",
       "section": "Reglas"
-    }
+    },
+    "openBoard": "Abrir tablero",
+    "search": "Buscar eventos",
+    "noMatch": "Ningún evento coincide con la búsqueda.",
+    "noneMine": "Aún no te has unido a ningún evento."
   },
   "teams": {
     "eyebrow": "Administración",
@@ -867,7 +882,8 @@
     "oldestFirst": "Más antiguos primero",
     "empty": "Nada que revisar. 🎉",
     "backToQueue": "Volver a la cola",
-    "instructions": "Instrucciones"
+    "instructions": "Instrucciones",
+    "ownTeam": "Juegas en este equipo — otro admin revisa este envío."
   },
   "score": {
     "tileComplete": "Completa +{{points}}",
@@ -1102,7 +1118,8 @@
       "button": "Pedir unirme",
       "needAccount": "Primero elige una cuenta en el paso 1.",
       "needAgreements": "Primero confirma los 3 puntos del paso 3.",
-      "pending": "Tu solicitud queda <b>Pendiente</b> hasta que un admin la apruebe."
+      "pending": "Tu solicitud queda <b>Pendiente</b> hasta que un admin la apruebe.",
+      "title": "Enviar solicitud"
     },
     "errors": {
       "account": "Elige una cuenta de tu perfil.",
@@ -1150,5 +1167,14 @@
     "noPreference": "Sin preferencia",
     "buyInPending": "Buy-in pendiente",
     "sigma": "Σ = main + alts encontradas en Wise Old Man."
+  },
+  "home": {
+    "eyebrow": "OSRS Bingo",
+    "title": "Mis eventos",
+    "login": "Inicia sesión para ver los eventos en los que estás.",
+    "none": "Aún no estás en ningún evento.",
+    "browseEvents": "Ver eventos",
+    "notPlaying": "Evento activo — no estás jugando en él.",
+    "browseBoard": "Ver tablero"
   }
 }

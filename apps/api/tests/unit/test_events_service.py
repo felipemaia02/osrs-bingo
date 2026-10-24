@@ -10,6 +10,7 @@ from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventCreate, EventRules, EventStatus, EventUpdate
 from app.modules.events.service import EventService
+from app.modules.players.repository import PlayerRepository
 
 NOW = datetime(2026, 8, 30, 12, tzinfo=UTC)
 
@@ -58,8 +59,13 @@ def boards() -> AsyncMock:
 
 
 @pytest.fixture
-def service(repository: AsyncMock, boards: AsyncMock) -> EventService:
-    return EventService(repository, boards)
+def players() -> AsyncMock:
+    return AsyncMock(spec=PlayerRepository)
+
+
+@pytest.fixture
+def service(repository: AsyncMock, boards: AsyncMock, players: AsyncMock) -> EventService:
+    return EventService(repository, boards, players)
 
 
 async def test_create_normalizes_and_returns_draft(
@@ -198,3 +204,19 @@ async def test_buy_in_is_optional_text_returned_with_the_event(
     )
     with pytest.raises(ValueError):
         EventCreate(name="x", start_at=NOW, end_at=NOW + timedelta(days=1), buy_in="g" * 81)
+
+
+async def test_mine_lists_only_the_users_events(
+    repository: AsyncMock, players: AsyncMock, service: EventService
+) -> None:
+    event_id = ObjectId("66d000000000000000000001")
+    players.event_ids_for_user.return_value = [event_id]
+    repository.list_by_ids.return_value = [event_document()]
+
+    events = await service.mine(str(ObjectId()))
+
+    assert [event.name for event in events] == ["Summer Bingo"]
+    repository.list_by_ids.assert_awaited_once_with([event_id])
+
+    players.event_ids_for_user.return_value = []
+    assert await service.mine(str(ObjectId())) == []

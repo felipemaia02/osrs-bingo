@@ -193,6 +193,7 @@ function JoinFlow({ event, profile }: { event: BingoEvent; profile: Profile }) {
       body: (
         <RulesStep
           rulesText={event.rules_text ?? null}
+          hasBuyIn={Boolean(event.buy_in)}
           rsn={account?.rsn ?? null}
           agreed={form.agreed}
           onAgree={(agreement, value) =>
@@ -202,7 +203,7 @@ function JoinFlow({ event, profile }: { event: BingoEvent; profile: Profile }) {
       ),
     },
     {
-      title: t('join.buyIn.title'),
+      title: t(event.buy_in ? 'join.buyIn.title' : 'join.send.title'),
       summary: event.buy_in ? t('join.buyIn.summary') : t('join.buyIn.none'),
       body: (
         <>

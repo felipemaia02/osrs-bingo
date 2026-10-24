@@ -1,9 +1,10 @@
 from app.core.config import Settings
 from app.core.exceptions import ConflictError, DomainValidationError, NotFoundError
+from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.repository import PlayerRepository
-from app.modules.players.roster import to_roster_entry
+from app.modules.players.roster import for_event, to_roster_entry
 from app.modules.players.schemas import RegistrationStatus
 from app.modules.teams.models import TeamDocument
 from app.modules.teams.repository import TeamRepository
@@ -90,7 +91,7 @@ class TeamService:
 
     async def draft_preview(self, event_id: str) -> DraftPreviewResponse:
         """Captains per team and approved players without a team (feature 024)."""
-        await self._require_event(event_id)
+        event = await self._require_event(event_id)
         teams = await self._teams.list(event_id)
         captains = {row["team_id"]: row for row in await self._players.captains(event_id)}
         players, _ = await self._players.page(
@@ -115,7 +116,7 @@ class TeamService:
                 for team in teams
                 for captain in [captains.get(team["_id"])]
             ],
-            players=[to_roster_entry(player) for player in players],
+            players=[for_event(to_roster_entry(player), event) for player in players],
         )
 
     async def update(self, event_id: str, team_id: str, payload: TeamUpdate) -> TeamResponse:
@@ -130,9 +131,11 @@ class TeamService:
             raise ConflictError(TEAM_CONFLICT_DETAIL)
         return self._to_response(document, 0)
 
-    async def _require_event(self, event_id: str) -> None:
-        if await self._events.get(event_id) is None:
+    async def _require_event(self, event_id: str) -> EventDocument:
+        event = await self._events.get(event_id)
+        if event is None:
             raise NotFoundError("Event")
+        return event
 
     async def _require_draft_event(self, event_id: str) -> None:
         event = await self._events.get(event_id)

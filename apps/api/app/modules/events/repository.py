@@ -1,3 +1,4 @@
+from builtins import list as builtin_list
 from datetime import UTC, datetime
 from typing import cast
 
@@ -47,6 +48,10 @@ class EventRepository:
         document = await self._collection.find_one({"_id": object_id})
         log_event(self._logger, 20, "event_document_read", event_id=event_id, found=bool(document))
         return document
+
+    async def list_by_ids(self, event_ids: builtin_list[ObjectId]) -> builtin_list[EventDocument]:
+        cursor = self._collection.find({"_id": {"$in": event_ids}}).sort("created_at", -1)
+        return [document async for document in cursor]
 
     async def list(self, status: EventStatus | None = None) -> list[EventDocument]:
         query = {"status": status} if status is not None else {}
