@@ -24,7 +24,9 @@ import { RosterTabs, type RosterTab } from '../components/RosterTabs'
 import { TeamsList } from '../components/TeamsList'
 import { teamErrorKey } from '../errors'
 import { useRosterActions } from '../hooks/useRosterActions'
-import { usePlayers, useTeamMutations, useTeams } from '../hooks/useTeams'
+import { usePlayers, useTeamBalance, useTeamMutations, useTeams } from '../hooks/useTeams'
+import { ParticipantModal } from '../components/ParticipantModal'
+import { TeamBalanceCards } from '../components/TeamBalanceCards'
 import type { Player } from '../types'
 
 const PAGE_SIZE = 25
@@ -140,7 +142,9 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const [confirmAll, setConfirmAll] = useState(false)
   const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
+  const [editing, setEditing] = useState<Player | null>(null)
   const teams = useTeams(event.id)
+  const balance = useTeamBalance(event.id)
   const group = tab === 'teams' ? 'assigned' : tab
   const players = usePlayers(event.id, {
     group,
@@ -212,6 +216,10 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
       actions.clearFeedback()
       setRemoving(player)
     },
+    onEdit: (player: Player) => {
+      actions.clearFeedback()
+      setEditing(player)
+    },
   }
   const tabCounts: Record<RosterTab, number | null> = {
     pending: counts?.pending ?? null,
@@ -222,7 +230,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   // Names are listed only when every pending request is on screen (no search, single page).
   const allPendingVisible = tab === 'pending' && !search && items.length === (counts?.pending ?? -1)
   const dialogOpen = Boolean(
-    removing || removingSelected || confirmAll || assigning || creatingTeam,
+    removing || removingSelected || confirmAll || assigning || creatingTeam || editing,
   )
   const total = players.data?.total ?? 0
   const rangeEnd = Math.min(offset + PAGE_SIZE, total)
@@ -245,6 +253,9 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           className={`${FIELD} pl-[38px] pr-3 placeholder:text-rs-muted`}
         />
       </label>
+      <span className="whitespace-nowrap text-[13px] text-rs-muted">
+        {t('teams.roster.sorted')}
+      </span>
       {tab === 'assigned' && (
         <label className="flex items-center gap-2 text-[13px]">
           <span className="sr-only">{t('teams.roster.teamFilter')}</span>
@@ -385,6 +396,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
 
   return (
     <>
+      {balance.data && <TeamBalanceCards balance={balance.data} />}
       {desktop ? (
         <>
           <div className="flex flex-col rounded border border-rs-border bg-rs-surface">
@@ -517,6 +529,17 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           onSaved={() => {
             setAssigning(null)
             actions.notify(t('teams.feedback.assignmentUpdated'))
+          }}
+        />
+      )}
+      {editing && (
+        <ParticipantModal
+          eventId={event.id}
+          player={editing}
+          onClose={() => setEditing(null)}
+          onSaved={(message) => {
+            setEditing(null)
+            actions.notify(message)
           }}
         />
       )}

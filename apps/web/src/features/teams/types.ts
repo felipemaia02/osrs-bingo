@@ -19,7 +19,46 @@ export interface Player {
   /** Profile account playing the event; null for nickname registrations (before 022). */
   account_id?: string | null
   activity?: 'under_1h' | 'one_to_three_h' | 'over_3h' | null
-  buy_in_status?: 'pending' | 'paid' | null
+  buy_in_status?: BuyInStatus | null
+  /** Admin roster only (feature 023): the player's current profile and roles. */
+  role?: ParticipantRole | null
+  boss_kc_total?: number | null
+  ehb_total?: number | null
+  alt_count?: number | null
+  timezone?: string | null
+  teammates?: string[]
+  buy_in_admin_name?: string | null
+}
+
+export type BuyInStatus = 'pending' | 'paid'
+export type ParticipantRole = 'captain' | 'instructor'
+export const BUY_IN_STATUSES: BuyInStatus[] = ['pending', 'paid']
+export const PARTICIPANT_ROLES: ParticipantRole[] = ['captain', 'instructor']
+
+export interface ParticipationPayload {
+  role: ParticipantRole | null
+  buy_in_status: BuyInStatus
+  buy_in_admin_id: string | null
+}
+
+export interface TeamBalance {
+  team_id: string
+  name: string
+  color: string | null
+  emblem_url?: string | null
+  player_count: number
+  boss_kc_total: number
+  ehb_total: number
+  captain: string | null
+  /** EHB versus the average per team, in percent. */
+  ehb_vs_average: number
+  players_short: number
+  balanced: boolean
+}
+
+export interface TeamBalanceResponse {
+  average_ehb: number
+  teams: TeamBalance[]
 }
 
 export interface TeamPayload {

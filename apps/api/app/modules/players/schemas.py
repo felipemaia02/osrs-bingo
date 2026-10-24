@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.modules.profiles.schemas import Activity
 
@@ -35,6 +35,29 @@ class BuyInStatus(StrEnum):
 
     PENDING = "pending"
     PAID = "paid"
+
+
+class ParticipantRole(StrEnum):
+    CAPTAIN = "captain"
+    INSTRUCTOR = "instructor"
+
+
+class ParticipationUpdate(BaseModel):
+    """An admin's change to a participant's role and buy-in (feature 023)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    role: ParticipantRole | None
+    buy_in_status: BuyInStatus
+    buy_in_admin_id: str | None = Field(default=None, pattern=OBJECT_ID_PATTERN)
+
+    @model_validator(mode="after")
+    def paid_needs_admin(self) -> "ParticipationUpdate":
+        if self.buy_in_status == BuyInStatus.PAID and self.buy_in_admin_id is None:
+            raise ValueError("Choose the administrator who received the buy-in")
+        if self.buy_in_status != BuyInStatus.PAID and self.buy_in_admin_id is not None:
+            raise ValueError("Only paid buy-ins have a receiving administrator")
+        return self
 
 
 class JoinRequest(BaseModel):
@@ -81,6 +104,19 @@ class PlayerResponse(PlayerFields):
     updated_at: datetime
 
 
+class RosterEntry(PlayerResponse):
+    """Admin roster row: the registration plus the player's current profile (feature 023)."""
+
+    role: ParticipantRole | None = None
+    # None for nickname registrations (before feature 022).
+    boss_kc_total: int | None = None
+    ehb_total: float | None = None
+    alt_count: int | None = None
+    timezone: str | None = None
+    teammates: list[str] = Field(default_factory=list)
+    buy_in_admin_name: str | None = None
+
+
 class PlayerListQuery(BaseModel):
     group: Literal["all", "pending", "unassigned", "assigned"] = "all"
     search: str = Field(default="", max_length=80)
@@ -96,7 +132,7 @@ class PlayerCounts(BaseModel):
 
 
 class PlayerListResponse(BaseModel):
-    items: list[PlayerResponse]
+    items: list[RosterEntry]
     total: int
     offset: int
     limit: int

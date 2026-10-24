@@ -9,9 +9,12 @@ import {
   createPlayer,
   createTeam,
   fetchPlayers,
+  fetchTeamBalance,
   fetchTeams,
+  updateParticipation,
   updatePlayer,
 } from '../api/teamsApi'
+import { fetchAdministrators } from '../../administration/api/administrationApi'
 
 export function useTeams(eventId: string | null) {
   return useQuery({
@@ -19,6 +22,19 @@ export function useTeams(eventId: string | null) {
     queryFn: () => fetchTeams(eventId!),
     enabled: Boolean(eventId),
   })
+}
+
+/** Each team's experience versus the average (feature 023); refreshed with the teams. */
+export function useTeamBalance(eventId: string | null) {
+  return useQuery({
+    queryKey: ['teams', eventId, 'balance'],
+    queryFn: () => fetchTeamBalance(eventId!),
+    enabled: Boolean(eventId),
+  })
+}
+
+export function useAdministrators(enabled: boolean) {
+  return useQuery({ queryKey: ['administrators'], queryFn: fetchAdministrators, enabled })
 }
 
 export function usePlayers(eventId: string | null, filters: import('../types').PlayerFilters) {
@@ -47,6 +63,7 @@ export function useTeamMutations() {
     approveSelectedPlayers: useMutation({ mutationFn: approveSelectedPlayers, onSuccess: refresh }),
     removeSelectedPlayers: useMutation({ mutationFn: removeSelectedPlayers, onSuccess: refresh }),
     updatePlayer: useMutation({ mutationFn: updatePlayer, onSuccess: refresh }),
+    updateParticipation: useMutation({ mutationFn: updateParticipation, onSuccess: refresh }),
   }
 }
 

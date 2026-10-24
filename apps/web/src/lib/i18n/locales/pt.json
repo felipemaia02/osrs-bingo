@@ -279,7 +279,12 @@
       "invalidInput": "Informe um nome válido.",
       "approvedOnly": "Somente inscrições aprovadas podem receber um time. Atualize a lista.",
       "pendingOnly": "Esta solicitação não está mais pendente.",
-      "removed": "Esta inscrição já foi removida."
+      "removed": "Esta inscrição já foi removida.",
+      "roleNeedsApproval": "Só jogadores aprovados podem ter uma função.",
+      "captainNeedsTeam": "Coloque o jogador num time antes de torná-lo capitão.",
+      "captainTaken": "Este time já tem um capitão.",
+      "buyInAdmin": "Escolha um administrador atual.",
+      "changed": "Esta inscrição mudou nesse meio-tempo. Recarregue e tente de novo."
     },
     "roster": {
       "tabs": "Participantes e times",
@@ -294,13 +299,10 @@
       "allTeams": "Todos os times",
       "previous": "Anterior",
       "next": "Próxima",
-      "status": "Status",
       "actions": "Ações",
       "assignPlayer": "Alterar time de {{name}}",
       "editable": "Editável: evento em rascunho",
       "readOnly": "Somente leitura: evento {{status}}",
-      "osrsName": "Nome OSRS",
-      "discord": "Discord",
       "requested": "Pedido em",
       "team": "Time",
       "members": "Membros",
@@ -310,12 +312,26 @@
       "approveAllCount": "Aprovar todos ({{count}})…",
       "paginationPage": "{{start}}–{{end}} de {{total}} · {{size}} por página",
       "paginationShort": "{{start}}–{{end}} de {{total}}",
-      "note": "“Remover” não apaga o pedido: o jogador continua vendo o próprio status como <strong>Removido</strong>. Depois de aprovar, use a aba <strong>Sem time</strong> para definir o time.",
+      "note": "Σ = main + alts encontradas no Wise Old Man; o nome do jogador é a conta do bingo. “Remover” não apaga o pedido: o jogador continua vendo o próprio status como <strong>Removido</strong>. Depois de aprovar, use a aba <strong>Sem time</strong> para definir o time.",
       "approveAllTitle_one": "Aprovar {{count}} pedido?",
       "approveAllTitle_other": "Aprovar {{count}} pedidos?",
       "approveCount": "Aprovar {{count}}",
       "approveAllNamed": "{{names}} ficam <strong>aprovados, sem time</strong>. Você escolhe o time de cada jogador depois.",
-      "approveAllEveryone": "Todos os {{count}} pedidos pendentes deste evento ficam <strong>aprovados, sem time</strong>, inclusive os que estão fora da busca ou da página atual. Você escolhe o time de cada jogador depois."
+      "approveAllEveryone": "Todos os {{count}} pedidos pendentes deste evento ficam <strong>aprovados, sem time</strong>, inclusive os que estão fora da busca ou da página atual. Você escolhe o time de cada jogador depois.",
+      "player": "Jogador",
+      "timezone": "Fuso horário",
+      "activity": "Atividade",
+      "bossKc": "Σ KC de bosses",
+      "ehb": "Σ EHB",
+      "teammates": "Quer jogar com",
+      "role": "Função",
+      "buyIn": "Buy-in",
+      "mainOnly": "só main",
+      "mainAndAlts_one": "main + {{count}} alt",
+      "mainAndAlts_other": "main + {{count}} alts",
+      "experienceLine": "Σ EHB {{ehb}} · Σ KC de bosses {{kc}}",
+      "wantsWith": "quer {{names}}",
+      "sorted": "Ordenado por EHB total ↓"
     },
     "status": {
       "pending": "Pendente",
@@ -332,6 +348,35 @@
       "removeTitle": "Remover inscrições selecionadas?",
       "removeConfirmation_one": "Remover {{count}} inscrição selecionada? O time também será desfeito. O pedido é mantido e o jogador vê o status Removido.",
       "removeConfirmation_other": "Remover {{count}} inscrições selecionadas? Os times também serão desfeitos. Os pedidos são mantidos e os jogadores veem o status Removido."
+    },
+    "balance": {
+      "title": "Equilíbrio dos times",
+      "description": "Soma de KC de bosses e EHB da main + alts encontradas no Wise Old Man de cada jogador · EHB médio por time {{average}}",
+      "players_one": "{{count}} jogador",
+      "players_other": "{{count}} jogadores",
+      "ehb": "EHB",
+      "bossKc": "KC de bosses",
+      "noCaptain": "Sem capitão",
+      "versus": "{{value}} vs média",
+      "short_one": "falta {{count}} jogador",
+      "short_other": "faltam {{count}} jogadores"
+    },
+    "roles": {
+      "none": "Nenhuma",
+      "captain": "Capitão",
+      "instructor": "Instrutor"
+    },
+    "buyIn": {
+      "pending": "Pendente",
+      "paid": "Pago",
+      "to": "para {{name}}"
+    },
+    "participant": {
+      "edit": "Editar {{name}}",
+      "title": "Editar {{name}}",
+      "receivedBy": "Recebido por",
+      "saved": "{{name}} atualizado.",
+      "captainHint": "O capitão precisa estar aprovado e num time; cada time tem um capitão. Mudar o time dele remove a função."
     }
   },
   "language": {

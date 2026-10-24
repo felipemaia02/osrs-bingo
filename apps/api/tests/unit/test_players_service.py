@@ -6,13 +6,15 @@ from bson import ObjectId
 from pydantic import ValidationError
 
 from app.core.exceptions import ConflictError, DomainValidationError, NotFoundError
+from app.modules.administration.repository import AdministrationRepository
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.models import NewRegistration
-from app.modules.players.repository import PlayerRepository
+from app.modules.players.repository import CaptainTakenError, PlayerRepository
 from app.modules.players.schemas import (
     BuyInStatus,
     JoinRequest,
+    ParticipationUpdate,
     PlayerListQuery,
     PlayerUpdate,
     RegistrationStatus,
@@ -80,7 +82,9 @@ def repositories() -> tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock]:
     profiles = AsyncMock(spec=ProfileRepository)
     profiles.get.return_value = PROFILE
     profiles.existing_user_ids.side_effect = lambda ids: set(ids) & {FRIEND_ID}
-    return PlayerService(players, teams, events, profiles), players, teams, events
+    administration = AsyncMock(spec=AdministrationRepository)
+    service = PlayerService(players, teams, events, profiles, administration)
+    return service, players, teams, events
 
 
 async def test_registration_starts_pending_without_team(
@@ -291,3 +295,104 @@ def test_join_request_requires_agreements_and_at_most_three_teammates() -> None:
         JoinRequest.model_validate({**base, "teammate_ids": [FRIEND_ID, FRIEND_ID]})
     with pytest.raises(ValidationError, match="Extra inputs"):
         JoinRequest.model_validate({**base, "team_id": TEAM_ID})
+
+
+ADMIN_ID = ObjectId()
+
+
+def participation(role: str | None, status: str = "pending", admin: str | None = None):  # type: ignore[no-untyped-def]
+    return ParticipationUpdate(role=role, buy_in_status=status, buy_in_admin_id=admin)  # type: ignore[arg-type]
+
+
+@pytest.fixture
+def participants(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> tuple[PlayerService, AsyncMock]:
+    service, players, _, _ = repositories
+    service._administration.administrators.return_value = [{"_id": ADMIN_ID}]  # type: ignore[attr-defined]
+    players.get.return_value = {
+        **registration(RegistrationStatus.APPROVED),
+        "team_id": ObjectId(TEAM_ID),
+    }
+    players.set_participation.return_value = registration(RegistrationStatus.APPROVED)
+    return service, players
+
+
+async def test_captain_needs_approval_and_a_team_and_is_unique(
+    participants: tuple[PlayerService, AsyncMock],
+) -> None:
+    service, players = participants
+    await service.update_participation(EVENT_ID, PLAYER_ID, participation("captain"))
+    assert players.set_participation.await_args.kwargs["team_id"] == ObjectId(TEAM_ID)
+
+    players.set_participation.side_effect = CaptainTakenError
+    with pytest.raises(ConflictError, match="already has a captain"):
+        await service.update_participation(EVENT_ID, PLAYER_ID, participation("captain"))
+
+    players.get.return_value = registration(RegistrationStatus.APPROVED)
+    with pytest.raises(ConflictError, match="Assign a team"):
+        await service.update_participation(EVENT_ID, PLAYER_ID, participation("captain"))
+    players.get.return_value = registration(RegistrationStatus.PENDING)
+    with pytest.raises(ConflictError, match="Only approved"):
+        await service.update_participation(EVENT_ID, PLAYER_ID, participation("instructor"))
+
+
+async def test_paid_buy_in_records_a_current_administrator(
+    participants: tuple[PlayerService, AsyncMock],
+) -> None:
+    service, players = participants
+    await service.update_participation(
+        EVENT_ID, PLAYER_ID, participation(None, "paid", str(ADMIN_ID))
+    )
+    buy_in = players.set_participation.await_args.kwargs["buy_in"]
+    assert buy_in["status"] == "paid" and buy_in["admin_id"] == ADMIN_ID
+
+    with pytest.raises(DomainValidationError, match="current administrator"):
+        await service.update_participation(
+            EVENT_ID, PLAYER_ID, participation(None, "paid", str(ObjectId()))
+        )
+
+
+async def test_unchanged_buy_in_is_not_rewritten(
+    participants: tuple[PlayerService, AsyncMock],
+) -> None:
+    service, players = participants
+    await service.update_participation(EVENT_ID, PLAYER_ID, participation("instructor"))
+    assert players.set_participation.await_args.kwargs["buy_in"] is None
+
+
+async def test_participation_requires_a_draft_event_and_a_consistent_buy_in(
+    participants: tuple[PlayerService, AsyncMock],
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players = participants
+    repositories[3].get.return_value = {"status": EventStatus.ACTIVE}
+    with pytest.raises(ConflictError, match="Only draft"):
+        await service.update_participation(EVENT_ID, PLAYER_ID, participation(None))
+    players.set_participation.assert_not_awaited()
+    with pytest.raises(ValidationError, match="who received"):
+        participation(None, "paid")
+    with pytest.raises(ValidationError, match="Only paid"):
+        participation(None, "pending", str(ADMIN_ID))
+
+
+def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
+    mate, friend = ObjectId(), ObjectId()
+    document = {
+        **registration(RegistrationStatus.APPROVED),
+        "role": "captain",
+        "boss_kc_total": 17950,
+        "ehb_total": 845.2,
+        "account_count": 3,
+        "timezone": "Europe/Berlin",
+        "teammate_ids": [mate, friend],
+        "mate_users": [{"_id": mate, "username": "iris.btw"}, {"_id": friend, "username": "mo"}],
+        "mate_profiles": [{"_id": mate, "accounts": [{"rsn": "Ironman Iris", "is_main": True}]}],
+        "buy_in_admin": [{"_id": ADMIN_ID, "username": "felps_"}],
+    }
+
+    entry = PlayerService._to_roster_entry(document)  # type: ignore[arg-type]
+
+    assert entry.teammates == ["Ironman Iris", "mo"]
+    assert entry.alt_count == 2 and entry.ehb_total == 845.2 and entry.role == "captain"
+    assert entry.buy_in_admin_name == "felps_"

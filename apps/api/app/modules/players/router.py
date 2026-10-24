@@ -2,12 +2,14 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, status
 
+from app.modules.administration.repository import AdministrationRepository
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
     ApprovalResponse,
     JoinRequest,
+    ParticipationUpdate,
     PlayerListQuery,
     PlayerListResponse,
     PlayerResponse,
@@ -29,6 +31,7 @@ async def get_player_service(request: Request) -> PlayerService:
         TeamRepository(database),
         EventRepository(database),
         ProfileRepository(database),
+        AdministrationRepository(database),
     )
 
 
@@ -102,6 +105,17 @@ async def update_player(
     service: PlayerServiceDependency,
 ) -> PlayerResponse:
     return await service.update(event_id, player_id, payload)
+
+
+@router.patch("/{player_id}/participation", response_model=PlayerResponse)
+async def update_participation(
+    event_id: str,
+    player_id: str,
+    payload: ParticipationUpdate,
+    admin: AdminDependency,
+    service: PlayerServiceDependency,
+) -> PlayerResponse:
+    return await service.update_participation(event_id, player_id, payload)
 
 
 @router.delete("/{player_id}", response_model=PlayerResponse)

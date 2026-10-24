@@ -1,19 +1,27 @@
 from builtins import list as builtin_list
+from datetime import UTC, datetime
+from typing import Any
+
+from bson import ObjectId
 
 from app.core.exceptions import ConflictError, DomainValidationError, NotFoundError
+from app.modules.administration.repository import AdministrationRepository
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
-from app.modules.players.models import NewRegistration, PlayerDocument
-from app.modules.players.repository import PlayerRepository
+from app.modules.players.models import NewRegistration, PlayerDocument, RosterDocument
+from app.modules.players.repository import CaptainTakenError, PlayerRepository
 from app.modules.players.schemas import (
     BuyInStatus,
     JoinRequest,
+    ParticipantRole,
+    ParticipationUpdate,
     PlayerCounts,
     PlayerListQuery,
     PlayerListResponse,
     PlayerResponse,
     PlayerUpdate,
     RegistrationStatus,
+    RosterEntry,
     SelectionResult,
 )
 from app.modules.profiles.repository import ProfileRepository
@@ -26,6 +34,11 @@ ACCOUNT_NOT_LINKED = "Choose an account from your profile"
 ACCOUNT_NOT_ON_WOM = "This account isn't found on Wise Old Man"
 TEAMMATE_IS_SELF = "You can't pick yourself as a teammate"
 TEAMMATE_UNKNOWN = "Preferred teammate not found"
+ROLE_NEEDS_APPROVAL = "Only approved players can have a role"
+CAPTAIN_NEEDS_TEAM = "Assign a team before making this player captain"
+CAPTAIN_TAKEN = "This team already has a captain"
+BUY_IN_ADMIN_UNKNOWN = "Choose a current administrator"
+PARTICIPANT_CHANGED = "This registration changed meanwhile. Reload and try again"
 
 
 class PlayerService:
@@ -35,11 +48,13 @@ class PlayerService:
         teams: TeamRepository,
         events: EventRepository,
         profiles: ProfileRepository,
+        administration: AdministrationRepository,
     ) -> None:
         self._players = players
         self._teams = teams
         self._events = events
         self._profiles = profiles
+        self._administration = administration
 
     async def create(self, event_id: str, payload: JoinRequest, user_id: str) -> PlayerResponse:
         await self._require_draft_event(event_id)
@@ -83,7 +98,7 @@ class PlayerService:
             limit=query.limit,
         )
         return PlayerListResponse(
-            items=[self._to_response(document) for document in documents],
+            items=[self._to_roster_entry(document) for document in documents],
             total=total,
             offset=query.offset,
             limit=query.limit,
@@ -154,6 +169,61 @@ class PlayerService:
         if await self._events.get(event_id) is None:
             raise NotFoundError("Event")
 
+    async def update_participation(
+        self, event_id: str, player_id: str, payload: ParticipationUpdate
+    ) -> PlayerResponse:
+        """Role and buy-in of one participant (feature 023, BR-001-BR-004)."""
+        await self._require_draft_event(event_id)
+        player = await self._players.get(event_id, player_id)
+        if player is None:
+            raise NotFoundError("Player")
+        self._check_role(player, payload.role)
+        buy_in = await self._buy_in_change(player, payload)
+        try:
+            document = await self._players.set_participation(
+                event_id,
+                player_id,
+                role=payload.role,
+                team_id=player["team_id"],
+                buy_in=buy_in,
+            )
+        except CaptainTakenError as exc:
+            raise ConflictError(CAPTAIN_TAKEN) from exc
+        if document is None:
+            raise ConflictError(PARTICIPANT_CHANGED)
+        return self._to_response(document)
+
+    @staticmethod
+    def _check_role(player: PlayerDocument, role: ParticipantRole | None) -> None:
+        if role is None:
+            return
+        if player.get("status") != RegistrationStatus.APPROVED:
+            raise ConflictError(ROLE_NEEDS_APPROVAL)
+        if role == ParticipantRole.CAPTAIN and player["team_id"] is None:
+            raise ConflictError(CAPTAIN_NEEDS_TEAM)
+
+    async def _buy_in_change(
+        self, player: PlayerDocument, payload: ParticipationUpdate
+    ) -> dict[str, Any] | None:
+        """The new buy-in record, or None when status and admin stay the same."""
+        admin_id = ObjectId(payload.buy_in_admin_id) if payload.buy_in_admin_id else None
+        current = player.get("buy_in")
+        if (
+            current
+            and current["status"] == payload.buy_in_status
+            and current["admin_id"] == admin_id
+        ):
+            return None
+        if admin_id is not None:
+            administrators = await self._administration.administrators()
+            if admin_id not in {user["_id"] for user in administrators}:
+                raise DomainValidationError(BUY_IN_ADMIN_UNKNOWN)
+        return {
+            "status": payload.buy_in_status,
+            "admin_id": admin_id,
+            "updated_at": datetime.now(UTC),
+        }
+
     async def _account_rsn(self, user_id: str, account_id: str) -> str:
         """The RSN of a profile account usable for bingo (has WOM stats), stored as a snapshot."""
         profile = await self._profiles.get(user_id)
@@ -183,6 +253,40 @@ class PlayerService:
     async def _require_team(self, event_id: str, team_id: str) -> None:
         if await self._teams.get(event_id, team_id) is None:
             raise NotFoundError("Team")
+
+    @classmethod
+    def _to_roster_entry(cls, document: RosterDocument) -> RosterEntry:
+        role = document.get("role")
+        accounts = document.get("account_count")
+        admins = document.get("buy_in_admin") or []
+        return RosterEntry(
+            **cls._to_response(document).model_dump(),
+            role=ParticipantRole(role) if role else None,
+            boss_kc_total=document.get("boss_kc_total"),
+            ehb_total=document.get("ehb_total"),
+            alt_count=max(accounts - 1, 0) if accounts else None,
+            timezone=document.get("timezone"),
+            teammates=cls._teammate_names(document),
+            buy_in_admin_name=str(admins[0]["username"]) if admins else None,
+        )
+
+    @staticmethod
+    def _teammate_names(document: RosterDocument) -> builtin_list[str]:
+        """Each wanted teammate's main RSN, or their Discord name without one."""
+        users = {user["_id"]: user for user in document.get("mate_users") or []}
+        mains = {
+            profile["_id"]: next(
+                (acc["rsn"] for acc in profile.get("accounts", []) if acc.get("is_main")),  # type: ignore[attr-defined]
+                None,
+            )
+            for profile in document.get("mate_profiles") or []
+        }
+        names = []
+        for mate_id in document.get("teammate_ids") or []:
+            name = mains.get(mate_id) or users.get(mate_id, {}).get("username")
+            if name:
+                names.append(str(name))
+        return names
 
     @staticmethod
     def _activity(document: PlayerDocument) -> Activity | None:

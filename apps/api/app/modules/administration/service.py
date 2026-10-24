@@ -26,6 +26,19 @@ class AdministrationService:
             admin_count=len(roles["admin_ids"]),
         )
 
+    async def administrators(self) -> list[DirectoryUser]:
+        """Current administrators, e.g. to record who received a buy-in (feature 023)."""
+        users = await self._repository.administrators()
+        return [
+            DirectoryUser(
+                id=str(user["_id"]),
+                discord_id=user["discord_id"],
+                username=user["username"],
+                is_admin=True,
+            )
+            for user in users
+        ]
+
     async def change_role(self, actor: CurrentUser, user_id: str, is_admin: bool) -> DirectoryUser:
         target = await self._repository.get_user(user_id)
         if target is None:

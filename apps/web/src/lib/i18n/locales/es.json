@@ -279,7 +279,12 @@
       "invalidInput": "Introduce un nombre válido.",
       "approvedOnly": "Solo las inscripciones aprobadas pueden recibir un equipo. Actualiza la lista.",
       "pendingOnly": "Esta solicitud ya no está pendiente.",
-      "removed": "Esta inscripción ya fue eliminada."
+      "removed": "Esta inscripción ya fue eliminada.",
+      "roleNeedsApproval": "Solo los jugadores aprobados pueden tener un rol.",
+      "captainNeedsTeam": "Asigna un equipo antes de hacerlo capitán.",
+      "captainTaken": "Este equipo ya tiene capitán.",
+      "buyInAdmin": "Elige un administrador actual.",
+      "changed": "Esta inscripción cambió mientras tanto. Recarga e inténtalo de nuevo."
     },
     "roster": {
       "tabs": "Participantes y equipos",
@@ -294,13 +299,10 @@
       "allTeams": "Todos los equipos",
       "previous": "Anterior",
       "next": "Siguiente",
-      "status": "Estado",
       "actions": "Acciones",
       "assignPlayer": "Cambiar equipo de {{name}}",
       "editable": "Editable: evento en borrador",
       "readOnly": "Solo lectura: evento {{status}}",
-      "osrsName": "Nombre OSRS",
-      "discord": "Discord",
       "requested": "Solicitado",
       "team": "Equipo",
       "members": "Miembros",
@@ -310,12 +312,26 @@
       "approveAllCount": "Aprobar todos ({{count}})…",
       "paginationPage": "{{start}}–{{end}} de {{total}} · {{size}} por página",
       "paginationShort": "{{start}}–{{end}} de {{total}}",
-      "note": "“Eliminar” no borra la solicitud: el jugador sigue viendo su estado como <strong>Eliminado</strong>. Después de aprobar, usa la pestaña <strong>Sin equipo</strong> para asignar un equipo.",
+      "note": "Σ = main + alts encontradas en Wise Old Man; el nombre del jugador es su cuenta del bingo. “Eliminar” no borra la solicitud: el jugador sigue viendo su estado como <strong>Eliminado</strong>. Después de aprobar, usa la pestaña <strong>Sin equipo</strong> para asignar un equipo.",
       "approveAllTitle_one": "¿Aprobar {{count}} solicitud?",
       "approveAllTitle_other": "¿Aprobar {{count}} solicitudes?",
       "approveCount": "Aprobar {{count}}",
       "approveAllNamed": "{{names}} quedan <strong>aprobados, sin equipo</strong>. Eliges el equipo de cada jugador después.",
-      "approveAllEveryone": "Las {{count}} solicitudes pendientes de este evento quedan <strong>aprobadas, sin equipo</strong>, incluidas las que están fuera de la búsqueda o la página actual. Eliges el equipo de cada jugador después."
+      "approveAllEveryone": "Las {{count}} solicitudes pendientes de este evento quedan <strong>aprobadas, sin equipo</strong>, incluidas las que están fuera de la búsqueda o la página actual. Eliges el equipo de cada jugador después.",
+      "player": "Jugador",
+      "timezone": "Zona horaria",
+      "activity": "Actividad",
+      "bossKc": "Σ KC de jefes",
+      "ehb": "Σ EHB",
+      "teammates": "Quiere jugar con",
+      "role": "Rol",
+      "buyIn": "Buy-in",
+      "mainOnly": "solo main",
+      "mainAndAlts_one": "main + {{count}} alt",
+      "mainAndAlts_other": "main + {{count}} alts",
+      "experienceLine": "Σ EHB {{ehb}} · Σ KC de jefes {{kc}}",
+      "wantsWith": "quiere {{names}}",
+      "sorted": "Ordenado por EHB total ↓"
     },
     "status": {
       "pending": "Pendiente",
@@ -332,6 +348,35 @@
       "removeTitle": "¿Eliminar inscripciones seleccionadas?",
       "removeConfirmation_one": "¿Eliminar {{count}} inscripción seleccionada? También se quitará su equipo. La solicitud se conserva y el jugador ve su estado como Eliminado.",
       "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado."
+    },
+    "balance": {
+      "title": "Equilibrio de equipos",
+      "description": "Suma de KC de jefes y EHB de la main + alts encontradas en Wise Old Man de cada jugador · EHB medio por equipo {{average}}",
+      "players_one": "{{count}} jugador",
+      "players_other": "{{count}} jugadores",
+      "ehb": "EHB",
+      "bossKc": "KC de jefes",
+      "noCaptain": "Sin capitán",
+      "versus": "{{value}} vs media",
+      "short_one": "falta {{count}} jugador",
+      "short_other": "faltan {{count}} jugadores"
+    },
+    "roles": {
+      "none": "Ninguno",
+      "captain": "Capitán",
+      "instructor": "Instructor"
+    },
+    "buyIn": {
+      "pending": "Pendiente",
+      "paid": "Pagado",
+      "to": "a {{name}}"
+    },
+    "participant": {
+      "edit": "Editar {{name}}",
+      "title": "Editar {{name}}",
+      "receivedBy": "Recibido por",
+      "saved": "{{name}} actualizado.",
+      "captainHint": "El capitán debe estar aprobado y en un equipo; cada equipo tiene un capitán. Cambiar su equipo quita el rol."
     }
   },
   "language": {

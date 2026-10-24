@@ -5,11 +5,20 @@ from app.modules.events.schemas import EventStatus
 from app.modules.players.repository import PlayerRepository
 from app.modules.teams.models import TeamDocument
 from app.modules.teams.repository import TeamRepository
-from app.modules.teams.schemas import TeamCreate, TeamResponse, TeamUpdate
+from app.modules.teams.schemas import (
+    TeamBalance,
+    TeamBalanceResponse,
+    TeamCreate,
+    TeamResponse,
+    TeamUpdate,
+)
 
 TEAM_CONFLICT_DETAIL = "Team name already exists in this event"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be changed"
 TEAM_EMBLEMS_DISABLED_DETAIL = "Team emblems are disabled"
+# A team within ±15% of the average EHB per team counts as balanced (feature 023).
+BALANCE_TOLERANCE_PERCENT = 15
+PERCENT = 100
 
 
 class TeamService:
@@ -42,6 +51,36 @@ class TeamService:
         return [
             self._to_response(document, counts.get(document["_id"], 0)) for document in documents
         ]
+
+    async def balance(self, event_id: str) -> TeamBalanceResponse:
+        """Each team's experience versus the average per team (feature 023, FR-001)."""
+        await self._require_event(event_id)
+        teams = await self._teams.list(event_id)
+        experience = {row["_id"]: row for row in await self._players.team_experience(event_id)}
+        totals = [experience.get(team["_id"]) for team in teams]
+        ehb = [round(row["ehb_total"], 2) if row else 0.0 for row in totals]
+        sizes = [row["player_count"] if row else 0 for row in totals]
+        average = round(sum(ehb) / len(teams), 2) if teams else 0.0
+        largest = max(sizes, default=0)
+        balance = []
+        for team, row, team_ehb, size in zip(teams, totals, ehb, sizes, strict=True):
+            versus = round((team_ehb - average) / average * PERCENT) if average else 0
+            balance.append(
+                TeamBalance(
+                    team_id=str(team["_id"]),
+                    name=team["name"],
+                    color=team["color"],
+                    emblem_url=team.get("emblem_url"),
+                    player_count=size,
+                    boss_kc_total=row["boss_kc_total"] if row else 0,
+                    ehb_total=team_ehb,
+                    captain=row["captains"][0] if row and row["captains"] else None,
+                    ehb_vs_average=versus,
+                    players_short=largest - size,
+                    balanced=abs(versus) <= BALANCE_TOLERANCE_PERCENT,
+                )
+            )
+        return TeamBalanceResponse(average_ehb=average, teams=balance)
 
     async def update(self, event_id: str, team_id: str, payload: TeamUpdate) -> TeamResponse:
         await self._require_draft_event(event_id)

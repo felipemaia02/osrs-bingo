@@ -279,7 +279,12 @@
       "invalidInput": "Enter a valid name.",
       "approvedOnly": "Only approved registrations can be assigned. Refresh the participant list.",
       "pendingOnly": "This request is no longer pending.",
-      "removed": "This registration has already been removed."
+      "removed": "This registration has already been removed.",
+      "roleNeedsApproval": "Only approved players can have a role.",
+      "captainNeedsTeam": "Assign a team before making this player captain.",
+      "captainTaken": "This team already has a captain.",
+      "buyInAdmin": "Choose a current administrator.",
+      "changed": "This registration changed meanwhile. Reload and try again."
     },
     "roster": {
       "tabs": "Participants and teams",
@@ -294,13 +299,10 @@
       "allTeams": "All teams",
       "previous": "Previous",
       "next": "Next",
-      "status": "Status",
       "actions": "Actions",
       "assignPlayer": "Change team for {{name}}",
       "editable": "Editable: draft event",
       "readOnly": "Read-only: {{status}} event",
-      "osrsName": "OSRS name",
-      "discord": "Discord",
       "requested": "Requested",
       "team": "Team",
       "members": "Members",
@@ -310,12 +312,26 @@
       "approveAllCount": "Approve all ({{count}})…",
       "paginationPage": "{{start}}–{{end}} of {{total}} · {{size}} per page",
       "paginationShort": "{{start}}–{{end}} of {{total}}",
-      "note": "“Remove” doesn't delete the request: the player still sees their own status as <strong>Removed</strong>. After approving, use the <strong>Unassigned</strong> tab to assign a team.",
+      "note": "Σ = main + alts found on Wise Old Man; the player's name is their bingo account. “Remove” doesn't delete the request: the player still sees their own status as <strong>Removed</strong>. After approving, use the <strong>Unassigned</strong> tab to assign a team.",
       "approveAllTitle_one": "Approve {{count}} request?",
       "approveAllTitle_other": "Approve {{count}} requests?",
       "approveCount": "Approve {{count}}",
       "approveAllNamed": "{{names}} become <strong>approved, without a team</strong>. You choose each player's team later.",
-      "approveAllEveryone": "All {{count}} pending requests in this event become <strong>approved, without a team</strong>, including any outside the current search or page. You choose each player's team later."
+      "approveAllEveryone": "All {{count}} pending requests in this event become <strong>approved, without a team</strong>, including any outside the current search or page. You choose each player's team later.",
+      "player": "Player",
+      "timezone": "Time zone",
+      "activity": "Activity",
+      "bossKc": "Boss KC Σ",
+      "ehb": "EHB Σ",
+      "teammates": "Wants to team with",
+      "role": "Role",
+      "buyIn": "Buy-in",
+      "mainOnly": "main only",
+      "mainAndAlts_one": "main + {{count}} alt",
+      "mainAndAlts_other": "main + {{count}} alts",
+      "experienceLine": "EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "wantsWith": "wants {{names}}",
+      "sorted": "Sorted by EHB total ↓"
     },
     "status": {
       "pending": "Pending",
@@ -332,6 +348,35 @@
       "removeTitle": "Remove selected registrations?",
       "removeConfirmation_one": "Remove {{count}} selected registration? Its team assignment will also be cleared. The request is kept and the player sees their status as Removed.",
       "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed."
+    },
+    "balance": {
+      "title": "Team balance",
+      "description": "Sum of boss KC and EHB of each player's main + alts found on Wise Old Man · average EHB per team {{average}}",
+      "players_one": "{{count}} player",
+      "players_other": "{{count}} players",
+      "ehb": "EHB",
+      "bossKc": "Boss KC",
+      "noCaptain": "No captain",
+      "versus": "{{value}} vs average",
+      "short_one": "{{count}} player short",
+      "short_other": "{{count}} players short"
+    },
+    "roles": {
+      "none": "None",
+      "captain": "Captain",
+      "instructor": "Instructor"
+    },
+    "buyIn": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "to": "to {{name}}"
+    },
+    "participant": {
+      "edit": "Edit {{name}}",
+      "title": "Edit {{name}}",
+      "receivedBy": "Received by",
+      "saved": "{{name}} updated.",
+      "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role."
     }
   },
   "language": {

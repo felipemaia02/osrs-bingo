@@ -55,8 +55,9 @@ async def test_unassignment_updates_existing_registration_without_deleting_it() 
         "event_id": ObjectId(event_id),
         "status": RegistrationStatus.APPROVED,
     }
-    assert update["$set"]["team_id"] is None
-    assert "event_id" not in update["$set"]
+    assert update[0]["$set"]["team_id"] is None
+    assert update[0]["$set"]["role"]["$cond"][1] is None  # a moved captain loses the role
+    assert "event_id" not in update[0]["$set"]
     collection.delete_one.assert_not_called()
 
 
@@ -81,9 +82,10 @@ async def test_removal_retains_identity_and_clears_team() -> None:
     query, update = collection.find_one_and_update.call_args.args
     assert query["event_id"] == ObjectId(event_id)
     assert query["status"] == {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]}
-    assert update["$set"]["status"] == RegistrationStatus.REMOVED
-    assert update["$set"]["team_id"] is None
-    assert "_id" not in update["$set"]
+    assert update[0]["$set"]["status"] == RegistrationStatus.REMOVED
+    assert update[0]["$set"]["team_id"] is None
+    assert "role" in update[0]["$set"]
+    assert "_id" not in update[0]["$set"]
     collection.delete_one.assert_not_called()
 
 
@@ -134,10 +136,17 @@ async def test_page_joins_discord_name_and_searches_both_names_with_bounds() -> 
     search = pipeline[4]["$match"]["$or"]
     assert search[0] == {"normalized_display_name": {"$regex": r"crab\.\*"}}
     assert search[1] == {"discord_username": {"$regex": r"Crab\.\*", "$options": "i"}}
-    assert pipeline[5]["$facet"]["items"] == [
-        {"$sort": {"normalized_display_name": 1, "_id": 1}},
+    assert pipeline[5]["$lookup"]["from"] == "player_profiles"
+    items = pipeline[-1]["$facet"]["items"]
+    assert items[:3] == [
+        {"$sort": {"ehb_total": -1, "normalized_display_name": 1, "_id": 1}},
         {"$skip": 25},
         {"$limit": 25},
+    ]
+    assert [stage["$lookup"]["as"] for stage in items[3:]] == [
+        "mate_users",
+        "mate_profiles",
+        "buy_in_admin",
     ]
     assert result == ([row], 42)
 
@@ -173,13 +182,15 @@ async def test_selected_updates_are_event_scoped_and_state_guarded() -> None:
     assert query["_id"] == {"$in": [ObjectId(ids[0]), ObjectId(ids[1])]}
     assert query["event_id"] == ObjectId(event_id)
     assert query["status"] == RegistrationStatus.PENDING
-    assert update["$set"]["status"] == RegistrationStatus.APPROVED
+    assert update[0]["$set"]["status"] == RegistrationStatus.APPROVED
+    assert "role" not in update[0]["$set"]
 
     await repository.remove_selected(event_id, ids)
     query, update = collection.update_many.call_args.args
     assert query["status"] == {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]}
-    assert update["$set"]["status"] == RegistrationStatus.REMOVED
-    assert update["$set"]["team_id"] is None
+    assert update[0]["$set"]["status"] == RegistrationStatus.REMOVED
+    assert update[0]["$set"]["team_id"] is None
+    assert "role" in update[0]["$set"]
 
 
 async def test_counts_are_event_scoped_and_exclude_removed() -> None:

@@ -40,6 +40,8 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
   removePlayer: vi.fn(),
   approveSelectedPlayers: vi.fn(),
   removeSelectedPlayers: vi.fn(),
+  fetchTeamBalance: vi.fn().mockResolvedValue({ average_ehb: 0, teams: [] }),
+  updateParticipation: vi.fn(),
 }))
 
 vi.mock('../src/features/administration/api/administrationApi', () => ({
@@ -47,6 +49,7 @@ vi.mock('../src/features/administration/api/administrationApi', () => ({
     .fn()
     .mockResolvedValue({ items: [], total: 0, offset: 0, limit: 25, admin_count: 1 }),
   changeRole: vi.fn(),
+  fetchAdministrators: vi.fn().mockResolvedValue([]),
 }))
 
 vi.mock('../src/features/cards/api/cardsApi', () => ({

@@ -34,5 +34,27 @@ class PlayerDocument(TypedDict):
     teammate_ids: NotRequired[list[ObjectId]]
     agreements_accepted_at: NotRequired[datetime]
     buy_in: NotRequired[BuyInRecord]
+    # captain | instructor (feature 023)
+    role: NotRequired[str | None]
     created_at: datetime
     updated_at: datetime
+
+
+class RosterDocument(PlayerDocument, total=False):
+    """A roster row with its profile experience and lookups (feature 023)."""
+
+    boss_kc_total: int | None
+    ehb_total: float | None
+    account_count: int | None
+    timezone: str | None
+    mate_users: list[dict[str, object]]
+    mate_profiles: list[dict[str, object]]
+    buy_in_admin: list[dict[str, object]]
+
+
+class TeamExperience(TypedDict):
+    _id: ObjectId
+    player_count: int
+    boss_kc_total: int
+    ehb_total: float
+    captains: list[str]

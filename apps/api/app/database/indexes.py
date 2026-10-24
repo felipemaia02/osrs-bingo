@@ -40,6 +40,16 @@ class IndexManager:
         ("players", [("event_id", 1), ("team_id", 1)], {"name": "players_event_team"}),
         (
             "players",
+            [("event_id", 1), ("team_id", 1)],
+            {
+                # One captain per team (feature 023).
+                "name": "players_team_captain_unique",
+                "unique": True,
+                "partialFilterExpression": {"role": "captain"},
+            },
+        ),
+        (
+            "players",
             [("event_id", 1), ("user_id", 1)],
             {
                 "name": "players_event_user_unique",

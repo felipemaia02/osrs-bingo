@@ -68,7 +68,7 @@ def repositories() -> Iterator[tuple[AsyncMock, AsyncMock, AsyncMock]]:
             }
         ]
     }
-    service = PlayerService(players, teams, events, profiles)
+    service = PlayerService(players, teams, events, profiles, AsyncMock())
 
     async def override_service() -> PlayerService:
         return service

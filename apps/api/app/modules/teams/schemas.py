@@ -61,5 +61,25 @@ class TeamListResponse(BaseModel):
     items: list[TeamResponse]
 
 
+class TeamBalance(BaseModel):
+    team_id: str
+    name: str
+    color: str | None
+    emblem_url: str | None
+    player_count: int
+    boss_kc_total: int
+    ehb_total: float
+    captain: str | None
+    # EHB versus the average per team, in percent (rounded).
+    ehb_vs_average: int
+    players_short: int
+    balanced: bool
+
+
+class TeamBalanceResponse(BaseModel):
+    average_ehb: float
+    teams: list[TeamBalance]
+
+
 def utc_now() -> datetime:
     return datetime.now(UTC)

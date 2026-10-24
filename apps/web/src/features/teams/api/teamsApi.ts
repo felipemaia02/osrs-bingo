@@ -5,8 +5,10 @@ import type {
   Player,
   PlayerAssignmentPayload,
   JoinPayload,
+  ParticipationPayload,
   SelectionResult,
   Team,
+  TeamBalanceResponse,
   TeamPayload,
 } from '../types'
 
@@ -56,3 +58,18 @@ export const removeSelectedPlayers = async ({ eventId, playerIds }: SelectionReq
       player_ids: playerIds,
     })
   ).data
+
+export const fetchTeamBalance = async (eventId: string) =>
+  (await apiClient.get<TeamBalanceResponse>(`/events/${eventId}/teams/balance`)).data
+
+export const updateParticipation = async ({
+  eventId,
+  playerId,
+  payload,
+}: {
+  eventId: string
+  playerId: string
+  payload: ParticipationPayload
+}) =>
+  (await apiClient.patch<Player>(`/events/${eventId}/players/${playerId}/participation`, payload))
+    .data

@@ -14,3 +14,7 @@ export const fetchUsers = async (search: string, offset: number, limit: number) 
 
 export const changeRole = async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) =>
   (await apiClient.patch<CurrentUser>(`/admin/users/${userId}/role`, { is_admin: isAdmin })).data
+
+/** Current administrators, e.g. to record who received a buy-in (feature 023). */
+export const fetchAdministrators = async () =>
+  (await apiClient.get<CurrentUser[]>('/admin/administrators')).data
