@@ -51,6 +51,20 @@ const MAIN = {
     magic: 99,
   },
   skills: { slayer: 96, agility: 99 },
+  wikisync: {
+    status: 'found' as const,
+    quest_points: 300,
+    quests_completed: 170,
+    quests_total: 184,
+    hard_diaries: 8,
+    diaries: Array.from({ length: 12 }, (_, index) => ({
+      region: `Region ${index + 1}`,
+      easy: true,
+      medium: true,
+      hard: index < 8,
+      elite: false,
+    })),
+  },
   ehp: 1402.6,
   ehb: 700.2,
   boss_kc: 15000,
@@ -64,6 +78,7 @@ const ALT = {
   combat_level: null,
   combat: null,
   skills: null,
+  wikisync: null,
 }
 const HAL = { ...MAIN, id: 'acc-hal', rsn: 'Holy Hal', skills: { slayer: 93 } }
 
@@ -127,6 +142,10 @@ describe('Draft preview', () => {
     expect(within(iris).getByText('126')).toBeInTheDocument()
     const skills = within(iris).getByLabelText('Combat levels')
     expect(within(skills).getByText('Str')).toBeInTheDocument()
+    // Slayer sits with the combat levels (often a bingo requirement).
+    expect(within(skills).getByTitle('Slayer').nextElementSibling).toHaveTextContent('96')
+    expect(iris).toHaveTextContent('QP 300')
+    expect(iris).toHaveTextContent('Hard diaries 8/12')
 
     await user.click(within(iris).getByRole('button', { name: 'Show details of Ironman Iris' }))
     const dialog = screen.getByRole('dialog', { name: 'Ironman Iris' })
@@ -135,7 +154,11 @@ describe('Draft preview', () => {
     const main = within(dialog).getByRole('article', { name: 'Ironman Iris' })
     expect(within(main).getByText('Plays the bingo')).toBeInTheDocument()
     expect(within(main).getByText('Strength')).toBeInTheDocument()
+    expect(within(main).getByTitle('Slayer').nextElementSibling).toHaveTextContent('96')
+    const quests = within(main).getByRole('region', { name: 'Quests & diaries' })
+    expect(within(quests).getByText('Quests').nextSibling).toHaveTextContent('170/184')
     const alt = within(dialog).getByRole('article', { name: 'Iris Alt' })
+    expect(within(alt).getByText(/Not loaded yet/)).toBeInTheDocument()
     expect(within(alt).getByText('1,500')).toBeInTheDocument()
     expect(within(alt).queryByText('Plays the bingo')).toBeNull()
   })

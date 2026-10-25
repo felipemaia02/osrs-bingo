@@ -75,6 +75,7 @@ async def test_first_account_is_main_and_others_are_alts(service: ProfileService
     assert [(a.rsn, a.is_main) for a in profile.accounts] == [("Main", True), ("Alt One", False)]
     assert profile.accounts[0].wom_url == "https://wiseoldman.net/players/Main"
     assert profile.accounts[0].combat == {"attack": 99, "strength": 99, "defence": 90}
+    assert profile.accounts[0].skills is not None and profile.accounts[0].skills["slayer"] == 95
     assert profile.totals.boss_kc == 200 and profile.totals.ehb == 21.0
 
 

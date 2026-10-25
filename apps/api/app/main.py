@@ -31,6 +31,7 @@ from app.modules.droptracker.service import DropTrackerService
 from app.modules.events.repository import EventRepository
 from app.modules.events.router import router as events_router
 from app.modules.items.client import WikiItemClient
+from app.modules.items.quests import QuestPointClient, QuestPointService
 from app.modules.items.repository import ItemRepository
 from app.modules.items.router import router as items_router
 from app.modules.items.service import ItemService
@@ -100,7 +101,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await AdministrationRepository(db_client.database).initialize(settings.admin_discord_ids)
         app.state.droptracker_poller = start_droptracker(db_client.database)
         app.state.item_syncer = ItemSyncer(
-            ItemService(ItemRepository(db_client.database), WikiItemClient())
+            ItemService(ItemRepository(db_client.database), WikiItemClient()),
+            QuestPointService(db_client.database, QuestPointClient()),
         )
         app.state.item_syncer.start()
         log_event(logger, 20, "application_ready")

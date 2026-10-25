@@ -62,6 +62,32 @@ class Preferences(BaseModel):
         return value
 
 
+class WikiSyncStatus(StrEnum):
+    FOUND = "found"
+    NOT_FOUND = "not_found"
+    UNAVAILABLE = "unavailable"
+
+
+class DiaryRegion(BaseModel):
+    region: str
+    easy: bool
+    medium: bool
+    hard: bool
+    elite: bool
+
+
+class WikiSyncResponse(BaseModel):
+    """Quests and achievement diaries from the WikiSync plugin (feature 034)."""
+
+    status: WikiSyncStatus
+    quest_points: int | None = None
+    quests_completed: int | None = None
+    quests_total: int | None = None
+    hard_diaries: int | None = None
+    diaries: list[DiaryRegion] = Field(default_factory=list)
+    checked_at: datetime | None = None
+
+
 class AccountResponse(BaseModel):
     id: str
     rsn: str
@@ -72,6 +98,10 @@ class AccountResponse(BaseModel):
     ehb: float | None
     boss_kc: int | None
     combat: dict[str, int] | None
+    # Every skill level from WOM (feature 032); None until the account is read again.
+    skills: dict[str, int] | None = None
+    # None until the account is read again after feature 034.
+    wikisync: WikiSyncResponse | None = None
     wom_updated_at: datetime | None
     checked_at: datetime | None
     wom_url: str

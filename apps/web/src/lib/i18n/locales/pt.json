@@ -1067,7 +1067,8 @@
       "hitpoints": "Vida",
       "ranged": "Distância",
       "prayer": "Oração",
-      "magic": "Magia"
+      "magic": "Magia",
+      "slayer": "Slayer"
     },
     "combatShort": {
       "attack": "Atq",
@@ -1076,7 +1077,25 @@
       "hitpoints": "Vida",
       "ranged": "Dist",
       "prayer": "Oraç",
-      "magic": "Mag"
+      "magic": "Mag",
+      "slayer": "Slay"
+    },
+    "wikisync": {
+      "title": "Quests e diários",
+      "questPoints": "Quest points",
+      "quests": "Quests",
+      "hardDiaries": "Diários Hard",
+      "qp": "QP",
+      "regions": "Diários de conquistas por região",
+      "elite": "Elite",
+      "hardDone": "{{region}}: diário Hard completo",
+      "eliteDone": "{{region}}: diário Elite completo",
+      "hardMissing": "{{region}}: diário Hard incompleto",
+      "notLoaded": "Ainda não carregado. Clique em \"Atualizar do WOM\" para carregar quests e diários.",
+      "notFound": "Sem dados do WikiSync. Instale o plugin WikiSync no RuneLite, entre no jogo uma vez e clique em \"Atualizar do WOM\".",
+      "unavailable": "O WikiSync está indisponível agora. Tente \"Atualizar do WOM\" mais tarde.",
+      "noDataShort": "Sem dados de quests/diários (WikiSync)",
+      "source": "Do plugin WikiSync (OSRS Wiki), conforme o último login com ele."
     }
   },
   "join": {
