@@ -83,7 +83,7 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onSelect }: 
       className="flex flex-col gap-1.5 rounded border border-rs-border bg-rs-surface p-2.5"
     >
       <div className="flex items-baseline justify-between">
-        <strong className="text-[13px]">{t('board.miniMap.title', { size })}</strong>
+        <strong className="text-[13px]">{t('board.miniMap.title')}</strong>
         {summary && <span className="text-xs">{summary.short}</span>}
       </div>
       <div className="grid gap-1" style={grid} aria-hidden="true">

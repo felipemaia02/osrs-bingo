@@ -269,10 +269,10 @@ describe('Board v2', () => {
 
       await user.click(tileButton('Grotesque Guardians'))
       const panel = screen.getByRole('complementary', { name: 'Tile detail' })
-      expect(panel).toHaveTextContent('Row 1 · Column 1')
       expect(
-        within(panel).getByRole('heading', { name: 'Grotesque Guardians' }),
+        within(panel).getByRole('heading', { name: 'Grotesque Guardians', level: 2 }),
       ).toBeInTheDocument()
+      expect(panel).not.toHaveTextContent(/Row \d · Column \d/)
       expect(within(panel).getByText('Boss group')).toBeInTheDocument()
       expect(panel).toHaveTextContent(
         'Completes when progress reaches 8. Worth 10 pts only once — extra progress gives no points.',
@@ -407,9 +407,8 @@ describe('Board v2', () => {
       await user.click(screen.getByRole('button', { name: 'List view' }))
       expect(screen.getByRole('heading', { name: 'Row 1', level: 2 })).toBeInTheDocument()
       await user.click(tileButton('Alchemical Hydra'))
-      expect(screen.getByRole('complementary', { name: 'Tile detail' })).toHaveTextContent(
-        'Row 1 · Column 3',
-      )
+      const panel = screen.getByRole('complementary', { name: 'Tile detail' })
+      expect(within(panel).getByRole('heading', { name: 'Alchemical Hydra' })).toBeInTheDocument()
       expect(localStorage.getItem('osrs-bingo-board-view')).toBe('list')
       unmount()
 
@@ -490,12 +489,16 @@ describe('Board v2', () => {
       await user.click(cell)
       expect(cell).toHaveAttribute('aria-pressed', 'true')
       const panel = screen.getByRole('region', { name: 'Tile detail' })
-      expect(panel).toHaveTextContent('Row 1 · Column 3')
+      expect(within(panel).getByRole('heading', { name: 'Alchemical Hydra' })).toBeInTheDocument()
+      expect(panel).not.toHaveTextContent(/Row \d · Column \d/)
+      expect(
+        within(map).getByText('Tap a tile to see details below, tap again to close.'),
+      ).toBeInTheDocument()
       expect(within(panel).getByText("Hydra's Claw").closest('li')).toHaveTextContent('+3 progress')
       expect(screen.queryByRole('dialog')).toBeNull()
 
       await user.click(within(panel).getByRole('button', { name: 'Next tile' }))
-      expect(panel).toHaveTextContent('Row 1 · Column 4')
+      expect(within(panel).getByRole('heading', { name: 'Objective 4' })).toBeInTheDocument()
       expect(cell).toHaveAttribute('aria-pressed', 'false')
 
       const next = within(map).getByRole('button', { pressed: true })

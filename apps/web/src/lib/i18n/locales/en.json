@@ -85,7 +85,6 @@
     },
     "panel": {
       "label": "Tile detail",
-      "position": "Row {{row}} · Column {{column}}",
       "close": "Close detail",
       "prompt": "Select a tile to see its accepted drops and how it is completed.",
       "completes": "Completes when progress reaches <strong>{{requirement}}</strong>. Worth <strong>{{points}} pts only once</strong> — extra progress gives no points.",
@@ -102,9 +101,9 @@
     },
     "miniMap": {
       "label": "Board mini-map",
-      "title": "{{size}}×{{size}} map",
+      "title": "Tap a tile to see details below, tap again to close.",
       "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show details",
-      "legend": "★ Bronze = Easy · ★ Silver = Medium · ★ Gold = Hard. Tap a tile to see it below; tap it again to close.",
+      "legend": "★ Bronze = Easy · ★ Silver = Medium · ★ Gold = Hard",
       "bonusCell": "{{name}}, bonus card, {{tier}}: show details",
       "hint": "Tap a tile on the map to see its details here."
     },
