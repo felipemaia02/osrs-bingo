@@ -51,3 +51,29 @@ class DropPage(BaseModel):
     total: int
     offset: int
     limit: int
+
+
+MATCH_PREVIEW_MAX_DROPS = 100
+
+
+class DropMatchInput(BaseModel):
+    """A card drop as typed in the card form (feature 033)."""
+
+    name: str = Field(min_length=1, max_length=160)
+    aliases: list[str] = Field(default_factory=list, max_length=20)
+    item_ids: list[int] = Field(default_factory=list, max_length=200)
+    match_by_name: bool = True
+
+
+class DropMatchPreviewRequest(BaseModel):
+    drops: list[DropMatchInput] = Field(min_length=1, max_length=MATCH_PREVIEW_MAX_DROPS)
+
+
+class DropMatchPreview(BaseModel):
+    # False when no DropTracker drops are stored (ingestion off or nothing yet).
+    available: bool
+    days: int
+    # Clan drops that match the whole card, each counted once.
+    total: int
+    # Same order as the request.
+    per_drop: list[int]

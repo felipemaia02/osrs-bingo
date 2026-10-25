@@ -9,6 +9,46 @@ export interface AcceptedDrop {
   aliases: string[]
   verification_note: string | null
   counting_restriction: string | null
+  /** OSRS item IDs (feature 033); empty for free-text drops. */
+  item_ids?: number[]
+  /** False when a specific version was picked: only its IDs count. */
+  match_by_name?: boolean
+}
+
+/** One pick in the drop search (feature 033). */
+export interface ItemOption {
+  name: string
+  label: string
+  item_ids: number[]
+  icon_url: string | null
+  any_version: boolean
+  versions: number
+}
+
+export interface ItemSearchResult {
+  ready: boolean
+  items: ItemOption[]
+}
+
+export interface DropMatchInput {
+  name: string
+  aliases: string[]
+  item_ids: number[]
+  match_by_name: boolean
+}
+
+export interface DropMatchPreview {
+  available: boolean
+  days: number
+  total: number
+  per_drop: number[]
+}
+
+export interface LinkItemsResult {
+  linked_cards: number
+  linked_drops: number
+  unlinked_drops: number
+  skipped_cards: string[]
 }
 
 export interface WikiImage {

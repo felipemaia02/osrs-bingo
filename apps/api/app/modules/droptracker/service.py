@@ -10,13 +10,23 @@ from typing import Any
 from app.core.config import Settings
 from app.modules.droptracker.client import PAGE_SIZE, DropTrackerClient, DropTrackerError
 from app.modules.droptracker.repository import DropRepository
-from app.modules.droptracker.schemas import DropPage, DropQuery, DropRecord, DropTrackerStatus
+from app.modules.droptracker.schemas import (
+    DropMatchInput,
+    DropMatchPreview,
+    DropMatchPreviewRequest,
+    DropPage,
+    DropQuery,
+    DropRecord,
+    DropTrackerStatus,
+)
 
 FIRST_RUN_LOOKBACK = timedelta(hours=1)
 # Drops accepted while a previous poll was running are picked up again; drop_id dedupes.
 WINDOW_OVERLAP = timedelta(minutes=10)
 # The export API pages by offset up to 100,000 rows.
 MAX_PAGES = 200
+# Card drop check (feature 033): how far back clan drops are compared.
+MATCH_PREVIEW_DAYS = 30
 
 
 class DropTrackerService:
@@ -74,6 +84,34 @@ class DropTrackerService:
             stored_drops=await self._drops.count(),
             bingo_outcomes=await self._drops.outcome_counts(),
         )
+
+    async def match_preview(
+        self, request: DropMatchPreviewRequest, now: datetime | None = None
+    ) -> DropMatchPreview:
+        """How many stored clan drops each card drop, and the card, would have matched."""
+        since = (now or datetime.now(UTC)) - timedelta(days=MATCH_PREVIEW_DAYS)
+        per_drop = [
+            await self._drops.count_matching(self._conditions(drop), since)
+            for drop in request.drops
+        ]
+        every = [condition for drop in request.drops for condition in self._conditions(drop)]
+        return DropMatchPreview(
+            available=await self._drops.count() > 0,
+            days=MATCH_PREVIEW_DAYS,
+            total=await self._drops.count_matching(every, since),
+            per_drop=per_drop,
+        )
+
+    @staticmethod
+    def _conditions(drop: DropMatchInput) -> list[dict[str, Any]]:
+        """Same rule as the bingo matching: IDs, plus names unless a specific version was picked."""
+        conditions: list[dict[str, Any]] = []
+        if drop.item_ids:
+            conditions.append({"item_id": {"$in": drop.item_ids}})
+        if not drop.item_ids or drop.match_by_name:
+            names = {" ".join(name.split()) for name in (drop.name, *drop.aliases)}
+            conditions.extend({"item_name": name} for name in sorted(names) if name)
+        return conditions
 
     async def drops(self, query: DropQuery) -> DropPage:
         filters: dict[str, Any] = {}

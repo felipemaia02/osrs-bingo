@@ -42,7 +42,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B84:O84"
+          "source_cell": "Accepted Drops!B84:O84",
+          "item_ids": [34027],
+          "match_by_name": true
         },
         {
           "key": "jar-of-light",
@@ -51,7 +53,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B85:O85"
+          "source_cell": "Accepted Drops!B85:O85",
+          "item_ids": [34030],
+          "match_by_name": true
         },
         {
           "key": "aggy",
@@ -60,7 +64,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B86:O86"
+          "source_cell": "Accepted Drops!B86:O86",
+          "item_ids": [34042],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -119,7 +125,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B87:O87"
+          "source_cell": "Accepted Drops!B87:O87",
+          "item_ids": [30085],
+          "match_by_name": true
         },
         {
           "key": "tome-of-earth",
@@ -128,7 +136,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B88:O88"
+          "source_cell": "Accepted Drops!B88:O88",
+          "item_ids": [30064],
+          "match_by_name": true
         },
         {
           "key": "dragon-hunter-wand",
@@ -137,7 +147,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B89:O89"
+          "source_cell": "Accepted Drops!B89:O89",
+          "item_ids": [30070],
+          "match_by_name": true
         },
         {
           "key": "huberte",
@@ -146,7 +158,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B90:O90"
+          "source_cell": "Accepted Drops!B90:O90",
+          "item_ids": [30152],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -220,7 +234,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B91:O91"
+          "source_cell": "Accepted Drops!B91:O91",
+          "item_ids": [4153, 12848, 20557, 24225, 24227],
+          "match_by_name": true
         },
         {
           "key": "granite-gloves",
@@ -229,7 +245,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B92:O92"
+          "source_cell": "Accepted Drops!B92:O92",
+          "item_ids": [21736],
+          "match_by_name": true
         },
         {
           "key": "granite-ring",
@@ -238,7 +256,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B93:O93"
+          "source_cell": "Accepted Drops!B93:O93",
+          "item_ids": [21739],
+          "match_by_name": true
         },
         {
           "key": "granite-hammer",
@@ -247,7 +267,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B94:O94"
+          "source_cell": "Accepted Drops!B94:O94",
+          "item_ids": [21742],
+          "match_by_name": true
         },
         {
           "key": "black-tourmaline-core",
@@ -256,7 +278,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B95:O95"
+          "source_cell": "Accepted Drops!B95:O95",
+          "item_ids": [21730],
+          "match_by_name": true
         },
         {
           "key": "jar-of-stone",
@@ -265,7 +289,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B96:O96"
+          "source_cell": "Accepted Drops!B96:O96",
+          "item_ids": [21745],
+          "match_by_name": true
         },
         {
           "key": "noon",
@@ -274,7 +300,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B97:O97"
+          "source_cell": "Accepted Drops!B97:O97",
+          "item_ids": [21748],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -323,7 +351,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B98:O98"
+          "source_cell": "Accepted Drops!B98:O98",
+          "item_ids": [29580],
+          "match_by_name": true
         },
         {
           "key": "burning-claw",
@@ -332,7 +362,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B99:O99"
+          "source_cell": "Accepted Drops!B99:O99",
+          "item_ids": [29574],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -401,7 +433,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B100:O100"
+          "source_cell": "Accepted Drops!B100:O100",
+          "item_ids": [13231],
+          "match_by_name": true
         },
         {
           "key": "pegasian-crystal",
@@ -410,7 +444,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B101:O101"
+          "source_cell": "Accepted Drops!B101:O101",
+          "item_ids": [13229],
+          "match_by_name": true
         },
         {
           "key": "eternal-crystal",
@@ -419,7 +455,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B102:O102"
+          "source_cell": "Accepted Drops!B102:O102",
+          "item_ids": [13227],
+          "match_by_name": true
         },
         {
           "key": "smouldering-stone",
@@ -428,7 +466,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B103:O103"
+          "source_cell": "Accepted Drops!B103:O103",
+          "item_ids": [13233],
+          "match_by_name": true
         },
         {
           "key": "jar-of-souls",
@@ -437,7 +477,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B104:O104"
+          "source_cell": "Accepted Drops!B104:O104",
+          "item_ids": [13245],
+          "match_by_name": true
         },
         {
           "key": "hellpuppy",
@@ -446,7 +488,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B105:O105"
+          "source_cell": "Accepted Drops!B105:O105",
+          "item_ids": [13247],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -550,7 +594,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B106:O106"
+          "source_cell": "Accepted Drops!B106:O106",
+          "item_ids": [21034],
+          "match_by_name": true
         },
         {
           "key": "arcane-prayer-scroll",
@@ -559,7 +605,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B107:O107"
+          "source_cell": "Accepted Drops!B107:O107",
+          "item_ids": [21079],
+          "match_by_name": true
         },
         {
           "key": "twisted-buckler",
@@ -568,7 +616,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B108:O108"
+          "source_cell": "Accepted Drops!B108:O108",
+          "item_ids": [21000, 33188],
+          "match_by_name": true
         },
         {
           "key": "dragon-hunter-crossbow",
@@ -577,7 +627,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B109:O109"
+          "source_cell": "Accepted Drops!B109:O109",
+          "item_ids": [21012],
+          "match_by_name": true
         },
         {
           "key": "ancestral-piece-any",
@@ -586,7 +638,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B110:O110"
+          "source_cell": "Accepted Drops!B110:O110",
+          "item_ids": [21018, 21021, 21024, 25518, 27193, 27194],
+          "match_by_name": false
         },
         {
           "key": "dinh-s-bulwark",
@@ -595,7 +649,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B111:O111"
+          "source_cell": "Accepted Drops!B111:O111",
+          "item_ids": [21015],
+          "match_by_name": true
         },
         {
           "key": "dragon-claws",
@@ -604,7 +660,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B112:O112"
+          "source_cell": "Accepted Drops!B112:O112",
+          "item_ids": [13652, 20784],
+          "match_by_name": true
         },
         {
           "key": "elder-maul",
@@ -613,7 +671,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B113:O113"
+          "source_cell": "Accepted Drops!B113:O113",
+          "item_ids": [21003, 21205],
+          "match_by_name": true
         },
         {
           "key": "kodai-insignia",
@@ -622,7 +682,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B114:O114"
+          "source_cell": "Accepted Drops!B114:O114",
+          "item_ids": [21043],
+          "match_by_name": true
         },
         {
           "key": "twisted-bow",
@@ -631,16 +693,20 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B115:O115"
+          "source_cell": "Accepted Drops!B115:O115",
+          "item_ids": [20997],
+          "match_by_name": true
         },
         {
           "key": "olmet",
-          "name": "Olmet",
+          "name": "Olmlet",
           "progress_weight": 3.0,
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B116:O116"
+          "source_cell": "Accepted Drops!B116:O116",
+          "item_ids": [20851],
+          "match_by_name": true
         },
         {
           "key": "twisted-ancestral-colour-kit",
@@ -649,7 +715,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B117:O117"
+          "source_cell": "Accepted Drops!B117:O117",
+          "item_ids": [24670],
+          "match_by_name": true
         },
         {
           "key": "metamorphic-dust",
@@ -658,7 +726,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B118:O118"
+          "source_cell": "Accepted Drops!B118:O118",
+          "item_ids": [22386],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -722,7 +792,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B119:O119"
+          "source_cell": "Accepted Drops!B119:O119",
+          "item_ids": [2577],
+          "match_by_name": true
         },
         {
           "key": "wizard-boots",
@@ -731,7 +803,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B120:O120"
+          "source_cell": "Accepted Drops!B120:O120",
+          "item_ids": [2579, 27162],
+          "match_by_name": true
         },
         {
           "key": "holy-sandals",
@@ -740,7 +814,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B121:O121"
+          "source_cell": "Accepted Drops!B121:O121",
+          "item_ids": [12598],
+          "match_by_name": true
         },
         {
           "key": "spiked-manacles",
@@ -749,7 +825,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B122:O122"
+          "source_cell": "Accepted Drops!B122:O122",
+          "item_ids": [23389, 27178],
+          "match_by_name": true
         },
         {
           "key": "climbing-boots-g",
@@ -758,7 +836,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B123:O123"
+          "source_cell": "Accepted Drops!B123:O123",
+          "item_ids": [23413],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -812,7 +892,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B124:O124"
+          "source_cell": "Accepted Drops!B124:O124",
+          "item_ids": [30759],
+          "match_by_name": true
         },
         {
           "key": "oathplate-piece-any",
@@ -821,7 +903,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B125:O125"
+          "source_cell": "Accepted Drops!B125:O125",
+          "item_ids": [30750, 30753, 30756, 33462],
+          "match_by_name": false
         },
         {
           "key": "yami",
@@ -830,7 +914,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B126:O126"
+          "source_cell": "Accepted Drops!B126:O126",
+          "item_ids": [30888],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -904,7 +990,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B127:O127"
+          "source_cell": "Accepted Drops!B127:O127",
+          "item_ids": [25582],
+          "match_by_name": true
         },
         {
           "key": "tackle-box",
@@ -913,7 +1001,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B128:O128"
+          "source_cell": "Accepted Drops!B128:O128",
+          "item_ids": [25580],
+          "match_by_name": true
         },
         {
           "key": "soaked-pages-x-25",
@@ -922,7 +1012,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B129:O129"
+          "source_cell": "Accepted Drops!B129:O129",
+          "item_ids": [25578],
+          "match_by_name": false
         },
         {
           "key": "big-harpoonfish",
@@ -931,7 +1023,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B130:O130"
+          "source_cell": "Accepted Drops!B130:O130",
+          "item_ids": [25559],
+          "match_by_name": true
         },
         {
           "key": "tome-of-water",
@@ -940,7 +1034,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B131:O131"
+          "source_cell": "Accepted Drops!B131:O131",
+          "item_ids": [25574],
+          "match_by_name": true
         },
         {
           "key": "dragon-harpoon",
@@ -949,7 +1045,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B132:O132"
+          "source_cell": "Accepted Drops!B132:O132",
+          "item_ids": [21028],
+          "match_by_name": true
         },
         {
           "key": "tiny-tempor",
@@ -958,7 +1056,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B133:O133"
+          "source_cell": "Accepted Drops!B133:O133",
+          "item_ids": [25602],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -1042,7 +1142,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B134:O134"
+          "source_cell": "Accepted Drops!B134:O134",
+          "item_ids": [22477],
+          "match_by_name": true
         },
         {
           "key": "ghrazi-rapier",
@@ -1051,7 +1153,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B135:O135"
+          "source_cell": "Accepted Drops!B135:O135",
+          "item_ids": [22324, 23628],
+          "match_by_name": true
         },
         {
           "key": "sanguinesti-staff",
@@ -1060,7 +1164,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B136:O136"
+          "source_cell": "Accepted Drops!B136:O136",
+          "item_ids": [22323],
+          "match_by_name": true
         },
         {
           "key": "justiciar-piece-any",
@@ -1069,7 +1175,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B137:O137"
+          "source_cell": "Accepted Drops!B137:O137",
+          "item_ids": [22326, 22327, 22328],
+          "match_by_name": false
         },
         {
           "key": "scythe-of-vitur",
@@ -1078,7 +1186,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B138:O138"
+          "source_cell": "Accepted Drops!B138:O138",
+          "item_ids": [22325, 22664],
+          "match_by_name": true
         },
         {
           "key": "holy-ornament-kit",
@@ -1087,7 +1197,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B139:O139"
+          "source_cell": "Accepted Drops!B139:O139",
+          "item_ids": [25742],
+          "match_by_name": true
         },
         {
           "key": "sanguine-ornament-kit",
@@ -1096,7 +1208,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B140:O140"
+          "source_cell": "Accepted Drops!B140:O140",
+          "item_ids": [25744],
+          "match_by_name": true
         },
         {
           "key": "sanguine-dust",
@@ -1105,7 +1219,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B141:O141"
+          "source_cell": "Accepted Drops!B141:O141",
+          "item_ids": [25746],
+          "match_by_name": true
         },
         {
           "key": "lil-zik",
@@ -1114,7 +1230,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B142:O142"
+          "source_cell": "Accepted Drops!B142:O142",
+          "item_ids": [22473],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -1273,7 +1391,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B143:O143"
+          "source_cell": "Accepted Drops!B143:O143",
+          "item_ids": [7977],
+          "match_by_name": true
         },
         {
           "key": "basilisk-jaw",
@@ -1282,7 +1402,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B144:O144"
+          "source_cell": "Accepted Drops!B144:O144",
+          "item_ids": [24268],
+          "match_by_name": true
         },
         {
           "key": "horn-of-plenty",
@@ -1291,7 +1413,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B145:O145"
+          "source_cell": "Accepted Drops!B145:O145",
+          "item_ids": [31241],
+          "match_by_name": true
         },
         {
           "key": "belle-s-folly",
@@ -1300,7 +1424,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B146:O146"
+          "source_cell": "Accepted Drops!B146:O146",
+          "item_ids": [31248],
+          "match_by_name": true
         },
         {
           "key": "antler-guard",
@@ -1309,7 +1435,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B147:O147"
+          "source_cell": "Accepted Drops!B147:O147",
+          "item_ids": [31081],
+          "match_by_name": true
         },
         {
           "key": "warped-sceptre",
@@ -1318,7 +1446,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B148:O148"
+          "source_cell": "Accepted Drops!B148:O148",
+          "item_ids": [28585],
+          "match_by_name": true
         },
         {
           "key": "black-mask",
@@ -1327,7 +1457,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B149:O149"
+          "source_cell": "Accepted Drops!B149:O149",
+          "item_ids": [8921],
+          "match_by_name": true
         },
         {
           "key": "leaf-bladed-sword",
@@ -1336,7 +1468,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B150:O150"
+          "source_cell": "Accepted Drops!B150:O150",
+          "item_ids": [11902],
+          "match_by_name": true
         },
         {
           "key": "leaf-bladed-battleaxe",
@@ -1345,7 +1479,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B151:O151"
+          "source_cell": "Accepted Drops!B151:O151",
+          "item_ids": [20727],
+          "match_by_name": true
         },
         {
           "key": "kurask-head",
@@ -1354,7 +1490,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B152:O152"
+          "source_cell": "Accepted Drops!B152:O152",
+          "item_ids": [7978],
+          "match_by_name": true
         },
         {
           "key": "blood-shard",
@@ -1363,7 +1501,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B153:O153"
+          "source_cell": "Accepted Drops!B153:O153",
+          "item_ids": [24777],
+          "match_by_name": true
         },
         {
           "key": "aquanite-tendon",
@@ -1372,7 +1512,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B154:O154"
+          "source_cell": "Accepted Drops!B154:O154",
+          "item_ids": [32876],
+          "match_by_name": true
         },
         {
           "key": "drake-s-tooth",
@@ -1381,7 +1523,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B155:O155"
+          "source_cell": "Accepted Drops!B155:O155",
+          "item_ids": [22960],
+          "match_by_name": true
         },
         {
           "key": "drake-s-claw",
@@ -1390,7 +1534,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B156:O156"
+          "source_cell": "Accepted Drops!B156:O156",
+          "item_ids": [22957],
+          "match_by_name": true
         },
         {
           "key": "dragon-harpoon",
@@ -1399,7 +1545,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B157:O157"
+          "source_cell": "Accepted Drops!B157:O157",
+          "item_ids": [21028],
+          "match_by_name": true
         },
         {
           "key": "dark-bow",
@@ -1408,7 +1556,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B158:O158"
+          "source_cell": "Accepted Drops!B158:O158",
+          "item_ids": [11235, 12765, 12766, 12767, 12768, 20408],
+          "match_by_name": true
         },
         {
           "key": "occult-necklace",
@@ -1417,7 +1567,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B159:O159"
+          "source_cell": "Accepted Drops!B159:O159",
+          "item_ids": [12002, 23654],
+          "match_by_name": true
         },
         {
           "key": "aranea-boots",
@@ -1426,7 +1578,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B160:O160"
+          "source_cell": "Accepted Drops!B160:O160",
+          "item_ids": [29806, 33202],
+          "match_by_name": true
         },
         {
           "key": "abyssal-whip",
@@ -1435,7 +1589,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B161:O161"
+          "source_cell": "Accepted Drops!B161:O161",
+          "item_ids": [4151, 4178, 20405],
+          "match_by_name": true
         },
         {
           "key": "abyssal-head",
@@ -1444,7 +1600,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B162:O162"
+          "source_cell": "Accepted Drops!B162:O162",
+          "item_ids": [7979],
+          "match_by_name": true
         },
         {
           "key": "crawling-hand",
@@ -1453,7 +1611,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B163:O163"
+          "source_cell": "Accepted Drops!B163:O163",
+          "item_ids": [7975],
+          "match_by_name": true
         },
         {
           "key": "cockatrice-head",
@@ -1462,7 +1622,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B164:O164"
+          "source_cell": "Accepted Drops!B164:O164",
+          "item_ids": [7976],
+          "match_by_name": true
         },
         {
           "key": "imbued-heart",
@@ -1471,7 +1633,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B165:O165"
+          "source_cell": "Accepted Drops!B165:O165",
+          "item_ids": [20724],
+          "match_by_name": true
         },
         {
           "key": "eternal-gem",
@@ -1480,7 +1644,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B166:O166"
+          "source_cell": "Accepted Drops!B166:O166",
+          "item_ids": [21270],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -1549,7 +1715,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B167:O167"
+          "source_cell": "Accepted Drops!B167:O167",
+          "item_ids": [19529],
+          "match_by_name": true
         },
         {
           "key": "ballista-limbs",
@@ -1558,7 +1726,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B168:O168"
+          "source_cell": "Accepted Drops!B168:O168",
+          "item_ids": [19592],
+          "match_by_name": true
         },
         {
           "key": "ballista-spring",
@@ -1567,7 +1737,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B169:O169"
+          "source_cell": "Accepted Drops!B169:O169",
+          "item_ids": [19601],
+          "match_by_name": true
         },
         {
           "key": "light-frame",
@@ -1576,7 +1748,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B170:O170"
+          "source_cell": "Accepted Drops!B170:O170",
+          "item_ids": [19586],
+          "match_by_name": true
         },
         {
           "key": "heavy-frame",
@@ -1585,7 +1759,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B171:O171"
+          "source_cell": "Accepted Drops!B171:O171",
+          "item_ids": [19589],
+          "match_by_name": true
         },
         {
           "key": "monkey-tail",
@@ -1594,7 +1770,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B172:O172"
+          "source_cell": "Accepted Drops!B172:O172",
+          "item_ids": [19610],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -1703,7 +1881,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B173:O173"
+          "source_cell": "Accepted Drops!B173:O173",
+          "item_ids": [11838],
+          "match_by_name": true
         },
         {
           "key": "saradomin-s-light",
@@ -1712,7 +1892,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B174:O174"
+          "source_cell": "Accepted Drops!B174:O174",
+          "item_ids": [13256],
+          "match_by_name": true
         },
         {
           "key": "armadyl-crossbow",
@@ -1721,7 +1903,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B175:O175"
+          "source_cell": "Accepted Drops!B175:O175",
+          "item_ids": [11785, 23611],
+          "match_by_name": true
         },
         {
           "key": "saradomin-hilt",
@@ -1730,7 +1914,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B176:O176"
+          "source_cell": "Accepted Drops!B176:O176",
+          "item_ids": [11814],
+          "match_by_name": true
         },
         {
           "key": "bandos-piece-any",
@@ -1739,7 +1925,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B177:O177"
+          "source_cell": "Accepted Drops!B177:O177",
+          "item_ids": [11832, 11834, 11836, 23646],
+          "match_by_name": false
         },
         {
           "key": "bandos-hilt",
@@ -1748,7 +1936,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B178:O178"
+          "source_cell": "Accepted Drops!B178:O178",
+          "item_ids": [11812],
+          "match_by_name": true
         },
         {
           "key": "armadyl-piece-any",
@@ -1757,7 +1947,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B179:O179"
+          "source_cell": "Accepted Drops!B179:O179",
+          "item_ids": [11826, 11828, 11830],
+          "match_by_name": false
         },
         {
           "key": "armadyl-hilt",
@@ -1766,7 +1958,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B180:O180"
+          "source_cell": "Accepted Drops!B180:O180",
+          "item_ids": [11810],
+          "match_by_name": true
         },
         {
           "key": "steam-battlestaff",
@@ -1775,7 +1969,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B181:O181"
+          "source_cell": "Accepted Drops!B181:O181",
+          "item_ids": [11787, 12795],
+          "match_by_name": true
         },
         {
           "key": "zamorakian-spear",
@@ -1784,7 +1980,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B182:O182"
+          "source_cell": "Accepted Drops!B182:O182",
+          "item_ids": [11824],
+          "match_by_name": true
         },
         {
           "key": "staff-of-the-dead",
@@ -1793,7 +1991,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B183:O183"
+          "source_cell": "Accepted Drops!B183:O183",
+          "item_ids": [11791, 23613],
+          "match_by_name": true
         },
         {
           "key": "zamorak-hilt",
@@ -1802,7 +2002,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B184:O184"
+          "source_cell": "Accepted Drops!B184:O184",
+          "item_ids": [11816],
+          "match_by_name": true
         },
         {
           "key": "godsword-shard-any",
@@ -1811,7 +2013,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B185:O185"
+          "source_cell": "Accepted Drops!B185:O185",
+          "item_ids": [11818, 11820, 11822],
+          "match_by_name": false
         },
         {
           "key": "pet",
@@ -1820,7 +2024,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B186:O186"
+          "source_cell": "Accepted Drops!B186:O186",
+          "item_ids": [12649, 12650, 12651, 12652],
+          "match_by_name": false
         }
       ],
       "wiki_image": {
@@ -1889,7 +2095,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B187:O187"
+          "source_cell": "Accepted Drops!B187:O187",
+          "item_ids": [2425, 21907],
+          "match_by_name": true
         },
         {
           "key": "dragonbone-necklace",
@@ -1898,7 +2106,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B188:O188"
+          "source_cell": "Accepted Drops!B188:O188",
+          "item_ids": [22111],
+          "match_by_name": true
         },
         {
           "key": "draconic-visage",
@@ -1907,7 +2117,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B189:O189"
+          "source_cell": "Accepted Drops!B189:O189",
+          "item_ids": [11286],
+          "match_by_name": true
         },
         {
           "key": "skeletal-visage",
@@ -1916,7 +2128,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B190:O190"
+          "source_cell": "Accepted Drops!B190:O190",
+          "item_ids": [22006],
+          "match_by_name": true
         },
         {
           "key": "jar-of-decay",
@@ -1925,7 +2139,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B191:O191"
+          "source_cell": "Accepted Drops!B191:O191",
+          "item_ids": [22106],
+          "match_by_name": true
         },
         {
           "key": "vorki",
@@ -1934,7 +2150,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B192:O192"
+          "source_cell": "Accepted Drops!B192:O192",
+          "item_ids": [21992],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -1998,12 +2216,14 @@
       "drops": [
         {
           "key": "osmunten-s-fang",
-          "name": "Osmunten's Fang",
+          "name": "Osmumten's fang",
           "progress_weight": 1.0,
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B193:O193"
+          "source_cell": "Accepted Drops!B193:O193",
+          "item_ids": [26219, 33174],
+          "match_by_name": true
         },
         {
           "key": "lightbearer",
@@ -2012,7 +2232,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B194:O194"
+          "source_cell": "Accepted Drops!B194:O194",
+          "item_ids": [25975, 27870],
+          "match_by_name": true
         },
         {
           "key": "elidinis-ward",
@@ -2021,7 +2243,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B195:O195"
+          "source_cell": "Accepted Drops!B195:O195",
+          "item_ids": [25985],
+          "match_by_name": true
         },
         {
           "key": "masori-piece-any",
@@ -2030,7 +2254,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B196:O196"
+          "source_cell": "Accepted Drops!B196:O196",
+          "item_ids": [27226, 27229, 27232],
+          "match_by_name": false
         },
         {
           "key": "tumeken-s-shadow",
@@ -2039,7 +2265,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B197:O197"
+          "source_cell": "Accepted Drops!B197:O197",
+          "item_ids": [27275],
+          "match_by_name": true
         },
         {
           "key": "tumeken-s-guardian",
@@ -2048,7 +2276,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B198:O198"
+          "source_cell": "Accepted Drops!B198:O198",
+          "item_ids": [27352],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2117,7 +2347,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B199:O199"
+          "source_cell": "Accepted Drops!B199:O199",
+          "item_ids": [26798],
+          "match_by_name": true
         },
         {
           "key": "elemental-talisman",
@@ -2126,7 +2358,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B200:O200"
+          "source_cell": "Accepted Drops!B200:O200",
+          "item_ids": [5516],
+          "match_by_name": true
         },
         {
           "key": "abyssal-needle",
@@ -2135,7 +2369,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B201:O201"
+          "source_cell": "Accepted Drops!B201:O201",
+          "item_ids": [26813],
+          "match_by_name": true
         },
         {
           "key": "abyssal-lantern",
@@ -2144,7 +2380,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B202:O202"
+          "source_cell": "Accepted Drops!B202:O202",
+          "item_ids": [26822],
+          "match_by_name": true
         },
         {
           "key": "abyssal-dye-any",
@@ -2153,7 +2391,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B203:O203"
+          "source_cell": "Accepted Drops!B203:O203",
+          "item_ids": [26807, 26809, 26811],
+          "match_by_name": false
         },
         {
           "key": "abyssal-protector",
@@ -2162,7 +2402,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B204:O204"
+          "source_cell": "Accepted Drops!B204:O204",
+          "item_ids": [26901],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2211,7 +2453,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B205:O205"
+          "source_cell": "Accepted Drops!B205:O205",
+          "item_ids": [27614],
+          "match_by_name": true
         },
         {
           "key": "muphin",
@@ -2220,7 +2464,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B206:O206"
+          "source_cell": "Accepted Drops!B206:O206",
+          "item_ids": [27590, 27592, 27593],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2284,7 +2530,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B207:O207"
+          "source_cell": "Accepted Drops!B207:O207",
+          "item_ids": [30631],
+          "match_by_name": true
         },
         {
           "key": "ice-element-staff-crown",
@@ -2293,7 +2541,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B208:O208"
+          "source_cell": "Accepted Drops!B208:O208",
+          "item_ids": [30628],
+          "match_by_name": true
         },
         {
           "key": "mystic-vigour-prayer-scroll",
@@ -2302,7 +2552,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B209:O209"
+          "source_cell": "Accepted Drops!B209:O209",
+          "item_ids": [30627],
+          "match_by_name": true
         },
         {
           "key": "deadeye-prayer-scroll",
@@ -2311,7 +2563,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B210:O210"
+          "source_cell": "Accepted Drops!B210:O210",
+          "item_ids": [30626],
+          "match_by_name": true
         },
         {
           "key": "bran",
@@ -2320,7 +2574,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B211:O211"
+          "source_cell": "Accepted Drops!B211:O211",
+          "item_ids": [30622],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2374,7 +2630,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B212:O212"
+          "source_cell": "Accepted Drops!B212:O212",
+          "item_ids": [20714, 27358],
+          "match_by_name": true
         },
         {
           "key": "dragon-axe",
@@ -2383,7 +2641,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B213:O213"
+          "source_cell": "Accepted Drops!B213:O213",
+          "item_ids": [6739],
+          "match_by_name": true
         },
         {
           "key": "phoenix",
@@ -2392,7 +2652,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B214:O214"
+          "source_cell": "Accepted Drops!B214:O214",
+          "item_ids": [20693, 24483, 24484, 24485, 24486],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2456,7 +2718,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B215:O215"
+          "source_cell": "Accepted Drops!B215:O215",
+          "item_ids": [29790, 29792, 29794],
+          "match_by_name": false
         },
         {
           "key": "araxyte-fang",
@@ -2465,7 +2729,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B216:O216"
+          "source_cell": "Accepted Drops!B216:O216",
+          "item_ids": [29799],
+          "match_by_name": true
         },
         {
           "key": "araxyte-head",
@@ -2474,7 +2740,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B217:O217"
+          "source_cell": "Accepted Drops!B217:O217",
+          "item_ids": [29788],
+          "match_by_name": true
         },
         {
           "key": "jar-of-venom",
@@ -2483,7 +2751,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B218:O218"
+          "source_cell": "Accepted Drops!B218:O218",
+          "item_ids": [29786],
+          "match_by_name": true
         },
         {
           "key": "nid",
@@ -2492,7 +2762,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B219:O219"
+          "source_cell": "Accepted Drops!B219:O219",
+          "item_ids": [29836],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2566,7 +2838,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B220:O220"
+          "source_cell": "Accepted Drops!B220:O220",
+          "item_ids": [12922],
+          "match_by_name": true
         },
         {
           "key": "magic-fang",
@@ -2575,7 +2849,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B221:O221"
+          "source_cell": "Accepted Drops!B221:O221",
+          "item_ids": [12932],
+          "match_by_name": true
         },
         {
           "key": "serpentine-visage",
@@ -2584,7 +2860,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B222:O222"
+          "source_cell": "Accepted Drops!B222:O222",
+          "item_ids": [12927],
+          "match_by_name": true
         },
         {
           "key": "uncut-onyx",
@@ -2593,7 +2871,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B223:O223"
+          "source_cell": "Accepted Drops!B223:O223",
+          "item_ids": [6571],
+          "match_by_name": true
         },
         {
           "key": "mutagen-any",
@@ -2602,7 +2882,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B224:O224"
+          "source_cell": "Accepted Drops!B224:O224",
+          "item_ids": [13200, 13201],
+          "match_by_name": false
         },
         {
           "key": "jar-of-swamp",
@@ -2611,7 +2893,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B225:O225"
+          "source_cell": "Accepted Drops!B225:O225",
+          "item_ids": [12936],
+          "match_by_name": true
         },
         {
           "key": "pet-snakeling",
@@ -2620,7 +2904,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B226:O226"
+          "source_cell": "Accepted Drops!B226:O226",
+          "item_ids": [12921, 12939, 12940],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2669,7 +2955,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B227:O227"
+          "source_cell": "Accepted Drops!B227:O227",
+          "item_ids": [28810, 28813],
+          "match_by_name": false
         },
         {
           "key": "zombie-helm",
@@ -2678,7 +2966,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B228:O228"
+          "source_cell": "Accepted Drops!B228:O228",
+          "item_ids": [30321, 30324],
+          "match_by_name": false
         }
       ],
       "wiki_image": {
@@ -2737,7 +3027,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B229:O229"
+          "source_cell": "Accepted Drops!B229:O229",
+          "item_ids": [31088],
+          "match_by_name": true
         },
         {
           "key": "eye-of-ayak",
@@ -2746,7 +3038,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B230:O230"
+          "source_cell": "Accepted Drops!B230:O230",
+          "item_ids": [31113],
+          "match_by_name": true
         },
         {
           "key": "mokhaiotl-cloth",
@@ -2755,7 +3049,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B231:O231"
+          "source_cell": "Accepted Drops!B231:O231",
+          "item_ids": [31109],
+          "match_by_name": true
         },
         {
           "key": "dom",
@@ -2764,7 +3060,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B232:O232"
+          "source_cell": "Accepted Drops!B232:O232",
+          "item_ids": [31130],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2808,7 +3106,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B233:O233"
+          "source_cell": "Accepted Drops!B233:O233",
+          "item_ids": [13273],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2877,25 +3177,31 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B234:O234"
+          "source_cell": "Accepted Drops!B234:O234",
+          "item_ids": [22969, 22971, 22973],
+          "match_by_name": false
         },
         {
           "key": "hydra-s-tail",
-          "name": "Hydra's Tail",
+          "name": "Hydra tail",
           "progress_weight": 2.0,
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B235:O235"
+          "source_cell": "Accepted Drops!B235:O235",
+          "item_ids": [22988],
+          "match_by_name": true
         },
         {
           "key": "hydra-s-leather",
-          "name": "Hydra's Leather",
+          "name": "Hydra leather",
           "progress_weight": 2.0,
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B236:O236"
+          "source_cell": "Accepted Drops!B236:O236",
+          "item_ids": [22983],
+          "match_by_name": true
         },
         {
           "key": "hydra-s-claw",
@@ -2904,7 +3210,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B237:O237"
+          "source_cell": "Accepted Drops!B237:O237",
+          "item_ids": [22966],
+          "match_by_name": true
         },
         {
           "key": "jar-of-chemicals",
@@ -2913,7 +3221,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B238:O238"
+          "source_cell": "Accepted Drops!B238:O238",
+          "item_ids": [23064],
+          "match_by_name": true
         },
         {
           "key": "ikkle-hydra",
@@ -2922,7 +3232,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B239:O239"
+          "source_cell": "Accepted Drops!B239:O239",
+          "item_ids": [22746, 22748, 22750, 22752],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -2981,7 +3293,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B240:O240"
+          "source_cell": "Accepted Drops!B240:O240",
+          "item_ids": [23953],
+          "match_by_name": true
         },
         {
           "key": "zalcano-shard",
@@ -2990,7 +3304,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B241:O241"
+          "source_cell": "Accepted Drops!B241:O241",
+          "item_ids": [23908],
+          "match_by_name": true
         },
         {
           "key": "uncut-onyx",
@@ -2999,7 +3315,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B242:O242"
+          "source_cell": "Accepted Drops!B242:O242",
+          "item_ids": [6571],
+          "match_by_name": true
         },
         {
           "key": "smolcano",
@@ -3008,7 +3326,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B243:O243"
+          "source_cell": "Accepted Drops!B243:O243",
+          "item_ids": [23760],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -3057,7 +3377,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B244:O244"
+          "source_cell": "Accepted Drops!B244:O244",
+          "item_ids": [28798],
+          "match_by_name": true
         },
         {
           "key": "scurry",
@@ -3066,7 +3388,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B245:O245"
+          "source_cell": "Accepted Drops!B245:O245",
+          "item_ids": [28801],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -3125,7 +3449,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B246:O246"
+          "source_cell": "Accepted Drops!B246:O246",
+          "item_ids": [4207],
+          "match_by_name": true
         },
         {
           "key": "crystal-armour-seed",
@@ -3134,7 +3460,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B247:O247"
+          "source_cell": "Accepted Drops!B247:O247",
+          "item_ids": [23956],
+          "match_by_name": true
         },
         {
           "key": "enhanced-crystal-weapon-seed",
@@ -3143,7 +3471,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B248:O248"
+          "source_cell": "Accepted Drops!B248:O248",
+          "item_ids": [25859],
+          "match_by_name": true
         },
         {
           "key": "youngllef",
@@ -3152,7 +3482,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B249:O249"
+          "source_cell": "Accepted Drops!B249:O249",
+          "item_ids": [23757],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -3206,7 +3538,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B250:O250"
+          "source_cell": "Accepted Drops!B250:O250",
+          "item_ids": [34024],
+          "match_by_name": true
         },
         {
           "key": "imcando-hammer",
@@ -3215,7 +3549,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B251:O251"
+          "source_cell": "Accepted Drops!B251:O251",
+          "item_ids": [25644],
+          "match_by_name": true
         },
         {
           "key": "fletching-knife",
@@ -3224,7 +3560,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B252:O252"
+          "source_cell": "Accepted Drops!B252:O252",
+          "item_ids": [31043],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -3278,7 +3616,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B253:O253"
+          "source_cell": "Accepted Drops!B253:O253",
+          "item_ids": [33634],
+          "match_by_name": true
         },
         {
           "key": "crimson-kisten",
@@ -3287,7 +3627,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B254:O254"
+          "source_cell": "Accepted Drops!B254:O254",
+          "item_ids": [33631],
+          "match_by_name": true
         },
         {
           "key": "maggot-marquess",
@@ -3296,7 +3638,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B255:O255"
+          "source_cell": "Accepted Drops!B255:O255",
+          "item_ids": [33642],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -3355,7 +3699,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B256:O256"
+          "source_cell": "Accepted Drops!B256:O256",
+          "item_ids": [9044, 9046, 9048, 9050, 13074, 13075, 13076, 13077, 13078, 26948, 26950],
+          "match_by_name": true
         },
         {
           "key": "ring-of-endurance",
@@ -3364,7 +3710,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B257:O257"
+          "source_cell": "Accepted Drops!B257:O257",
+          "item_ids": [24736],
+          "match_by_name": true
         },
         {
           "key": "enhanced-crystal-teleport-seed",
@@ -3373,7 +3721,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B258:O258"
+          "source_cell": "Accepted Drops!B258:O258",
+          "item_ids": [23959],
+          "match_by_name": true
         },
         {
           "key": "blood-shard",
@@ -3382,7 +3732,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B259:O259"
+          "source_cell": "Accepted Drops!B259:O259",
+          "item_ids": [24777],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -3451,7 +3803,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B260:O260"
+          "source_cell": "Accepted Drops!B260:O260",
+          "item_ids": [4708, 4710, 4712, 4714, 20598, 20599, 23653],
+          "match_by_name": false
         },
         {
           "key": "guthan-s-piece-any",
@@ -3460,7 +3814,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B261:O261"
+          "source_cell": "Accepted Drops!B261:O261",
+          "item_ids": [4724, 4726, 4728, 4730, 23638],
+          "match_by_name": false
         },
         {
           "key": "karil-s-piece-any",
@@ -3469,7 +3825,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B262:O262"
+          "source_cell": "Accepted Drops!B262:O262",
+          "item_ids": [4732, 4734, 4736, 4738, 23632],
+          "match_by_name": false
         },
         {
           "key": "dharok-s-piece-any",
@@ -3478,7 +3836,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B263:O263"
+          "source_cell": "Accepted Drops!B263:O263",
+          "item_ids": [4716, 4718, 4720, 4722, 23633, 23639, 25515, 25516],
+          "match_by_name": false
         },
         {
           "key": "torag-s-piece-any",
@@ -3487,7 +3847,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B264:O264"
+          "source_cell": "Accepted Drops!B264:O264",
+          "item_ids": [4745, 4747, 4749, 4751, 23634, 23637],
+          "match_by_name": false
         },
         {
           "key": "verac-s-piece-any",
@@ -3496,7 +3858,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B265:O265"
+          "source_cell": "Accepted Drops!B265:O265",
+          "item_ids": [4753, 4755, 4757, 4759, 23635, 23636, 27189, 27190],
+          "match_by_name": false
         }
       ],
       "wiki_image": {
@@ -3610,7 +3974,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B266:O266"
+          "source_cell": "Accepted Drops!B266:O266",
+          "item_ids": [28276],
+          "match_by_name": true
         },
         {
           "key": "virtus-piece-any",
@@ -3619,7 +3985,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B267:O267"
+          "source_cell": "Accepted Drops!B267:O267",
+          "item_ids": [26241, 26243, 26245, 33196, 33198],
+          "match_by_name": false
         },
         {
           "key": "ultor-vestige-2x-gold-ring",
@@ -3628,7 +3996,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B268:O268"
+          "source_cell": "Accepted Drops!B268:O268",
+          "item_ids": [28285],
+          "match_by_name": false
         },
         {
           "key": "executioner-s-axe-head",
@@ -3637,7 +4007,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B269:O269"
+          "source_cell": "Accepted Drops!B269:O269",
+          "item_ids": [28319],
+          "match_by_name": true
         },
         {
           "key": "blood-quartz",
@@ -3646,7 +4018,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B270:O270"
+          "source_cell": "Accepted Drops!B270:O270",
+          "item_ids": [28268],
+          "match_by_name": true
         },
         {
           "key": "magus-vestige-2x-gold-ring",
@@ -3655,7 +4029,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B271:O271"
+          "source_cell": "Accepted Drops!B271:O271",
+          "item_ids": [28281],
+          "match_by_name": false
         },
         {
           "key": "eye-of-the-duke",
@@ -3664,7 +4040,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B272:O272"
+          "source_cell": "Accepted Drops!B272:O272",
+          "item_ids": [28321],
+          "match_by_name": true
         },
         {
           "key": "ice-quartz",
@@ -3673,7 +4051,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B273:O273"
+          "source_cell": "Accepted Drops!B273:O273",
+          "item_ids": [28270],
+          "match_by_name": true
         },
         {
           "key": "venator-vestige-2x-gold-ring",
@@ -3682,7 +4062,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B274:O274"
+          "source_cell": "Accepted Drops!B274:O274",
+          "item_ids": [28283],
+          "match_by_name": false
         },
         {
           "key": "leviathan-s-lure",
@@ -3691,7 +4073,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B275:O275"
+          "source_cell": "Accepted Drops!B275:O275",
+          "item_ids": [28325],
+          "match_by_name": true
         },
         {
           "key": "smoke-quartz",
@@ -3700,7 +4084,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B276:O276"
+          "source_cell": "Accepted Drops!B276:O276",
+          "item_ids": [28274],
+          "match_by_name": true
         },
         {
           "key": "bellator-vestige-2x-gold-ring",
@@ -3709,7 +4095,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B277:O277"
+          "source_cell": "Accepted Drops!B277:O277",
+          "item_ids": [28279],
+          "match_by_name": false
         },
         {
           "key": "siren-s-staff",
@@ -3718,7 +4106,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B278:O278"
+          "source_cell": "Accepted Drops!B278:O278",
+          "item_ids": [28323],
+          "match_by_name": true
         },
         {
           "key": "shadow-quartz",
@@ -3727,7 +4117,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B279:O279"
+          "source_cell": "Accepted Drops!B279:O279",
+          "item_ids": [28272],
+          "match_by_name": true
         },
         {
           "key": "pet",
@@ -3736,7 +4128,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B280:O280"
+          "source_cell": "Accepted Drops!B280:O280",
+          "item_ids": [28246, 28248, 28250, 28252],
+          "match_by_name": false
         }
       ],
       "wiki_image": {
@@ -3815,7 +4209,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B281:O281"
+          "source_cell": "Accepted Drops!B281:O281",
+          "item_ids": [11920, 12797],
+          "match_by_name": true
         },
         {
           "key": "ring-any",
@@ -3824,7 +4220,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B282:O282"
+          "source_cell": "Accepted Drops!B282:O282",
+          "item_ids": [12601, 12603, 12605],
+          "match_by_name": false
         },
         {
           "key": "voidwaker-piece-any",
@@ -3833,7 +4231,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B283:O283"
+          "source_cell": "Accepted Drops!B283:O283",
+          "item_ids": [27681, 27684, 27687],
+          "match_by_name": false
         },
         {
           "key": "claws-of-callisto",
@@ -3842,7 +4242,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B284:O284"
+          "source_cell": "Accepted Drops!B284:O284",
+          "item_ids": [27667],
+          "match_by_name": true
         },
         {
           "key": "skull-of-vet-ion",
@@ -3851,7 +4253,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B285:O285"
+          "source_cell": "Accepted Drops!B285:O285",
+          "item_ids": [27673],
+          "match_by_name": true
         },
         {
           "key": "fangs-of-venenatis",
@@ -3860,7 +4264,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B286:O286"
+          "source_cell": "Accepted Drops!B286:O286",
+          "item_ids": [27670],
+          "match_by_name": true
         },
         {
           "key": "dragon-2h-sword",
@@ -3869,7 +4275,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B287:O287"
+          "source_cell": "Accepted Drops!B287:O287",
+          "item_ids": [7158],
+          "match_by_name": true
         },
         {
           "key": "pet",
@@ -3878,7 +4286,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B288:O288"
+          "source_cell": "Accepted Drops!B288:O288",
+          "item_ids": [13177, 13178, 13179, 13180, 27648, 27649, 27650, 27651],
+          "match_by_name": false
         }
       ],
       "wiki_image": {
@@ -3942,7 +4352,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B289:O289"
+          "source_cell": "Accepted Drops!B289:O289",
+          "item_ids": [6737],
+          "match_by_name": true
         },
         {
           "key": "rings-other",
@@ -3951,7 +4363,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B290:O290"
+          "source_cell": "Accepted Drops!B290:O290",
+          "item_ids": [6731, 6733, 6735],
+          "match_by_name": false
         },
         {
           "key": "seercull",
@@ -3960,7 +4374,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B291:O291"
+          "source_cell": "Accepted Drops!B291:O291",
+          "item_ids": [6724],
+          "match_by_name": true
         },
         {
           "key": "mud-battlestaff",
@@ -3969,7 +4385,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B292:O292"
+          "source_cell": "Accepted Drops!B292:O292",
+          "item_ids": [6562],
+          "match_by_name": true
         },
         {
           "key": "dragon-axe",
@@ -3978,7 +4396,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B293:O293"
+          "source_cell": "Accepted Drops!B293:O293",
+          "item_ids": [6739],
+          "match_by_name": true
         }
       ],
       "wiki_image": {
@@ -4032,7 +4452,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B294:O294"
+          "source_cell": "Accepted Drops!B294:O294",
+          "item_ids": [29000, 29004, 29007, 29010, 29031, 29033, 29035, 29840, 29841, 29842, 29851],
+          "match_by_name": false
         },
         {
           "key": "blood-moon-piece-any",
@@ -4041,7 +4463,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B295:O295"
+          "source_cell": "Accepted Drops!B295:O295",
+          "item_ids": [28997, 29022, 29025, 29028, 29043, 29045, 29047, 29846, 29847, 29848, 29850],
+          "match_by_name": false
         },
         {
           "key": "blue-moon-piece-any",
@@ -4050,7 +4474,9 @@
           "aliases": [],
           "verification_note": null,
           "counting_restriction": null,
-          "source_cell": "Accepted Drops!B296:O296"
+          "source_cell": "Accepted Drops!B296:O296",
+          "item_ids": [28988, 29013, 29016, 29019, 29037, 29039, 29041, 29843, 29844, 29845, 29849],
+          "match_by_name": false
         }
       ],
       "wiki_image": {

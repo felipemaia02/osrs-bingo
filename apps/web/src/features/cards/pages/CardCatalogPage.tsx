@@ -2,6 +2,7 @@ import { useState } from 'react'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined'
+import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
@@ -24,7 +25,7 @@ export function CardCatalogPage() {
   const isDesktop = useIsDesktop()
   const cards = useCards(true)
   const view = useCatalogView(cards.data ?? [])
-  const { retire } = useCardMutations()
+  const { retire, linkItems } = useCardMutations()
   const [editor, setEditor] = useState<{ card: CardSummary | null } | null>(null)
   const [importing, setImporting] = useState(false)
   const [retiring, setRetiring] = useState<CardSummary | null>(null)
@@ -54,8 +55,39 @@ export function CardCatalogPage() {
     }
   }
 
+  async function linkDrops() {
+    setFeedback(null)
+    try {
+      const result = await linkItems.mutateAsync()
+      setFeedback(
+        t('cards.feedback.linked', {
+          cards: result.linked_cards,
+          drops: result.linked_drops,
+          unlinked: result.unlinked_drops,
+        }),
+      )
+    } catch {
+      setFeedback(t('common.apiError'))
+    }
+  }
+
+  const hasUnlinked = (cards.data ?? []).some(
+    (card) =>
+      card.status === 'active' && card.revision.drops.some((drop) => !drop.item_ids?.length),
+  )
+
   const actions = (
-    <div className={`flex gap-2 ${isDesktop ? '' : 'w-full'}`}>
+    <div className={`flex flex-wrap gap-2 ${isDesktop ? '' : 'w-full'}`}>
+      {hasUnlinked && (
+        <Button
+          className={isDesktop ? '' : 'flex-1'}
+          disabled={linkItems.isPending}
+          onClick={() => void linkDrops()}
+        >
+          <LinkOutlinedIcon fontSize="small" aria-hidden="true" />
+          {t(linkItems.isPending ? 'common.saving' : 'cards.linkItems')}
+        </Button>
+      )}
       <Button
         className={isDesktop ? '' : 'flex-1'}
         onClick={() => {

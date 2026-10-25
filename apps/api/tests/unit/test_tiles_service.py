@@ -147,3 +147,65 @@ def test_stored_revisions_without_instructions_still_load() -> None:
         "created_at": "2026-10-23T12:00:00Z",
     }
     assert CardRevisionResponse.model_validate(stored).requires_preverification is True
+
+
+async def test_linking_items_adds_ids_by_exact_name_in_a_new_revision() -> None:
+    document = card_document()
+    document["revisions"][0]["drops"].append(
+        {"key": "custom-task", "name": "Custom task", "progress_weight": 1}
+    )
+    repository = AsyncMock(spec=CardRepository)
+    repository.list_cards.return_value = [document]
+    repository.add_revision.return_value = document
+    items = AsyncMock()
+    items.ids_by_name.return_value = {"skeletal visage": [22006]}
+
+    result = await CardService(repository).link_items(ADMIN, items)
+
+    assert (result.linked_cards, result.linked_drops, result.unlinked_drops) == (1, 1, 1)
+    card_id, payload, actor = repository.add_revision.await_args.args
+    assert card_id == str(document["_id"]) and actor == ADMIN.id
+    assert payload.expected_revision == 1 and payload.change_reason == "Linked drops to OSRS items"
+    visage, custom = payload.drops
+    assert visage.item_ids == [22006] and visage.match_by_name
+    assert custom.item_ids == []
+
+
+async def test_linking_items_skips_cards_with_nothing_to_link_or_that_changed() -> None:
+    linked = card_document()
+    linked["revisions"][0]["drops"][0]["item_ids"] = [22006]
+    stale = card_document()
+    stale["_id"] = ObjectId("66d000000000000000000011")
+    repository = AsyncMock(spec=CardRepository)
+    repository.list_cards.return_value = [linked, stale]
+    repository.add_revision.return_value = None
+    items = AsyncMock()
+    items.ids_by_name.return_value = {"skeletal visage": [22006]}
+
+    result = await CardService(repository).link_items(ADMIN, items)
+
+    assert result.linked_cards == 0 and result.skipped_cards == ["Vorkath"]
+    assert repository.add_revision.await_count == 1
+
+
+async def test_linking_items_applies_the_bundled_workbook_fixes_to_imported_cards() -> None:
+    document = card_document()
+    document["slug"] = "alchemical-hydra"
+    document["revisions"][0]["name"] = "Alchemical Hydra"
+    document["revisions"][0]["drops"] = [
+        {"key": "hydra-s-tail", "name": "Hydra's Tail", "progress_weight": 2},
+        {"key": "brimstone-ring-piece", "name": "Brimstone Ring Piece", "progress_weight": 1},
+    ]
+    repository = AsyncMock(spec=CardRepository)
+    repository.list_cards.return_value = [document]
+    repository.add_revision.return_value = document
+    items = AsyncMock()
+    items.ids_by_name.return_value = {}
+
+    result = await CardService(repository).link_items(ADMIN, items)
+
+    assert (result.linked_drops, result.unlinked_drops) == (2, 0)
+    tail, brimstone = repository.add_revision.await_args.args[1].drops
+    assert (tail.name, tail.item_ids, tail.match_by_name) == ("Hydra tail", [22988], True)
+    assert brimstone.name == "Brimstone Ring Piece" and not brimstone.match_by_name
+    assert brimstone.item_ids == [22969, 22971, 22973] and tail.progress_weight == 2

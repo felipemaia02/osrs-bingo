@@ -8,8 +8,11 @@ import {
   createCardRevision,
   fetchCards,
   importWorkbookCatalog,
+  linkCatalogItems,
+  previewDropMatches,
   resolveWikiImage,
   retireCard,
+  searchItems,
 } from '../../src/features/cards/api/cardsApi'
 import { fetchAdminBoard, saveBoard } from '../../src/features/boards/api/boardsApi'
 import type { CardSummary } from '../../src/features/cards/types'
@@ -633,17 +636,35 @@ it('shows drop weights as progress and the tile score only on completion', async
   expect(within(drop).queryByText(/points/)).not.toBeInTheDocument()
 })
 
-it('keeps drop keys and verification metadata when publishing an edited revision', async () => {
-  const noted = {
-    ...CARD.revision.drops[0],
-    key: 'visage-workbook-key',
-    aliases: ['Visage'],
-    verification_note: 'Screenshot required',
-    counting_restriction: 'Once per team',
-  }
-  vi.mocked(fetchCards).mockResolvedValue([
-    { ...CARD, revision: { ...CARD.revision, drops: [noted] } },
-  ])
+const NECKLACE = {
+  name: 'Dragonbone necklace',
+  label: 'Dragonbone necklace',
+  item_ids: [22111],
+  icon_url: 'https://oldschool.runescape.wiki/images/Dragonbone_necklace.png',
+  any_version: true,
+  versions: 1,
+}
+const NESTS = [
+  {
+    name: 'Bird nest',
+    label: 'Bird nest',
+    item_ids: [5074, 5075, 22798],
+    icon_url: null,
+    any_version: true,
+    versions: 3,
+  },
+  {
+    name: 'Bird nest',
+    label: 'Bird nest (seeds)',
+    item_ids: [22798],
+    icon_url: null,
+    any_version: false,
+    versions: 3,
+  },
+]
+
+async function openEditor(drops = CARD.revision.drops) {
+  vi.mocked(fetchCards).mockResolvedValue([{ ...CARD, revision: { ...CARD.revision, drops } }])
   vi.mocked(createCardRevision).mockResolvedValue({
     ...CARD,
     revisions: [CARD.revision],
@@ -653,19 +674,44 @@ it('keeps drop keys and verification metadata when publishing an edited revision
   })
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/admin/cards')
-
   await user.click(await screen.findByRole('button', { name: 'Edit Vorkath' }))
   const dialog = screen.getByRole('dialog', { name: 'Publish a new card revision' })
-  const drops = within(dialog).getByLabelText('Accepted drops (one per line)')
-  await user.clear(drops)
-  await user.type(drops, 'Skeletal Visage | 3{enter}Dragonbone necklace | 1')
+  return { user, dialog }
+}
+
+async function save(user: ReturnType<typeof userEvent.setup>, dialog: HTMLElement) {
   await user.type(within(dialog).getByLabelText('Reason for this revision'), 'Rebalance')
   await user.click(within(dialog).getByRole('button', { name: 'Save' }))
-
   await waitFor(() => expect(createCardRevision).toHaveBeenCalledOnce())
-  const payload = vi.mocked(createCardRevision).mock.calls[0][0].payload
+  return vi.mocked(createCardRevision).mock.calls[0][0].payload
+}
+
+it('keeps drop keys and verification metadata and links a new drop picked from OSRS items', async () => {
+  const noted = {
+    ...CARD.revision.drops[0],
+    key: 'visage-workbook-key',
+    aliases: ['Visage'],
+    verification_note: 'Screenshot required',
+    counting_restriction: 'Once per team',
+  }
+  vi.mocked(searchItems).mockResolvedValue({ ready: true, items: [NECKLACE] })
+  const { user, dialog } = await openEditor([noted])
+
+  expect(within(dialog).getByText('Manual only')).toBeInTheDocument()
+  const progress = within(dialog).getByLabelText('Progress for Skeletal Visage')
+  await user.clear(progress)
+  await user.type(progress, '3')
+  await user.click(within(dialog).getByRole('button', { name: 'Add drop' }))
+  await user.type(within(dialog).getByRole('combobox', { name: 'Drop 2' }), 'dragonb')
+  await user.click(await within(dialog).findByRole('option', { name: /Dragonbone necklace/ }))
+
+  expect(within(dialog).getByText('Auto-tracked')).toBeInTheDocument()
+  expect(within(dialog).getByText(/Completes at 8 progress → 13 pts once/)).toHaveTextContent(
+    'e.g. 3 × Skeletal Visage, or 8 × Dragonbone necklace.',
+  )
+  const payload = await save(user, dialog)
   expect(payload.drops).toEqual([
-    { ...noted, progress_weight: 3 },
+    { ...noted, progress_weight: 3, item_ids: [], match_by_name: true },
     {
       key: 'dragonbone-necklace',
       name: 'Dragonbone necklace',
@@ -673,8 +719,95 @@ it('keeps drop keys and verification metadata when publishing an edited revision
       aliases: [],
       verification_note: null,
       counting_restriction: null,
+      item_ids: [22111],
+      match_by_name: true,
     },
   ])
+})
+
+it('links only the IDs of a specific version and typing again unlinks the drop', async () => {
+  vi.mocked(searchItems).mockResolvedValue({ ready: true, items: NESTS })
+  const { user, dialog } = await openEditor()
+
+  const field = within(dialog).getByRole('combobox', { name: 'Drop 1' })
+  await user.clear(field)
+  await user.type(field, 'bird')
+  expect(
+    await within(dialog).findByRole('option', { name: /any version · 3 versions/ }),
+  ).toBeInTheDocument()
+  await user.click(within(dialog).getByRole('option', { name: /Bird nest \(seeds\)/ }))
+  expect(field).toHaveValue('Bird nest (seeds)')
+
+  const payload = await save(user, dialog)
+  expect(payload.drops[0]).toMatchObject({
+    name: 'Bird nest (seeds)',
+    item_ids: [22798],
+    match_by_name: false,
+  })
+})
+
+it('pastes a list, links the names found on the wiki and marks the rest Manual only', async () => {
+  vi.mocked(searchItems).mockImplementation(async (query) => ({
+    ready: true,
+    items: query.toLowerCase().startsWith('dragonbone') ? [NECKLACE] : [],
+  }))
+  const { user, dialog } = await openEditor()
+
+  await user.click(within(dialog).getByRole('button', { name: 'Paste list' }))
+  await user.type(
+    within(dialog).getByLabelText('One drop per line: Name | progress'),
+    'dragonbone NECKLACE | 4{enter}Custom task',
+  )
+  await user.click(within(dialog).getByRole('button', { name: 'Add to list' }))
+
+  expect(
+    await within(dialog).findByText("1 line wasn't found on the OSRS Wiki: marked Manual only."),
+  ).toBeInTheDocument()
+  const payload = await save(user, dialog)
+  expect(payload.drops.map((drop) => [drop.name, drop.progress_weight, drop.item_ids])).toEqual([
+    ['Skeletal Visage', 2, []],
+    ['Dragonbone necklace', 4, [22111]],
+    ['Custom task', 1, []],
+  ])
+})
+
+it('shows how many clan drops the card would have matched', async () => {
+  vi.mocked(previewDropMatches).mockResolvedValue({
+    available: true,
+    days: 30,
+    total: 14,
+    per_drop: [14],
+  })
+  const { dialog } = await openEditor()
+
+  expect(
+    await within(dialog).findByText(
+      '✓ This card would have matched 14 clan drops in the last 30 days.',
+    ),
+  ).toBeInTheDocument()
+  expect(previewDropMatches).toHaveBeenCalledWith([
+    { name: 'Skeletal Visage', aliases: [], item_ids: [], match_by_name: true },
+  ])
+})
+
+it('flags cards with drops that are not linked and links them from the catalog', async () => {
+  vi.mocked(linkCatalogItems).mockResolvedValue({
+    linked_cards: 1,
+    linked_drops: 1,
+    unlinked_drops: 0,
+    skipped_cards: [],
+  })
+  const user = userEvent.setup()
+  renderApp(<AppRouter />, '/admin/cards')
+
+  expect(await screen.findByText('⚠ 1 drop not auto-tracked')).toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Link drops to OSRS items' }))
+
+  expect(
+    await screen.findByText(
+      "Linked 1 drops on 1 cards. 0 drops weren't found on the OSRS Wiki and stay Manual only.",
+    ),
+  ).toBeInTheDocument()
 })
 
 it('resolves a Wiki image in the editor and sends it with the revision', async () => {

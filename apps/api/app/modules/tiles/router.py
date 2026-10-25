@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.modules.auth.dependencies import AdminDependency
+from app.modules.items.router import ItemServiceDependency
 from app.modules.tiles.repository import CardRepository
 from app.modules.tiles.schemas import (
     CardCreate,
@@ -10,6 +11,7 @@ from app.modules.tiles.schemas import (
     CardListResponse,
     CardRetire,
     CardRevisionCreate,
+    LinkItemsResponse,
     WikiImage,
     WikiImageResolveRequest,
     WorkbookImportResponse,
@@ -56,6 +58,13 @@ async def import_workbook(
     admin: AdminDependency, service: CardServiceDependency
 ) -> WorkbookImportResponse:
     return await service.import_workbook(admin)
+
+
+@router.post("/link-items", response_model=LinkItemsResponse)
+async def link_items(
+    admin: AdminDependency, service: CardServiceDependency, items: ItemServiceDependency
+) -> LinkItemsResponse:
+    return await service.link_items(admin, items)
 
 
 @wiki_router.post("/resolve", response_model=WikiImage)

@@ -3,7 +3,6 @@
 Every automatic drop starts Pending; admins accept or reject it like a manual one.
 """
 
-import unicodedata
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -16,6 +15,7 @@ from app.modules.droptracker.repository import DropRepository
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
+from app.modules.items.names import normalize_name
 from app.modules.players.models import PlayerDocument
 from app.modules.players.repository import PlayerRepository
 from app.modules.profiles.schemas import normalize_rsn
@@ -37,17 +37,44 @@ class Outcome:
     OUTSIDE_WINDOW = "outside_window"
 
 
-def normalize_name(value: str | None) -> str:
-    """Case-, accent- and spacing-insensitive item/NPC name."""
-    text = unicodedata.normalize("NFKD", value or "")
-    text = "".join(char for char in text if not unicodedata.combining(char))
-    return " ".join(text.casefold().split())
-
-
 @dataclass(frozen=True)
 class CardMatch:
     slot: dict[str, Any]
     drop: dict[str, Any]
+
+
+class CardIndex:
+    """The board's accepted drops by item ID and by name (030, IDs since 033).
+
+    A card drop linked to OSRS items matches their IDs; it also matches by name when it accepts
+    any version of the item (that covers noted drops, which have their own ID). Free-text drops
+    match by name or alias only.
+    """
+
+    def __init__(self, positions: list[dict[str, Any]]) -> None:
+        self._by_id: dict[int, list[CardMatch]] = {}
+        self._by_name: dict[str, list[CardMatch]] = {}
+        for slot in positions:
+            for drop in slot["card"].get("drops", []):
+                match = CardMatch(slot, drop)
+                item_ids = drop.get("item_ids") or []
+                for item_id in item_ids:
+                    self._by_id.setdefault(int(item_id), []).append(match)
+                if item_ids and not drop.get("match_by_name", True):
+                    continue
+                for name in {drop["name"], *drop.get("aliases", [])}:
+                    self._by_name.setdefault(normalize_name(name), []).append(match)
+
+    def lookup(self, drop: dict[str, Any]) -> list[CardMatch]:
+        item_id = drop.get("item_id")
+        found = [
+            *(self._by_id.get(int(item_id), []) if item_id is not None else []),
+            *self._by_name.get(normalize_name(drop.get("item_name")), []),
+        ]
+        unique: dict[tuple[int, str], CardMatch] = {}
+        for match in found:
+            unique.setdefault((match.slot["position"], match.drop["key"]), match)
+        return list(unique.values())
 
 
 class DropTrackerBingo:
@@ -92,7 +119,7 @@ class DropTrackerBingo:
         drop: dict[str, Any],
         event: EventDocument,
         players: dict[str, PlayerDocument],
-        cards: dict[str, list[CardMatch]],
+        cards: "CardIndex",
     ) -> str:
         received = self._utc(drop["received_at"])
         if not self._utc(event["start_at"]) <= received <= self._utc(event["end_at"]):
@@ -100,7 +127,7 @@ class DropTrackerBingo:
         player = players.get(normalize_rsn(drop["player_name"]))
         if player is None:
             return Outcome.NOT_IN_EVENT
-        matches = self._choose(cards.get(normalize_name(drop["item_name"]), []), drop)
+        matches = self._choose(cards.lookup(drop), drop)
         if not matches:
             return Outcome.NO_CARD
         created = 0
@@ -120,14 +147,8 @@ class DropTrackerBingo:
         return Outcome.CREATED if created else Outcome.MANUAL_DUPLICATE
 
     @staticmethod
-    def _card_index(positions: list[dict[str, Any]]) -> dict[str, list[CardMatch]]:
-        """Accepted drop name or alias -> the board cards that accept it."""
-        index: dict[str, list[CardMatch]] = {}
-        for slot in positions:
-            for drop in slot["card"].get("drops", []):
-                for name in {drop["name"], *drop.get("aliases", [])}:
-                    index.setdefault(normalize_name(name), []).append(CardMatch(slot, drop))
-        return index
+    def _card_index(positions: list[dict[str, Any]]) -> "CardIndex":
+        return CardIndex(positions)
 
     @staticmethod
     def _choose(matches: list[CardMatch], drop: dict[str, Any]) -> list[CardMatch]:

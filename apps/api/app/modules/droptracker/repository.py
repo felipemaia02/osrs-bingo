@@ -8,6 +8,8 @@ from pymongo.errors import DuplicateKeyError
 DROPS_COLLECTION = "droptracker_drops"
 STATE_COLLECTION = "droptracker_state"
 STATE_ID = "group-export"
+# Matches the droptracker_drops_item_name_ci index (feature 033).
+NAME_COLLATION = {"locale": "en", "strength": 2}
 
 
 class DropRepository:
@@ -67,6 +69,16 @@ class DropRepository:
             {"$group": {"_id": "$bingo_outcome", "count": {"$sum": 1}}},
         ]
         return {row["_id"]: row["count"] async for row in self._drops.aggregate(pipeline)}
+
+    async def count_matching(self, conditions: list[dict[str, Any]], since: datetime) -> int:
+        """Drops since a moment matching any condition; item names compare case-insensitively."""
+        if not conditions:
+            return 0
+        return int(
+            await self._drops.count_documents(
+                {"received_at": {"$gte": since}, "$or": conditions}, collation=NAME_COLLATION
+            )
+        )
 
     async def count(self) -> int:
         return int(await self._drops.estimated_document_count())

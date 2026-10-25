@@ -133,6 +133,18 @@ class IndexManager:
             [("bingo_outcome", 1), ("received_at", 1)],
             {"name": "droptracker_drops_bingo_pending"},
         ),
+        # Card drop check (feature 033): clan drops by item ID or name, case-insensitive.
+        ("droptracker_drops", [("item_id", 1)], {"name": "droptracker_drops_item_id"}),
+        (
+            "droptracker_drops",
+            [("item_name", 1)],
+            {
+                "name": "droptracker_drops_item_name_ci",
+                "collation": {"locale": "en", "strength": 2},
+            },
+        ),
+        ("osrs_items", [("normalized_name", 1)], {"name": "osrs_items_normalized_name"}),
+        ("osrs_items", [("batch", 1)], {"name": "osrs_items_batch"}),
         (
             "submissions",
             [("preverification_gate", 1)],

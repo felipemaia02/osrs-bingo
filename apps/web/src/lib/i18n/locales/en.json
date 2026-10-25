@@ -548,8 +548,6 @@
       "score": "Completion points",
       "requirement": "Progress requirement",
       "description": "Description",
-      "drops": "Accepted drops (one per line)",
-      "dropsPlaceholder": "Drop name | progress weight",
       "wikiArticle": "OSRS Wiki article",
       "resolveImage": "Find image",
       "changeReason": "Reason for this revision",
@@ -563,11 +561,12 @@
       "created": "Card created.",
       "revised": "New card revision published.",
       "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present.",
-      "retired": "{{name}} retired."
+      "retired": "{{name}} retired.",
+      "linked": "Linked {{drops}} drops on {{cards}} cards. {{unlinked}} drops weren't found on the OSRS Wiki and stay Manual only."
     },
     "errors": {
       "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
-      "drops": "Enter every drop as Name | positive weight.",
+      "drops": "Give every drop a name and a progress above 0, without repeating names.",
       "changed": "This card changed while you were editing. Reload and try again.",
       "slug": "This stable card key is already in use.",
       "importConflict": "The workbook import found conflicting keys: {{slugs}}."
@@ -624,7 +623,42 @@
       "workbook": "Approved workbook",
       "admin": "Administrator"
     },
-    "preverification": "Pre-verification"
+    "preverification": "Pre-verification",
+    "drops": {
+      "title": "Accepted drops",
+      "item": "Drop {{position}}",
+      "unnamed": "drop {{position}}",
+      "searchPlaceholder": "Search an OSRS item…",
+      "results": "OSRS items",
+      "anyVersion": "any version · {{count}} versions",
+      "thisVersion": "this version only",
+      "notReady": "The OSRS item list is still loading. A typed name is saved as Manual only.",
+      "noResults": "No OSRS item found. Keep the name to use it as Manual only.",
+      "linked": "Auto-tracked",
+      "manual": "Manual only",
+      "manualHint": "Not linked to an OSRS item: DropTracker won't send it, players can still submit it.",
+      "progress": "Progress",
+      "progressFor": "Progress for {{name}}",
+      "remove": "Remove {{name}}",
+      "add": "Add drop",
+      "paste": "Paste list",
+      "pasteHint": "One drop per line: Name | progress",
+      "pasteApply": "Add to list",
+      "pasteMissing_one": "{{count}} line wasn't found on the OSRS Wiki: marked Manual only.",
+      "pasteMissing_other": "{{count}} lines weren't found on the OSRS Wiki: marked Manual only.",
+      "summary": "Completes at {{requirement}} progress → {{points}} pts once.",
+      "summaryExamples": "e.g. {{examples}}.",
+      "example": "{{count}} × {{name}}",
+      "or": ", or ",
+      "checkTotal_one": "✓ This card would have matched {{count}} clan drop in the last {{days}} days.",
+      "checkTotal_other": "✓ This card would have matched {{count}} clan drops in the last {{days}} days.",
+      "checkNone": "No clan drop in the last {{days}} days matched these drops (normal for rare items).",
+      "checkMissing": "No match yet: {{names}}. Check the names if these drops are common.",
+      "checkUnavailable": "No DropTracker data yet, so the clan drop check is off."
+    },
+    "unlinked_one": "{{count}} drop not auto-tracked",
+    "unlinked_other": "{{count}} drops not auto-tracked",
+    "linkItems": "Link drops to OSRS items"
   },
   "boards": {
     "title": "Build board",
