@@ -1,15 +1,18 @@
 name: API CI
 
+# Runs on every PR and push (no path filters): required status checks must always report.
 on:
   push:
-    branches: [master, main, develop]
-    paths:
-      - "apps/api/**"
-      - ".github/workflows/api-ci.yml"
+    branches: [master, develop]
   pull_request:
-    paths:
-      - "apps/api/**"
-      - ".github/workflows/api-ci.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: api-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 defaults:
   run:
@@ -17,7 +20,9 @@ defaults:
 
 jobs:
   ci:
+    name: API checks
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
