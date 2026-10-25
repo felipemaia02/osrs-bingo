@@ -6,7 +6,8 @@
     "events": "Eventos",
     "team": "Equipe",
     "play": "Jogar",
-    "mySubmissions": "Meus envios"
+    "mySubmissions": "Meus envios",
+    "profile": "Meu perfil"
   },
   "board": {
     "noActiveEvent": "Não há um evento ativo para exibir.",
@@ -21,7 +22,9 @@
     },
     "search": {
       "label": "Onde meu drop conta?",
-      "placeholder": "Onde meu drop conta? ex.: jar, claw, Vorkath"
+      "placeholder": "Busque um drop, ex.: Jar of Stone",
+      "open": "Buscar drops",
+      "close": "Fechar busca"
     },
     "filter": {
       "label": "Dificuldade",
@@ -48,17 +51,16 @@
       "progress": "Cada drop aceito soma seu valor de progresso ao tile do seu time.",
       "completion": "Quando o progresso do time atinge o requisito do tile, o time ganha os pontos do tile uma única vez.",
       "excess": "Progresso além do requisito não dá pontos extras de tile.",
-      "bonuses": "Bônus de linha, coluna e especiais são definidos pelas regras do evento.",
-      "details": "Selecione um tile para ver os drops aceitos, valores de progresso e observações."
+      "details": "Selecione um tile para ver os drops aceitos, valores de progresso e observações.",
+      "lines": "Completar todos os {{size}} tiles de uma linha dá +{{row}} pontos; de uma coluna, +{{column}} pontos.",
+      "linesNotSet": "Os bônus de linha e coluna ainda não foram definidos neste tabuleiro."
     },
     "activeEvent": "Evento ativo",
     "yourTeam": "Seu time",
     "startsInLabel": "Começa em",
     "endsInLabel": "Termina em",
-    "progressUnavailableShort": "Progresso indisponível por enquanto",
     "progressNotice": {
-      "title": "Progresso indisponível.",
-      "body": "O envio de drops ainda não existe — por enquanto, use a busca para ver onde cada drop conta."
+      "title": "Progresso indisponível."
     },
     "status": {
       "search_one": "{{count}} tile aceita “{{query}}”",
@@ -87,10 +89,12 @@
       "close": "Fechar detalhes",
       "prompt": "Selecione um tile para ver os drops aceitos e como ele é completado.",
       "completes": "Completa quando o progresso chega a <strong>{{requirement}}</strong>. Vale <strong>{{points}} pts uma única vez</strong> — progresso extra não dá pontos.",
-      "teamProgress": "Progresso do seu time: indisponível",
       "drops": "Drops aceitos ({{count}})",
       "weightHint": "peso = progresso",
-      "imageSource": "Imagem: OSRS Wiki — {{name}}"
+      "imageSource": "Imagem: OSRS Wiki — {{name}}",
+      "previous": "Card anterior",
+      "next": "Próximo card",
+      "closeTile": "Fechar card"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} correspondem à busca",
@@ -99,8 +103,25 @@
     "miniMap": {
       "label": "Minimapa do tabuleiro",
       "title": "Mapa {{size}}×{{size}}",
-      "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: mostrar na lista",
-      "legend": "F = Fácil · M = Médio · D = Difícil. Toque numa célula para ir até ela na lista."
+      "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: ver detalhes",
+      "legend": "★ Bronze = Fácil · ★ Prata = Médio · ★ Ouro = Difícil. Toque num card para vê-lo abaixo; toque de novo para fechar.",
+      "bonusCell": "{{name}}, card bônus, {{tier}}: ver detalhes",
+      "hint": "Toque num card do mapa para ver os detalhes aqui."
+    },
+    "bonus": {
+      "badge": "Bônus",
+      "card": "Card bônus",
+      "row": "Cards bônus",
+      "section": "Cards bônus",
+      "slot": "Card bônus {{slot}}"
+    },
+    "progress": {
+      "login": "Entre para ver o progresso do seu time.",
+      "notRegistered": "Você não está neste evento, então não há progresso de time para mostrar.",
+      "pending": "Sua inscrição está aguardando a aprovação de um admin.",
+      "removed": "Sua inscrição foi removida por um admin.",
+      "unassigned": "Você verá o progresso do seu time quando um admin te colocar num time.",
+      "unavailable": "O progresso do seu time não está disponível agora."
     }
   },
   "tile": {
@@ -115,7 +136,8 @@
       "Low": "F",
       "Mid": "M",
       "High": "D"
-    }
+    },
+    "bonusLabel": "{{name}}, card bônus, {{tier}}, {{points}} pontos"
   },
   "common": {
     "loading": "Carregando…",
@@ -141,7 +163,8 @@
       "all": "Todos",
       "draft": "Rascunho",
       "active": "Ativo",
-      "finished": "Finalizado"
+      "finished": "Finalizado",
+      "mine": "Meus"
     },
     "actions": {
       "create": "Novo evento",
@@ -149,7 +172,8 @@
       "finish": "Encerrar",
       "edit": "Editar",
       "board": "Tabuleiro",
-      "activateShort": "Ativar"
+      "activateShort": "Ativar",
+      "rules": "Regras"
     },
     "form": {
       "createTitle": "Criar evento",
@@ -157,7 +181,10 @@
       "name": "Nome",
       "description": "Descrição",
       "start": "Data e hora de início",
-      "end": "Data e hora de término"
+      "end": "Data e hora de término",
+      "buyIn": "Buy-in",
+      "buyInPlaceholder": "ex.: 5M gp",
+      "buyInHint": "Opcional. Aparece quando os jogadores entram; os admins registram os pagamentos."
     },
     "schedule": {
       "title": "Período do evento",
@@ -173,7 +200,8 @@
       "created": "Evento criado.",
       "updated": "Evento atualizado.",
       "activated": "Evento ativado.",
-      "finished": "Evento finalizado."
+      "finished": "Evento finalizado.",
+      "rulesSaved": "Regras salvas."
     },
     "confirm": {
       "activateTitle": "Ativar evento?",
@@ -188,7 +216,8 @@
       "readOnly": "Somente eventos em rascunho podem ser editados.",
       "invalidTransition": "Este evento não permite essa mudança de status.",
       "notFound": "O evento não foi encontrado.",
-      "boardRequired": "Preencha e salve todas as posições do tabuleiro antes de ativar o evento."
+      "boardRequired": "Preencha e salve todas as posições do tabuleiro antes de ativar o evento.",
+      "rulesRequired": "Defina os bônus de linha e coluna no montador do tabuleiro antes de ativar o evento."
     },
     "publicEyebrow": "Eventos da comunidade",
     "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição.",
@@ -201,7 +230,20 @@
     "readOnly": "Somente leitura",
     "activeNotice": "{{name}} está ativo. Só um evento pode estar ativo por vez: encerre-o antes de ativar outro.",
     "durationDays_one": "{{count}} dia",
-    "durationDays_other": "{{count}} dias"
+    "durationDays_other": "{{count}} dias",
+    "rules": {
+      "title": "Regras · {{name}}",
+      "editableUntil": "Editável até o evento ser ativado.",
+      "save": "Salvar regras",
+      "text": "Regras do bingo",
+      "placeholder": "Escreva como este bingo funciona: datas, o que conta, screenshots, regras dos times…",
+      "hint": "Texto simples; as quebras de linha são mantidas. Os jogadores leem na página de Eventos e na ajuda do tabuleiro.",
+      "section": "Regras"
+    },
+    "openBoard": "Abrir board",
+    "search": "Buscar eventos",
+    "noMatch": "Nenhum evento corresponde à busca.",
+    "noneMine": "Você ainda não entrou em nenhum evento."
   },
   "teams": {
     "eyebrow": "Administração",
@@ -211,7 +253,6 @@
     "teams": "Times",
     "players": "Inscrições no evento",
     "teamName": "Nome do time",
-    "playerName": "Nome de exibição do OSRS",
     "selectTeam": "Selecione um time",
     "create": "Criar",
     "description": "Aprove pedidos e distribua os jogadores aprovados entre os times.",
@@ -244,7 +285,8 @@
       "selectedRemoved_one": "{{count}} removido.",
       "selectedRemoved_other": "{{count}} removidos.",
       "skipped_one": "{{count}} ignorado porque já tinha mudado.",
-      "skipped_other": "{{count}} ignorados porque já tinham mudado."
+      "skipped_other": "{{count}} ignorados porque já tinham mudado.",
+      "teamUpdated": "Time atualizado."
     },
     "errors": {
       "duplicatePlayer": "Você ou este nome do OSRS já possui uma inscrição neste evento.",
@@ -255,7 +297,12 @@
       "invalidInput": "Informe um nome válido.",
       "approvedOnly": "Somente inscrições aprovadas podem receber um time. Atualize a lista.",
       "pendingOnly": "Esta solicitação não está mais pendente.",
-      "removed": "Esta inscrição já foi removida."
+      "removed": "Esta inscrição já foi removida.",
+      "roleNeedsApproval": "Só jogadores aprovados podem ter uma função.",
+      "captainNeedsTeam": "Coloque o jogador num time antes de torná-lo capitão.",
+      "captainTaken": "Este time já tem um capitão.",
+      "buyInAdmin": "Escolha um administrador atual.",
+      "changed": "Esta inscrição mudou nesse meio-tempo. Recarregue e tente de novo."
     },
     "roster": {
       "tabs": "Participantes e times",
@@ -270,13 +317,10 @@
       "allTeams": "Todos os times",
       "previous": "Anterior",
       "next": "Próxima",
-      "status": "Status",
       "actions": "Ações",
       "assignPlayer": "Alterar time de {{name}}",
       "editable": "Editável: evento em rascunho",
       "readOnly": "Somente leitura: evento {{status}}",
-      "osrsName": "Nome OSRS",
-      "discord": "Discord",
       "requested": "Pedido em",
       "team": "Time",
       "members": "Membros",
@@ -286,12 +330,26 @@
       "approveAllCount": "Aprovar todos ({{count}})…",
       "paginationPage": "{{start}}–{{end}} de {{total}} · {{size}} por página",
       "paginationShort": "{{start}}–{{end}} de {{total}}",
-      "note": "“Remover” não apaga o pedido: o jogador continua vendo o próprio status como <strong>Removido</strong>. Depois de aprovar, use a aba <strong>Sem time</strong> para definir o time.",
+      "note": "Σ = main + alts encontradas no Wise Old Man; o nome do jogador é a conta do bingo. “Remover” não apaga o pedido: o jogador continua vendo o próprio status como <strong>Removido</strong>. Depois de aprovar, use a aba <strong>Sem time</strong> para definir o time.",
       "approveAllTitle_one": "Aprovar {{count}} pedido?",
       "approveAllTitle_other": "Aprovar {{count}} pedidos?",
       "approveCount": "Aprovar {{count}}",
       "approveAllNamed": "{{names}} ficam <strong>aprovados, sem time</strong>. Você escolhe o time de cada jogador depois.",
-      "approveAllEveryone": "Todos os {{count}} pedidos pendentes deste evento ficam <strong>aprovados, sem time</strong>, inclusive os que estão fora da busca ou da página atual. Você escolhe o time de cada jogador depois."
+      "approveAllEveryone": "Todos os {{count}} pedidos pendentes deste evento ficam <strong>aprovados, sem time</strong>, inclusive os que estão fora da busca ou da página atual. Você escolhe o time de cada jogador depois.",
+      "player": "Jogador",
+      "timezone": "Fuso horário",
+      "activity": "Atividade",
+      "bossKc": "Σ KC de bosses",
+      "ehb": "Σ EHB",
+      "teammates": "Quer jogar com",
+      "role": "Função",
+      "buyIn": "Buy-in",
+      "mainOnly": "só main",
+      "mainAndAlts_one": "main + {{count}} alt",
+      "mainAndAlts_other": "main + {{count}} alts",
+      "experienceLine": "Σ EHB {{ehb}} · Σ KC de bosses {{kc}}",
+      "wantsWith": "quer {{names}}",
+      "sorted": "Ordenado por EHB total ↓"
     },
     "status": {
       "pending": "Pendente",
@@ -308,7 +366,38 @@
       "removeTitle": "Remover inscrições selecionadas?",
       "removeConfirmation_one": "Remover {{count}} inscrição selecionada? O time também será desfeito. O pedido é mantido e o jogador vê o status Removido.",
       "removeConfirmation_other": "Remover {{count}} inscrições selecionadas? Os times também serão desfeitos. Os pedidos são mantidos e os jogadores veem o status Removido."
-    }
+    },
+    "balance": {
+      "title": "Equilíbrio dos times",
+      "description": "Soma de KC de bosses e EHB da main + alts encontradas no Wise Old Man de cada jogador · EHB médio por time {{average}}",
+      "players_one": "{{count}} jogador",
+      "players_other": "{{count}} jogadores",
+      "ehb": "EHB",
+      "bossKc": "KC de bosses",
+      "noCaptain": "Sem capitão",
+      "versus": "{{value}} vs média",
+      "short_one": "falta {{count}} jogador",
+      "short_other": "faltam {{count}} jogadores"
+    },
+    "roles": {
+      "none": "Nenhuma",
+      "captain": "Capitão",
+      "instructor": "Instrutor"
+    },
+    "buyIn": {
+      "pending": "Pendente",
+      "paid": "Pago",
+      "to": "para {{name}}"
+    },
+    "participant": {
+      "edit": "Editar {{name}}",
+      "title": "Editar {{name}}",
+      "receivedBy": "Recebido por",
+      "saved": "{{name}} atualizado.",
+      "captainHint": "O capitão precisa estar aprovado e num time; cada time tem um capitão. Mudar o time dele remove a função."
+    },
+    "edit": "Editar",
+    "editTeam": "Editar {{name}}"
   },
   "language": {
     "label": "Idioma",
@@ -334,9 +423,7 @@
   },
   "registration": {
     "loginToRegister": "Entre com Discord para se inscrever",
-    "formFor": "Inscrever-se em {{name}}",
     "approvalHint": "Sua solicitação será analisada por um administrador.",
-    "request": "Solicitar inscrição",
     "status": {
       "pending": "Inscrição aguardando aprovação",
       "approved": "Inscrição aprovada",
@@ -347,6 +434,13 @@
       "pending": "Pendente",
       "approved": "Aprovada",
       "removed": "Removida"
+    },
+    "join": "Entrar no evento",
+    "joinFor": "Entrar em {{name}}",
+    "playingAs": "Jogando com",
+    "buyIn": {
+      "pending": "Buy-in ainda não pago",
+      "paid": "Buy-in pago"
     }
   },
   "admin": {
@@ -366,8 +460,7 @@
     "cardsDescription": "Bosses, drops, pesos de progresso e revisões.",
     "boardsDescription": "Escolha o tamanho do tabuleiro, os cards e suas posições em cada evento.",
     "rolesDescription": "Papéis do app, independentes do Discord.",
-    "rankingDescription": "Compare times e contribuições. Ainda não disponível.",
-    "rankingUnavailable": "A pontuação do evento ainda não está disponível. A classificação dos times e as contribuições dos jogadores aparecerão aqui quando as regras e as atividades aceitas estiverem definidas.",
+    "rankingDescription": "Compare os times e a contribuição de cada jogador.",
     "searchUsers": "Buscar usuários cadastrados",
     "search": "Buscar",
     "noUsers": "Nenhum usuário encontrado. Os usuários aparecem aqui após o primeiro login.",
@@ -403,7 +496,9 @@
       "cardsActive": "{{count}} ativo",
       "retired": "{{count}} retirado",
       "administrators_one": "{{count}} administrador",
-      "administrators_other": "{{count}} administradores"
+      "administrators_other": "{{count}} administradores",
+      "reviews_one": "{{count}} pendente",
+      "reviews_other": "{{count}} pendentes"
     },
     "you": "Você",
     "grantShort": "Conceder acesso",
@@ -418,7 +513,11 @@
       "action": "Ação"
     },
     "directoryCount_one": "{{count}} usuário registrado",
-    "directoryCount_other": "{{count}} usuários registrados"
+    "directoryCount_other": "{{count}} usuários registrados",
+    "review": "Revisão de drops",
+    "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot.",
+    "draft": "Prévia do draft",
+    "draftDescription": "Jogadores disponíveis para a escolha dos capitães."
   },
   "cards": {
     "title": "Catálogo de cards",
@@ -454,9 +553,12 @@
       "dropsPlaceholder": "Nome do drop | peso no progresso",
       "wikiArticle": "Artigo da OSRS Wiki",
       "resolveImage": "Buscar imagem",
-      "ruleNote": "Observação de regra ou verificação",
       "changeReason": "Motivo desta revisão",
-      "fallbackImage": "Sem imagem: o escudo padrão será usado."
+      "fallbackImage": "Sem imagem: o escudo padrão será usado.",
+      "requiresPreverification": "Exige pré-verificação",
+      "requiresPreverificationHint": "Os jogadores enviam um screenshot inicial deste card antes de os drops serem aceitos. Descreva abaixo o que ele precisa mostrar.",
+      "preverificationNote": "Instruções da pré-verificação",
+      "preverificationNotePlaceholder": "ex.: Tire um print do seu KC de Theatre of Blood antes da primeira raid do evento."
     },
     "feedback": {
       "created": "Card criado.",
@@ -522,7 +624,8 @@
     "source": {
       "workbook": "Planilha aprovada",
       "admin": "Administrador"
-    }
+    },
+    "preverification": "Pré-verificação"
   },
   "boards": {
     "title": "Montar tabuleiro",
@@ -601,6 +704,27 @@
       "shrinkConfirm": "Reduzir e remover",
       "shrinkConfirmation_one": "{{count}} card está fora da área {{size}}×{{size}} e será removido do rascunho: {{names}}. Nada é salvo até você salvar o tabuleiro.",
       "shrinkConfirmation_other": "{{count}} cards estão fora da área {{size}}×{{size}} e serão removidos do rascunho: {{names}}. Nada é salvo até você salvar o tabuleiro."
+    },
+    "bonuses": {
+      "row": "Bônus de linha",
+      "column": "Bônus de coluna",
+      "required": "Os dois são obrigatórios para ativar",
+      "readOnly": "Linha +{{row}} · Coluna +{{column}}"
+    },
+    "bonusRow": {
+      "add": "Adicionar linha bônus",
+      "label": "Linha bônus",
+      "cell": "Bônus {{slot}}",
+      "slots_one": "Linha bônus · {{count}} card",
+      "slots_other": "Linha bônus · {{count}} cards",
+      "fewer": "Um card bônus a menos",
+      "more": "Um card bônus a mais",
+      "remove": "Remover linha bônus",
+      "shrinkTitle": "Remover vagas bônus?",
+      "removeTitle": "Remover a linha bônus?",
+      "shrinkConfirm": "Remover cards",
+      "shrinkConfirmation_one": "{{count}} card vai sair da linha bônus: {{names}}. Nada é salvo até você salvar o tabuleiro.",
+      "shrinkConfirmation_other": "{{count}} cards vão sair da linha bônus: {{names}}. Nada é salvo até você salvar o tabuleiro."
     }
   },
   "brand": {
@@ -621,6 +745,499 @@
       "hoursMinutes": "{{hours}} h {{minutes}} min",
       "startsIn": "Começa em {{time}}",
       "ended": "Fim programado atingido"
+    }
+  },
+  "submissions": {
+    "title": "Minhas submissões",
+    "description": "Só as suas. Cada submissão é conferida por um administrador pelo screenshot.",
+    "submit": "Enviar com screenshot",
+    "filterLabel": "Filtrar por status",
+    "tabs": {
+      "all": "Todas",
+      "pending": "Pendentes",
+      "accepted": "Aceitas",
+      "rejected": "Rejeitadas"
+    },
+    "status": {
+      "pending": "Pendente",
+      "accepted": "Aceita",
+      "rejected": "Rejeitada"
+    },
+    "empty": "Você ainda não enviou nada.",
+    "emptyFilter": "Nada aqui com este filtro.",
+    "blocked": {
+      "login": "Entre para enviar seus drops.",
+      "noEvent": "Não há evento ativo agora.",
+      "notRegistered": "Você não está inscrito no evento ativo.",
+      "notApproved": "Sua inscrição está aguardando um administrador.",
+      "noTeam": "Você poderá enviar quando um administrador te colocar em um time."
+    },
+    "preverificationTitle": "Pré-verificação · {{card}}",
+    "kind": {
+      "drop": "Com screenshot",
+      "preverification": "Pré-verificação"
+    },
+    "reviewedBy": "revisado por {{name}}",
+    "progressAdded_one": "+{{count}} de progresso em {{card}}",
+    "progressAdded_other": "+{{count}} de progresso em {{card}}",
+    "progressOnAccept_one": "+{{count}} de progresso em {{card}} quando aceito",
+    "progressOnAccept_other": "+{{count}} de progresso em {{card}} quando aceito",
+    "preverificationPendingHint": "Enquanto não for aceita, os drops deste card ainda não contam.",
+    "reason": "Motivo:",
+    "reasons": {
+      "unreadable_screenshot": "screenshot ilegível",
+      "item_mismatch": "o item não confere com o screenshot",
+      "outside_event_period": "fora do período do evento",
+      "other": "outro"
+    },
+    "viewScreenshot": "Ver screenshot",
+    "openScreenshot": "Abrir o screenshot",
+    "screenshotAlt": "Screenshot da submissão",
+    "screenshotUnavailable": "Screenshot indisponível",
+    "submitTitle": "Enviar com screenshot",
+    "gate": {
+      "required": "Exige pré-verificação",
+      "pending": "Pré-verificação pendente",
+      "accepted": "Pré-verificado",
+      "rejected": "Pré-verificação rejeitada"
+    },
+    "form": {
+      "card": "Card",
+      "searchCard": "Buscar card",
+      "positionLabel": "Linha {{row}} · coluna {{column}}",
+      "noCards": "Nenhum card encontrado.",
+      "preverificationFirst": "Envie um screenshot do seu ponto de partida (por exemplo o kill count). Depois disso você pode enviar os drops.",
+      "item": "Item que você pegou em {{card}}",
+      "gatePending": "Sua pré-verificação está pendente: estes drops só são aceitos depois dela.",
+      "screenshot": "Screenshot (prova)",
+      "chooseScreenshot": "Escolher screenshot",
+      "screenshotHint": "PNG, JPEG ou WebP, até 5 MB. Um item por submissão.",
+      "preview": "Prévia do screenshot",
+      "note": "Observação (opcional)",
+      "send": "Enviar",
+      "sendPreverification": "Enviar pré-verificação",
+      "preverificationNeeded": "{{card}} precisa de uma pré-verificação primeiro",
+      "preverificationRejected": "Sua pré-verificação de {{card}} foi rejeitada — envie uma nova"
+    },
+    "feedback": {
+      "sent": "Enviado. Um administrador vai revisar.",
+      "preverificationSent": "Pré-verificação enviada. Agora você pode enviar os drops deste card."
+    },
+    "errors": {
+      "notActive": "As submissões só ficam abertas com o evento ativo.",
+      "notEligible": "Só jogadores aprovados e com time podem enviar.",
+      "position": "Este card não está mais no tabuleiro.",
+      "drop": "Este item não é aceito por este card.",
+      "dropRequired": "Escolha o item que você pegou.",
+      "preverificationRequired": "Envie primeiro a pré-verificação deste card.",
+      "preverificationNotNeeded": "Este card não precisa de pré-verificação.",
+      "preverificationExists": "Você já tem uma pré-verificação pendente ou aceita para este card.",
+      "preverificationNotAccepted": "Aceite antes a pré-verificação deste jogador para o card.",
+      "alreadyReviewed": "Alguém já revisou esta submissão.",
+      "reviewClosed": "Só dá para revisar submissões de eventos ativos ou encerrados.",
+      "imageType": "Use uma imagem PNG, JPEG ou WebP.",
+      "imageSize": "O screenshot precisa ter até 5 MB.",
+      "storage": "Não foi possível salvar o screenshot agora. Tente de novo em instantes.",
+      "cardRequired": "Escolha um card.",
+      "screenshotRequired": "Anexe um screenshot."
+    },
+    "source": {
+      "droptracker": "DropTracker"
+    },
+    "noDropTrackerImage": "Sem screenshot do DropTracker"
+  },
+  "review": {
+    "title": "Revisão de drops",
+    "description": "Toda submissão chega aqui: confira o screenshot e aceite ou rejeite.",
+    "queue": "Submissões pendentes",
+    "initialScreenshot": "Screenshot inicial",
+    "preverificationOf": "Pré-verificação · {{card}}",
+    "selected": "Submissão selecionada",
+    "position": "{{index}} de {{total}}",
+    "previous": "Anterior",
+    "next": "Próxima",
+    "openOriginal": "Clique na imagem para abrir a original.",
+    "player": "Jogador",
+    "card": "Card",
+    "item": "Item",
+    "sent": "Enviado",
+    "period": "Período",
+    "withinEvent": "Dentro do evento",
+    "outsideEvent": "Fora do período do evento",
+    "preverification": "Pré-verificação",
+    "preverificationMissing": "Não enviada",
+    "note": "Observação do jogador",
+    "waitingPreverification": "Aguardando pré-verificação: aceite a pré-verificação deste jogador para o card antes de aceitar este drop.",
+    "reasonLabel": "Motivo da rejeição",
+    "reasonHint": "(obrigatório só para rejeitar)",
+    "chooseReason": "Escolha um motivo…",
+    "otherNote": "Descreva o motivo",
+    "accept": "Aceitar",
+    "reject": "Rejeitar",
+    "skip": "Pular",
+    "feedback": {
+      "accepted": "Submissão aceita.",
+      "rejected": "Submissão rejeitada. O jogador vê o motivo."
+    },
+    "event": "Evento",
+    "shortcuts": "J / K navegar · A aceitar · R motivo",
+    "noEvent": "Nenhum evento ativo ou encerrado para revisar.",
+    "filter": "Filtrar por tipo",
+    "filters": {
+      "all": "Todas",
+      "preverification": "Pré-verificação",
+      "drop": "Drops"
+    },
+    "oldestFirst": "Mais antigas primeiro",
+    "empty": "Nada para revisar. 🎉",
+    "backToQueue": "Voltar para a fila",
+    "instructions": "Instruções",
+    "ownTeam": "Você joga neste time — outro admin revisa este envio."
+  },
+  "score": {
+    "tileComplete": "Completo +{{points}}",
+    "tileProgress": "{{value}} / {{requirement}}",
+    "panel": "Placar do seu time",
+    "official": "Placar oficial do time",
+    "completedTiles": "Tiles completos ({{count}} de {{total}})",
+    "rows": "Linhas",
+    "columns": "Colunas",
+    "lineBreakdown": "{{count}} × {{value}}",
+    "notConfigured": "bônus não configurado",
+    "notConfiguredShort": "não definido",
+    "labelComplete": "completo",
+    "labelProgress": "progresso {{value}} de {{requirement}}",
+    "detailProgress": "Progresso do time: {{value}} de {{requirement}} · vale {{points}} pts uma vez",
+    "dropCount": "{{name}} × {{count}}",
+    "bonusCards": "Cards bônus ({{count}} de {{total}})"
+  },
+  "ranking": {
+    "eyebrow": "Administração · privado",
+    "private": "Só administradores veem esta tela. Os jogadores só veem o próprio time.",
+    "event": "Evento",
+    "noEvent": "Ainda não há eventos.",
+    "rules": "Bônus de linha: linha {{row}} · coluna {{column}}",
+    "calculatedAt": "calculado às {{time}}",
+    "official": "Placar oficial dos times",
+    "position": "Posição",
+    "team": "Time",
+    "tiles": "Tiles",
+    "rows": "Linhas",
+    "columns": "Colunas",
+    "total": "Total",
+    "members_one": "{{count}} jogador",
+    "members_other": "{{count}} jogadores",
+    "tilesDone": "{{count}}/{{total}} tiles",
+    "breakdown": "Tiles {{tiles}} ({{done}}/{{total}}) · linhas {{rows}} · colunas {{columns}}",
+    "tie": "(empate)",
+    "place_ordinal_one": "{{count}}º",
+    "place_ordinal_other": "{{count}}º",
+    "tiesNote": "Empates dividem a posição e não há desempate; a próxima posição é pulada (1º, 2º, 2º, 4º).",
+    "contribution": "Contribuição individual",
+    "contributionHint": "Métrica separada · fracionária · não soma no placar do time",
+    "player": "Jogador",
+    "contributionShort": "Contribuição",
+    "noPlayers": "Nenhum jogador neste time.",
+    "noTeams": "Este evento ainda não tem times.",
+    "bonus": "Bônus",
+    "bonusShort": "bônus {{points}}"
+  },
+  "profile": {
+    "eyebrow": "Conta",
+    "title": "Meu perfil",
+    "description": "Seus dados do Discord e do OSRS. Usamos quando você entra em um evento e para equilibrar os times.",
+    "login": "Entre para ver seu perfil.",
+    "discord": {
+      "id": "ID do Discord {{id}}",
+      "automatic": "Automático · do seu login no Discord"
+    },
+    "accounts": {
+      "title": "Contas OSRS",
+      "description": "Os dados vêm do Wise Old Man e não podem ser editados aqui.",
+      "add": "Adicionar conta",
+      "empty": "Nenhuma conta ainda. Adicione primeiro sua conta principal."
+    },
+    "account": {
+      "main": "Main · padrão no bingo",
+      "alt": "Alt · só experiência",
+      "mainLabel": "Conta principal {{rsn}}",
+      "altLabel": "Conta alt {{rsn}}",
+      "updated": "Atualizado no Wise Old Man {{ago}}",
+      "openWom": "Abrir perfil no WOM",
+      "altNote": "Alts contam só para sua experiência no equilíbrio dos times.",
+      "notFoundHint": "Confira o nome ou rastreie o jogador no Wise Old Man primeiro. Esta conta não conta até ser encontrada."
+    },
+    "wom": {
+      "found": "Encontrado no Wise Old Man",
+      "notFound": "Não encontrado no Wise Old Man",
+      "unavailable": "Não foi possível acessar o Wise Old Man, tente mais tarde"
+    },
+    "stats": {
+      "totalLevel": "Nível total",
+      "ehp": "EHP",
+      "ehb": "EHB",
+      "bossKc": "KC de bosses (todos)"
+    },
+    "actions": {
+      "refresh": "Atualizar do WOM",
+      "main": "Tornar main",
+      "track": "Rastrear no WOM",
+      "remove": "Remover",
+      "more": "Mais opções para {{rsn}}"
+    },
+    "add": {
+      "title": "Adicionar conta",
+      "rsn": "Nome no RuneScape (RSN)",
+      "firstHint": "Sua primeira conta vira a main, a padrão no bingo.",
+      "altHint": "Contas extras são alts: contam só para sua experiência.",
+      "submit": "Adicionar conta",
+      "checking": "Consultando o Wise Old Man…",
+      "added": "{{rsn}} adicionada."
+    },
+    "balance": {
+      "title": "Experiência para equilíbrio dos times",
+      "description": "Main + alts encontradas no Wise Old Man. Os admins usam isso para equilibrar os times.",
+      "bossKc": "Total de KC de bosses",
+      "ehb": "Total de EHB",
+      "counted": "{{counted}} de {{total}} contas contadas",
+      "notFound": "{{names}} não encontrada(s)"
+    },
+    "preferences": {
+      "title": "Preferências do clã",
+      "description": "Salvas no seu perfil e reaproveitadas nos próximos eventos.",
+      "activity": "Atividade habitual durante eventos",
+      "save": "Salvar preferências",
+      "saved": "Preferências salvas.",
+      "timezone": "Fuso horário",
+      "noTimezone": "Não definido",
+      "detected": "Detectado pelo seu navegador. Salve para manter."
+    },
+    "activities": {
+      "under_1h": "Menos de 1 h por dia",
+      "one_to_three_h": "1 a 3 h por dia",
+      "over_3h": "Mais de 3 h por dia"
+    },
+    "errors": {
+      "rsnTaken": "Esta conta já está ligada a outro jogador.",
+      "rsnAlreadyYours": "Esta conta já está no seu perfil.",
+      "rsnInvalid": "Use de 1 a 12 letras, números, espaços, - ou _.",
+      "tooMany": "Você pode ligar até 10 contas.",
+      "mainNeeded": "Torne outra conta a main antes de remover esta.",
+      "cooldown": "Atualizado há menos de uma hora. Tente mais tarde.",
+      "accountMissing": "Esta conta não está mais no seu perfil. Recarregue a página."
+    },
+    "combat": {
+      "title": "Níveis de combate",
+      "attack": "Ataque",
+      "strength": "Força",
+      "defence": "Defesa",
+      "hitpoints": "Vida",
+      "ranged": "Distância",
+      "prayer": "Oração",
+      "magic": "Magia"
+    },
+    "combatShort": {
+      "attack": "Atq",
+      "strength": "For",
+      "defence": "Def",
+      "hitpoints": "Vida",
+      "ranged": "Dist",
+      "prayer": "Oraç",
+      "magic": "Mag"
+    }
+  },
+  "join": {
+    "eyebrow": "Entrar no evento",
+    "open": "inscrições abertas",
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "nextNeedAccount": "Próximo · escolha uma conta",
+    "nextNeedAgreements": "Próximo · confirme os 3",
+    "progress": "Passo {{step}} de {{total}}",
+    "backToEvents": "Voltar aos eventos",
+    "changeIn": "altere em",
+    "timezone": "Fuso horário:",
+    "sent": "Pedido enviado para {{name}} — aguardando um admin.",
+    "blocked": {
+      "login": "Entre com o Discord para participar de um evento.",
+      "notFound": "Este evento não existe.",
+      "closed": "As inscrições deste evento estão encerradas.",
+      "registered": "Você já pediu para entrar neste evento."
+    },
+    "account": {
+      "title": "Com qual conta você vai jogar?",
+      "group": "Conta do bingo",
+      "manage": "Gerenciar contas em Meu perfil",
+      "main": "Main",
+      "alt": "Alt",
+      "wom": "Wise Old Man",
+      "stats": "EHB {{ehb}} · KC de bosses {{kc}} · Total {{total}}",
+      "othersCount": "Suas outras contas continuam contando para sua experiência no equilíbrio dos times.",
+      "none": "Adicione primeiro uma conta encontrada no Wise Old Man em Meu perfil.",
+      "foundSummary": "encontrada no Wise Old Man"
+    },
+    "availability": {
+      "title": "Disponibilidade e companheiros"
+    },
+    "activity": {
+      "label": "Atividade esperada durante este evento",
+      "fromProfile": "(do seu perfil)",
+      "options": {
+        "under_1h": "Menos de 1 h/dia",
+        "one_to_three_h": "1 a 3 h/dia",
+        "over_3h": "Mais de 3 h/dia"
+      },
+      "short": {
+        "under_1h": "<1 h/dia",
+        "one_to_three_h": "1–3 h/dia",
+        "over_3h": ">3 h/dia"
+      }
+    },
+    "teammates": {
+      "label": "Com quem você gostaria de jogar?",
+      "count": "Até {{max}} membros do clã · {{count}} de {{max}}",
+      "placeholder": "Busque pelo nome do Discord ou RSN",
+      "full": "3 de 3 escolhidos",
+      "results": "Membros do clã",
+      "remove": "Remover {{name}}",
+      "onDiscord": "{{name}} no Discord",
+      "enter": "Enter para adicionar",
+      "none": "Nenhum membro do clã encontrado.",
+      "hint": "É uma preferência, não uma garantia — admins e capitães equilibram os times."
+    },
+    "rules": {
+      "title": "Como o bingo funciona",
+      "event": "Regras do evento",
+      "confirm": "Para continuar, confirme que:",
+      "confirmed": "Regras confirmadas",
+      "yourAccount": "sua conta",
+      "summary": {
+        "board": "Todos os times jogam o mesmo board. Ele fica congelado quando o evento começa.",
+        "progress": "Cada drop aceito adiciona <b>progresso</b> a um card. O card vale seus pontos uma vez, quando o progresso atinge o requisito.",
+        "screenshots": "Você envia seus drops com uma screenshot, e um admin revisa.",
+        "teams": "Os admins definem os times. Você só vê o progresso do seu time.",
+        "buyIn": "O buy-in é pago a um admin, que registra o pagamento."
+      },
+      "agreements": {
+        "rules": "Li as regras do bingo acima.",
+        "dropAccount": "Só drops de <b>{{rsn}}</b> durante o período do evento vão contar para mim.",
+        "team": "Aceito o time em que os admins me colocarem."
+      }
+    },
+    "buyIn": {
+      "title": "Buy-in e envio",
+      "amount": "Buy-in: <b>{{amount}}</b>. Pague a qualquer admin no jogo; ele marca como recebido aqui.",
+      "none": "Este evento não tem buy-in.",
+      "notPaid": "Ainda não pago",
+      "summary": "Buy-in: ainda não pago"
+    },
+    "send": {
+      "button": "Pedir para entrar",
+      "needAccount": "Escolha uma conta no passo 1 primeiro.",
+      "needAgreements": "Confirme os 3 itens do passo 3 primeiro.",
+      "pending": "Seu pedido fica <b>Pendente</b> até um admin aprovar.",
+      "title": "Enviar pedido"
+    },
+    "errors": {
+      "account": "Escolha uma conta do seu perfil.",
+      "accountNotOnWom": "Esta conta não foi encontrada no Wise Old Man. Atualize em Meu perfil.",
+      "teammateSelf": "Você não pode escolher a si mesmo.",
+      "teammateUnknown": "Um dos companheiros não foi encontrado. Remova e escolha de novo."
+    }
+  },
+  "draft": {
+    "eyebrow": "Administração · {{event}} · Rascunho",
+    "title": "Prévia do draft",
+    "description": "Só para admins. Compartilhe a tela com os capitães durante a escolha — os jogadores nunca abrem esta página. Os times continuam sendo salvos por um admin.",
+    "presentation": "Modo apresentação",
+    "exitPresentation": "Sair da apresentação",
+    "noDraft": "Não há evento em rascunho para mostrar.",
+    "captains": "Capitães",
+    "noCaptain": "Ainda sem capitão",
+    "captainLine": "{{team}} · Σ EHB {{ehb}}",
+    "region": "Região",
+    "activity": "Atividade",
+    "sortBy": "Ordenar por",
+    "anyActivity": "Qualquer",
+    "regions": {
+      "all": "Todas as regiões",
+      "americas": "Américas",
+      "europe": "Europa",
+      "africa": "África",
+      "asia": "Ásia",
+      "oceania": "Oceania"
+    },
+    "sorts": {
+      "ehb": "EHB total ↓",
+      "kc": "KC de bosses total ↓",
+      "name": "Nome A–Z"
+    },
+    "count_one": "{{count}} jogador disponível · capitães não listados",
+    "count_other": "{{count}} jogadores disponíveis · capitães não listados",
+    "everyoneAssigned": "Todos os jogadores aprovados já têm time.",
+    "ehb": "Σ EHB",
+    "bossKc": "Σ KC de bosses",
+    "alts_one": "{{count}} alt",
+    "alts_other": "{{count}} alts",
+    "noAlts": "sem alts",
+    "wants": "Quer:",
+    "noPreference": "Sem preferência",
+    "buyInPending": "Buy-in pendente",
+    "sigma": "Σ = main + alts encontradas no Wise Old Man.",
+    "details": "Ver detalhes de {{name}}",
+    "totalLevel": "Total",
+    "combatLevel": "Combate",
+    "modal": {
+      "discord": "Discord",
+      "accounts": "Contas ligadas",
+      "noAccounts": "Nenhuma conta ligada (inscrito antes dos perfis).",
+      "playing": "Joga o bingo"
+    }
+  },
+  "home": {
+    "eyebrow": "OSRS Bingo",
+    "title": "Meus eventos",
+    "login": "Entre para ver os eventos em que você está.",
+    "none": "Você ainda não está em nenhum evento.",
+    "browseEvents": "Ver eventos",
+    "notPlaying": "Evento ativo — você não está jogando nele.",
+    "browseBoard": "Ver board"
+  },
+  "status": {
+    "home": "Teleportar para o início",
+    "notFound": {
+      "eyebrow": "404",
+      "title": "I can't reach that!",
+      "message": "Esta página não existe. Ela pode ter mudado de lugar, ou o endereço está errado."
+    },
+    "noAccess": {
+      "eyebrow": "Área de membros",
+      "title": "Você precisa de um level maior para entrar",
+      "message": "Esta área é para os administradores do clã. Fale com um admin se acha que deveria ter acesso."
+    },
+    "login": {
+      "eyebrow": "Só para membros",
+      "title": "Entre para continuar",
+      "message": "Entre com o Discord para acessar esta área."
+    },
+    "crash": {
+      "eyebrow": "Oh dear…",
+      "title": "You are dead!",
+      "message": "Algo deu errado e esta página quebrou. Seu progresso está salvo — faça respawn para tentar de novo.",
+      "respawn": "Respawn"
+    },
+    "offline": {
+      "eyebrow": "Conexão perdida",
+      "title": "O mundo está offline",
+      "message": "Não conseguimos falar com o servidor do bingo agora. Tente de novo em instantes.",
+      "retry": "Tentar de novo"
+    },
+    "maintenance": {
+      "eyebrow": "Manutenção",
+      "title": "O mundo está sendo atualizado",
+      "soon": "Volte daqui a pouco.",
+      "adminBanner": "O modo manutenção está ligado — os jogadores não conseguem usar o site."
     }
   }
 }

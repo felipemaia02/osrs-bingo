@@ -12,6 +12,7 @@ import { FormModal } from '../../../components/ui/FormModal'
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { useSession } from '../../auth/hooks/useSession'
+import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { BulkBar } from '../components/BulkBar'
@@ -23,8 +24,10 @@ import { RosterTabs, type RosterTab } from '../components/RosterTabs'
 import { TeamsList } from '../components/TeamsList'
 import { teamErrorKey } from '../errors'
 import { useRosterActions } from '../hooks/useRosterActions'
-import { usePlayers, useTeamMutations, useTeams } from '../hooks/useTeams'
-import type { Player } from '../types'
+import { usePlayers, useTeamBalance, useTeamMutations, useTeams } from '../hooks/useTeams'
+import { ParticipantModal } from '../components/ParticipantModal'
+import { TeamBalanceCards } from '../components/TeamBalanceCards'
+import type { Player, Team } from '../types'
 
 const PAGE_SIZE = 25
 const SEARCH_DELAY_MS = 300
@@ -37,8 +40,10 @@ export function TeamsPage() {
   const isDesktop = useIsDesktop()
   const session = useSession()
   const events = useEvents()
-  const [eventId, setEventId] = useState('')
-  const selectedEvent = events.data?.find((event) => event.id === eventId)
+  const [chosenEventId, setEventId] = useState<string | null>(null)
+  const options = workingEvents(events.data ?? [])
+  const eventId = chosenEventId ?? defaultWorkingEvent(options)?.id ?? ''
+  const selectedEvent = options.find((event) => event.id === eventId)
 
   const eventSelect = (
     <label className={`flex flex-col gap-1 ${isDesktop ? 'w-[360px]' : ''}`}>
@@ -50,7 +55,7 @@ export function TeamsPage() {
           className={`${FIELD} appearance-none pl-3 pr-9`}
         >
           <option value="">{t('teams.selectEvent')}</option>
-          {events.data?.map((event) => (
+          {options.map((event) => (
             <option key={event.id} value={event.id}>
               {event.name} · {t(`events.status.${event.status}`)}
             </option>
@@ -137,7 +142,10 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const [confirmAll, setConfirmAll] = useState(false)
   const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
+  const [editing, setEditing] = useState<Player | null>(null)
+  const [editingTeam, setEditingTeam] = useState<Team | null>(null)
   const teams = useTeams(event.id)
+  const balance = useTeamBalance(event.id)
   const group = tab === 'teams' ? 'assigned' : tab
   const players = usePlayers(event.id, {
     group,
@@ -209,6 +217,10 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
       actions.clearFeedback()
       setRemoving(player)
     },
+    onEdit: (player: Player) => {
+      actions.clearFeedback()
+      setEditing(player)
+    },
   }
   const tabCounts: Record<RosterTab, number | null> = {
     pending: counts?.pending ?? null,
@@ -219,7 +231,13 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   // Names are listed only when every pending request is on screen (no search, single page).
   const allPendingVisible = tab === 'pending' && !search && items.length === (counts?.pending ?? -1)
   const dialogOpen = Boolean(
-    removing || removingSelected || confirmAll || assigning || creatingTeam,
+    removing ||
+    removingSelected ||
+    confirmAll ||
+    assigning ||
+    creatingTeam ||
+    editing ||
+    editingTeam,
   )
   const total = players.data?.total ?? 0
   const rangeEnd = Math.min(offset + PAGE_SIZE, total)
@@ -242,6 +260,9 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           className={`${FIELD} pl-[38px] pr-3 placeholder:text-rs-muted`}
         />
       </label>
+      <span className="whitespace-nowrap text-[13px] text-rs-muted">
+        {t('teams.roster.sorted')}
+      </span>
       {tab === 'assigned' && (
         <label className="flex items-center gap-2 text-[13px]">
           <span className="sr-only">{t('teams.roster.teamFilter')}</span>
@@ -308,6 +329,14 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             teams={teams.data}
             mobile={!desktop}
             onViewMembers={(team) => changeTab('assigned', team.id)}
+            onEdit={
+              editable
+                ? (team) => {
+                    actions.clearFeedback()
+                    setEditingTeam(team)
+                  }
+                : undefined
+            }
           />
         )}
       </>
@@ -326,6 +355,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
       </p>
     ) : desktop ? (
       <RosterTable
+        showBuyIn={Boolean(event.buy_in)}
         players={items}
         group={group}
         teams={teams.data ?? []}
@@ -382,6 +412,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
 
   return (
     <>
+      {balance.data && <TeamBalanceCards balance={balance.data} />}
       {desktop ? (
         <>
           <div className="flex flex-col rounded border border-rs-border bg-rs-surface">
@@ -517,13 +548,36 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           }}
         />
       )}
-      {creatingTeam && (
-        <CreateTeamDialog
+      {editing && (
+        <ParticipantModal
           eventId={event.id}
+          player={editing}
+          onClose={() => setEditing(null)}
+          onSaved={(message) => {
+            setEditing(null)
+            actions.notify(message)
+          }}
+        />
+      )}
+      {creatingTeam && (
+        <TeamDialog
+          eventId={event.id}
+          team={null}
           onClose={() => setCreatingTeam(false)}
-          onCreated={() => {
+          onSaved={() => {
             setCreatingTeam(false)
             actions.notify(t('teams.feedback.teamCreated'))
+          }}
+        />
+      )}
+      {editingTeam && (
+        <TeamDialog
+          eventId={event.id}
+          team={editingTeam}
+          onClose={() => setEditingTeam(null)}
+          onSaved={() => {
+            setEditingTeam(null)
+            actions.notify(t('teams.feedback.teamUpdated'))
           }}
         />
       )}
@@ -549,19 +603,23 @@ function ApproveAllMessage({ pending, visible }: { pending: number; visible: Pla
   )
 }
 
-function CreateTeamDialog({
+/** Creates a team, or renames `team` keeping its color and emblem. */
+function TeamDialog({
   eventId,
+  team,
   onClose,
-  onCreated,
+  onSaved,
 }: {
   eventId: string
+  team: Team | null
   onClose: () => void
-  onCreated: () => void
+  onSaved: () => void
 }) {
   const { t } = useTranslation()
-  const { createTeam } = useTeamMutations()
-  const [name, setName] = useState('')
+  const { createTeam, updateTeam } = useTeamMutations()
+  const [name, setName] = useState(team?.name ?? '')
   const [error, setError] = useState<string | null>(null)
+  const busy = createTeam.isPending || updateTeam.isPending
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -571,8 +629,14 @@ function CreateTeamDialog({
       return
     }
     try {
-      await createTeam.mutateAsync({ eventId, payload: { name, color: null } })
-      onCreated()
+      if (team)
+        await updateTeam.mutateAsync({
+          eventId,
+          teamId: team.id,
+          payload: { name, color: team.color, emblem_url: team.emblem_url ?? null },
+        })
+      else await createTeam.mutateAsync({ eventId, payload: { name, color: null } })
+      onSaved()
     } catch (failure) {
       setError(t(teamErrorKey(failure)))
     }
@@ -580,8 +644,8 @@ function CreateTeamDialog({
 
   return (
     <FormModal
-      title={t('teams.roster.createTeam')}
-      busy={createTeam.isPending}
+      title={team ? t('teams.editTeam', { name: team.name }) : t('teams.roster.createTeam')}
+      busy={busy}
       size="sm"
       onClose={onClose}
     >
@@ -604,11 +668,11 @@ function CreateTeamDialog({
           </p>
         )}
         <div className="flex justify-end gap-2">
-          <Button onClick={onClose} disabled={createTeam.isPending}>
+          <Button onClick={onClose} disabled={busy}>
             {t('common.cancel')}
           </Button>
-          <Button type="submit" variant="primary" disabled={createTeam.isPending}>
-            {t(createTeam.isPending ? 'common.saving' : 'teams.create')}
+          <Button type="submit" variant="primary" disabled={busy}>
+            {t(busy ? 'common.saving' : team ? 'common.save' : 'teams.create')}
           </Button>
         </div>
       </form>

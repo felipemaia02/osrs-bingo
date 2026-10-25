@@ -40,6 +40,16 @@ class IndexManager:
         ("players", [("event_id", 1), ("team_id", 1)], {"name": "players_event_team"}),
         (
             "players",
+            [("event_id", 1), ("team_id", 1)],
+            {
+                # One captain per team (feature 023).
+                "name": "players_team_captain_unique",
+                "unique": True,
+                "partialFilterExpression": {"role": "captain"},
+            },
+        ),
+        (
+            "players",
             [("event_id", 1), ("user_id", 1)],
             {
                 "name": "players_event_user_unique",
@@ -66,6 +76,71 @@ class IndexManager:
             "event_boards",
             [("event_id", 1)],
             {"name": "event_boards_event_unique", "unique": True},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("status", 1), ("kind", 1), ("submitted_at", 1)],
+            {"name": "submissions_event_status_kind_time"},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("user_id", 1), ("submitted_at", -1)],
+            {"name": "submissions_event_user_time"},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("kind", 1), ("player_id", 1), ("position", 1)],
+            {"name": "submissions_event_preverification"},
+        ),
+        (
+            "player_profiles",
+            [("accounts.normalized", 1)],
+            {
+                # An RSN can be linked to only one user (feature 021).
+                "name": "player_profiles_rsn_unique",
+                "unique": True,
+                "partialFilterExpression": {"accounts.normalized": {"$exists": True}},
+            },
+        ),
+        (
+            "droptracker_drops",
+            [("drop_id", 1)],
+            {"name": "droptracker_drops_id_unique", "unique": True},
+        ),
+        (
+            "droptracker_drops",
+            [("received_at", -1), ("drop_id", -1)],
+            {"name": "droptracker_drops_recent"},
+        ),
+        (
+            "droptracker_drops",
+            [("expires_at", 1)],
+            # Raw drops expire after DROPTRACKER_RETENTION_DAYS (stored per drop).
+            {"name": "droptracker_drops_ttl", "expireAfterSeconds": 0},
+        ),
+        (
+            "submissions",
+            [("droptracker_drop_id", 1), ("position", 1)],
+            {
+                # One automatic submission per DropTracker drop and card (feature 030).
+                "name": "submissions_droptracker_drop_unique",
+                "unique": True,
+                "partialFilterExpression": {"droptracker_drop_id": {"$exists": True}},
+            },
+        ),
+        (
+            "droptracker_drops",
+            [("bingo_outcome", 1), ("received_at", 1)],
+            {"name": "droptracker_drops_bingo_pending"},
+        ),
+        (
+            "submissions",
+            [("preverification_gate", 1)],
+            {
+                "name": "submissions_preverification_gate_unique",
+                "unique": True,
+                "partialFilterExpression": {"preverification_gate": {"$exists": True}},
+            },
         ),
     ]
 

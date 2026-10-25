@@ -9,6 +9,7 @@ import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { AdminEventCards, AdminEventTable } from '../components/AdminEventList'
 import { EventFormModal } from '../components/EventFormModal'
+import { EventRulesModal } from '../components/EventRulesModal'
 import { EVENT_PANEL_ID, EventTabs } from '../components/EventTabs'
 import { useEventAdmin } from '../hooks/useEventAdmin'
 import { useEvents } from '../hooks/useEvents'
@@ -35,12 +36,14 @@ export function AdminEventsPage() {
       <AdminEventTable
         events={tabs.visible}
         onEdit={admin.openEdit}
+        onRules={admin.openRules}
         onTransition={admin.openTransition}
       />
     ) : (
       <AdminEventCards
         events={tabs.visible}
         onEdit={admin.openEdit}
+        onRules={admin.openRules}
         onTransition={admin.openTransition}
       />
     )
@@ -115,6 +118,14 @@ export function AdminEventsPage() {
           saving={admin.saving}
           onSave={admin.save}
           onClose={admin.closeForm}
+        />
+      )}
+      {admin.rulesEvent && (
+        <EventRulesModal
+          event={admin.rulesEvent}
+          saving={admin.savingRules}
+          onSave={admin.saveRules}
+          onClose={admin.closeRules}
         />
       )}
       {admin.transition && (

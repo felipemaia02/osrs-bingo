@@ -2,9 +2,10 @@ import logging
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from time import perf_counter
+from typing import Any
 from uuid import uuid4
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -12,22 +13,70 @@ from starlette.responses import Response
 from app.core.config import settings
 from app.core.exceptions import AppException, app_exception_handler
 from app.core.logging import OAuthAccessLogFilter, get_logger, log_event
+from app.core.storage import build_storage, uses_bucket
 from app.database.indexes import IndexManager
 from app.database.mongodb import DatabaseClient
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.router import router as administration_router
 from app.modules.auth.router import router as auth_router
+from app.modules.boards.repository import BoardRepository
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
+from app.modules.droptracker.bingo import DropTrackerBingo
+from app.modules.droptracker.client import DropTrackerClient
+from app.modules.droptracker.poller import DropTrackerPoller
+from app.modules.droptracker.repository import DropRepository
+from app.modules.droptracker.router import router as droptracker_router
+from app.modules.droptracker.service import DropTrackerService
+from app.modules.events.repository import EventRepository
 from app.modules.events.router import router as events_router
+from app.modules.maintenance.gate import maintenance_gate
+from app.modules.maintenance.router import router as maintenance_router
+from app.modules.players.repository import PlayerRepository
 from app.modules.players.router import router as players_router
+from app.modules.profiles.router import router as profile_router
+from app.modules.profiles.wom import WomClient
+from app.modules.scoring.router import admin_router as admin_scoring_router
+from app.modules.scoring.router import player_router as scoring_router
 from app.modules.security.middleware import RequestSafetyMiddleware
+from app.modules.submissions.repository import SubmissionRepository
+from app.modules.submissions.router import (
+    MULTIPART_OVERHEAD_BYTES,
+    UPLOAD_PATH_PATTERN,
+)
+from app.modules.submissions.router import admin_router as admin_submissions_router
+from app.modules.submissions.router import player_router as submissions_router
 from app.modules.teams.router import router as teams_router
 from app.modules.tiles.router import router as tiles_router
 from app.modules.tiles.router import wiki_router
 
 logger = get_logger(__name__)
 logging.getLogger("uvicorn.access").addFilter(OAuthAccessLogFilter())
+
+
+def start_droptracker(database: Any) -> DropTrackerPoller | None:
+    """Starts pulling the clan's drops when enabled and a key is set (feature 029)."""
+    if not settings.droptracker_ingest_enabled:
+        return None
+    if not settings.droptracker_api_key.get_secret_value():
+        log_event(logger, 30, "droptracker_enabled_without_key")
+        return None
+    drops = DropRepository(database)
+    service = DropTrackerService(drops, DropTrackerClient(settings), settings)
+    bingo = (
+        DropTrackerBingo(
+            drops,
+            EventRepository(database),
+            PlayerRepository(database),
+            BoardRepository(database),
+            SubmissionRepository(database),
+        )
+        if settings.droptracker_bingo_enabled
+        else None
+    )
+    poller = DropTrackerPoller(service, drops, settings, bingo)
+    poller.start()
+    return poller
 
 
 @asynccontextmanager
@@ -37,12 +86,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     try:
         await db_client.connect(settings)
         app.state.db_client = db_client
+        app.state.screenshot_storage = build_storage(settings)
+        app.state.wom_client = WomClient(settings)
+        if settings.app_env != "development" and not uses_bucket(settings):
+            # A container folder is wiped on every deploy: screenshots would be lost.
+            log_event(logger, 30, "screenshot_storage_local_outside_development")
         await IndexManager().ensure_all(db_client.database)
         await AdministrationRepository(db_client.database).initialize(settings.admin_discord_ids)
+        app.state.droptracker_poller = start_droptracker(db_client.database)
         log_event(logger, 20, "application_ready")
         yield
     finally:
         log_event(logger, 20, "application_stopping")
+        if hasattr(app.state, "wom_client"):
+            await app.state.wom_client.close()
+        poller = getattr(app.state, "droptracker_poller", None)
+        if poller is not None:
+            await poller.stop()
         await db_client.disconnect()
 
 
@@ -80,6 +140,7 @@ async def request_logging(
 
 
 app = FastAPI(
+    dependencies=[Depends(maintenance_gate)],
     title="OSRS Bingo API",
     version="0.1.0",
     description="Platform for managing OSRS Bingo events",
@@ -88,7 +149,12 @@ app = FastAPI(
 
 app.middleware("http")(request_logging)
 
-app.add_middleware(RequestSafetyMiddleware, max_body_bytes=settings.max_request_body_bytes)
+app.add_middleware(
+    RequestSafetyMiddleware,
+    max_body_bytes=settings.max_request_body_bytes,
+    upload_paths=UPLOAD_PATH_PATTERN,
+    max_upload_bytes=settings.max_screenshot_bytes + MULTIPART_OVERHEAD_BYTES,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -108,6 +174,13 @@ app.include_router(tiles_router)
 app.include_router(wiki_router)
 app.include_router(public_boards_router)
 app.include_router(admin_boards_router)
+app.include_router(submissions_router)
+app.include_router(admin_submissions_router)
+app.include_router(scoring_router)
+app.include_router(admin_scoring_router)
+app.include_router(profile_router)
+app.include_router(maintenance_router)
+app.include_router(droptracker_router)
 
 
 @app.get("/health", tags=["infra"])

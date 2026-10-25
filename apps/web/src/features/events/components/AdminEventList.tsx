@@ -7,6 +7,7 @@ import { EventStatusBadge } from './EventStatusBadge'
 interface AdminEventListProps {
   events: BingoEvent[]
   onEdit: (event: BingoEvent) => void
+  onRules: (event: BingoEvent) => void
   onTransition: (event: BingoEvent, action: EventTransition) => void
 }
 
@@ -15,7 +16,7 @@ const HEAD =
   'whitespace-nowrap border-b border-rs-border bg-rs-inset px-3 py-2.5 text-left text-xs font-semibold text-rs-muted'
 
 /** Desktop table: event, status, schedule and per-status actions. */
-export function AdminEventTable({ events, onEdit, onTransition }: AdminEventListProps) {
+export function AdminEventTable({ events, onEdit, onRules, onTransition }: AdminEventListProps) {
   const { t } = useTranslation()
   return (
     <table className="w-full border-collapse">
@@ -49,6 +50,7 @@ export function AdminEventTable({ events, onEdit, onTransition }: AdminEventList
                 event={event}
                 mobile={false}
                 onEdit={onEdit}
+                onRules={onRules}
                 onTransition={onTransition}
               />
             </td>
@@ -60,7 +62,7 @@ export function AdminEventTable({ events, onEdit, onTransition }: AdminEventList
 }
 
 /** Mobile cards with the same content and 44 px actions. */
-export function AdminEventCards({ events, onEdit, onTransition }: AdminEventListProps) {
+export function AdminEventCards({ events, onEdit, onRules, onTransition }: AdminEventListProps) {
   return (
     <ul className="m-0 flex list-none flex-col gap-3 p-0">
       {events.map((event) => (
@@ -76,7 +78,13 @@ export function AdminEventCards({ events, onEdit, onTransition }: AdminEventList
           {event.description && (
             <p className="m-0 line-clamp-2 text-[13px] text-rs-muted">{event.description}</p>
           )}
-          <EventActions event={event} mobile onEdit={onEdit} onTransition={onTransition} />
+          <EventActions
+            event={event}
+            mobile
+            onEdit={onEdit}
+            onRules={onRules}
+            onTransition={onTransition}
+          />
         </li>
       ))}
     </ul>

@@ -30,6 +30,13 @@ async def directory(
     return await service.directory(search.strip(), offset, limit)
 
 
+@router.get("/administrators", response_model=list[DirectoryUser])
+async def administrators(
+    admin: AdminDependency, service: AdministrationServiceDependency
+) -> list[DirectoryUser]:
+    return await service.administrators()
+
+
 @router.patch("/users/{user_id}/role", response_model=DirectoryUser)
 async def change_role(
     user_id: str,

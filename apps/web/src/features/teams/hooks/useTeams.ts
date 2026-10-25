@@ -8,10 +8,15 @@ import {
   fetchOwnRegistration,
   createPlayer,
   createTeam,
+  updateTeam,
   fetchPlayers,
+  fetchDraftPreview,
+  fetchTeamBalance,
   fetchTeams,
+  updateParticipation,
   updatePlayer,
 } from '../api/teamsApi'
+import { fetchAdministrators } from '../../administration/api/administrationApi'
 
 export function useTeams(eventId: string | null) {
   return useQuery({
@@ -19,6 +24,32 @@ export function useTeams(eventId: string | null) {
     queryFn: () => fetchTeams(eventId!),
     enabled: Boolean(eventId),
   })
+}
+
+/** Each team's experience versus the average (feature 023); refreshed with the teams. */
+export function useTeamBalance(eventId: string | null) {
+  return useQuery({
+    queryKey: ['teams', eventId, 'balance'],
+    queryFn: () => fetchTeamBalance(eventId!),
+    enabled: Boolean(eventId),
+  })
+}
+
+const DRAFT_REFRESH_MS = 30_000
+
+/** Draft preview, re-read every 30 s and on focus so assigned players drop out (feature 024). */
+export function useDraftPreview(eventId: string | null) {
+  return useQuery({
+    queryKey: ['teams', eventId, 'draft-preview'],
+    queryFn: () => fetchDraftPreview(eventId!),
+    enabled: Boolean(eventId),
+    refetchInterval: DRAFT_REFRESH_MS,
+    refetchOnWindowFocus: true,
+  })
+}
+
+export function useAdministrators(enabled: boolean) {
+  return useQuery({ queryKey: ['administrators'], queryFn: fetchAdministrators, enabled })
 }
 
 export function usePlayers(eventId: string | null, filters: import('../types').PlayerFilters) {
@@ -40,6 +71,7 @@ export function useTeamMutations() {
   }
   return {
     createTeam: useMutation({ mutationFn: createTeam, onSuccess: refresh }),
+    updateTeam: useMutation({ mutationFn: updateTeam, onSuccess: refresh }),
     createPlayer: useMutation({ mutationFn: createPlayer, onSuccess: refresh }),
     approvePlayer: useMutation({ mutationFn: approvePlayer, onSuccess: refresh }),
     approveAllPlayers: useMutation({ mutationFn: approveAllPlayers, onSuccess: refresh }),
@@ -47,6 +79,7 @@ export function useTeamMutations() {
     approveSelectedPlayers: useMutation({ mutationFn: approveSelectedPlayers, onSuccess: refresh }),
     removeSelectedPlayers: useMutation({ mutationFn: removeSelectedPlayers, onSuccess: refresh }),
     updatePlayer: useMutation({ mutationFn: updatePlayer, onSuccess: refresh }),
+    updateParticipation: useMutation({ mutationFn: updateParticipation, onSuccess: refresh }),
   }
 }
 

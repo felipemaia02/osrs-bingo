@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
@@ -6,6 +6,8 @@ import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import { AxiosError } from 'axios'
 import { fetchUsers, changeRole } from '../../src/features/administration/api/administrationApi'
 import { AppRouter } from '../../src/app/router'
+import { fetchSiteStatus } from '../../src/features/maintenance/siteStatusApi'
+import { ErrorBoundary } from '../../src/components/common/status/ErrorBoundary'
 import { fetchAdminBoard } from '../../src/features/boards/api/boardsApi'
 import type { EventBoard } from '../../src/features/boards/types'
 import { fetchCards } from '../../src/features/cards/api/cardsApi'
@@ -29,18 +31,22 @@ beforeEach(async () => {
   vi.mocked(fetchEvents).mockResolvedValue([])
 })
 
-it('redirects anonymous admin visitors to the dedicated login page', async () => {
+it('asks anonymous admin visitors to log in (feature 027)', async () => {
   vi.mocked(fetchSession).mockResolvedValue(null)
   renderApp(<AppRouter />, '/admin/teams')
-  expect(await screen.findByRole('heading', { name: 'Join the adventure' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Log in to continue' })).toBeInTheDocument()
+  expect(screen.getAllByRole('link', { name: 'Log in with Discord' })[0]).toHaveAttribute(
+    'href',
+    '/login',
+  )
 })
 
 it('blocks regular users from the private portal and navigation', async () => {
   vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: false })
   renderApp(<AppRouter />, '/admin')
-  expect(await screen.findByRole('alert')).toHaveTextContent(
-    'Only administrators can manage participants.',
-  )
+  expect(
+    await screen.findByRole('heading', { name: 'You need a higher level to enter' }),
+  ).toBeInTheDocument()
   expect(
     screen.queryByRole('navigation', { name: 'Administration sections' }),
   ).not.toBeInTheDocument()
@@ -62,14 +68,13 @@ it('makes every overview card a complete navigation link', async () => {
     ['/admin/cards', 'Bosses, drops, progress weights and revisions.'],
     ['/admin/boards', 'Choose the board size, cards and positions for each event.'],
     ['/admin/administrators', 'App roles, independent of Discord.'],
+    ['/admin/ranking', "Compare teams and each player's contribution."],
+    ['/admin/review', "Accept or reject players' submissions with the screenshot."],
   ]
   for (const [path, description] of destinations) {
     const text = await screen.findByText(description)
     expect(text.closest('a')).toHaveAttribute('href', path)
   }
-  const ranking = screen.getByText('Compare teams and contributions. Not available yet.')
-  expect(ranking.closest('a')).toBeNull()
-  expect(ranking.closest('[aria-disabled="true"]')).not.toBeNull()
 
   await user.click(screen.getByText('Create, activate and finish. Only one can be active.'))
   expect(await screen.findByRole('button', { name: 'New event' })).toBeInTheDocument()
@@ -159,8 +164,46 @@ it('shows the last-administrator conflict without changing the role', async () =
 it('does not request the user directory for a regular player', async () => {
   vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: false })
   renderApp(<AppRouter />, '/admin/administrators')
-  expect(await screen.findByRole('alert')).toBeInTheDocument()
+  expect(
+    await screen.findByRole('heading', { name: 'You need a higher level to enter' }),
+  ).toBeInTheDocument()
   expect(fetchUsers).not.toHaveBeenCalled()
+})
+
+it('shows the 404 screen for unknown pages, also under /admin', async () => {
+  const { unmount } = renderApp(<AppRouter />, '/does-not-exist')
+  expect(await screen.findByRole('heading', { name: "I can't reach that!" })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Teleport home' })).toHaveAttribute('href', '/')
+  unmount()
+
+  renderApp(<AppRouter />, '/admin/nope')
+  expect(await screen.findByRole('heading', { name: "I can't reach that!" })).toBeInTheDocument()
+})
+
+it('shows the offline screen when the server is unreachable and retries', async () => {
+  vi.mocked(fetchSession).mockRejectedValueOnce(new AxiosError('Network Error'))
+  const user = userEvent.setup()
+  renderApp(<AppRouter />, '/events')
+
+  expect(await screen.findByRole('heading', { name: 'The world is offline' })).toBeInTheDocument()
+  vi.mocked(fetchSession).mockResolvedValue(USER)
+  await user.click(screen.getByRole('button', { name: 'Try again' }))
+  await waitFor(() => expect(screen.queryByText('The world is offline')).toBeNull())
+})
+
+it('shows the crash screen instead of a blank page', async () => {
+  const Broken = () => {
+    throw new Error('boom')
+  }
+  const spy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  render(
+    <ErrorBoundary>
+      <Broken />
+    </ErrorBoundary>,
+  )
+  expect(screen.getByRole('heading', { name: 'You are dead!' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Respawn' })).toBeInTheDocument()
+  spy.mockRestore()
 })
 
 describe('administration overview status', () => {
@@ -239,5 +282,33 @@ describe('administration overview status', () => {
       .closest('a')!
     expect(boards).not.toHaveTextContent('/36')
     expect(screen.queryByText(/pending/)).not.toBeInTheDocument()
+  })
+})
+
+describe('maintenance mode (feature 028)', () => {
+  beforeEach(() => {
+    vi.mocked(fetchSiteStatus).mockResolvedValue({
+      maintenance: true,
+      message: 'Back at 20:00 UTC.',
+    })
+  })
+
+  it('closes the site for players with the admins message', async () => {
+    vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: false })
+    renderApp(<AppRouter />, '/events')
+
+    expect(
+      await screen.findByRole('heading', { name: 'The world is being updated' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Back at 20:00 UTC. Please come back soon.')).toBeInTheDocument()
+  })
+
+  it('lets admins in with a banner', async () => {
+    renderApp(<AppRouter />, '/events')
+
+    expect(
+      await screen.findByText("Maintenance mode is on — players can't use the site."),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'The world is being updated' })).toBeNull()
   })
 })

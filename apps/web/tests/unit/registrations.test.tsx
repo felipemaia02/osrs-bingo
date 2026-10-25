@@ -2,8 +2,9 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
+import { fetchAdministrators } from '../../src/features/administration/api/administrationApi'
 import { fetchSession, logout } from '../../src/features/auth/api/authApi'
-import { fetchEvents } from '../../src/features/events/api/eventsApi'
+import { fetchEvents, fetchMyEvents } from '../../src/features/events/api/eventsApi'
 import { PlayerEventsPage } from '../../src/features/events/pages/PlayerEventsPage'
 import type { BingoEvent } from '../../src/features/events/types'
 import * as api from '../../src/features/teams/api/teamsApi'
@@ -79,24 +80,62 @@ async function openAdministration() {
   return user
 }
 
-it('requests registration without a team and refreshes pending status', async () => {
+it('links unregistered players to the join page instead of a nickname form', async () => {
+  renderApp(<PlayerEventsPage />, '/events')
+
+  const join = await screen.findByRole('link', { name: 'Join Summer Bingo' })
+  expect(join).toHaveAttribute('href', `/events/${EVENT.id}/join`)
+  expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
+})
+
+it('filters my events and searches by name', async () => {
+  const other = { ...EVENT, id: 'winter', name: 'Winter Bingo' }
+  vi.mocked(fetchEvents).mockImplementation(async (status) =>
+    status === 'active' ? [] : [EVENT, other],
+  )
+  vi.mocked(fetchMyEvents).mockResolvedValue([EVENT])
   const user = userEvent.setup()
-  vi.mocked(api.createPlayer).mockImplementation(async () => {
-    vi.mocked(api.fetchOwnRegistration).mockResolvedValue(PLAYER)
-    return PLAYER
+  renderApp(<PlayerEventsPage />, '/events')
+
+  await user.click(await screen.findByRole('tab', { name: /Mine 1/ }))
+  expect(screen.getByRole('heading', { name: 'Summer Bingo' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Winter Bingo' })).toBeNull()
+
+  await user.click(screen.getByRole('tab', { name: /All 2/ }))
+  await user.type(screen.getByRole('searchbox', { name: 'Search events' }), 'wínter')
+  expect(screen.getByRole('heading', { name: 'Winter Bingo' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Summer Bingo' })).toBeNull()
+})
+
+it('makes event cards lead to the board or the join page', async () => {
+  const active = { ...EVENT, id: 'live', name: 'Cyber Event', status: 'active' as const }
+  vi.mocked(fetchEvents).mockImplementation(async (status) =>
+    status === 'active' ? [active] : [active, EVENT],
+  )
+  renderApp(<PlayerEventsPage />, '/events')
+
+  const board = await screen.findByRole('link', { name: /Cyber Event.*Open board/ })
+  expect(board).toHaveAttribute('href', '/')
+  expect(await screen.findByRole('link', { name: /Summer Bingo.*Join event/ })).toHaveAttribute(
+    'href',
+    `/events/${EVENT.id}/join`,
+  )
+})
+
+it('shows the account and buy-in status of a joined registration', async () => {
+  vi.mocked(api.fetchOwnRegistration).mockResolvedValue({
+    ...PLAYER,
+    account_id: 'acc-1',
+    activity: 'over_3h',
+    buy_in_status: 'pending',
   })
   renderApp(<PlayerEventsPage />, '/events')
-  await user.type(await screen.findByLabelText('OSRS display name'), 'Thunder Crab')
-  await user.click(screen.getByRole('button', { name: 'Request registration' }))
+
   expect(await screen.findByText('Registration pending approval')).toBeInTheDocument()
-  expect(screen.getByText('Pending')).toBeInTheDocument()
-  expect(vi.mocked(api.createPlayer).mock.calls[0][0]).toEqual({
-    eventId: EVENT.id,
-    payload: { display_name: 'Thunder Crab' },
-  })
-  expect(screen.queryByRole('button', { name: 'New event' })).not.toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
-  expect(screen.queryByLabelText('Team for Thunder Crab')).not.toBeInTheDocument()
+  expect(screen.getByText('Playing as')).toBeInTheDocument()
+  expect(screen.getByText('Thunder Crab')).toBeInTheDocument()
+  expect(screen.getByText('Buy-in not paid yet')).toBeInTheDocument()
 })
 
 it('requires login and prevents participant administration', async () => {
@@ -222,25 +261,29 @@ it.each([
   expect(await screen.findByText(text)).toBeInTheDocument()
 })
 
-it('keeps participant queries scoped to the selected administrative event', async () => {
-  const other = { ...EVENT, id: 'event-2', name: 'Winter Bingo' }
+it('opens the oldest draft, hides finished events and keeps queries scoped', async () => {
+  const other = {
+    ...EVENT,
+    id: 'event-2',
+    name: 'Winter Bingo',
+    created_at: '2026-10-05T12:00:00Z',
+  }
+  const finished = { ...EVENT, id: 'event-3', name: 'Old Bingo', status: 'finished' as const }
   vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: true })
   vi.mocked(fetchEvents).mockImplementation(async (status) =>
-    status === 'active' ? [] : [EVENT, other],
+    status === 'active' ? [] : [other, EVENT, finished],
   )
   vi.mocked(api.fetchPlayers).mockImplementation(async (eventId, filters) =>
     pageOf(eventId === EVENT.id ? [PLAYER] : [], filters),
   )
   const user = userEvent.setup()
   renderApp(<TeamsPage />, '/teams')
-  await screen.findByRole('option', { name: 'Winter Bingo · Draft' })
-  // The shell only reads draft-event counts (limit 1); no roster page loads before selection.
-  expect(api.fetchPlayers).not.toHaveBeenCalledWith(
-    expect.anything(),
-    expect.objectContaining({ limit: 25 }),
-  )
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  await screen.findByText('Thunder Crab')
+
+  // No active event: the draft created first is opened without choosing.
+  expect(await screen.findByText('Thunder Crab')).toBeInTheDocument()
+  expect(screen.getByLabelText('Event')).toHaveValue(EVENT.id)
+  expect(screen.queryByRole('option', { name: 'Old Bingo · Finished' })).toBeNull()
+
   await user.selectOptions(screen.getByLabelText('Event'), other.id)
   expect(await screen.findByText('No pending requests.')).toBeInTheDocument()
   expect(screen.queryByText('Thunder Crab')).not.toBeInTheDocument()
@@ -248,6 +291,15 @@ it('keeps participant queries scoped to the selected administrative event', asyn
     other.id,
     expect.objectContaining({ offset: 0, group: 'pending' }),
   )
+})
+
+it('opens the active event before any draft', async () => {
+  const active = { ...EVENT, id: 'event-9', name: 'Live Bingo', status: 'active' as const }
+  vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: true })
+  vi.mocked(fetchEvents).mockResolvedValue([EVENT, active])
+  renderApp(<TeamsPage />, '/teams')
+
+  await waitFor(() => expect(screen.getByLabelText('Event')).toHaveValue(active.id))
 })
 
 it('shows active events as read-only even to administrators', async () => {
@@ -311,6 +363,29 @@ it('creates a team in a modal and opens its filtered member list', async () => {
   )
 })
 
+it('renames a team keeping its color', async () => {
+  const colored = { ...TEAM, color: '#2F5592' }
+  vi.mocked(api.fetchTeams).mockResolvedValue([colored])
+  vi.mocked(api.updateTeam).mockResolvedValue({ ...colored, name: 'Lobsters' })
+  const user = await openAdministration()
+  await user.click(await screen.findByRole('tab', { name: /^Teams/ }))
+
+  await user.click(screen.getByRole('button', { name: 'Edit Crabs' }))
+  const dialog = screen.getByRole('dialog', { name: 'Edit Crabs' })
+  const name = within(dialog).getByLabelText('Team name')
+  expect(name).toHaveValue('Crabs')
+  await user.clear(name)
+  await user.type(name, 'Lobsters')
+  await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+  expect(await screen.findByText('Team updated.')).toBeInTheDocument()
+  expect(vi.mocked(api.updateTeam).mock.calls[0][0]).toEqual({
+    eventId: EVENT.id,
+    teamId: TEAM.id,
+    payload: { name: 'Lobsters', color: '#2F5592', emblem_url: null },
+  })
+})
+
 it('returns to the previous page when the last row is removed', async () => {
   const players = Array.from({ length: 26 }, (_, index) => ({
     ...PLAYER,
@@ -347,7 +422,6 @@ describe('teams v2 selection and columns', () => {
     const row = (await screen.findByText('Player 1')).closest('tr')!
     expect(row).toHaveTextContent('discord1')
     expect(row).toHaveTextContent(/Oct 21/)
-    expect(within(row).getByText('Pending')).toBeInTheDocument()
     expect(screen.getByText('Player 2').closest('tr')).toHaveTextContent('—')
     expect(screen.getByText('Editable: draft event')).toBeInTheDocument()
     expect(screen.getByText(/doesn't delete the request/)).toBeInTheDocument()
@@ -445,5 +519,140 @@ describe('teams v2 selection and columns', () => {
     expect(api.approvePlayer).toHaveBeenCalled()
     expect(screen.getByText('1–2 of 2')).toBeInTheDocument()
     vi.unstubAllGlobals()
+  })
+})
+
+describe('participants and team balance (feature 023)', () => {
+  const PAID_EVENT = { ...EVENT, buy_in: '5M gp' }
+  const ADMIN = { id: 'admin-1', discord_id: '9', username: 'felps_', is_admin: true }
+  const approved = (index: number, extra: Partial<Player> = {}): Player => ({
+    ...PLAYER,
+    id: `a${index}`,
+    status: 'approved',
+    display_name: `Player ${index}`,
+    discord_username: `discord${index}`,
+    account_id: `acc${index}`,
+    activity: 'one_to_three_h',
+    buy_in_status: 'pending',
+    ...extra,
+  })
+
+  beforeEach(() => {
+    vi.mocked(fetchEvents).mockImplementation(async (status) =>
+      status === 'active' ? [] : [PAID_EVENT],
+    )
+    vi.mocked(api.fetchTeamBalance).mockResolvedValue({
+      average_ehb: 900,
+      teams: [
+        {
+          team_id: TEAM.id,
+          name: 'Crabs',
+          color: null,
+          player_count: 6,
+          boss_kc_total: 67605,
+          ehb_total: 1100,
+          captain: 'felps_',
+          ehb_vs_average: 22,
+          players_short: 0,
+          balanced: false,
+        },
+        {
+          team_id: 'team-2',
+          name: 'Lobsters',
+          color: null,
+          player_count: 5,
+          boss_kc_total: 40000,
+          ehb_total: 880,
+          captain: null,
+          ehb_vs_average: -2,
+          players_short: 1,
+          balanced: true,
+        },
+      ],
+    })
+    vi.mocked(fetchAdministrators).mockResolvedValue([
+      ADMIN,
+      { ...ADMIN, id: 'admin-2', username: 'mod_bia' },
+    ])
+  })
+
+  it('shows team balance cards against the average', async () => {
+    await openAdministration()
+
+    const crabs = await screen.findByRole('article', { name: 'Crabs' })
+    expect(within(crabs).getByText('6 players')).toBeInTheDocument()
+    expect(within(crabs).getByText('1,100')).toBeInTheDocument()
+    expect(within(crabs).getByText('67,605')).toBeInTheDocument()
+    expect(within(crabs).getByText('+22% vs average')).toBeInTheDocument()
+    const lobsters = screen.getByRole('article', { name: 'Lobsters' })
+    expect(within(lobsters).getByText('No captain')).toBeInTheDocument()
+    expect(within(lobsters).getByText(/−2% vs average · 1 player short/)).toBeInTheDocument()
+    expect(screen.getByText(/average EHB per team 900/)).toBeInTheDocument()
+  })
+
+  it('lists experience, wishes, role and buy-in for each participant', async () => {
+    setPlayers([
+      approved(1, {
+        alt_count: 2,
+        boss_kc_total: 17950,
+        ehb_total: 845.2,
+        timezone: 'America/Sao_Paulo',
+        teammates: ['Druid Duda'],
+        role: 'instructor',
+        buy_in_status: 'paid',
+        buy_in_admin_name: 'felps_',
+      }),
+      approved(2, { account_id: null, buy_in_status: null, activity: null }),
+    ])
+    const user = await openAdministration()
+    await user.click(screen.getByRole('tab', { name: /Unassigned/ }))
+
+    const row = (await screen.findByText('Player 1')).closest('tr')!
+    expect(row).toHaveTextContent('discord1 · main + 2 alts')
+    expect(row).toHaveTextContent('Sao Paulo')
+    expect(row).toHaveTextContent('1–3 h/day')
+    expect(row).toHaveTextContent('17,950')
+    expect(row).toHaveTextContent('845.2')
+    expect(row).toHaveTextContent('Druid Duda')
+    expect(within(row).getByText('Instructor')).toBeInTheDocument()
+    expect(within(row).getByText('Paid')).toBeInTheDocument()
+    expect(within(row).getByText('to felps_')).toBeInTheDocument()
+    expect(screen.getByText('Sorted by EHB total ↓')).toBeInTheDocument()
+  })
+
+  it('edits role and buy-in, recording who received the payment', async () => {
+    setPlayers([approved(1, { team_id: TEAM.id })])
+    vi.mocked(fetchSession).mockResolvedValue(ADMIN)
+    vi.mocked(api.updateParticipation)
+      .mockRejectedValueOnce(
+        new AxiosError('conflict', '409', undefined, undefined, {
+          status: 409,
+          data: { detail: 'This team already has a captain' },
+        } as never),
+      )
+      .mockResolvedValueOnce(approved(1))
+    renderApp(<TeamsPage />, '/teams')
+    const user = userEvent.setup()
+    await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+    await user.click(await screen.findByRole('tab', { name: /Assigned/ }))
+    await user.click(await screen.findByRole('button', { name: 'Edit Player 1' }))
+
+    const dialog = screen.getByRole('dialog', { name: 'Edit Player 1' })
+    await user.selectOptions(within(dialog).getByLabelText('Role'), 'captain')
+    await user.selectOptions(within(dialog).getByLabelText('Buy-in'), 'paid')
+    const receiver = await within(dialog).findByLabelText('Received by')
+    expect(receiver).toHaveValue('admin-1')
+    await user.selectOptions(receiver, 'admin-2')
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+    expect(await within(dialog).findByText('This team already has a captain.')).toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+    expect(await screen.findByText('Player 1 updated.')).toBeInTheDocument()
+    expect(vi.mocked(api.updateParticipation).mock.calls[1][0]).toEqual({
+      eventId: EVENT.id,
+      playerId: 'a1',
+      payload: { role: 'captain', buy_in_status: 'paid', buy_in_admin_id: 'admin-2' },
+    })
   })
 })

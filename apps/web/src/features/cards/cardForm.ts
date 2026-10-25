@@ -20,6 +20,7 @@ export interface CardForm {
   wikiArticle: string
   wikiImage: WikiImage | null
   ruleNote: string
+  requiresPreverification: boolean
   changeReason: string
 }
 
@@ -38,6 +39,7 @@ export const EMPTY_FORM: CardForm = {
   wikiArticle: '',
   wikiImage: null,
   ruleNote: '',
+  requiresPreverification: false,
   changeReason: '',
 }
 
@@ -89,6 +91,7 @@ export function cardToForm(card: CardSummary): CardForm {
     wikiArticle: revision.wiki_image?.article_title ?? revision.name,
     wikiImage: revision.wiki_image,
     ruleNote: revision.rule_note ?? '',
+    requiresPreverification: revision.requires_preverification ?? false,
     changeReason: '',
   }
 }
@@ -111,6 +114,7 @@ export function toRevisionPayload(
     wiki_image: form.wikiImage,
     fallback_image_accepted: !form.wikiImage,
     rule_note: form.ruleNote || null,
+    requires_preverification: form.requiresPreverification,
     change_reason: form.changeReason,
   }
 }

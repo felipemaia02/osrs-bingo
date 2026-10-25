@@ -5,6 +5,7 @@ import {
   moveCard,
   placeCard,
   removeCard,
+  resizeBonusRow,
   resizeDraft,
   rowOf,
   sameDraft,
@@ -64,10 +65,40 @@ describe('board draft', () => {
     expect(resizeDraft(draft, 6, 4)).toEqual({
       draft: { 1: 'a:1', 7: 'b:1' },
       removed: ['c:1', 'd:1'],
+      bonusSlots: 0,
     })
     expect(resizeDraft({ 1: 'a:1', 7: 'b:1' }, 4, 6)).toEqual({
       draft: { 1: 'a:1', 9: 'b:1' },
       removed: [],
+      bonusSlots: 0,
+    })
+  })
+
+  it('keeps bonus cards in their slot when the board size changes', () => {
+    // 4×4 with 3 bonus slots: grid 1…16, bonus 17…19.
+    const draft: Draft = { 1: 'a:1', 17: 'x:1', 19: 'z:1' }
+    expect(resizeDraft(draft, 4, 6, 3)).toEqual({
+      draft: { 1: 'a:1', 37: 'x:1', 39: 'z:1' },
+      removed: [],
+      bonusSlots: 3,
+    })
+    // A 3×3 board keeps at most 3 bonus slots: slot 3 stays (9 + 3 = 12).
+    expect(resizeDraft({ 17: 'x:1', 20: 'w:1' }, 4, 3, 4)).toEqual({
+      draft: { 10: 'x:1' },
+      removed: ['w:1'],
+      bonusSlots: 3,
+    })
+  })
+
+  it('fills the grid before the bonus row and trims removed bonus slots', () => {
+    const keys = Array.from({ length: 11 }, (_, index) => `k${index}:1`)
+    const filled = fillEmpty({}, keys, 3, 2)
+    expect(Object.keys(filled).map(Number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+    expect(emptyPositions({}, 3, 2)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+
+    expect(resizeBonusRow({ 1: 'a:1', 10: 'b:1', 11: 'c:1' }, 3, 1)).toEqual({
+      draft: { 1: 'a:1', 10: 'b:1' },
+      removed: ['c:1'],
     })
   })
 })

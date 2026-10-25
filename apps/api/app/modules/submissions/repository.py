@@ -1,0 +1,181 @@
+from datetime import UTC, datetime, timedelta
+from typing import Any, cast
+
+from bson import ObjectId
+from bson.errors import InvalidId
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from pymongo import ReturnDocument
+from pymongo.errors import DuplicateKeyError
+
+from app.modules.submissions.models import SubmissionDocument
+from app.modules.submissions.schemas import SubmissionKind, SubmissionStatus
+
+OWN_SUBMISSIONS_LIMIT = 500
+
+
+def preverification_gate(event_id: ObjectId, player_id: ObjectId, position: int) -> str:
+    return f"{event_id}:{player_id}:{position}"
+
+
+class SubmissionRepository:
+    def __init__(self, database: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
+        self._collection = database["submissions"]
+
+    async def insert(self, document: SubmissionDocument) -> bool:
+        """False when a pending or accepted pre-verification already exists."""
+        try:
+            await self._collection.insert_one(document)
+        except DuplicateKeyError:
+            return False
+        return True
+
+    async def has_recent_manual_drop(
+        self,
+        event_id: ObjectId,
+        player_id: ObjectId,
+        position: int,
+        drop_key: str,
+        around: datetime,
+        window: timedelta,
+    ) -> bool:
+        """A manual, pending or accepted submission of this item on this card near `around`."""
+        found = await self._collection.find_one(
+            {
+                "event_id": event_id,
+                "player_id": player_id,
+                "position": position,
+                "drop_key": drop_key,
+                "kind": SubmissionKind.DROP,
+                "source": {"$ne": "droptracker"},
+                "status": {"$in": [SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED]},
+                "submitted_at": {"$gte": around - window, "$lte": around + window},
+            },
+            {"_id": 1},
+        )
+        return found is not None
+
+    async def get(self, submission_id: str) -> SubmissionDocument | None:
+        object_id = self._object_id(submission_id)
+        if object_id is None:
+            return None
+        return cast(SubmissionDocument | None, await self._collection.find_one({"_id": object_id}))
+
+    async def list_for_user(
+        self, event_id: ObjectId, user_id: ObjectId
+    ) -> list[SubmissionDocument]:
+        cursor = (
+            self._collection.find({"event_id": event_id, "user_id": user_id})
+            .sort("submitted_at", -1)
+            .limit(OWN_SUBMISSIONS_LIMIT)
+        )
+        return cast(list[SubmissionDocument], await cursor.to_list(length=OWN_SUBMISSIONS_LIMIT))
+
+    async def page(
+        self,
+        event_id: ObjectId,
+        status: SubmissionStatus,
+        kind: SubmissionKind | None,
+        offset: int,
+        limit: int,
+    ) -> tuple[list[SubmissionDocument], int]:
+        query: dict[str, Any] = {"event_id": event_id, "status": status}
+        if kind is not None:
+            query["kind"] = kind
+        total = await self._collection.count_documents(query)
+        cursor = self._collection.find(query).sort("submitted_at", 1).skip(offset).limit(limit)
+        return cast(list[SubmissionDocument], await cursor.to_list(length=limit)), total
+
+    async def pending_counts(self, event_id: ObjectId) -> dict[str, int]:
+        pipeline: list[dict[str, Any]] = [
+            {"$match": {"event_id": event_id, "status": SubmissionStatus.PENDING}},
+            {"$group": {"_id": "$kind", "count": {"$sum": 1}}},
+        ]
+        return {row["_id"]: row["count"] async for row in self._collection.aggregate(pipeline)}
+
+    async def preverification_statuses(
+        self, event_id: ObjectId, keys: set[tuple[ObjectId, int]]
+    ) -> dict[tuple[ObjectId, int], str]:
+        """Best state per (player, position): accepted > pending > rejected."""
+        if not keys:
+            return {}
+        rank = {
+            SubmissionStatus.ACCEPTED: 3,
+            SubmissionStatus.PENDING: 2,
+            SubmissionStatus.REJECTED: 1,
+        }
+        cursor = self._collection.find(
+            {
+                "event_id": event_id,
+                "kind": SubmissionKind.PREVERIFICATION,
+                "$or": [{"player_id": player, "position": position} for player, position in keys],
+            },
+            {"player_id": 1, "position": 1, "status": 1},
+        )
+        best: dict[tuple[ObjectId, int], str] = {}
+        async for row in cursor:
+            key = (row["player_id"], row["position"])
+            current = best.get(key)
+            if (
+                current is None
+                or rank[SubmissionStatus(row["status"])] > rank[SubmissionStatus(current)]
+            ):
+                best[key] = row["status"]
+        return best
+
+    async def review(
+        self,
+        submission_id: ObjectId,
+        decision: SubmissionStatus,
+        reviewer_id: str,
+        reviewer_name: str,
+        reason: str | None = None,
+        note: str | None = None,
+    ) -> SubmissionDocument | None:
+        """Applies a decision only if the submission is still pending."""
+        update: dict[str, Any] = {
+            "$set": {
+                "status": decision,
+                "reviewed_at": datetime.now(UTC),
+                "reviewed_by": reviewer_id,
+                "reviewer_name": reviewer_name,
+                "rejection_reason": reason,
+                "rejection_note": note,
+            }
+        }
+        if decision == SubmissionStatus.REJECTED:
+            update["$unset"] = {"preverification_gate": ""}
+        return cast(
+            SubmissionDocument | None,
+            await self._collection.find_one_and_update(
+                {"_id": submission_id, "status": SubmissionStatus.PENDING},
+                update,
+                return_document=ReturnDocument.AFTER,
+            ),
+        )
+
+    async def accepted_drops(self, event_id: ObjectId) -> list[SubmissionDocument]:
+        """The verified activity scoring consumes (feature 006)."""
+        cursor = self._collection.find(
+            {
+                "event_id": event_id,
+                "kind": SubmissionKind.DROP,
+                "status": SubmissionStatus.ACCEPTED,
+            },
+            {
+                "team_id": 1,
+                "player_id": 1,
+                "position": 1,
+                "drop_key": 1,
+                "drop_name": 1,
+                "progress_weight": 1,
+                "quantity": 1,
+            },
+        )
+        return cast(list[SubmissionDocument], await cursor.to_list(length=None))
+
+    @staticmethod
+    def _object_id(value: str) -> ObjectId | None:
+        try:
+            return ObjectId(value)
+        except (InvalidId, TypeError):
+            return None

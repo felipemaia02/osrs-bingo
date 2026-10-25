@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My profile — desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.h2{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;font-size:18px}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.p{background:#d4ad53;border-color:#d4ad53;color:#15110e;font-weight:600}
+.btn.sm{min-height:32px;padding:0 10px;font-size:13px}
+.btn.ic{padding:0;width:36px;min-height:36px}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bd .ms{font-size:13px}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bW{color:#f1d487;border-color:#a88647;background:#2a2112}
+.bH{color:#efaaa0;border-color:#b45b4e;background:#2b1714}
+.bF{color:#a9cde2;border-color:#668ca3;background:#13202a}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.hd{height:64px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid #705a39;background:#19120e}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #705a39;border-radius:3px;color:#ead9b7;text-decoration:none;font-size:13px}
+.lg{font:inherit;font-size:12px;font-weight:600;min-width:36px;min-height:32px;background:transparent;border:1px solid transparent;color:#aa9a7c;border-radius:3px;cursor:pointer}
+.lg.on{background:#d4ad53;color:#15110e}
+.av{width:24px;height:24px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.sb{width:240px;flex:none;border-right:1px solid rgba(112,90,57,.55);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.sg{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aa9a7c;font-weight:600;padding:14px 12px 6px}
+.nv{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:3px;color:#ead9b7;text-decoration:none;border:1px solid transparent;font-size:14px}
+.nv.on{background:#2d2119;border-color:#a88647;color:#f1d487;font-weight:600}
+.nv.off{color:#9a8b70}
+.nv .bd{margin-left:auto}
+.acc{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.st{background:#19120e;border:1px solid rgba(112,90,57,.6);border-radius:3px;padding:8px 10px;display:flex;flex-direction:column}
+.st span{font-size:11px;color:#aa9a7c;letter-spacing:.04em}
+.st strong{font-size:18px;color:#f1d487;font-variant-numeric:tabular-nums}
+.auto{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#aa9a7c}
+.auto .ms{font-size:14px}
+.opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:1px solid #705a39;border-radius:3px;background:#19120e;cursor:pointer;font-size:14px}
+.opt.on{border-color:#f1d487;background:#2d2119;color:#f1d487;font-weight:600}
+.opt input{accent-color:#d4ad53;width:16px;height:16px;margin:0}
+.sum{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(112,90,57,.4)}
+.sample{position:absolute;top:-10px;right:12px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9cde2;background:#13202a;border:1px solid #668ca3;padding:1px 6px;border-radius:2px}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 1300px; display: flex; flex-direction: column">
+  <header class="hd">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px">
+      <a href="#" class="pill"><span class="ms" aria-hidden="true">event</span>Autumn Bingo 2026<span class="bd bE">Active</span></a>
+      <div role="group" aria-label="Language" style="display: flex; align-items: center; gap: 2px"><span class="ms mut" aria-hidden="true">translate</span><button class="lg on" type="button" aria-pressed="true">EN</button><button class="lg" type="button">PT</button><button class="lg" type="button">ES</button></div>
+      <button class="btn" type="button" style="min-height: 36px"><span class="av">F</span>felps_<span class="ms" aria-hidden="true">expand_more</span></button>
+    </div>
+  </header>
+  <div style="display: flex; flex: 1; min-height: 0">
+    <nav class="sb" aria-label="Main">
+      <div class="sg">Play</div>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">grid_view</span>Board</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">calendar_month</span>Events</a>
+      <a class="nv on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">account_circle</span>My profile</a>
+      <span class="nv off" aria-disabled="true"><span class="ms" aria-hidden="true">upload_file</span>My submissions<span class="bd bN">Soon</span></span>
+      <div class="sg">Administration</div>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">space_dashboard</span>Overview</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">groups</span>Teams and registrations</a>
+    </nav>
+    <main style="flex: 1; min-width: 0; padding: 26px 32px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <span class="eb">Account</span>
+        <h1 class="h1" style="font-size: 32px">My profile</h1>
+        <span class="mut">Your Discord and OSRS details. We use them when you join an event and to balance teams.</span>
+      </div>
+      <section class="pn" aria-labelledby="dc-t" style="display: flex; align-items: center; gap: 16px; padding: 14px 16px">
+        <span style="width: 48px; height: 48px; border-radius: 50%; background: #2d2119; border: 1px solid #a88647; color: #f1d487; font-weight: 700; font-size: 18px; display: inline-flex; align-items: center; justify-content: center">F</span>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <h2 id="dc-t" style="margin: 0; font-size: 16px">felps_</h2>
+          <span class="mut" style="font-size: 13px">Discord ID 336288077507198977</span>
+        </div>
+        <span class="bd bE" style="font-size: 12px"><span class="ms f" aria-hidden="true">verified</span>Member of the clan Discord server</span>
+        <span class="auto" style="margin-left: auto"><span class="ms" aria-hidden="true">lock</span>Automatic · from your Discord login</span>
+      </section>
+      <div style="display: flex; gap: 20px; align-items: flex-start">
+        <section aria-labelledby="acc-t" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: flex-end; justify-content: space-between">
+            <div><h2 id="acc-t" class="h2">OSRS accounts</h2><span class="mut" style="font-size: 13px">Stats come from Wise Old Man and can't be edited here.</span></div>
+            <button class="btn p" type="button"><span class="ms" aria-hidden="true">add</span>Add account</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid #668ca3; background: #13202a; border-radius: 4px; color: #cfe2ee; font-size: 13px">
+            <span class="ms" aria-hidden="true">link</span>
+            <span style="flex: 1"><strong>DropTracker found 1 more account linked to your Discord:</strong> felps pure</span>
+            <button class="btn sm" type="button" style="border-color: #668ca3; color: #cfe2ee; background: transparent">Add as alt</button>
+            <button class="btn sm" type="button" style="border-color: transparent; color: #cfe2ee; background: transparent">Dismiss</button>
+          </div>
+          <article class="pn acc" aria-label="Main account felps" style="position: relative; border-color: #a88647">
+            <span class="sample">Sample WOM data</span>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+              <span class="ms f" aria-hidden="true" style="color: #d4ad53">star</span>
+              <strong style="font-size: 17px">felps</strong>
+              <span class="bd bW">Main · default for bingo</span>
+              <span class="bd bE"><span class="ms f" aria-hidden="true">check_circle</span>Found on Wise Old Man</span>
+              <span style="margin-left: auto; display: flex; gap: 6px"><button class="btn sm" type="button"><span class="ms" aria-hidden="true" style="font-size: 18px">refresh</span>Update from WOM</button><button class="btn ic" type="button" aria-label="More options for felps"><span class="ms" aria-hidden="true">more_vert</span></button></span>
+            </div>
+            <div class="stats">
+              <div class="st"><span>TOTAL LEVEL</span><strong>2,277</strong></div>
+              <div class="st"><span>EHP</span><strong>1,402.6</strong></div>
+              <div class="st"><span>EHB</span><strong>918.4</strong></div>
+              <div class="st"><span>BOSS KC (ALL BOSSES)</span><strong>21,340</strong></div>
+            </div>
+            <span class="mut" style="font-size: 12px">Updated on Wise Old Man 2 hours ago · <a href="#">Open profile on WOM</a></span>
+          </article>
+          <article class="pn acc" aria-label="Alt account felps iron" style="position: relative">
+            <span class="sample">Sample WOM data</span>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+              <strong style="font-size: 16px">felps iron</strong>
+              <span class="bd bN">Alt · experience only</span>
+              <span class="bd bE"><span class="ms f" aria-hidden="true">check_circle</span>Found on Wise Old Man</span>
+              <span style="margin-left: auto; display: flex; gap: 6px"><button class="btn sm" type="button">Make main</button><button class="btn ic" type="button" aria-label="More options for felps iron"><span class="ms" aria-hidden="true">more_vert</span></button></span>
+            </div>
+            <div class="stats">
+              <div class="st"><span>TOTAL LEVEL</span><strong>1,985</strong></div>
+              <div class="st"><span>EHP</span><strong>640.2</strong></div>
+              <div class="st"><span>EHB</span><strong>310.7</strong></div>
+              <div class="st"><span>BOSS KC (ALL BOSSES)</span><strong>6,915</strong></div>
+            </div>
+            <span class="mut" style="font-size: 12px">Alts only count toward your experience for team balance.</span>
+          </article>
+          <article class="pn acc" aria-label="Alt account felps skiller — not found" style="border-color: #b45b4e">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+              <strong style="font-size: 16px">felps skiller</strong>
+              <span class="bd bN">Alt</span>
+              <span class="bd bH"><span class="ms" aria-hidden="true">error</span>Not found on Wise Old Man</span>
+              <span style="margin-left: auto; display: flex; gap: 6px"><button class="btn sm" type="button">Try again</button><button class="btn sm" type="button">Remove</button></span>
+            </div>
+            <span style="font-size: 13px">Check the spelling, or track the player on Wise Old Man first. This account won't count until it's found.</span>
+          </article>
+        </section>
+        <aside style="width: 380px; flex: none; display: flex; flex-direction: column; gap: 14px">
+          <section class="pn" aria-labelledby="bal-t" style="padding: 14px 16px; position: relative">
+            <span class="sample">Sample WOM data</span>
+            <h2 id="bal-t" class="h2" style="font-size: 16px">Experience for team balance</h2>
+            <span class="mut" style="font-size: 12px">Main + verified alts. Admins use this to balance teams.</span>
+            <div style="margin-top: 8px">
+              <div class="sum"><span>Boss KC total</span><strong style="font-size: 18px; color: #f1d487">28,255</strong></div>
+              <div class="sum" style="border-bottom: 0"><span>EHB total</span><strong style="font-size: 18px; color: #f1d487">1,229.1</strong></div>
+            </div>
+            <span class="mut" style="font-size: 12px">2 of 3 accounts counted · felps skiller not found</span>
+          </section>
+          <section class="pn" aria-labelledby="pref-t" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 14px">
+            <div><h2 id="pref-t" class="h2" style="font-size: 16px">Clan preferences</h2><span class="mut" style="font-size: 12px">Saved on your profile and reused in future events.</span></div>
+            <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px">
+              <legend style="font-size: 13px; font-weight: 600; margin-bottom: 6px">Closest server region</legend>
+              <label class="opt on"><input type="radio" name="rg" checked>US East</label>
+              <label class="opt"><input type="radio" name="rg">US West</label>
+              <label class="opt"><input type="radio" name="rg">United Kingdom</label>
+              <label class="opt"><input type="radio" name="rg">Germany</label>
+              <label class="opt"><input type="radio" name="rg">Australia</label>
+            </fieldset>
+            <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px">
+              <legend style="font-size: 13px; font-weight: 600; margin-bottom: 6px">Usual activity during events</legend>
+              <label class="opt"><input type="radio" name="ac">Less than 1 h per day</label>
+              <label class="opt on"><input type="radio" name="ac" checked>1 to 3 h per day</label>
+              <label class="opt"><input type="radio" name="ac">More than 3 h per day</label>
+            </fieldset>
+            <button class="btn p" type="button" style="align-self: flex-start">Save preferences</button>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

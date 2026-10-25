@@ -3,17 +3,19 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.core.logging import get_logger, log_event
-from app.modules.auth.dependencies import AdminDependency, require_admin
+from app.modules.auth.dependencies import AdminDependency, UserDependency, require_admin
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import (
     EventCreate,
     EventListResponse,
     EventResponse,
+    EventRules,
     EventStatus,
     EventUpdate,
 )
 from app.modules.events.service import EventService
+from app.modules.players.repository import PlayerRepository
 
 router = APIRouter(prefix="/events", tags=["events"])
 logger = get_logger(__name__)
@@ -22,7 +24,8 @@ logger = get_logger(__name__)
 def get_event_service(request: Request) -> EventService:
     repository = EventRepository(request.app.state.db_client.database)
     boards = BoardRepository(request.app.state.db_client.database)
-    return EventService(repository, boards)
+    players = PlayerRepository(request.app.state.db_client.database)
+    return EventService(repository, boards, players)
 
 
 EventServiceDependency = Annotated[EventService, Depends(get_event_service)]
@@ -53,6 +56,11 @@ async def list_events(
     return EventListResponse(items=await service.list(event_status))
 
 
+@router.get("/mine", response_model=EventListResponse)
+async def my_events(user: UserDependency, service: EventServiceDependency) -> EventListResponse:
+    return EventListResponse(items=await service.mine(user.id))
+
+
 @router.get("/{event_id}", response_model=EventResponse)
 async def get_event(event_id: str, service: EventServiceDependency) -> EventResponse:
     log_event(logger, 20, "event_read_requested", event_id=event_id)
@@ -67,6 +75,16 @@ async def update_event(
 ) -> EventResponse:
     log_event(logger, 20, "event_update_requested", event_id=event_id)
     return await service.update(event_id, payload)
+
+
+@router.patch(
+    "/{event_id}/rules", response_model=EventResponse, dependencies=[Depends(require_admin)]
+)
+async def update_rules(
+    event_id: str, payload: EventRules, service: EventServiceDependency
+) -> EventResponse:
+    log_event(logger, 20, "event_rules_update_requested", event_id=event_id)
+    return await service.set_rules(event_id, payload)
 
 
 @router.post("/{event_id}/activate", response_model=EventResponse)

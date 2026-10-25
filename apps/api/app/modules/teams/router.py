@@ -7,7 +7,14 @@ from app.modules.auth.dependencies import require_admin
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.teams.repository import TeamRepository
-from app.modules.teams.schemas import TeamCreate, TeamListResponse, TeamResponse, TeamUpdate
+from app.modules.teams.schemas import (
+    DraftPreviewResponse,
+    TeamBalanceResponse,
+    TeamCreate,
+    TeamListResponse,
+    TeamResponse,
+    TeamUpdate,
+)
 from app.modules.teams.service import TeamService
 
 router = APIRouter(prefix="/events/{event_id}/teams", tags=["teams"])
@@ -33,6 +40,20 @@ async def create_team(
     event_id: str, payload: TeamCreate, service: TeamServiceDependency
 ) -> TeamResponse:
     return await service.create(event_id, payload)
+
+
+@router.get("/balance", response_model=TeamBalanceResponse, dependencies=[Depends(require_admin)])
+async def team_balance(event_id: str, service: TeamServiceDependency) -> TeamBalanceResponse:
+    return await service.balance(event_id)
+
+
+@router.get(
+    "/draft-preview",
+    response_model=DraftPreviewResponse,
+    dependencies=[Depends(require_admin)],
+)
+async def draft_preview(event_id: str, service: TeamServiceDependency) -> DraftPreviewResponse:
+    return await service.draft_preview(event_id)
 
 
 @router.get("", response_model=TeamListResponse)

@@ -59,11 +59,16 @@ function GroupLabel({ children, icon }: { children: string; icon?: boolean }) {
 interface ShellSidebarProps {
   isAdmin: boolean
   pendingRegistrations: number | null
+  pendingReviews: number | null
 }
 
 /** Desktop sidebar (layout 4A): Play for everyone, Administration only for administrators. */
-export function ShellSidebar({ isAdmin, pendingRegistrations }: ShellSidebarProps) {
+export function ShellSidebar({ isAdmin, pendingRegistrations, pendingReviews }: ShellSidebarProps) {
   const { t } = useTranslation()
+  const badges: Record<string, number | null> = {
+    teams: pendingRegistrations,
+    review: pendingReviews,
+  }
   return (
     <nav
       aria-label={t('navigation.primary')}
@@ -77,11 +82,7 @@ export function ShellSidebar({ isAdmin, pendingRegistrations }: ShellSidebarProp
         <>
           <GroupLabel icon>{t('admin.title')}</GroupLabel>
           {ADMIN_ENTRIES.map((entry) => (
-            <SidebarItem
-              key={entry.key}
-              entry={entry}
-              badge={entry.key === 'teams' ? pendingRegistrations : undefined}
-            />
+            <SidebarItem key={entry.key} entry={entry} badge={badges[entry.key]} />
           ))}
         </>
       )}

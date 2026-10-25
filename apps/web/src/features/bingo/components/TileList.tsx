@@ -1,11 +1,11 @@
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
-import { tileListItemId } from '../boardTiles'
 import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { TileProgressLine } from './TileProgressLine'
 
 interface TileListProps {
   tiles: Tile[]
@@ -17,22 +17,37 @@ interface TileListProps {
 /** Row-grouped list (board-b-mobile); also the desktop list view. Never reorders tiles. */
 export function TileList({ tiles, matches, selectedId = null, onSelect }: TileListProps) {
   const { t } = useTranslation()
-  const rows = [...new Set(tiles.map((tile) => tile.row))].sort((a, b) => a - b)
+  const gridTiles = tiles.filter((tile) => !tile.bonus)
+  const rows = [...new Set(gridTiles.map((tile) => tile.row))].sort((a, b) => a - b)
+  const groups = [
+    ...rows.map((row) => ({
+      key: `row-${row}`,
+      title: t('board.row', { row }),
+      tiles: gridTiles.filter((tile) => tile.row === row),
+    })),
+    // Bonus cards close the list in their own section (feature 020).
+    ...(tiles.some((tile) => tile.bonus)
+      ? [
+          {
+            key: 'bonus',
+            title: t('board.bonus.section'),
+            tiles: tiles.filter((tile) => tile.bonus),
+          },
+        ]
+      : []),
+  ]
   return (
     <div className="flex flex-col gap-3">
-      {rows.map((row) => {
-        const rowTiles = tiles.filter((tile) => tile.row === row).sort((a, b) => a.col - b.col)
+      {groups.map(({ key, title, tiles: group }) => {
+        const rowTiles = [...group].sort((a, b) => a.col - b.col)
         const hits = matches
           ? rowTiles.filter((tile) => matches.get(tile.id)?.matches).length
           : null
         return (
-          <section key={row} aria-labelledby={`board-row-${row}`} className="flex flex-col gap-1.5">
+          <section key={key} aria-labelledby={`board-${key}`} className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between gap-2 rounded-[3px] border border-rs-border bg-rs-inset px-3 py-2">
-              <h2
-                id={`board-row-${row}`}
-                className="m-0 font-display text-[15px] text-rs-gold-bright"
-              >
-                {t('board.row', { row })}
+              <h2 id={`board-${key}`} className="m-0 font-display text-[15px] text-rs-gold-bright">
+                {title}
               </h2>
               {hits !== null && (
                 <span className="text-xs text-rs-muted">
@@ -74,7 +89,6 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
 
   return (
     <button
-      id={tileListItemId(tile)}
       type="button"
       onClick={() => onSelect(tile)}
       aria-label={label}
@@ -86,7 +100,7 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
       } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright' : ''}`}
     >
       <span className="min-w-[30px] text-center text-[11px] font-semibold tabular-nums text-rs-muted">
-        {t('board.columnShort', { column: tile.col })}
+        {tile.bonus ? `★${tile.col}` : t('board.columnShort', { column: tile.col })}
       </span>
       <CardImage name={tile.name} imageUrl={tile.imageUrl} className="h-12 w-[52px] shrink-0" />
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
@@ -100,6 +114,7 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
             })}
           </span>
         </span>
+        {tile.progress && <TileProgressLine progress={tile.progress} />}
         {hit && (
           <span className="text-xs font-semibold text-rs-gold-bright">
             ↳ {hit.name} +{hit.progressWeight}

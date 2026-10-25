@@ -1,0 +1,26 @@
+name: Bug report
+description: Something on the site doesn't work as expected.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected and what you saw instead.
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      placeholder: e.g. /events, /admin/review
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options: [Desktop, Mobile, Both]
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Drag images here if you have them.

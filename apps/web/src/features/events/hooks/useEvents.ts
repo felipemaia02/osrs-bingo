@@ -1,8 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { activateEvent, createEvent, fetchEvents, finishEvent, updateEvent } from '../api/eventsApi'
+import {
+  activateEvent,
+  createEvent,
+  fetchEvents,
+  fetchMyEvents,
+  finishEvent,
+  updateEvent,
+  updateEventRules,
+} from '../api/eventsApi'
 import type { EventPayload, EventStatus } from '../types'
 
 export const EVENT_QUERY_KEY = ['events'] as const
+
+export function useMyEvents(enabled: boolean) {
+  return useQuery({ queryKey: [...EVENT_QUERY_KEY, 'mine'], queryFn: fetchMyEvents, enabled })
+}
 
 export function useEvents(status?: EventStatus) {
   return useQuery({
@@ -22,6 +34,7 @@ export function useEventMutations() {
         updateEvent(eventId, payload),
       onSuccess: refreshEvents,
     }),
+    updateRules: useMutation({ mutationFn: updateEventRules, onSuccess: refreshEvents }),
     activateEvent: useMutation({ mutationFn: activateEvent, onSuccess: refreshEvents }),
     finishEvent: useMutation({ mutationFn: finishEvent, onSuccess: refreshEvents }),
   }

@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Avatar } from '../../../components/ui/Avatar'
 import { ThemedMenu, ThemedMenuItem } from '../../../components/ui/ThemedMenu'
 import { useLogout, useSession } from '../hooks/useSession'
@@ -15,6 +16,7 @@ export function AuthControls({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation()
   const session = useSession()
   const logout = useLogout()
+  const navigate = useNavigate()
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
 
   if (session.isLoading) return <span className="text-xs text-rs-muted">{t('common.loading')}</span>
@@ -61,6 +63,15 @@ export function AuthControls({ compact = false }: { compact?: boolean }) {
         )}
       </button>
       <ThemedMenu id="account-menu" anchorEl={anchor} onClose={() => setAnchor(null)}>
+        <ThemedMenuItem
+          onClick={() => {
+            setAnchor(null)
+            navigate('/profile')
+          }}
+        >
+          <AccountCircleOutlinedIcon fontSize="small" aria-hidden="true" />
+          {t('navigation.profile')}
+        </ThemedMenuItem>
         <ThemedMenuItem
           disabled={logout.isPending}
           onClick={() => {

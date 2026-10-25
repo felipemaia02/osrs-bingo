@@ -119,3 +119,31 @@ async def test_missing_card_cannot_receive_revision() -> None:
 
     with pytest.raises(NotFoundError):
         await CardService(repository).add_revision("missing", payload, ADMIN)
+
+
+def test_preverification_needs_instructions_in_the_note() -> None:
+    with pytest.raises(ValidationError, match="Describe the pre-verification"):
+        card_payload(requires_preverification=True, rule_note=None)
+    card = card_payload(requires_preverification=True, rule_note="Screenshot your ToB KC")
+    assert card.rule_note == "Screenshot your ToB KC"
+
+
+def test_stored_revisions_without_instructions_still_load() -> None:
+    from app.modules.tiles.schemas import CardRevisionResponse
+
+    stored = {
+        **card_payload().model_dump(exclude={"slug", "change_reason"}),
+        "requires_preverification": True,
+        "rule_note": None,
+        "revision": 2,
+        "change_reason": "Flag added before feature 019",
+        "provenance": {
+            "source": "admin",
+            "source_ref": None,
+            "source_cells": [],
+            "derived_from_revision": None,
+        },
+        "created_by": "admin",
+        "created_at": "2026-10-23T12:00:00Z",
+    }
+    assert CardRevisionResponse.model_validate(stored).requires_preverification is True

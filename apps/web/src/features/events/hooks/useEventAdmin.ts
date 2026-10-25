@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { EventTransition } from '../components/EventActions'
 import { eventErrorKey } from '../errors'
-import type { BingoEvent, EventPayload } from '../types'
+import type { BingoEvent, EventPayload, EventRules } from '../types'
 import { useEventMutations } from './useEvents'
 
 type FormTarget = { event: BingoEvent | null } | null
@@ -16,6 +16,7 @@ export function useEventAdmin() {
   const [transition, setTransition] = useState<PendingTransition>(null)
   const [transitionError, setTransitionError] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<string | null>(null)
+  const [rulesEvent, setRulesEvent] = useState<BingoEvent | null>(null)
 
   async function save(payload: EventPayload) {
     const editing = form?.event ?? null
@@ -23,6 +24,13 @@ export function useEventAdmin() {
     else await mutations.createEvent.mutateAsync(payload)
     setFeedback(t(editing ? 'events.feedback.updated' : 'events.feedback.created'))
     setForm(null)
+  }
+
+  async function saveRules(rules: EventRules) {
+    if (!rulesEvent) return
+    await mutations.updateRules.mutateAsync({ eventId: rulesEvent.id, rules })
+    setFeedback(t('events.feedback.rulesSaved'))
+    setRulesEvent(null)
   }
 
   async function confirmTransition() {
@@ -58,6 +66,14 @@ export function useEventAdmin() {
       setForm({ event })
     },
     closeForm: () => setForm(null),
+    rulesEvent,
+    savingRules: mutations.updateRules.isPending,
+    openRules: (event: BingoEvent) => {
+      setFeedback(null)
+      setRulesEvent(event)
+    },
+    closeRules: () => setRulesEvent(null),
+    saveRules,
     save,
     transition,
     transitionError,

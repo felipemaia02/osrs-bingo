@@ -210,13 +210,36 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               {form.wikiImage ? form.wikiImage.file_name : t('cards.form.fallbackImage')}
             </span>
           </div>
-          <Field label={t('cards.form.ruleNote')} wide>
-            <textarea
-              value={form.ruleNote}
-              onChange={(event) => update('ruleNote', event.target.value)}
-              className={TEXTAREA}
-            />
-          </Field>
+          <div className="flex flex-col gap-3 rounded-[3px] border border-rs-border bg-rs-inset p-3 md:col-span-2">
+            <label className="flex items-start gap-2.5 text-[13px]">
+              <input
+                type="checkbox"
+                checked={form.requiresPreverification}
+                onChange={(event) => {
+                  // The note is the pre-verification instructions: it only exists when required.
+                  update('requiresPreverification', event.target.checked)
+                  if (!event.target.checked) update('ruleNote', '')
+                }}
+                className="mt-0.5 size-[18px] shrink-0 accent-rs-gold"
+              />
+              <span className="flex flex-col gap-0.5">
+                <strong>{t('cards.form.requiresPreverification')}</strong>
+                <span className="text-rs-muted">{t('cards.form.requiresPreverificationHint')}</span>
+              </span>
+            </label>
+            {form.requiresPreverification && (
+              <Field label={t('cards.form.preverificationNote')}>
+                <textarea
+                  required
+                  rows={3}
+                  value={form.ruleNote}
+                  onChange={(event) => update('ruleNote', event.target.value)}
+                  placeholder={t('cards.form.preverificationNotePlaceholder')}
+                  className={TEXTAREA}
+                />
+              </Field>
+            )}
+          </div>
           <Field label={t('cards.form.changeReason')} wide>
             <input
               required

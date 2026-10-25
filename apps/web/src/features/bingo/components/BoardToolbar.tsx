@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import FilterCenterFocusOutlinedIcon from '@mui/icons-material/FilterCenterFocusOutlined'
 import GridView from '@mui/icons-material/GridView'
 import GridViewOutlined from '@mui/icons-material/GridViewOutlined'
@@ -6,6 +8,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import ViewList from '@mui/icons-material/ViewList'
 import ViewListOutlined from '@mui/icons-material/ViewListOutlined'
 import { useTranslation } from 'react-i18next'
+import { Button } from '../../../components/ui/Button'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
 import type { FilterSummary } from '../hooks/useFilterSummary'
 import { useTierOptions } from '../hooks/useTierOptions'
@@ -15,10 +18,12 @@ export function SearchField({
   value,
   onChange,
   mobile = false,
+  autoFocus = false,
 }: {
   value: string
   onChange: (value: string) => void
   mobile?: boolean
+  autoFocus?: boolean
 }) {
   const { t } = useTranslation()
   return (
@@ -31,6 +36,7 @@ export function SearchField({
       <span className="sr-only">{t('board.search.label')}</span>
       <input
         type="search"
+        autoFocus={autoFocus}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={t('board.search.placeholder')}
@@ -124,6 +130,42 @@ export function BoardToolbar({
           </>
         )}
       </div>
+    </div>
+  )
+}
+
+/** Mobile: the search stays behind a button until needed (feature 026, FR-003). */
+export function MobileSearch({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(Boolean(value))
+  if (!open)
+    return (
+      <Button className="self-start" onClick={() => setOpen(true)}>
+        <SearchOutlinedIcon fontSize="small" aria-hidden="true" />
+        {t('board.search.open')}
+      </Button>
+    )
+  return (
+    <div className="flex items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <SearchField value={value} onChange={onChange} mobile autoFocus />
+      </div>
+      <Button
+        size="icon"
+        aria-label={t('board.search.close')}
+        onClick={() => {
+          onChange('')
+          setOpen(false)
+        }}
+      >
+        <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
+      </Button>
     </div>
   )
 }

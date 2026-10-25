@@ -1,4 +1,6 @@
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import PersonRemoveOutlinedIcon from '@mui/icons-material/PersonRemoveOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
@@ -9,6 +11,42 @@ export interface RowHandlers {
   onApprove: (player: Player) => void
   onAssign: (player: Player) => void
   onRemove: (player: Player) => void
+  onEdit: (player: Player) => void
+}
+
+export function RoleBadge({ player }: { player: Player }) {
+  const { t } = useTranslation()
+  if (!player.role) return <span className="text-rs-muted">—</span>
+  return (
+    <Badge tone={player.role === 'captain' ? 'gold' : 'info'}>
+      {t(`teams.roles.${player.role}`)}
+    </Badge>
+  )
+}
+
+export function BuyInBadge({ player }: { player: Player }) {
+  const { t } = useTranslation()
+  if (!player.buy_in_status) return <span className="text-rs-muted">—</span>
+  if (player.buy_in_status === 'pending')
+    return (
+      <Badge tone="gold">
+        <ScheduleOutlinedIcon sx={{ fontSize: 13 }} aria-hidden="true" />
+        {t('teams.buyIn.pending')}
+      </Badge>
+    )
+  return (
+    <span className="inline-flex flex-col items-start gap-0.5">
+      <Badge tone="success">
+        <CheckOutlinedIcon sx={{ fontSize: 13 }} aria-hidden="true" />
+        {t('teams.buyIn.paid')}
+      </Badge>
+      {player.buy_in_admin_name && (
+        <span className="text-xs text-rs-muted">
+          {t('teams.buyIn.to', { name: player.buy_in_admin_name })}
+        </span>
+      )}
+    </span>
+  )
 }
 
 export function StatusBadge({ player }: { player: Player }) {
@@ -60,6 +98,15 @@ export function RowActions({
           {t(group === 'assigned' ? 'teams.roster.changeTeam' : 'teams.roster.assignTeam')}
         </Button>
       )}
+      <Button
+        size={mobile ? 'icon' : 'sm'}
+        disabled={busy}
+        aria-label={t('teams.participant.edit', { name: player.display_name })}
+        title={t('teams.participant.edit', { name: player.display_name })}
+        onClick={() => handlers.onEdit(player)}
+      >
+        <EditOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
+      </Button>
       <Button
         size={mobile ? 'icon' : 'sm'}
         disabled={busy}

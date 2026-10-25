@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Join event — desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&amp;display=block">
+<style>
+body{margin:0;background:#15110e}
+*{box-sizing:border-box}
+a{color:#f1d487}a:hover{color:#ffe3a3}
+.r{font-family:Inter,system-ui,sans-serif;color:#ead9b7;background:#15110e;font-size:14px;line-height:1.45;position:relative;overflow:hidden}
+.ms{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;flex:none}
+.ms.f{font-variation-settings:'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 24}
+.cz{font-family:Cinzel,Georgia,serif}
+.eb{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d4ad53;font-weight:600}
+.h1{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;line-height:1.15}
+.h2{font-family:Cinzel,Georgia,serif;font-weight:700;color:#f1d487;margin:0;font-size:19px}
+.mut{color:#aa9a7c}
+.pn{background:#211914;border:1px solid #705a39;border-radius:4px}
+.btn{font:inherit;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid #705a39;background:#211914;color:#ead9b7;border-radius:3px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.p{background:#d4ad53;border-color:#d4ad53;color:#15110e;font-weight:600}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid #f1d487;outline-offset:2px}
+.bd{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:1px 6px;border-radius:2px;border:1px solid;line-height:1.5;white-space:nowrap}
+.bd .ms{font-size:13px}
+.bE{color:#b5d699;border-color:#6f984f;background:#1b2214}
+.bW{color:#f1d487;border-color:#a88647;background:#2a2112}
+.bH{color:#efaaa0;border-color:#b45b4e;background:#2b1714}
+.bN{color:#ead9b7;border-color:#705a39;background:#2d2119}
+.inp{font:inherit;font-size:14px;min-height:40px;width:100%;background:#19120e;border:1px solid #705a39;color:#ead9b7;border-radius:3px;padding:0 12px}
+.hd{height:64px;display:flex;align-items:center;gap:16px;padding:0 24px;border-bottom:1px solid #705a39;background:#19120e}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #705a39;border-radius:3px;color:#ead9b7;text-decoration:none;font-size:13px}
+.av{width:24px;height:24px;border-radius:50%;background:#2d2119;border:1px solid #a88647;color:#f1d487;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.sb{width:240px;flex:none;border-right:1px solid rgba(112,90,57,.55);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.sg{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#aa9a7c;font-weight:600;padding:14px 12px 6px}
+.nv{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:3px;color:#ead9b7;text-decoration:none;border:1px solid transparent;font-size:14px}
+.nv.on{background:#2d2119;border-color:#a88647;color:#f1d487;font-weight:600}
+.step{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 10px;border-radius:3px;color:#aa9a7c;text-decoration:none;font-size:14px}
+.step .n{width:24px;height:24px;border-radius:50%;border:1px solid #705a39;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.step.done{color:#ead9b7}.step.done .n{background:#6f984f;border-color:#6f984f;color:#15110e}
+.step.cur{color:#f1d487;font-weight:600;background:#2d2119}.step.cur .n{background:#d4ad53;border-color:#d4ad53;color:#15110e}
+.sec{padding:18px;display:flex;flex-direction:column;gap:12px}
+.acc{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #705a39;border-radius:4px;background:#19120e}
+.acc.on{border-color:#f1d487;background:#2d2119;box-shadow:inset 0 0 0 1px #f1d487}
+.acc.off{opacity:.6}
+.acc input{accent-color:#d4ad53;width:18px;height:18px;margin:0}
+.opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border:1px solid #705a39;border-radius:3px;background:#19120e;font-size:14px;flex:1}
+.opt.on{border-color:#f1d487;background:#2d2119;color:#f1d487;font-weight:600}
+.opt input{accent-color:#d4ad53;width:16px;height:16px;margin:0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 10px;border:1px solid #a88647;border-radius:16px;background:#2a2112;font-size:13px}
+.chip button{width:24px;height:24px;border-radius:50%;border:0;background:transparent;color:#ead9b7;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.lb{display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:14px}
+.lb.fo{background:#2d2119;outline:2px solid #f1d487;outline-offset:-2px}
+.ck{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid rgba(112,90,57,.6);border-radius:3px;background:#19120e;font-size:14px}
+.ck input{accent-color:#d4ad53;width:18px;height:18px;margin:1px 0 0}
+.rl{display:flex;gap:10px;font-size:14px}
+.rl .ms{color:#d4ad53;font-size:18px;margin-top:1px}
+</style>
+</helmet>
+<div class="r" style="width: 1440px; height: 1500px; display: flex; flex-direction: column">
+  <header class="hd">
+    <a href="#" aria-label="OSRS Bingo — home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+      <img src="../assets/logo-shield.png" alt="" style="width: 31px; height: 40px">
+      <span class="cz" style="font-size: 19px; font-weight: 700; color: #f1d487; line-height: .95">OSRS<br>Bingo</span>
+    </a>
+    <div style="margin-left: auto; display: flex; align-items: center; gap: 14px">
+      <a href="#" class="pill"><span class="ms" aria-hidden="true">event</span>Autumn Bingo 2026<span class="bd bE">Active</span></a>
+      <button class="btn" type="button" style="min-height: 36px"><span class="av">H</span>Holy Hal<span class="ms" aria-hidden="true">expand_more</span></button>
+    </div>
+  </header>
+  <div style="display: flex; flex: 1; min-height: 0">
+    <nav class="sb" aria-label="Main">
+      <div class="sg">Play</div>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">grid_view</span>Board</a>
+      <a class="nv on" href="#" aria-current="page"><span class="ms f" aria-hidden="true">calendar_month</span>Events</a>
+      <a class="nv" href="#"><span class="ms" aria-hidden="true">account_circle</span>My profile</a>
+    </nav>
+    <main style="flex: 1; min-width: 0; padding: 26px 32px; display: flex; gap: 28px; align-items: flex-start">
+      <nav aria-label="Steps" style="width: 230px; flex: none; display: flex; flex-direction: column; gap: 4px; padding-top: 104px">
+        <a class="step done" href="#acc"><span class="n">✓</span>Account</a>
+        <a class="step done" href="#av"><span class="n">✓</span>Availability and teammates</a>
+        <a class="step cur" href="#rules" aria-current="step"><span class="n">3</span>Rules</a>
+        <a class="step" href="#buy"><span class="n">4</span>Buy-in and send</a>
+      </nav>
+      <div style="flex: 1; min-width: 0; max-width: 820px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 4px">
+          <a href="#" style="font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 2px"><span class="ms" aria-hidden="true" style="font-size: 18px">chevron_left</span>Events</a>
+          <span class="eb">Join event</span>
+          <h1 class="h1" style="font-size: 30px">Winter Bingo 2026</h1>
+          <span class="mut">Dec 10 → Dec 24, 2026 · registrations open</span>
+        </div>
+        <section id="acc" class="pn sec" aria-labelledby="s1">
+          <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 id="s1" class="h2">1 · Which account will you play with?</h2><a href="#" style="font-size: 13px">Manage accounts in My profile</a></div>
+          <div role="radiogroup" aria-label="Bingo account" style="display: flex; flex-direction: column; gap: 8px">
+            <label class="acc on"><input type="radio" name="acc" checked><span style="flex: 1"><strong style="font-size: 15px">Holy Hal</strong> <span class="bd bW">Main</span><br><span class="mut" style="font-size: 12px">EHB 702.5 · Boss KC 15,230 · Total 2,198 (sample WOM data)</span></span><span class="bd bE"><span class="ms f" aria-hidden="true">check_circle</span>Wise Old Man</span></label>
+            <label class="acc"><input type="radio" name="acc"><span style="flex: 1"><strong style="font-size: 15px">Hal Iron</strong> <span class="bd bN">Alt</span><br><span class="mut" style="font-size: 12px">EHB 188.0 · Boss KC 4,410 · Total 1,870 (sample WOM data)</span></span><span class="bd bE"><span class="ms f" aria-hidden="true">check_circle</span>Wise Old Man</span></label>
+          </div>
+          <span class="mut" style="font-size: 12px">Your other accounts still count toward your experience for team balance.</span>
+        </section>
+        <section id="av" class="pn sec" aria-labelledby="s2">
+          <h2 id="s2" class="h2">2 · Availability and teammates</h2>
+          <fieldset style="border: 0; padding: 0; margin: 0"><legend style="font-size: 13px; font-weight: 600; margin-bottom: 6px">Expected activity during this event <span class="mut" style="font-weight: 400">(from your profile)</span></legend>
+            <div style="display: flex; gap: 8px"><label class="opt"><input type="radio" name="ac">Less than 1 h/day</label><label class="opt on"><input type="radio" name="ac" checked>1 to 3 h/day</label><label class="opt"><input type="radio" name="ac">More than 3 h/day</label></div>
+          </fieldset>
+          <span style="font-size: 13px; display: flex; align-items: center; gap: 6px"><span class="ms mut" aria-hidden="true" style="font-size: 18px">public</span>Region: <strong>United Kingdom</strong> <span class="mut">· change it in <a href="#">My profile</a></span></span>
+          <div style="display: flex; flex-direction: column; gap: 6px; position: relative">
+            <label for="tm" style="font-size: 13px; font-weight: 600">Who would you like to team up with? <span class="mut" style="font-weight: 400">Up to 3 clan members · 2 of 3</span></label>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 6px; border: 2px solid #f1d487; border-radius: 3px; background: #19120e; min-height: 44px">
+              <span class="chip">Prayer Pete<button type="button" aria-label="Remove Prayer Pete"><span class="ms" aria-hidden="true" style="font-size: 16px">close</span></button></span>
+              <span class="chip">Blessed Bia<button type="button" aria-label="Remove Blessed Bia"><span class="ms" aria-hidden="true" style="font-size: 16px">close</span></button></span>
+              <input id="tm" type="text" value="monk" role="combobox" aria-expanded="true" style="flex: 1; min-width: 120px; border: 0; background: transparent; color: #ead9b7; font: inherit; outline: none">
+            </div>
+            <div role="listbox" aria-label="Clan members" class="pn" style="border-color: #a88647; box-shadow: 0 10px 24px rgba(0,0,0,.45)">
+              <div class="lb fo" role="option" aria-selected="false"><span class="av">M</span><span style="flex: 1"><strong>Monk Mateus</strong> <span class="mut" style="font-size: 12px">· monk.mateus on Discord</span></span><span class="mut" style="font-size: 12px">Enter to add</span></div>
+              <div class="lb" role="option" aria-selected="false"><span class="av">M</span><span style="flex: 1"><strong>Monkfish Mo</strong> <span class="mut" style="font-size: 12px">· mo.fish on Discord</span></span></div>
+            </div>
+            <span class="mut" style="font-size: 12px">A preference, not a guarantee — admins and captains balance teams.</span>
+          </div>
+        </section>
+        <section id="rules" class="pn sec" aria-labelledby="s3" style="border-color: #a88647">
+          <h2 id="s3" class="h2">3 · How the bingo works</h2>
+          <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; background: #19120e; border-radius: 3px">
+            <div class="rl"><span class="ms" aria-hidden="true">grid_view</span><span>Every team plays the same 6×6 board of 36 tiles. It's frozen once the event starts.</span></div>
+            <div class="rl"><span class="ms" aria-hidden="true">trending_up</span><span>Each accepted drop adds <strong>progress</strong> to a tile. A tile is worth its points once, when progress reaches its requirement.</span></div>
+            <div class="rl"><span class="ms" aria-hidden="true">sync</span><span>Drops from your selected account are tracked automatically if you play on RuneLite with DropTracker. On mobile, or for non-loot tiles, you submit them with a screenshot.</span></div>
+            <div class="rl"><span class="ms" aria-hidden="true">groups</span><span>Admins set the teams. You only see your own team's progress.</span></div>
+            <div class="rl"><span class="ms" aria-hidden="true">payments</span><span>The buy-in is paid to an admin, who records it.</span></div>
+          </div>
+          <fieldset style="border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px">
+            <legend style="font-size: 13px; font-weight: 600; margin-bottom: 6px">To continue, confirm that:</legend>
+            <label class="ck"><input type="checkbox" checked><span>I've read the bingo rules above.</span></label>
+            <label class="ck"><input type="checkbox" checked><span>Only drops from <strong>Holy Hal</strong> during the event period will count for me.</span></label>
+            <label class="ck" style="border-color: #f1d487"><input type="checkbox" style="outline: 2px solid #f1d487; outline-offset: 2px"><span>I accept the team I'm placed in by the admins.</span></label>
+          </fieldset>
+        </section>
+        <section id="buy" class="pn sec" aria-labelledby="s4">
+          <h2 id="s4" class="h2">4 · Buy-in and send</h2>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid #a88647; background: #2a2112; border-radius: 3px">
+            <span class="ms" aria-hidden="true" style="color: #f1d487">payments</span>
+            <span style="flex: 1">Buy-in: <strong>[EVENT AMOUNT]</strong>. Pay any admin in game; they'll mark it as received here.</span>
+            <span class="bd bW"><span class="ms" aria-hidden="true">schedule</span>Not paid yet</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px">
+            <button class="btn p" type="button" disabled aria-describedby="why">Request to join</button>
+            <span id="why" class="mut" style="font-size: 13px">Confirm all 3 items in step 3 first. Your request stays <strong style="color: #ead9b7">Pending</strong> until an admin approves it.</span>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

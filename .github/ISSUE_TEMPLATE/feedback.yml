@@ -1,0 +1,16 @@
+name: Feedback or idea
+description: Suggestions from players, testers or admins.
+labels: [feedback]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your feedback
+      description: What would make the bingo site better?
+    validations:
+      required: true
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      placeholder: e.g. board, join event, profile, review queue

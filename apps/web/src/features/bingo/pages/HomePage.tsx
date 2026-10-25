@@ -4,26 +4,37 @@ import { AppShell } from '../../../components/common/AppShell'
 import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
+import { useSession } from '../../auth/hooks/useSession'
 import { usePublicBoard } from '../../boards/hooks/useBoards'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { DEFAULT_BOARD_SIZE } from '../../boards/draft'
-import { boardToTiles, isFiltering, matchTile, tileListItemId } from '../boardTiles'
+import { boardToTiles, isFiltering, matchTile } from '../boardTiles'
 import { BingoBoard } from '../components/BingoBoard'
-import { BoardToolbar, SearchField } from '../components/BoardToolbar'
+import { BoardToolbar, MobileSearch } from '../components/BoardToolbar'
 import { EventHeader, MobileEventSummary } from '../components/EventHeader'
 import { HelpDialog } from '../components/HelpDialog'
 import { MiniMap } from '../components/MiniMap'
+import { MyEventsLanding } from '../components/MyEventsLanding'
 import { TileDetailPanel } from '../components/TileDetailPanel'
-import { TileDetailsDialog } from '../components/TileDetailsDialog'
+import { MobileTileDetail } from '../components/MobileTileDetail'
 import { TileList } from '../components/TileList'
 import { useBoardView } from '../hooks/useBoardView'
+import { useProgressReason } from '../hooks/useProgressReason'
 import { useFilterSummary, type FilterSummary } from '../hooks/useFilterSummary'
 import { useTierOptions } from '../hooks/useTierOptions'
+import { TeamScorePanel } from '../../scoring/components/TeamScorePanel'
+import { useOwnTeamScore } from '../../scoring/hooks/useScoring'
+import { useOwnRegistration } from '../../teams/hooks/useTeams'
+import type { TeamScore } from '../../scoring/types'
 import type { TierFilter, Tile, TileMatch } from '../types'
 
 interface BoardState {
   tiles: Tile[]
+  rowBonus: number | null
+  columnBonus: number | null
+  /** The viewer's own team score; null for visitors and players without a team. */
+  score: TeamScore | null
   /** Rows (and columns) of the published board. */
   size: number
   matches: Map<string, TileMatch> | null
@@ -43,11 +54,23 @@ export function HomePage() {
   const events = useEvents('active')
   const event = events.data?.find((candidate) => candidate.status === 'active') ?? null
   const board = usePublicBoard(event?.id ?? null)
+  const session = useSession()
+  const ownScore = useOwnTeamScore(event?.id ?? null, Boolean(session.data))
+  const score = ownScore.data ?? null
   const [search, setSearch] = useState('')
   const [tier, setTier] = useState<TierFilter>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [browsing, setBrowsing] = useState(false)
+  const registration = useOwnRegistration(event?.id ?? '', event ? session.data?.id : undefined)
+  // Players in the active event land on its board; everyone else sees their events (026).
+  const playing =
+    registration.data?.status === 'pending' || registration.data?.status === 'approved'
+  const deciding = session.isLoading || (Boolean(session.data) && registration.isLoading)
 
-  const tiles = useMemo(() => (board.data ? boardToTiles(board.data) : []), [board.data])
+  const tiles = useMemo(
+    () => (board.data ? boardToTiles(board.data, score) : []),
+    [board.data, score],
+  )
   const matches = useMemo(() => {
     if (!isFiltering(search, tier)) return null
     return new Map<string, TileMatch>(tiles.map((tile) => [tile.id, matchTile(tile, search, tier)]))
@@ -56,7 +79,10 @@ export function HomePage() {
   const summary = useFilterSummary(matchCount, tiles.length, search, tier)
   const state: BoardState = {
     tiles,
+    score,
     size: board.data?.size ?? DEFAULT_BOARD_SIZE,
+    rowBonus: board.data?.row_bonus ?? null,
+    columnBonus: board.data?.column_bonus ?? null,
     matches,
     summary,
     search,
@@ -67,6 +93,17 @@ export function HomePage() {
     setSelectedId,
   }
 
+  const boardView =
+    event && !board.isLoading && !board.data ? (
+      <p className="text-rs-muted">{t('board.unavailable')}</p>
+    ) : event && board.data ? (
+      isDesktop ? (
+        <DesktopBoard event={event} state={state} />
+      ) : (
+        <MobileBoard event={event} state={state} />
+      )
+    ) : null
+
   return (
     <AppShell desktopPadding="md:px-8 md:pt-7">
       <div className="mx-auto flex max-w-[96rem] flex-col gap-3 md:gap-[18px]">
@@ -76,17 +113,23 @@ export function HomePage() {
           </p>
         )}
         {(events.isError || board.isError) && <p role="alert">{t('common.apiError')}</p>}
-        {!events.isLoading && !event && <p className="text-rs-muted">{t('board.noActiveEvent')}</p>}
-        {event && !board.isLoading && !board.data && (
-          <p className="text-rs-muted">{t('board.unavailable')}</p>
+        {!events.isLoading && !deciding && !playing ? (
+          <MyEventsLanding
+            activeEvent={event}
+            browsing={browsing}
+            onBrowse={() => setBrowsing(true)}
+            board={boardView}
+          />
+        ) : (
+          !deciding && (
+            <>
+              {!events.isLoading && !event && (
+                <p className="text-rs-muted">{t('board.noActiveEvent')}</p>
+              )}
+              {boardView}
+            </>
+          )
         )}
-        {event &&
-          board.data &&
-          (isDesktop ? (
-            <DesktopBoard event={event} state={state} />
-          ) : (
-            <MobileBoard event={event} state={state} />
-          ))}
       </div>
     </AppShell>
   )
@@ -98,13 +141,18 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
   const [helpOpen, setHelpOpen] = useState(false)
   const select = (tile: Tile) => state.setSelectedId(tile.id)
   const selectedMatch = state.selected ? state.matches?.get(state.selected.id) : undefined
+  const reason = useProgressReason(event.id)
 
   return (
     <>
       <EventHeader event={event} />
-      <InfoBanner>
-        <strong>{t('board.progressNotice.title')}</strong> {t('board.progressNotice.body')}
-      </InfoBanner>
+      {state.score ? (
+        <TeamScorePanel score={state.score} />
+      ) : (
+        <InfoBanner>
+          <strong>{t('board.progressNotice.title')}</strong> {t(reason)}
+        </InfoBanner>
+      )}
       <BoardToolbar
         search={state.search}
         onSearchChange={state.setSearch}
@@ -137,10 +185,19 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
         <TileDetailPanel
           tile={state.selected}
           match={selectedMatch}
+          unavailableReason={reason}
           onClose={() => state.setSelectedId(null)}
         />
       </div>
-      {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
+      {helpOpen && (
+        <HelpDialog
+          size={state.size}
+          rowBonus={state.rowBonus}
+          columnBonus={state.columnBonus}
+          rulesText={event.rules_text ?? null}
+          onClose={() => setHelpOpen(false)}
+        />
+      )}
     </>
   )
 }
@@ -148,19 +205,24 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
 function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState }) {
   const { t } = useTranslation()
   const tierOptions = useTierOptions()
-  const [currentId, setCurrentId] = useState<string | null>(null)
-
-  function jumpTo(tile: Tile) {
-    setCurrentId(tile.id)
-    document
-      .getElementById(tileListItemId(tile))
-      ?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+  const reason = useProgressReason(event.id)
+  // Nothing is shown until a tile is tapped; tapping it again closes it (feature 025).
+  const tile = state.selected
+  const index = tile ? state.tiles.indexOf(tile) : -1
+  const step = (offset: number) => {
+    const next = state.tiles[index + offset]
+    return next ? () => state.setSelectedId(next.id) : null
   }
 
   return (
     <>
-      <MobileEventSummary event={event} />
-      <SearchField value={state.search} onChange={state.setSearch} mobile />
+      <MobileEventSummary
+        event={event}
+        hasScore={Boolean(state.score)}
+        unavailableReason={reason}
+      />
+      {state.score && <TeamScorePanel score={state.score} compact />}
+      <MobileSearch value={state.search} onChange={state.setSearch} />
       <SegmentedControl
         label={t('board.filter.label')}
         options={tierOptions}
@@ -176,20 +238,22 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
         size={state.size}
         matches={state.matches}
         summary={state.summary}
-        currentId={currentId}
-        onJump={jumpTo}
+        currentId={tile?.id ?? null}
+        onSelect={(selected) => state.setSelectedId(selected.id === tile?.id ? null : selected.id)}
       />
-      <TileList
-        tiles={state.tiles}
-        matches={state.matches}
-        onSelect={(tile) => state.setSelectedId(tile.id)}
-      />
-      {state.selected && (
-        <TileDetailsDialog
-          tile={state.selected}
-          match={state.matches?.get(state.selected.id)}
+      {tile ? (
+        <MobileTileDetail
+          tile={tile}
+          match={state.matches?.get(tile.id)}
+          unavailableReason={reason}
+          onPrevious={step(-1)}
+          onNext={step(1)}
           onClose={() => state.setSelectedId(null)}
         />
+      ) : (
+        <p className="m-0 rounded border border-dashed border-rs-border px-3 py-4 text-center text-[13px] text-rs-muted">
+          {t('board.miniMap.hint')}
+        </p>
       )}
     </>
   )

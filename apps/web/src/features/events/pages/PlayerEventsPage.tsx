@@ -1,12 +1,19 @@
+import { useMemo } from 'react'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { useTranslation } from 'react-i18next'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
+import { InfoBanner } from '../../../components/ui/InfoBanner'
+import { FIELD_CLASS } from '../../../components/ui/fieldClass'
+import { useSession } from '../../auth/hooks/useSession'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
+import { JOINED_STATE } from '../../join/state'
 import { EventRegistration } from '../../teams/components/EventRegistration'
+import { EventRulesText } from '../components/EventRulesText'
 import { EventSchedule } from '../components/EventSchedule'
-import { EventStatusBadge } from '../components/EventStatusBadge'
+import { EventCardTitle } from '../components/EventCardTitle'
 import { EVENT_PANEL_ID, EventTabs } from '../components/EventTabs'
-import { useEvents } from '../hooks/useEvents'
+import { useEvents, useMyEvents } from '../hooks/useEvents'
 import { useEventTabs } from '../hooks/useEventTabs'
 
 /** Layout v2 player events page: event cards with the player's own registration. */
@@ -14,8 +21,16 @@ export function PlayerEventsPage() {
   const { t } = useTranslation()
   const isDesktop = useIsDesktop()
   const [params] = useSearchParams()
+  const location = useLocation()
+  const joined = (location.state as Record<string, string> | null)?.[JOINED_STATE]
+  const session = useSession()
   const events = useEvents()
-  const tabs = useEventTabs(events.data ?? [])
+  const mine = useMyEvents(Boolean(session.data))
+  const mineIds = useMemo(
+    () => (session.data && mine.data ? new Set(mine.data.map((event) => event.id)) : null),
+    [session.data, mine.data],
+  )
+  const tabs = useEventTabs(events.data ?? [], mineIds)
 
   return (
     <AppShell desktopPadding="md:px-8 md:pt-6">
@@ -29,6 +44,7 @@ export function PlayerEventsPage() {
           </h1>
           <span className="text-rs-muted">{t('events.publicDescription')}</span>
         </div>
+        {joined && <InfoBanner>{t('join.sent', { name: joined })}</InfoBanner>}
         {params.get('login') === 'failed' && (
           <p
             role="alert"
@@ -45,8 +61,25 @@ export function PlayerEventsPage() {
           <p role="alert">{t('common.apiError')}</p>
         ) : (
           <>
+            <label className="relative flex items-center">
+              <SearchOutlinedIcon
+                fontSize="small"
+                className="pointer-events-none absolute left-2.5 text-rs-muted"
+                aria-hidden="true"
+              />
+              <span className="sr-only">{t('events.search')}</span>
+              <input
+                type="search"
+                maxLength={80}
+                value={tabs.search}
+                onChange={(change) => tabs.setSearch(change.target.value)}
+                placeholder={t('events.search')}
+                className={`${FIELD_CLASS} pl-[38px]`}
+              />
+            </label>
             <EventTabs
               tab={tabs.tab}
+              tabs={tabs.tabs}
               counts={tabs.counts}
               onChange={tabs.setTab}
               mobile={!isDesktop}
@@ -59,7 +92,13 @@ export function PlayerEventsPage() {
             >
               {!tabs.visible.length && (
                 <p className="m-0 rounded border border-rs-border bg-rs-surface p-8 text-center text-rs-muted">
-                  {t('events.empty')}
+                  {t(
+                    tabs.search.trim()
+                      ? 'events.noMatch'
+                      : tabs.tab === 'mine'
+                        ? 'events.noneMine'
+                        : 'events.empty',
+                  )}
                 </p>
               )}
               {tabs.visible.map((event) => (
@@ -68,19 +107,12 @@ export function PlayerEventsPage() {
                   aria-labelledby={`event-${event.id}`}
                   className="flex flex-col gap-2 rounded border border-rs-border bg-rs-surface p-4"
                 >
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2
-                      id={`event-${event.id}`}
-                      className="m-0 font-display text-lg font-bold text-rs-gold-bright md:text-xl"
-                    >
-                      {event.name}
-                    </h2>
-                    <EventStatusBadge status={event.status} />
-                  </div>
+                  <EventCardTitle event={event} />
                   <EventSchedule event={event} />
                   {event.description && (
                     <p className="m-0 text-sm text-rs-muted">{event.description}</p>
                   )}
+                  {event.rules_text && <EventRulesText text={event.rules_text} />}
                   <EventRegistration event={event} />
                 </article>
               ))}

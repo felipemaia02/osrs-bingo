@@ -1,9 +1,14 @@
 import { apiClient } from '../../../lib/api'
-import type { BingoEvent, EventListResponse, EventPayload, EventStatus } from '../types'
+import type { BingoEvent, EventListResponse, EventPayload, EventRules, EventStatus } from '../types'
 
 export async function fetchEvents(status?: EventStatus): Promise<BingoEvent[]> {
   const response = await apiClient.get<EventListResponse>('/events', { params: { status } })
   return response.data.items
+}
+
+/** Events the logged-in player is in (pending or approved), feature 026. */
+export async function fetchMyEvents(): Promise<BingoEvent[]> {
+  return (await apiClient.get<EventListResponse>('/events/mine')).data.items
 }
 
 export async function createEvent(payload: EventPayload): Promise<BingoEvent> {
@@ -14,6 +19,16 @@ export async function createEvent(payload: EventPayload): Promise<BingoEvent> {
 export async function updateEvent(eventId: string, payload: EventPayload): Promise<BingoEvent> {
   const response = await apiClient.patch<BingoEvent>(`/events/${eventId}`, payload)
   return response.data
+}
+
+export async function updateEventRules({
+  eventId,
+  rules,
+}: {
+  eventId: string
+  rules: EventRules
+}): Promise<BingoEvent> {
+  return (await apiClient.patch<BingoEvent>(`/events/${eventId}/rules`, rules)).data
 }
 
 export async function activateEvent(eventId: string): Promise<BingoEvent> {

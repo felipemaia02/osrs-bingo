@@ -3,8 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { AuthControls } from '../../features/auth/components/AuthControls'
 import { useSession } from '../../features/auth/hooks/useSession'
 import { ActiveEventStatus } from '../../features/events/components/ActiveEventStatus'
+import { usePendingReviews } from '../../features/submissions/hooks/usePendingReviews'
 import { useDraftRegistrationCounts } from '../../features/teams/hooks/useDraftRegistrationCounts'
+import { isNetworkError } from '../../lib/api'
 import { LanguageMenuButton, LanguageSwitcher } from './LanguageSwitcher'
+import { MaintenanceScreen, OfflineScreen } from './status/StatusScreens'
+import { useSiteStatus } from '../../features/maintenance/siteStatus'
+import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined'
 import { MobileBottomBar } from './shell/MobileBottomBar'
 import { ShellSidebar } from './shell/ShellSidebar'
 import { Wordmark } from './shell/Wordmark'
@@ -22,7 +27,10 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
   const { t } = useTranslation()
   const session = useSession()
   const isAdmin = session.data?.is_admin === true
+  const siteStatus = useSiteStatus()
+  const maintenance = siteStatus.data?.maintenance === true
   const registrations = useDraftRegistrationCounts(isAdmin)
+  const pendingReviews = usePendingReviews(isAdmin)
 
   return (
     <div className="min-h-screen bg-rs-canvas text-rs-text">
@@ -48,12 +56,37 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
       </div>
 
       <div className="md:flex">
-        <ShellSidebar isAdmin={isAdmin} pendingRegistrations={registrations?.pending ?? null} />
+        <ShellSidebar
+          isAdmin={isAdmin}
+          pendingRegistrations={registrations?.pending ?? null}
+          pendingReviews={pendingReviews}
+        />
         <main
           aria-label={t('shell.main')}
           className={`min-w-0 flex-1 px-4 pb-[90px] pt-4 md:pb-8 ${desktopPadding}`}
         >
-          {children}
+          {/* Nothing works without the server: say so once instead of every section failing. */}
+          {session.isError && isNetworkError(session.error) ? (
+            <OfflineScreen onRetry={() => void session.refetch()} />
+          ) : maintenance && !isAdmin ? (
+            <MaintenanceScreen
+              message={siteStatus.data?.message ?? null}
+              onRetry={() => void siteStatus.refetch()}
+            />
+          ) : (
+            <>
+              {maintenance && (
+                <p
+                  role="status"
+                  className="mb-4 flex items-center gap-2 rounded border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-sm text-rs-gold-bright"
+                >
+                  <ConstructionOutlinedIcon fontSize="small" aria-hidden="true" />
+                  {t('status.maintenance.adminBanner')}
+                </p>
+              )}
+              {children}
+            </>
+          )}
         </main>
       </div>
 

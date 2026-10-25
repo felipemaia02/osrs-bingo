@@ -6,16 +6,24 @@ import { Badge } from '../../../components/ui/Badge'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { TileProgressLine } from './TileProgressLine'
 
 interface TileDetailContentProps {
   tile: Tile
   match?: TileMatch
   /** The dialog already shows the name as its title. */
   showName: boolean
+  /** i18n key: why team progress can't be shown (feature 025). */
+  unavailableReason: string
 }
 
 /** Read-only tile rules (board-a-desktop detail panel). Drop weights are progress, never points. */
-export function TileDetailContent({ tile, match, showName }: TileDetailContentProps) {
+export function TileDetailContent({
+  tile,
+  match,
+  showName,
+  unavailableReason,
+}: TileDetailContentProps) {
   const { t } = useTranslation()
   const highlighted = match?.matches ? match.matchedDrop?.name : undefined
 
@@ -36,6 +44,10 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
             <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
             <Badge tone="neutral">{t('tile.points', { count: tile.points })}</Badge>
             <Badge tone="neutral">{t(`cards.kind.${tile.kind}`)}</Badge>
+            {tile.bonus && <Badge tone="gold">★ {t('board.bonus.card')}</Badge>}
+            {tile.requiresPreverification && (
+              <Badge tone="info">{t('cards.preverification')}</Badge>
+            )}
           </div>
         </div>
         <p className="m-0 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5 text-[13px]">
@@ -45,14 +57,37 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
             components={{ strong: <strong /> }}
           />
         </p>
-        <p className="m-0 flex items-center gap-2 text-[13px]">
-          <HourglassDisabledOutlinedIcon
-            fontSize="small"
-            className="text-rs-muted"
-            aria-hidden="true"
-          />
-          <span className="text-rs-muted">{t('board.panel.teamProgress')}</span>
-        </p>
+        {tile.progress ? (
+          <div className="flex flex-col gap-1.5 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5">
+            <strong className="text-[13px]">
+              {t('score.detailProgress', {
+                value: tile.progress.value,
+                requirement: tile.progress.requirement,
+                points: tile.points,
+              })}
+            </strong>
+            <TileProgressLine progress={tile.progress} />
+            {tile.progress.drops.length > 0 && (
+              <ul className="m-0 flex list-none flex-col gap-0.5 p-0 text-xs">
+                {tile.progress.drops.map((drop) => (
+                  <li key={drop.name} className="flex justify-between gap-2">
+                    <span>{t('score.dropCount', { name: drop.name, count: drop.count })}</span>
+                    <span className="font-semibold text-rs-gold-bright">+{drop.progress}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ) : (
+          <p className="m-0 flex items-center gap-2 text-[13px]">
+            <HourglassDisabledOutlinedIcon
+              fontSize="small"
+              className="text-rs-muted"
+              aria-hidden="true"
+            />
+            <span className="text-rs-muted">{t(unavailableReason)}</span>
+          </p>
+        )}
         <div>
           <div className="mb-1 flex items-baseline justify-between">
             <strong className="text-[13px]">
@@ -102,7 +137,11 @@ export function TileDetailContent({ tile, match, showName }: TileDetailContentPr
             })}
           </ul>
         </div>
-        {tile.ruleNote && <p className="m-0 text-xs text-rs-muted">{tile.ruleNote}</p>}
+        {tile.requiresPreverification && tile.ruleNote && (
+          <p className="m-0 rounded-[3px] border border-rs-info bg-rs-info-bg px-3 py-2 text-xs text-rs-info-banner-text">
+            <strong>{t('cards.preverification')}:</strong> {tile.ruleNote}
+          </p>
+        )}
         {tile.imageSourceUrl && (
           <a
             href={tile.imageSourceUrl}

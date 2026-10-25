@@ -1,20 +1,33 @@
+from builtins import list as builtin_list
+
 from app.core.exceptions import ConflictError, NotFoundError
 from app.core.logging import get_logger, log_event
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.service import BOARD_REQUIRED_DETAIL, is_publishable_board
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
-from app.modules.events.schemas import EventCreate, EventResponse, EventStatus, EventUpdate
+from app.modules.events.schemas import (
+    EventCreate,
+    EventResponse,
+    EventRules,
+    EventStatus,
+    EventUpdate,
+)
+from app.modules.players.repository import PlayerRepository
 
 ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
+LINE_BONUSES_REQUIRED_DETAIL = "Set the row and column bonuses on the board before activating"
 
 
 class EventService:
-    def __init__(self, repository: EventRepository, boards: BoardRepository) -> None:
+    def __init__(
+        self, repository: EventRepository, boards: BoardRepository, players: PlayerRepository
+    ) -> None:
         self._repository = repository
         self._boards = boards
+        self._players = players
 
     _logger = get_logger(__name__)
 
@@ -38,6 +51,12 @@ class EventService:
         )
         return [self._to_response(document) for document in documents]
 
+    async def mine(self, user_id: str) -> builtin_list[EventResponse]:
+        """Events the user is in (pending or approved registration), newest first (026)."""
+        event_ids = await self._players.event_ids_for_user(user_id)
+        documents = await self._repository.list_by_ids(event_ids) if event_ids else []
+        return [self._to_response(document) for document in documents]
+
     async def update(self, event_id: str, payload: EventUpdate) -> EventResponse:
         event = await self._require_event(event_id)
         if event["status"] != EventStatus.DRAFT:
@@ -54,12 +73,24 @@ class EventService:
         log_event(self._logger, 20, "event_updated", event_id=event_id)
         return self._to_response(updated)
 
+    async def set_rules(self, event_id: str, rules: EventRules) -> EventResponse:
+        event = await self._require_event(event_id)
+        if event["status"] != EventStatus.DRAFT:
+            raise ConflictError(READ_ONLY_EVENT_DETAIL)
+        updated = await self._repository.update_rules(event_id, rules)
+        if updated is None:
+            raise ConflictError(READ_ONLY_EVENT_DETAIL)
+        log_event(self._logger, 20, "event_rules_updated", event_id=event_id)
+        return self._to_response(updated)
+
     async def activate(self, event_id: str, actor_id: str = "system") -> EventResponse:
         event = await self._require_event(event_id)
         self._require_status(event, EventStatus.DRAFT)
         board = await self._boards.get_by_event(event_id)
         if not is_publishable_board(board):
             raise ConflictError(BOARD_REQUIRED_DETAIL)
+        if board is None or board.get("row_bonus") is None or board.get("column_bonus") is None:
+            raise ConflictError(LINE_BONUSES_REQUIRED_DETAIL)
         activated, limit_reached = await self._repository.activate(event_id)
         if activated is not None:
             await self._boards.publish(event_id, actor_id)
@@ -113,6 +144,8 @@ class EventService:
             start_at=document["start_at"],
             end_at=document["end_at"],
             status=document["status"],
+            rules_text=document.get("rules_text"),
+            buy_in=document.get("buy_in"),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

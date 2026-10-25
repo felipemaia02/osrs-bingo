@@ -42,6 +42,13 @@ class AdministrationRepository:
         )
         return result.modified_count == 1
 
+    async def administrators(self) -> list[dict[str, Any]]:
+        """Users who are administrators now, by name."""
+        roles = await self.roles()
+        admin_ids = roles["admin_ids"] if roles else []
+        cursor = self._users.find({"discord_id": {"$in": admin_ids}}).sort("username", 1)
+        return [dict(user) async for user in cursor]
+
     async def get_user(self, user_id: str) -> dict[str, Any] | None:
         try:
             object_id = ObjectId(user_id)

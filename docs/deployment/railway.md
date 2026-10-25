@@ -60,6 +60,40 @@ Railway always builds with the `Dockerfile` it finds in the service root directo
 | `DISCORD_REDIRECT_URI` | `https://<web-domain>/api/auth/discord/callback` |
 | `ADMIN_DISCORD_IDS` | your Discord user ID; seeds the first administrator on an empty database |
 
+Screenshot storage (feature 008) — create a **Bucket** in the project (+ New → Bucket) and reference it from **api** (replace `Bucket` with the bucket service's name):
+
+| Variable | Value |
+|---|---|
+| `STORAGE_ENDPOINT` | `${{Bucket.ENDPOINT}}` |
+| `STORAGE_BUCKET` | `${{Bucket.BUCKET}}` |
+| `STORAGE_ACCESS_KEY_ID` | `${{Bucket.ACCESS_KEY_ID}}` |
+| `STORAGE_SECRET_ACCESS_KEY` | `${{Bucket.SECRET_ACCESS_KEY}}` |
+| `STORAGE_REGION` | `${{Bucket.REGION}}` |
+
+Without all four storage values the API keeps screenshots in a local folder, which is wiped on every deploy; it logs `screenshot_storage_local_outside_development` at startup when that happens outside development. Buckets are private: the app shows screenshots through short-lived signed links.
+
+Maintenance mode (feature 028), optional on **api**:
+
+| Variable | Value |
+|---|---|
+| `MAINTENANCE_MODE` | `true` closes the site for everyone but logged-in admins; `false` (default) reopens it |
+| `MAINTENANCE_MESSAGE` | Optional text for players, up to 280 characters (e.g. `Back at 20:00 UTC.`) |
+
+Changing them restarts the `api` service (about a minute). Players then see "The world is being updated" with the message, and the API answers their requests with 503; `/health`, `/status` and the Discord login stay open so admins can log in and test before reopening. Admins see a "Maintenance mode is on" banner.
+
+DropTracker drop ingestion (feature 029), optional on **api**:
+
+| Variable | Value |
+|---|---|
+| `DROPTRACKER_API_KEY` | The group's export key (droptracker.io → group settings). Secret: set it only here |
+| `DROPTRACKER_GROUP_ID` | `126` (AstralStar) |
+| `DROPTRACKER_INGEST_ENABLED` | `true` starts pulling the clan's drops; `false` (default) makes no request |
+| `DROPTRACKER_POLL_SECONDS` | Seconds between polls; default `300` (5 minutes), minimum `30` |
+| `DROPTRACKER_RETENTION_DAYS` | Days raw drops are kept; default `30` |
+| `DROPTRACKER_BINGO_ENABLED` | `true` turns drops of active-event players into **pending** submissions in the review queue (feature 030); needs ingestion on |
+
+Admins check what arrived at `/api/admin/droptracker/status` and `/api/admin/droptracker/drops` (filters `player`, `npc`, `item`, `min_value`). With only ingestion on, nothing in events, submissions or scores changes. With the bingo flag on, each new drop is checked once: the bingo account (RSN chosen when joining) of an approved player with a team, an item a board card accepts, inside the event window. It becomes a Pending submission marked "DropTracker" (never auto-accepted), unless the player sent the same item manually on that card within 24 h. Only one API instance polls at a time.
+
 **web**
 
 | Variable | Value |

@@ -6,7 +6,8 @@
     "events": "Events",
     "team": "Team",
     "play": "Play",
-    "mySubmissions": "My submissions"
+    "mySubmissions": "My submissions",
+    "profile": "My profile"
   },
   "board": {
     "noActiveEvent": "There is no active event to display.",
@@ -21,7 +22,9 @@
     },
     "search": {
       "label": "Where does my drop count?",
-      "placeholder": "Where does my drop count? e.g. jar, claw, Vorkath"
+      "placeholder": "Search a drop, e.g. Jar of Stone",
+      "open": "Search drops",
+      "close": "Close search"
     },
     "filter": {
       "label": "Difficulty",
@@ -48,17 +51,16 @@
       "progress": "Each accepted drop adds its progress value to the tile for your team.",
       "completion": "When your team's progress reaches the tile requirement, the team earns the tile points once.",
       "excess": "Progress beyond the requirement does not award extra tile points.",
-      "bonuses": "Row, column and special bonuses are defined by the event rules.",
-      "details": "Select a tile to see its accepted drops, progress values and notes."
+      "details": "Select a tile to see its accepted drops, progress values and notes.",
+      "lines": "Completing all {{size}} tiles of a row gives +{{row}} points; of a column, +{{column}} points.",
+      "linesNotSet": "Row and column bonuses aren't set for this board yet."
     },
     "activeEvent": "Active event",
     "yourTeam": "Your team",
     "startsInLabel": "Starts in",
     "endsInLabel": "Ends in",
-    "progressUnavailableShort": "Progress unavailable for now",
     "progressNotice": {
-      "title": "Progress unavailable.",
-      "body": "Drop submissions don't exist yet — for now, use search to find where each drop counts."
+      "title": "Progress unavailable."
     },
     "status": {
       "search_one": "{{count}} tile accepts “{{query}}”",
@@ -87,10 +89,12 @@
       "close": "Close detail",
       "prompt": "Select a tile to see its accepted drops and how it is completed.",
       "completes": "Completes when progress reaches <strong>{{requirement}}</strong>. Worth <strong>{{points}} pts only once</strong> — extra progress gives no points.",
-      "teamProgress": "Your team's progress: unavailable",
       "drops": "Accepted drops ({{count}})",
       "weightHint": "weight = progress",
-      "imageSource": "Image: OSRS Wiki — {{name}}"
+      "imageSource": "Image: OSRS Wiki — {{name}}",
+      "previous": "Previous tile",
+      "next": "Next tile",
+      "closeTile": "Close tile"
     },
     "rowSummary": {
       "some": "{{count}} of {{total}} match the search",
@@ -99,8 +103,25 @@
     "miniMap": {
       "label": "Board mini-map",
       "title": "{{size}}×{{size}} map",
-      "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show in the list",
-      "legend": "E = Easy · M = Medium · H = Hard. Tap a cell to jump to it in the list."
+      "cell": "{{name}}, row {{row}} column {{column}}, {{tier}}: show details",
+      "legend": "★ Bronze = Easy · ★ Silver = Medium · ★ Gold = Hard. Tap a tile to see it below; tap it again to close.",
+      "bonusCell": "{{name}}, bonus card, {{tier}}: show details",
+      "hint": "Tap a tile on the map to see its details here."
+    },
+    "bonus": {
+      "badge": "Bonus",
+      "card": "Bonus card",
+      "row": "Bonus cards",
+      "section": "Bonus cards",
+      "slot": "Bonus card {{slot}}"
+    },
+    "progress": {
+      "login": "Log in to see your team's progress.",
+      "notRegistered": "You're not in this event, so there's no team progress to show.",
+      "pending": "Your registration is waiting for an admin's approval.",
+      "removed": "Your registration was removed by an admin.",
+      "unassigned": "You'll see your team's progress once an admin puts you in a team.",
+      "unavailable": "Your team's progress isn't available right now."
     }
   },
   "tile": {
@@ -115,7 +136,8 @@
       "Low": "E",
       "Mid": "M",
       "High": "H"
-    }
+    },
+    "bonusLabel": "{{name}}, bonus card, {{tier}}, {{points}} points"
   },
   "common": {
     "loading": "Loading…",
@@ -141,7 +163,8 @@
       "all": "All",
       "draft": "Draft",
       "active": "Active",
-      "finished": "Finished"
+      "finished": "Finished",
+      "mine": "Mine"
     },
     "actions": {
       "create": "New event",
@@ -149,7 +172,8 @@
       "finish": "Finish",
       "edit": "Edit",
       "board": "Board",
-      "activateShort": "Activate"
+      "activateShort": "Activate",
+      "rules": "Rules"
     },
     "form": {
       "createTitle": "Create event",
@@ -157,7 +181,10 @@
       "name": "Name",
       "description": "Description",
       "start": "Start date and time",
-      "end": "End date and time"
+      "end": "End date and time",
+      "buyIn": "Buy-in",
+      "buyInPlaceholder": "e.g. 5M gp",
+      "buyInHint": "Optional. Shown when players join; admins record payments."
     },
     "schedule": {
       "title": "Event schedule",
@@ -173,7 +200,8 @@
       "created": "Event created.",
       "updated": "Event updated.",
       "activated": "Event activated.",
-      "finished": "Event finished."
+      "finished": "Event finished.",
+      "rulesSaved": "Rules saved."
     },
     "confirm": {
       "activateTitle": "Activate event?",
@@ -188,7 +216,8 @@
       "readOnly": "Only draft events can be edited.",
       "invalidTransition": "This event cannot perform that status change.",
       "notFound": "The event was not found.",
-      "boardRequired": "Complete and save every board position before activating the event."
+      "boardRequired": "Complete and save every board position before activating the event.",
+      "rulesRequired": "Set the row and column bonuses in the board builder before activating the event."
     },
     "publicEyebrow": "Community events",
     "publicDescription": "Discover Bingo events and follow your registration.",
@@ -201,7 +230,20 @@
     "readOnly": "Read-only",
     "activeNotice": "{{name}} is active. Only one event can be active at a time: finish it before activating another.",
     "durationDays_one": "{{count}} day",
-    "durationDays_other": "{{count}} days"
+    "durationDays_other": "{{count}} days",
+    "rules": {
+      "title": "Rules · {{name}}",
+      "editableUntil": "Editable until the event is activated.",
+      "save": "Save rules",
+      "text": "Rules of the bingo",
+      "placeholder": "Write how this bingo works: dates, what counts, screenshots, team rules…",
+      "hint": "Plain text; line breaks are kept. Players read it on the Events page and in the board's help.",
+      "section": "Rules"
+    },
+    "openBoard": "Open board",
+    "search": "Search events",
+    "noMatch": "No event matches the search.",
+    "noneMine": "You haven't joined any event yet."
   },
   "teams": {
     "eyebrow": "Administration",
@@ -211,7 +253,6 @@
     "teams": "Teams",
     "players": "Event registrations",
     "teamName": "Team name",
-    "playerName": "OSRS display name",
     "selectTeam": "Select a team",
     "create": "Create",
     "description": "Approve requests and distribute approved players across teams.",
@@ -244,7 +285,8 @@
       "selectedRemoved_one": "{{count}} removed.",
       "selectedRemoved_other": "{{count}} removed.",
       "skipped_one": "{{count}} skipped because it had already changed.",
-      "skipped_other": "{{count}} skipped because they had already changed."
+      "skipped_other": "{{count}} skipped because they had already changed.",
+      "teamUpdated": "Team updated."
     },
     "errors": {
       "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
@@ -255,7 +297,12 @@
       "invalidInput": "Enter a valid name.",
       "approvedOnly": "Only approved registrations can be assigned. Refresh the participant list.",
       "pendingOnly": "This request is no longer pending.",
-      "removed": "This registration has already been removed."
+      "removed": "This registration has already been removed.",
+      "roleNeedsApproval": "Only approved players can have a role.",
+      "captainNeedsTeam": "Assign a team before making this player captain.",
+      "captainTaken": "This team already has a captain.",
+      "buyInAdmin": "Choose a current administrator.",
+      "changed": "This registration changed meanwhile. Reload and try again."
     },
     "roster": {
       "tabs": "Participants and teams",
@@ -270,13 +317,10 @@
       "allTeams": "All teams",
       "previous": "Previous",
       "next": "Next",
-      "status": "Status",
       "actions": "Actions",
       "assignPlayer": "Change team for {{name}}",
       "editable": "Editable: draft event",
       "readOnly": "Read-only: {{status}} event",
-      "osrsName": "OSRS name",
-      "discord": "Discord",
       "requested": "Requested",
       "team": "Team",
       "members": "Members",
@@ -286,12 +330,26 @@
       "approveAllCount": "Approve all ({{count}})…",
       "paginationPage": "{{start}}–{{end}} of {{total}} · {{size}} per page",
       "paginationShort": "{{start}}–{{end}} of {{total}}",
-      "note": "“Remove” doesn't delete the request: the player still sees their own status as <strong>Removed</strong>. After approving, use the <strong>Unassigned</strong> tab to assign a team.",
+      "note": "Σ = main + alts found on Wise Old Man; the player's name is their bingo account. “Remove” doesn't delete the request: the player still sees their own status as <strong>Removed</strong>. After approving, use the <strong>Unassigned</strong> tab to assign a team.",
       "approveAllTitle_one": "Approve {{count}} request?",
       "approveAllTitle_other": "Approve {{count}} requests?",
       "approveCount": "Approve {{count}}",
       "approveAllNamed": "{{names}} become <strong>approved, without a team</strong>. You choose each player's team later.",
-      "approveAllEveryone": "All {{count}} pending requests in this event become <strong>approved, without a team</strong>, including any outside the current search or page. You choose each player's team later."
+      "approveAllEveryone": "All {{count}} pending requests in this event become <strong>approved, without a team</strong>, including any outside the current search or page. You choose each player's team later.",
+      "player": "Player",
+      "timezone": "Time zone",
+      "activity": "Activity",
+      "bossKc": "Boss KC Σ",
+      "ehb": "EHB Σ",
+      "teammates": "Wants to team with",
+      "role": "Role",
+      "buyIn": "Buy-in",
+      "mainOnly": "main only",
+      "mainAndAlts_one": "main + {{count}} alt",
+      "mainAndAlts_other": "main + {{count}} alts",
+      "experienceLine": "EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "wantsWith": "wants {{names}}",
+      "sorted": "Sorted by EHB total ↓"
     },
     "status": {
       "pending": "Pending",
@@ -308,7 +366,38 @@
       "removeTitle": "Remove selected registrations?",
       "removeConfirmation_one": "Remove {{count}} selected registration? Its team assignment will also be cleared. The request is kept and the player sees their status as Removed.",
       "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed."
-    }
+    },
+    "balance": {
+      "title": "Team balance",
+      "description": "Sum of boss KC and EHB of each player's main + alts found on Wise Old Man · average EHB per team {{average}}",
+      "players_one": "{{count}} player",
+      "players_other": "{{count}} players",
+      "ehb": "EHB",
+      "bossKc": "Boss KC",
+      "noCaptain": "No captain",
+      "versus": "{{value}} vs average",
+      "short_one": "{{count}} player short",
+      "short_other": "{{count}} players short"
+    },
+    "roles": {
+      "none": "None",
+      "captain": "Captain",
+      "instructor": "Instructor"
+    },
+    "buyIn": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "to": "to {{name}}"
+    },
+    "participant": {
+      "edit": "Edit {{name}}",
+      "title": "Edit {{name}}",
+      "receivedBy": "Received by",
+      "saved": "{{name}} updated.",
+      "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role."
+    },
+    "edit": "Edit",
+    "editTeam": "Edit {{name}}"
   },
   "language": {
     "label": "Language",
@@ -334,9 +423,7 @@
   },
   "registration": {
     "loginToRegister": "Log in with Discord to register",
-    "formFor": "Register for {{name}}",
     "approvalHint": "Your request will be reviewed by an administrator.",
-    "request": "Request registration",
     "status": {
       "pending": "Registration pending approval",
       "approved": "Registration approved",
@@ -347,6 +434,13 @@
       "pending": "Pending",
       "approved": "Approved",
       "removed": "Removed"
+    },
+    "join": "Join event",
+    "joinFor": "Join {{name}}",
+    "playingAs": "Playing as",
+    "buyIn": {
+      "pending": "Buy-in not paid yet",
+      "paid": "Buy-in paid"
     }
   },
   "admin": {
@@ -366,8 +460,7 @@
     "cardsDescription": "Bosses, drops, progress weights and revisions.",
     "boardsDescription": "Choose the board size, cards and positions for each event.",
     "rolesDescription": "App roles, independent of Discord.",
-    "rankingDescription": "Compare teams and contributions. Not available yet.",
-    "rankingUnavailable": "Event scoring is not available yet. Team rankings and player contributions will appear here when the scoring rules and accepted activity are ready.",
+    "rankingDescription": "Compare teams and each player's contribution.",
     "searchUsers": "Search registered users",
     "search": "Search",
     "noUsers": "No users found. Users appear here after their first login.",
@@ -403,7 +496,9 @@
       "cardsActive": "{{count}} active",
       "retired": "{{count}} retired",
       "administrators_one": "{{count}} administrator",
-      "administrators_other": "{{count}} administrators"
+      "administrators_other": "{{count}} administrators",
+      "reviews_one": "{{count}} pending",
+      "reviews_other": "{{count}} pending"
     },
     "you": "You",
     "grantShort": "Grant access",
@@ -418,7 +513,11 @@
       "action": "Action"
     },
     "directoryCount_one": "{{count}} registered user",
-    "directoryCount_other": "{{count}} registered users"
+    "directoryCount_other": "{{count}} registered users",
+    "review": "Drop review",
+    "reviewDescription": "Accept or reject players' submissions with the screenshot.",
+    "draft": "Draft preview",
+    "draftDescription": "Available players for the captains' pick session."
   },
   "cards": {
     "title": "Card catalog",
@@ -454,9 +553,12 @@
       "dropsPlaceholder": "Drop name | progress weight",
       "wikiArticle": "OSRS Wiki article",
       "resolveImage": "Find image",
-      "ruleNote": "Rule or verification note",
       "changeReason": "Reason for this revision",
-      "fallbackImage": "No image: the fallback shield will be used."
+      "fallbackImage": "No image: the fallback shield will be used.",
+      "requiresPreverification": "Requires pre-verification",
+      "requiresPreverificationHint": "Players send a starting screenshot for this card before their drops can be accepted. Describe below what it must show.",
+      "preverificationNote": "Pre-verification instructions",
+      "preverificationNotePlaceholder": "e.g. Screenshot your Theatre of Blood KC before your first raid of the event."
     },
     "feedback": {
       "created": "Card created.",
@@ -522,7 +624,8 @@
     "source": {
       "workbook": "Approved workbook",
       "admin": "Administrator"
-    }
+    },
+    "preverification": "Pre-verification"
   },
   "boards": {
     "title": "Build board",
@@ -601,6 +704,27 @@
       "shrinkConfirm": "Shrink and remove",
       "shrinkConfirmation_one": "{{count}} card is outside the {{size}}×{{size}} area and will be removed from the draft: {{names}}. Nothing is saved until you save the board.",
       "shrinkConfirmation_other": "{{count}} cards are outside the {{size}}×{{size}} area and will be removed from the draft: {{names}}. Nothing is saved until you save the board."
+    },
+    "bonuses": {
+      "row": "Row bonus",
+      "column": "Column bonus",
+      "required": "Both are required to activate",
+      "readOnly": "Row +{{row}} · Column +{{column}}"
+    },
+    "bonusRow": {
+      "add": "Add bonus row",
+      "label": "Bonus row",
+      "cell": "Bonus {{slot}}",
+      "slots_one": "Bonus row · {{count}} card",
+      "slots_other": "Bonus row · {{count}} cards",
+      "fewer": "One bonus card fewer",
+      "more": "One bonus card more",
+      "remove": "Remove bonus row",
+      "shrinkTitle": "Remove bonus slots?",
+      "removeTitle": "Remove the bonus row?",
+      "shrinkConfirm": "Remove cards",
+      "shrinkConfirmation_one": "{{count}} card will leave the bonus row: {{names}}. Nothing is saved until you save the board.",
+      "shrinkConfirmation_other": "{{count}} cards will leave the bonus row: {{names}}. Nothing is saved until you save the board."
     }
   },
   "brand": {
@@ -621,6 +745,501 @@
       "hoursMinutes": "{{hours}} h {{minutes}} min",
       "startsIn": "Starts in {{time}}",
       "ended": "Scheduled end reached"
+    }
+  },
+  "submissions": {
+    "title": "My submissions",
+    "description": "Only yours. Each submission is checked by an administrator against its screenshot.",
+    "submit": "Submit with screenshot",
+    "filterLabel": "Filter by status",
+    "tabs": {
+      "all": "All",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "empty": "You haven't sent anything yet.",
+    "emptyFilter": "Nothing here with this filter.",
+    "blocked": {
+      "login": "Log in to send your drops.",
+      "noEvent": "There's no active event right now.",
+      "notRegistered": "You're not registered in the active event.",
+      "notApproved": "Your registration is waiting for an administrator.",
+      "noTeam": "You'll be able to submit once an administrator puts you on a team."
+    },
+    "preverificationTitle": "Pre-verification · {{card}}",
+    "kind": {
+      "drop": "With screenshot",
+      "preverification": "Pre-verification"
+    },
+    "reviewedBy": "reviewed by {{name}}",
+    "progressAdded_one": "+{{count}} progress on {{card}}",
+    "progressAdded_other": "+{{count}} progress on {{card}}",
+    "progressOnAccept_one": "+{{count}} progress on {{card}} once accepted",
+    "progressOnAccept_other": "+{{count}} progress on {{card}} once accepted",
+    "preverificationPendingHint": "Until it's accepted, drops for this card don't count yet.",
+    "reason": "Reason:",
+    "reasons": {
+      "unreadable_screenshot": "unreadable screenshot",
+      "item_mismatch": "the item doesn't match the screenshot",
+      "outside_event_period": "outside the event period",
+      "other": "other"
+    },
+    "viewScreenshot": "View screenshot",
+    "openScreenshot": "Open the screenshot",
+    "screenshotAlt": "Submission screenshot",
+    "screenshotUnavailable": "Screenshot unavailable",
+    "submitTitle": "Submit with screenshot",
+    "gate": {
+      "required": "Pre-verification required",
+      "pending": "Pre-verification pending",
+      "accepted": "Pre-verified",
+      "rejected": "Pre-verification rejected"
+    },
+    "form": {
+      "card": "Card",
+      "searchCard": "Search card",
+      "positionLabel": "Row {{row}} · column {{column}}",
+      "noCards": "No card matches.",
+      "preverificationFirst": "Send a screenshot of your starting point (for example your kill count). After that you can send its drops.",
+      "item": "Item you got on {{card}}",
+      "gatePending": "Your pre-verification is pending: these drops are accepted only after it.",
+      "screenshot": "Screenshot (proof)",
+      "chooseScreenshot": "Choose a screenshot",
+      "screenshotHint": "PNG, JPEG or WebP, up to 5 MB. One item per submission.",
+      "preview": "Screenshot preview",
+      "note": "Note (optional)",
+      "send": "Send",
+      "sendPreverification": "Send pre-verification",
+      "preverificationNeeded": "{{card}} needs a pre-verification first",
+      "preverificationRejected": "Your pre-verification for {{card}} was rejected — send a new one"
+    },
+    "feedback": {
+      "sent": "Sent. An administrator will review it.",
+      "preverificationSent": "Pre-verification sent. You can now send this card's drops."
+    },
+    "errors": {
+      "notActive": "Submissions are only open while the event is active.",
+      "notEligible": "Only approved players with a team can submit.",
+      "position": "This card is no longer on the board.",
+      "drop": "This item isn't accepted by this card.",
+      "dropRequired": "Choose the item you got.",
+      "preverificationRequired": "Send this card's pre-verification first.",
+      "preverificationNotNeeded": "This card doesn't need a pre-verification.",
+      "preverificationExists": "You already have a pending or accepted pre-verification for this card.",
+      "preverificationNotAccepted": "Accept this player's pre-verification for the card first.",
+      "alreadyReviewed": "Someone already reviewed this submission.",
+      "reviewClosed": "Submissions can only be reviewed for active or finished events.",
+      "imageType": "Use a PNG, JPEG or WebP image.",
+      "imageSize": "The screenshot must be 5 MB or smaller.",
+      "storage": "Screenshots can't be saved right now. Try again in a moment.",
+      "cardRequired": "Choose a card.",
+      "screenshotRequired": "Attach a screenshot."
+    },
+    "source": {
+      "droptracker": "DropTracker"
+    },
+    "noDropTrackerImage": "No screenshot from DropTracker"
+  },
+  "review": {
+    "title": "Drop review",
+    "description": "Every submission lands here: check the screenshot, then accept or reject it.",
+    "queue": "Pending submissions",
+    "initialScreenshot": "Initial screenshot",
+    "preverificationOf": "Pre-verification · {{card}}",
+    "selected": "Selected submission",
+    "position": "{{index}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next",
+    "openOriginal": "Click the image to open the original.",
+    "player": "Player",
+    "card": "Card",
+    "item": "Item",
+    "sent": "Sent",
+    "period": "Period",
+    "withinEvent": "Within the event",
+    "outsideEvent": "Outside the event period",
+    "preverification": "Pre-verification",
+    "preverificationMissing": "Not sent",
+    "note": "Player note",
+    "waitingPreverification": "Waiting for pre-verification: accept this player's pre-verification for the card before accepting this drop.",
+    "reasonLabel": "Rejection reason",
+    "reasonHint": "(required only to reject)",
+    "chooseReason": "Choose a reason…",
+    "otherNote": "Describe the reason",
+    "accept": "Accept",
+    "reject": "Reject",
+    "skip": "Skip",
+    "feedback": {
+      "accepted": "Submission accepted.",
+      "rejected": "Submission rejected. The player sees the reason."
+    },
+    "event": "Event",
+    "shortcuts": "J / K navigate · A accept · R reason",
+    "noEvent": "No active or finished event to review.",
+    "filter": "Filter by type",
+    "filters": {
+      "all": "All",
+      "preverification": "Pre-verification",
+      "drop": "Drops"
+    },
+    "oldestFirst": "Oldest first",
+    "empty": "Nothing to review. 🎉",
+    "backToQueue": "Back to the queue",
+    "instructions": "Instructions",
+    "ownTeam": "You play on this team — another admin reviews it."
+  },
+  "score": {
+    "tileComplete": "Complete +{{points}}",
+    "tileProgress": "{{value}} / {{requirement}}",
+    "panel": "Your team's score",
+    "official": "Official team score",
+    "completedTiles": "Completed tiles ({{count}} of {{total}})",
+    "rows": "Rows",
+    "columns": "Columns",
+    "lineBreakdown": "{{count}} × {{value}}",
+    "notConfigured": "bonus not configured",
+    "notConfiguredShort": "not set",
+    "labelComplete": "complete",
+    "labelProgress": "progress {{value}} of {{requirement}}",
+    "detailProgress": "Team progress: {{value}} of {{requirement}} · worth {{points}} pts once",
+    "dropCount": "{{name}} × {{count}}",
+    "bonusCards": "Bonus cards ({{count}} of {{total}})"
+  },
+  "ranking": {
+    "eyebrow": "Administration · private",
+    "private": "Only administrators see this screen. Players only see their own team.",
+    "event": "Event",
+    "noEvent": "There are no events yet.",
+    "rules": "Line bonuses: row {{row}} · column {{column}}",
+    "calculatedAt": "calculated at {{time}}",
+    "official": "Official team scores",
+    "position": "Position",
+    "team": "Team",
+    "tiles": "Tiles",
+    "rows": "Rows",
+    "columns": "Columns",
+    "total": "Total",
+    "members_one": "{{count}} player",
+    "members_other": "{{count}} players",
+    "tilesDone": "{{count}}/{{total}} tiles",
+    "breakdown": "Tiles {{tiles}} ({{done}}/{{total}}) · rows {{rows}} · columns {{columns}}",
+    "tie": "(tie)",
+    "place_ordinal_one": "{{count}}st",
+    "place_ordinal_two": "{{count}}nd",
+    "place_ordinal_few": "{{count}}rd",
+    "place_ordinal_other": "{{count}}th",
+    "tiesNote": "Ties share the position and there is no tiebreaker; the next position is skipped (1st, 2nd, 2nd, 4th).",
+    "contribution": "Individual contribution",
+    "contributionHint": "Separate metric · fractional · doesn't add to the team score",
+    "player": "Player",
+    "contributionShort": "Contribution",
+    "noPlayers": "No players on this team.",
+    "noTeams": "This event has no teams yet.",
+    "bonus": "Bonus",
+    "bonusShort": "bonus {{points}}"
+  },
+  "profile": {
+    "eyebrow": "Account",
+    "title": "My profile",
+    "description": "Your Discord and OSRS details. We use them when you join an event and to balance teams.",
+    "login": "Log in to see your profile.",
+    "discord": {
+      "id": "Discord ID {{id}}",
+      "automatic": "Automatic · from your Discord login"
+    },
+    "accounts": {
+      "title": "OSRS accounts",
+      "description": "Stats come from Wise Old Man and can't be edited here.",
+      "add": "Add account",
+      "empty": "No accounts yet. Add your main account first."
+    },
+    "account": {
+      "main": "Main · default for bingo",
+      "alt": "Alt · experience only",
+      "mainLabel": "Main account {{rsn}}",
+      "altLabel": "Alt account {{rsn}}",
+      "updated": "Updated on Wise Old Man {{ago}}",
+      "openWom": "Open profile on WOM",
+      "altNote": "Alts only count toward your experience for team balance.",
+      "notFoundHint": "Check the spelling, or track the player on Wise Old Man first. This account won't count until it's found."
+    },
+    "wom": {
+      "found": "Found on Wise Old Man",
+      "notFound": "Not found on Wise Old Man",
+      "unavailable": "Couldn't reach Wise Old Man, try again later"
+    },
+    "stats": {
+      "totalLevel": "Total level",
+      "ehp": "EHP",
+      "ehb": "EHB",
+      "bossKc": "Boss KC (all bosses)"
+    },
+    "actions": {
+      "refresh": "Update from WOM",
+      "main": "Make main",
+      "track": "Track on WOM",
+      "remove": "Remove",
+      "more": "More options for {{rsn}}"
+    },
+    "add": {
+      "title": "Add account",
+      "rsn": "RuneScape name (RSN)",
+      "firstHint": "Your first account becomes your main, the default for bingo.",
+      "altHint": "Extra accounts are alts: they only count toward your experience.",
+      "submit": "Add account",
+      "checking": "Checking Wise Old Man…",
+      "added": "{{rsn}} added."
+    },
+    "balance": {
+      "title": "Experience for team balance",
+      "description": "Main + alts found on Wise Old Man. Admins use this to balance teams.",
+      "bossKc": "Boss KC total",
+      "ehb": "EHB total",
+      "counted": "{{counted}} of {{total}} accounts counted",
+      "notFound": "{{names}} not found"
+    },
+    "preferences": {
+      "title": "Clan preferences",
+      "description": "Saved on your profile and reused in future events.",
+      "activity": "Usual activity during events",
+      "save": "Save preferences",
+      "saved": "Preferences saved.",
+      "timezone": "Time zone",
+      "noTimezone": "Not set",
+      "detected": "Detected from your browser. Save to keep it."
+    },
+    "activities": {
+      "under_1h": "Less than 1 h per day",
+      "one_to_three_h": "1 to 3 h per day",
+      "over_3h": "More than 3 h per day"
+    },
+    "errors": {
+      "rsnTaken": "This account is already linked to another player.",
+      "rsnAlreadyYours": "This account is already on your profile.",
+      "rsnInvalid": "Use 1–12 letters, numbers, spaces, - or _.",
+      "tooMany": "You can link up to 10 accounts.",
+      "mainNeeded": "Make another account the main before removing this one.",
+      "cooldown": "Updated less than an hour ago. Try again later.",
+      "accountMissing": "This account is no longer on your profile. Reload the page."
+    },
+    "combat": {
+      "title": "Combat levels",
+      "attack": "Attack",
+      "strength": "Strength",
+      "defence": "Defence",
+      "hitpoints": "Hitpoints",
+      "ranged": "Ranged",
+      "prayer": "Prayer",
+      "magic": "Magic"
+    },
+    "combatShort": {
+      "attack": "Atk",
+      "strength": "Str",
+      "defence": "Def",
+      "hitpoints": "HP",
+      "ranged": "Rng",
+      "prayer": "Pray",
+      "magic": "Mag"
+    }
+  },
+  "join": {
+    "eyebrow": "Join event",
+    "open": "registrations open",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "nextNeedAccount": "Next · choose an account",
+    "nextNeedAgreements": "Next · confirm all 3",
+    "progress": "Step {{step}} of {{total}}",
+    "backToEvents": "Back to events",
+    "changeIn": "change it in",
+    "timezone": "Time zone:",
+    "sent": "Request sent for {{name}} — waiting for an admin.",
+    "blocked": {
+      "login": "Log in with Discord to join an event.",
+      "notFound": "This event doesn't exist.",
+      "closed": "Registrations are closed for this event.",
+      "registered": "You've already requested to join this event."
+    },
+    "account": {
+      "title": "Which account will you play with?",
+      "group": "Bingo account",
+      "manage": "Manage accounts in My profile",
+      "main": "Main",
+      "alt": "Alt",
+      "wom": "Wise Old Man",
+      "stats": "EHB {{ehb}} · Boss KC {{kc}} · Total {{total}}",
+      "othersCount": "Your other accounts still count toward your experience for team balance.",
+      "none": "Add an account found on Wise Old Man in My profile first.",
+      "foundSummary": "found on Wise Old Man"
+    },
+    "availability": {
+      "title": "Availability and teammates"
+    },
+    "activity": {
+      "label": "Expected activity during this event",
+      "fromProfile": "(from your profile)",
+      "options": {
+        "under_1h": "Less than 1 h/day",
+        "one_to_three_h": "1 to 3 h/day",
+        "over_3h": "More than 3 h/day"
+      },
+      "short": {
+        "under_1h": "<1 h/day",
+        "one_to_three_h": "1–3 h/day",
+        "over_3h": ">3 h/day"
+      }
+    },
+    "teammates": {
+      "label": "Who would you like to team up with?",
+      "count": "Up to {{max}} clan members · {{count}} of {{max}}",
+      "placeholder": "Search by Discord name or RSN",
+      "full": "3 of 3 chosen",
+      "results": "Clan members",
+      "remove": "Remove {{name}}",
+      "onDiscord": "{{name}} on Discord",
+      "enter": "Enter to add",
+      "none": "No clan member found.",
+      "hint": "A preference, not a guarantee — admins and captains balance teams."
+    },
+    "rules": {
+      "title": "How the bingo works",
+      "event": "Event rules",
+      "confirm": "To continue, confirm that:",
+      "confirmed": "Rules confirmed",
+      "yourAccount": "your account",
+      "summary": {
+        "board": "Every team plays the same board. It's frozen once the event starts.",
+        "progress": "Each accepted drop adds <b>progress</b> to a tile. A tile is worth its points once, when progress reaches its requirement.",
+        "screenshots": "You submit your drops with a screenshot, and an admin reviews them.",
+        "teams": "Admins set the teams. You only see your own team's progress.",
+        "buyIn": "The buy-in is paid to an admin, who records it."
+      },
+      "agreements": {
+        "rules": "I've read the bingo rules above.",
+        "dropAccount": "Only drops from <b>{{rsn}}</b> during the event period will count for me.",
+        "team": "I accept the team I'm placed in by the admins."
+      }
+    },
+    "buyIn": {
+      "title": "Buy-in and send",
+      "amount": "Buy-in: <b>{{amount}}</b>. Pay any admin in game; they'll mark it as received here.",
+      "none": "No buy-in for this event.",
+      "notPaid": "Not paid yet",
+      "summary": "Buy-in status: not paid yet"
+    },
+    "send": {
+      "button": "Request to join",
+      "needAccount": "Choose an account in step 1 first.",
+      "needAgreements": "Confirm all 3 items in step 3 first.",
+      "pending": "Your request stays <b>Pending</b> until an admin approves it.",
+      "title": "Send your request"
+    },
+    "errors": {
+      "account": "Choose an account from your profile.",
+      "accountNotOnWom": "This account isn't found on Wise Old Man. Update it in My profile.",
+      "teammateSelf": "You can't pick yourself as a teammate.",
+      "teammateUnknown": "One of the teammates wasn't found. Remove and pick them again."
+    }
+  },
+  "draft": {
+    "eyebrow": "Administration · {{event}} · Draft",
+    "title": "Draft preview",
+    "description": "Admins only. Share your screen with the captains during the pick session — players never open this page. Teams are still saved by an admin.",
+    "presentation": "Presentation mode",
+    "exitPresentation": "Exit presentation",
+    "noDraft": "There's no draft event to preview.",
+    "captains": "Captains",
+    "noCaptain": "No captain yet",
+    "captainLine": "{{team}} · EHB Σ {{ehb}}",
+    "region": "Region",
+    "activity": "Activity",
+    "sortBy": "Sort by",
+    "anyActivity": "Any",
+    "regions": {
+      "all": "All regions",
+      "americas": "Americas",
+      "europe": "Europe",
+      "africa": "Africa",
+      "asia": "Asia",
+      "oceania": "Oceania"
+    },
+    "sorts": {
+      "ehb": "EHB total ↓",
+      "kc": "Boss KC total ↓",
+      "name": "Name A–Z"
+    },
+    "count_one": "{{count}} player available · captains not listed",
+    "count_other": "{{count}} players available · captains not listed",
+    "everyoneAssigned": "Every approved player has a team.",
+    "ehb": "EHB Σ",
+    "bossKc": "Boss KC Σ",
+    "alts_one": "{{count}} alt",
+    "alts_other": "{{count}} alts",
+    "noAlts": "no alts",
+    "wants": "Wants:",
+    "noPreference": "No preference",
+    "buyInPending": "Buy-in pending",
+    "sigma": "Σ = main + alts found on Wise Old Man.",
+    "details": "Show details of {{name}}",
+    "totalLevel": "Total",
+    "combatLevel": "Combat",
+    "modal": {
+      "discord": "Discord",
+      "accounts": "Linked accounts",
+      "noAccounts": "No accounts linked (registered before profiles).",
+      "playing": "Plays the bingo"
+    }
+  },
+  "home": {
+    "eyebrow": "OSRS Bingo",
+    "title": "My events",
+    "login": "Log in to see the events you're in.",
+    "none": "You aren't in any event yet.",
+    "browseEvents": "Browse events",
+    "notPlaying": "Active event — you're not playing in it.",
+    "browseBoard": "Browse board"
+  },
+  "status": {
+    "home": "Teleport home",
+    "notFound": {
+      "eyebrow": "404",
+      "title": "I can't reach that!",
+      "message": "This page doesn't exist. It may have moved, or the path is wrong."
+    },
+    "noAccess": {
+      "eyebrow": "Members' area",
+      "title": "You need a higher level to enter",
+      "message": "This area is for clan administrators. Ask an admin if you think you should have access."
+    },
+    "login": {
+      "eyebrow": "Members only",
+      "title": "Log in to continue",
+      "message": "Log in with Discord to enter this area."
+    },
+    "crash": {
+      "eyebrow": "Oh dear…",
+      "title": "You are dead!",
+      "message": "Something went wrong and this page crashed. Your progress is safe — respawn to try again.",
+      "respawn": "Respawn"
+    },
+    "offline": {
+      "eyebrow": "Connection lost",
+      "title": "The world is offline",
+      "message": "We can't reach the bingo server right now. Try again in a moment.",
+      "retry": "Try again"
+    },
+    "maintenance": {
+      "eyebrow": "Maintenance",
+      "title": "The world is being updated",
+      "soon": "Please come back soon.",
+      "adminBanner": "Maintenance mode is on — players can't use the site."
     }
   }
 }

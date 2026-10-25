@@ -16,7 +16,13 @@ const SIZE_CLASS = {
 } as const
 
 /** Team color with its initials (design: `tm-e`). */
-export function TeamEmblem({ team, size }: { team: Team; size: keyof typeof SIZE_CLASS }) {
+export function TeamEmblem({
+  team,
+  size,
+}: {
+  team: Pick<Team, 'name' | 'color'>
+  size: keyof typeof SIZE_CLASS
+}) {
   return (
     <span
       aria-hidden="true"

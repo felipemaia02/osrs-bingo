@@ -21,12 +21,15 @@ export interface BoardCardSnapshot {
   fallback_image_accepted: boolean
   rule_note: string | null
   provenance: CardProvenance
+  requires_preverification?: boolean
 }
 
 export interface BoardPosition {
   position: number
   row: number
   column: number
+  /** Bonus-row card (feature 020). */
+  bonus?: boolean
   card: BoardCardSnapshot
 }
 
@@ -35,6 +38,11 @@ export interface EventBoard {
   status: 'draft' | 'published'
   revision: number
   size: number
+  /** Points per completed row/column (features 006/019); null until set. */
+  row_bonus?: number | null
+  column_bonus?: number | null
+  /** Bonus cards under the grid (feature 020); 0 when there is no bonus row. */
+  bonus_slots?: number
   complete: boolean
   positions: BoardPosition[]
   created_at: string
@@ -45,6 +53,9 @@ export interface EventBoard {
 export interface BoardSavePayload {
   expected_revision: number
   size: number
+  row_bonus: number | null
+  column_bonus: number | null
+  bonus_slots: number
   positions: Array<{ position: number; card_id: string; card_revision: number }>
 }
 

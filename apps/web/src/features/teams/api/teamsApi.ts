@@ -4,9 +4,12 @@ import type {
   PlayerPage,
   Player,
   PlayerAssignmentPayload,
-  PlayerPayload,
+  JoinPayload,
+  ParticipationPayload,
   SelectionResult,
   Team,
+  TeamBalanceResponse,
+  DraftPreview,
   TeamPayload,
 } from '../types'
 
@@ -14,6 +17,15 @@ export const fetchTeams = async (eventId: string) =>
   (await apiClient.get<{ items: Team[] }>(`/events/${eventId}/teams`)).data.items
 export const createTeam = async ({ eventId, payload }: { eventId: string; payload: TeamPayload }) =>
   (await apiClient.post<Team>(`/events/${eventId}/teams`, payload)).data
+export const updateTeam = async ({
+  eventId,
+  teamId,
+  payload,
+}: {
+  eventId: string
+  teamId: string
+  payload: TeamPayload
+}) => (await apiClient.patch<Team>(`/events/${eventId}/teams/${teamId}`, payload)).data
 export const fetchPlayers = async (eventId: string, filters: PlayerFilters) =>
   (await apiClient.get<PlayerPage>(`/events/${eventId}/players`, { params: filters })).data
 export const createPlayer = async ({
@@ -21,7 +33,7 @@ export const createPlayer = async ({
   payload,
 }: {
   eventId: string
-  payload: PlayerPayload
+  payload: JoinPayload
 }) => (await apiClient.post<Player>(`/events/${eventId}/players`, payload)).data
 export const updatePlayer = async ({
   eventId,
@@ -56,3 +68,21 @@ export const removeSelectedPlayers = async ({ eventId, playerIds }: SelectionReq
       player_ids: playerIds,
     })
   ).data
+
+export const fetchTeamBalance = async (eventId: string) =>
+  (await apiClient.get<TeamBalanceResponse>(`/events/${eventId}/teams/balance`)).data
+
+export const updateParticipation = async ({
+  eventId,
+  playerId,
+  payload,
+}: {
+  eventId: string
+  playerId: string
+  payload: ParticipationPayload
+}) =>
+  (await apiClient.patch<Player>(`/events/${eventId}/players/${playerId}/participation`, payload))
+    .data
+
+export const fetchDraftPreview = async (eventId: string) =>
+  (await apiClient.get<DraftPreview>(`/events/${eventId}/teams/draft-preview`)).data

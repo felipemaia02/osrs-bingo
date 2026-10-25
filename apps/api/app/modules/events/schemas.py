@@ -10,11 +10,16 @@ class EventStatus(StrEnum):
     FINISHED = "finished"
 
 
+BUY_IN_MAX_LENGTH = 80
+
+
 class EventFields(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=2000)
     start_at: datetime
     end_at: datetime
+    # Free text such as "5M gp" (feature 022); None means no buy-in.
+    buy_in: str | None = Field(default=None, max_length=BUY_IN_MAX_LENGTH)
 
     @field_validator("name")
     @classmethod
@@ -24,9 +29,9 @@ class EventFields(BaseModel):
             raise ValueError("Event name must contain visible content")
         return stripped
 
-    @field_validator("description")
+    @field_validator("description", "buy_in")
     @classmethod
-    def normalize_description(cls, value: str | None) -> str | None:
+    def strip_optional_text(cls, value: str | None) -> str | None:
         if value is None:
             return None
         stripped = value.strip()
@@ -54,6 +59,26 @@ class EventUpdate(EventFields):
     pass
 
 
+RULES_TEXT_MAX_LENGTH = 5000
+
+
+class EventRules(BaseModel):
+    """The event's written rules (feature 019); plain text, line breaks kept."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    rules_text: str | None = Field(default=None, max_length=RULES_TEXT_MAX_LENGTH)
+
+    @field_validator("rules_text")
+    @classmethod
+    def normalize_rules_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        lines = [line.rstrip() for line in value.replace("\r\n", "\n").split("\n")]
+        text = "\n".join(lines).strip()
+        return text or None
+
+
 class EventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -63,6 +88,8 @@ class EventResponse(BaseModel):
     start_at: datetime
     end_at: datetime
     status: EventStatus
+    rules_text: str | None = None
+    buy_in: str | None = None
     created_at: datetime
     updated_at: datetime
 

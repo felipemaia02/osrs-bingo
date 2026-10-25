@@ -1,6 +1,8 @@
 import { type ReactNode } from 'react'
+import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DateLocalizationProvider } from './DateLocalizationProvider'
+import { muiTheme } from './muiTheme'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -11,7 +13,9 @@ const queryClient = new QueryClient({
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <DateLocalizationProvider>{children}</DateLocalizationProvider>
+      <ThemeProvider theme={muiTheme}>
+        <DateLocalizationProvider>{children}</DateLocalizationProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

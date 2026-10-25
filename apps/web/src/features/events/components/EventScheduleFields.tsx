@@ -12,7 +12,7 @@ interface EventScheduleFieldsProps {
   onEndChange: (value: Dayjs | null) => void
 }
 
-const PRESETS = [1, 7, 14] as const
+const PRESETS = [1, 7, 14, 30] as const
 
 export function EventScheduleFields({
   start,

@@ -15,29 +15,18 @@ interface DateTimeFieldProps {
   helperText?: string
 }
 
+/** Field look from the design system; MUI X v9 renders the field as PickersOutlinedInput. */
 const fieldSx = {
-  '& .MuiInputLabel-root': { color: '#aa9a7c' },
-  '& .MuiInputLabel-root.Mui-focused': { color: '#f1d487' },
-  '& .MuiOutlinedInput-root': {
+  '& .MuiPickersOutlinedInput-root': {
     color: '#ead9b7',
     backgroundColor: '#19120e',
     borderRadius: '2px',
-    '& fieldset': { borderColor: 'rgb(112 90 57 / 70%)' },
-    '&:hover fieldset': { borderColor: '#a88647' },
-    '&.Mui-focused fieldset': { borderColor: '#d4ad53' },
+    '& .MuiPickersOutlinedInput-notchedOutline': { borderColor: 'rgb(112 90 57 / 70%)' },
+    '&:hover .MuiPickersOutlinedInput-notchedOutline': { borderColor: '#a88647' },
+    '&.Mui-focused .MuiPickersOutlinedInput-notchedOutline': { borderColor: '#d4ad53' },
   },
-  '& .MuiInputBase-input': { padding: '10px 8px', fontSize: '0.82rem' },
+  '& .MuiPickersSectionList-root': { padding: '10px 8px', fontSize: '0.82rem' },
   '& .MuiIconButton-root': { color: '#d4ad53' },
-}
-
-const pickerSx = {
-  '& .MuiPaper-root': { color: '#ead9b7', backgroundColor: '#211914', backgroundImage: 'none' },
-  '& .MuiPickersDay-root': { color: '#ead9b7' },
-  '& .MuiPickersDay-root.Mui-selected': { color: '#19120e', backgroundColor: '#d4ad53' },
-  '& .MuiClock-root': { backgroundColor: '#211914' },
-  '& .MuiClockNumber-root': { color: '#ead9b7' },
-  '& .MuiPickersToolbar-root': { backgroundColor: '#2d2119' },
-  '& .MuiPickersToolbarText-root': { color: '#ead9b7' },
 }
 
 export function DateTimeField({
@@ -77,7 +66,6 @@ export function DateTimeField({
           slots={{ openPickerIcon: CalendarMonthOutlinedIcon }}
           slotProps={{
             textField: { required: true, fullWidth: true, size: 'small', sx: fieldSx },
-            popper: { sx: pickerSx },
           }}
         />
         <button

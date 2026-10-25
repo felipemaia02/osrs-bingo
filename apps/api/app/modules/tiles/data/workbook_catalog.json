@@ -14,7 +14,7 @@
       "difficulty": "Low",
       "tile_score": 5.0,
       "completion_requirement": 6.0,
-      "wiki_article": "Doom of Mokhaiotl",
+      "wiki_article": "Mad Angel",
       "fallback_image_accepted": true,
       "rule_note": null,
       "source_cells": [
@@ -64,18 +64,18 @@
         }
       ],
       "wiki_image": {
-        "article_title": "Doom of Mokhaiotl",
-        "article_url": "https://oldschool.runescape.wiki/w/Doom_of_Mokhaiotl",
-        "file_name": "Doom_of_Mokhaiotl.png",
-        "file_page_url": "https://oldschool.runescape.wiki/w/File:Doom_of_Mokhaiotl.png",
-        "image_url": "https://oldschool.runescape.wiki/images/thumb/Doom_of_Mokhaiotl.png/512px-Doom_of_Mokhaiotl.png?e5edb",
+        "article_title": "Mad Angel",
+        "article_url": "https://oldschool.runescape.wiki/w/Mad_Angel",
+        "file_name": "Mad_Angel.webp",
+        "file_page_url": "https://oldschool.runescape.wiki/w/File:Mad_Angel.webp",
+        "image_url": "https://oldschool.runescape.wiki/images/thumb/Mad_Angel.webp/512px-Mad_Angel.webp?c7990",
         "width": 512,
-        "height": 363,
-        "mime_type": "image/png",
+        "height": 699,
+        "mime_type": "image/webp",
         "attribution": "Old School RuneScape Wiki",
         "license_name": null,
         "license_url": null,
-        "resolved_at": "2026-10-03T19:00:00Z"
+        "resolved_at": "2026-10-24T15:26:03.225485Z"
       }
     },
     {
@@ -1140,7 +1140,7 @@
       "difficulty": "Mid",
       "tile_score": 10.0,
       "completion_requirement": 15.0,
-      "wiki_article": "Slayer",
+      "wiki_article": "Mortimer",
       "fallback_image_accepted": true,
       "rule_note": null,
       "source_cells": [
@@ -1484,18 +1484,18 @@
         }
       ],
       "wiki_image": {
-        "article_title": "Slayer",
-        "article_url": "https://oldschool.runescape.wiki/w/Slayer",
-        "file_name": "Slayer_icon_(detail).png",
-        "file_page_url": "https://oldschool.runescape.wiki/w/File:Slayer_icon_(detail).png",
-        "image_url": "https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png?a4903",
-        "width": 46,
-        "height": 46,
+        "article_title": "Mortimer",
+        "article_url": "https://oldschool.runescape.wiki/w/Mortimer",
+        "file_name": "Mortimer.png",
+        "file_page_url": "https://oldschool.runescape.wiki/w/File:Mortimer.png",
+        "image_url": "https://oldschool.runescape.wiki/images/Mortimer.png?fa619",
+        "width": 498,
+        "height": 1498,
         "mime_type": "image/png",
         "attribution": "Old School RuneScape Wiki",
         "license_name": null,
         "license_url": null,
-        "resolved_at": "2026-10-03T19:00:00Z"
+        "resolved_at": "2026-10-24T15:26:04.302684Z"
       }
     },
     {
@@ -3250,7 +3250,7 @@
       "difficulty": "High",
       "tile_score": 20.0,
       "completion_requirement": 2.0,
-      "wiki_article": "Royal Titans",
+      "wiki_article": "Maggot King",
       "fallback_image_accepted": true,
       "rule_note": null,
       "source_cells": [
@@ -3300,18 +3300,18 @@
         }
       ],
       "wiki_image": {
-        "article_title": "Royal Titans",
-        "article_url": "https://oldschool.runescape.wiki/w/Royal_Titans",
-        "file_name": "Eldric_the_Ice_King.png",
-        "file_page_url": "https://oldschool.runescape.wiki/w/File:Eldric_the_Ice_King.png",
-        "image_url": "https://oldschool.runescape.wiki/images/thumb/Eldric_the_Ice_King.png/512px-Eldric_the_Ice_King.png?6bd48",
+        "article_title": "Maggot King",
+        "article_url": "https://oldschool.runescape.wiki/w/Maggot_King",
+        "file_name": "Maggot_King.png",
+        "file_page_url": "https://oldschool.runescape.wiki/w/File:Maggot_King.png",
+        "image_url": "https://oldschool.runescape.wiki/images/thumb/Maggot_King.png/512px-Maggot_King.png?a6790",
         "width": 512,
-        "height": 783,
+        "height": 401,
         "mime_type": "image/png",
         "attribution": "Old School RuneScape Wiki",
         "license_name": null,
         "license_url": null,
-        "resolved_at": "2026-10-03T19:00:00Z"
+        "resolved_at": "2026-10-24T15:26:05.218431Z"
       }
     },
     {

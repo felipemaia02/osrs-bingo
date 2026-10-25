@@ -19,6 +19,8 @@ Existing tokens in `apps/web/tailwind.config.js` already match the base palette.
 | `gold` | `#d4ad53` | Primary button, eyebrow text, active segment underline, accent icons |
 | `gold-bright` | `#f1d487` | Headings, focus ring, search hits, links |
 | `gold-hover` **new** | `#ffe3a3` | Link hover |
+| `bronze` **new** | `#c27c46` | Difficulty star: Easy (mobile mini-map, feature 025) |
+| `silver` **new** | `#c9cdd3` | Difficulty star: Medium (mobile mini-map, feature 025) |
 | `text` | `#ead9b7` | Body text |
 | `muted` | `#aa9a7c` | Secondary text, axis labels, table headers |
 | `disabled` **new** | `#9a8b70` | Disabled navigation items |

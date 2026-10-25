@@ -45,6 +45,7 @@ export interface CardRevision {
   wiki_image: WikiImage | null
   fallback_image_accepted: boolean
   rule_note: string | null
+  requires_preverification?: boolean
   provenance: CardProvenance
   change_reason: string
   created_by: string
@@ -79,6 +80,7 @@ export interface CardRevisionPayload {
   wiki_image: WikiImage | null
   fallback_image_accepted: boolean
   rule_note: string | null
+  requires_preverification: boolean
   change_reason: string
 }
 

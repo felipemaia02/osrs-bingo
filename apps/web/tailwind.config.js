@@ -14,6 +14,9 @@ export default {
                     gold: '#d4ad53',
                     'gold-bright': '#f1d487',
                     'gold-hover': '#ffe3a3',
+                    // Difficulty stars on the mobile mini-map (Easy / Medium; Hard uses gold).
+                    bronze: '#c27c46',
+                    silver: '#c9cdd3',
                     text: '#ead9b7',
                     muted: '#aa9a7c',
                     disabled: '#9a8b70',

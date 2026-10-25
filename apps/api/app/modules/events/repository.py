@@ -1,3 +1,4 @@
+from builtins import list as builtin_list
 from datetime import UTC, datetime
 from typing import cast
 
@@ -9,7 +10,7 @@ from pymongo.errors import DuplicateKeyError
 
 from app.core.logging import get_logger, log_event
 from app.modules.events.models import EventDocument
-from app.modules.events.schemas import EventCreate, EventStatus, EventUpdate
+from app.modules.events.schemas import EventCreate, EventRules, EventStatus, EventUpdate
 
 EVENTS_COLLECTION = "events"
 
@@ -26,6 +27,7 @@ class EventRepository:
             "_id": ObjectId(),
             "name": payload.name,
             "description": payload.description,
+            "buy_in": payload.buy_in,
             "start_at": payload.start_at,
             "end_at": payload.end_at,
             "status": EventStatus.DRAFT,
@@ -46,6 +48,10 @@ class EventRepository:
         document = await self._collection.find_one({"_id": object_id})
         log_event(self._logger, 20, "event_document_read", event_id=event_id, found=bool(document))
         return document
+
+    async def list_by_ids(self, event_ids: builtin_list[ObjectId]) -> builtin_list[EventDocument]:
+        cursor = self._collection.find({"_id": {"$in": event_ids}}).sort("created_at", -1)
+        return [document async for document in cursor]
 
     async def list(self, status: EventStatus | None = None) -> list[EventDocument]:
         query = {"status": status} if status is not None else {}
@@ -79,6 +85,17 @@ class EventRepository:
             "event_draft_updated",
             event_id=event_id,
             updated=bool(document),
+        )
+        return cast(EventDocument | None, document)
+
+    async def update_rules(self, event_id: str, rules: EventRules) -> EventDocument | None:
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return None
+        document = await self._collection.find_one_and_update(
+            {"_id": object_id, "status": EventStatus.DRAFT},
+            {"$set": {**rules.model_dump(), "updated_at": datetime.now(UTC)}},
+            return_document=ReturnDocument.AFTER,
         )
         return cast(EventDocument | None, document)
 

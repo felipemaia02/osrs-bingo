@@ -125,6 +125,9 @@ it('saves selected exact card revisions for a draft event board', async () => {
     payload: {
       expected_revision: 0,
       size: 6,
+      row_bonus: null,
+      column_bonus: null,
+      bonus_slots: 0,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
     },
   })
@@ -242,6 +245,9 @@ describe('board builder v2', () => {
       payload: {
         expected_revision: 4,
         size: 6,
+        row_bonus: null,
+        column_bonus: null,
+        bonus_slots: 0,
         positions: [
           { position: 1, card_id: CARD.id, card_revision: 1 },
           { position: 4, card_id: HYDRA.id, card_revision: 1 },
@@ -329,8 +335,68 @@ describe('board builder v2', () => {
     expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toEqual({
       expected_revision: 4,
       size: 4,
+      row_bonus: null,
+      column_bonus: null,
+      bonus_slots: 0,
       positions: [{ position: 1, card_id: CARD.id, card_revision: 1 }],
     })
+  })
+
+  it('saves the row and column bonuses with the board', async () => {
+    vi.mocked(saveBoard).mockResolvedValue({
+      ...boardWith([[1, CARD]]),
+      row_bonus: 25,
+      column_bonus: 0,
+    })
+    const user = await openBuilder()
+    expect(screen.getByText('Both are required to activate')).toBeInTheDocument()
+
+    await user.type(screen.getByLabelText('Row bonus'), '25')
+    await user.type(screen.getByLabelText('Column bonus'), '0')
+    expect(screen.queryByText('Both are required to activate')).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+
+    expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toMatchObject({
+      row_bonus: 25,
+      column_bonus: 0,
+    })
+  })
+
+  it('adds a bonus row, fills a bonus slot and confirms before removing it', async () => {
+    vi.mocked(saveBoard).mockResolvedValue(boardWith([[1, CARD]]))
+    const user = await openBuilder()
+
+    await user.click(screen.getByRole('button', { name: 'Add bonus row' }))
+    const bonusRow = screen.getByRole('group', { name: 'Bonus row' })
+    await user.click(screen.getByRole('button', { name: 'One bonus card more' }))
+    expect(within(bonusRow).getAllByRole('button', { name: /empty — choose card$/ })).toHaveLength(
+      2,
+    )
+    expect(screen.getByText('1 of 38')).toBeInTheDocument()
+
+    await user.click(
+      within(bonusRow).getByRole('button', { name: 'Position Bonus 1 empty — choose card' }),
+    )
+    await user.click(screen.getByRole('button', { name: 'Add Alchemical Hydra' }))
+    expect(
+      within(bonusRow).getByRole('button', { name: /^Position Bonus 1: Alchemical Hydra/ }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Save board' }))
+    expect(vi.mocked(saveBoard).mock.calls[0][0].payload).toMatchObject({
+      bonus_slots: 2,
+      positions: [
+        { position: 1, card_id: CARD.id, card_revision: 1 },
+        { position: 37, card_id: HYDRA.id, card_revision: 1 },
+      ],
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Remove bonus row' }))
+    const dialog = screen.getByRole('dialog', { name: 'Remove the bonus row?' })
+    expect(dialog).toHaveTextContent('1 card will leave the bonus row: Alchemical Hydra.')
+    await user.click(within(dialog).getByRole('button', { name: 'Remove cards' }))
+    expect(screen.queryByRole('group', { name: 'Bonus row' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Add bonus row' })).toBeInTheDocument()
   })
 
   it('keeps rows and columns when the size changes without removing cards', async () => {
@@ -749,4 +815,34 @@ describe('card catalog v2', () => {
     expect(within(dialog).getByRole('option', { name: 'Easy' })).toHaveValue('Low')
     expect(within(dialog).getByRole('option', { name: 'Hard' })).toHaveValue('High')
   })
+})
+
+it('publishes the pre-verification flag from the card editor', async () => {
+  vi.mocked(createCardRevision).mockResolvedValue({
+    ...CARD,
+    revisions: [CARD.revision],
+    retired_by: null,
+    retired_at: null,
+    retirement_reason: null,
+  })
+  const user = userEvent.setup()
+  renderApp(<AppRouter />, '/admin/cards')
+
+  await user.click(await screen.findByRole('button', { name: 'Edit Vorkath' }))
+  const dialog = screen.getByRole('dialog', { name: 'Publish a new card revision' })
+  const flag = within(dialog).getByRole('checkbox', { name: /Requires pre-verification/ })
+  expect(flag).not.toBeChecked()
+  expect(within(dialog).queryByLabelText('Pre-verification instructions')).toBeNull()
+  await user.click(flag)
+  await user.type(
+    within(dialog).getByLabelText('Pre-verification instructions'),
+    'Screenshot your Vorkath KC before the event.',
+  )
+  await user.type(within(dialog).getByLabelText('Reason for this revision'), 'KC proof')
+  await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+  await waitFor(() => expect(createCardRevision).toHaveBeenCalledOnce())
+  const payload = vi.mocked(createCardRevision).mock.calls[0][0].payload
+  expect(payload.requires_preverification).toBe(true)
+  expect(payload.rule_note).toBe('Screenshot your Vorkath KC before the event.')
 })
