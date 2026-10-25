@@ -5,7 +5,13 @@ from fastapi import APIRouter, Depends, Query, Request
 from app.core.config import settings
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.droptracker.repository import DropRepository
-from app.modules.droptracker.schemas import DropPage, DropQuery, DropTrackerStatus
+from app.modules.droptracker.schemas import (
+    DropMatchPreview,
+    DropMatchPreviewRequest,
+    DropPage,
+    DropQuery,
+    DropTrackerStatus,
+)
 from app.modules.droptracker.service import DropTrackerService
 
 router = APIRouter(prefix="/admin/droptracker", tags=["droptracker"])
@@ -32,3 +38,12 @@ async def drops(
     query: Annotated[DropQuery, Query()],
 ) -> DropPage:
     return await service.drops(query)
+
+
+@router.post("/match-preview", response_model=DropMatchPreview)
+async def match_preview(
+    payload: DropMatchPreviewRequest,
+    admin: AdminDependency,
+    service: DropTrackerServiceDependency,
+) -> DropMatchPreview:
+    return await service.match_preview(payload)

@@ -4,6 +4,10 @@ import type {
   CardDetail,
   CardRevisionPayload,
   CardSummary,
+  DropMatchInput,
+  DropMatchPreview,
+  ItemSearchResult,
+  LinkItemsResult,
   WikiImage,
   WorkbookImportResult,
 } from '../types'
@@ -61,4 +65,19 @@ export async function resolveWikiImage(articleTitle: string): Promise<WikiImage>
       article_title: articleTitle,
     })
   ).data
+}
+
+/** OSRS items for the card drop search (feature 033). */
+export async function searchItems(query: string): Promise<ItemSearchResult> {
+  return (await apiClient.get<ItemSearchResult>('/admin/items', { params: { q: query } })).data
+}
+
+/** Clan drops from DropTracker that these card drops would have matched. */
+export async function previewDropMatches(drops: DropMatchInput[]): Promise<DropMatchPreview> {
+  return (await apiClient.post<DropMatchPreview>('/admin/droptracker/match-preview', { drops }))
+    .data
+}
+
+export async function linkCatalogItems(): Promise<LinkItemsResult> {
+  return (await apiClient.post<LinkItemsResult>('/admin/cards/link-items')).data
 }

@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.modules.profiles.schemas import Activity
+from app.modules.profiles.schemas import Activity, WikiSyncResponse
 
 OBJECT_ID_PATTERN = r"^[0-9a-fA-F]{24}$"
 MAX_TEAMMATES = 3
@@ -114,6 +114,10 @@ class AccountSnapshot(BaseModel):
     total_level: int | None = None
     combat_level: int | None = None
     combat: dict[str, int] | None = None
+    # Every skill level from WOM (feature 032); None until the account is read again.
+    skills: dict[str, int] | None = None
+    # Quests and diaries from WikiSync (feature 034); None until read again.
+    wikisync: WikiSyncResponse | None = None
     ehp: float | None = None
     ehb: float | None = None
     boss_kc: int | None = None

@@ -65,8 +65,21 @@ function apiError(status: number, detail: string): AxiosError {
   return error
 }
 
-const MAIN = account({})
+const MAIN = account({
+  wikisync: {
+    status: 'found',
+    quest_points: 343,
+    quests_completed: 184,
+    quests_total: 184,
+    hard_diaries: 1,
+    diaries: [
+      { region: 'Ardougne', easy: true, medium: true, hard: false, elite: false },
+      { region: 'Karamja', easy: true, medium: true, hard: true, elite: true },
+    ],
+  },
+})
 const ALT = account({
+  wikisync: { status: 'not_found', diaries: [] },
   id: 'alt',
   rsn: 'felps iron',
   is_main: false,
@@ -120,7 +133,17 @@ describe('My profile', () => {
       'https://wiseoldman.net/players/felps',
     )
 
+    const quests = within(main).getByRole('region', { name: 'Quests & diaries' })
+    expect(within(quests).getByText('Quest points').nextSibling).toHaveTextContent('343')
+    expect(within(quests).getByText('Quests').nextSibling).toHaveTextContent('184/184')
+    expect(within(quests).getByText('Hard diaries').nextSibling).toHaveTextContent('1/2')
+    expect(within(quests).getByTitle('Karamja: Elite diary complete')).toBeInTheDocument()
+    expect(within(quests).getByTitle('Ardougne: Hard diary not complete')).toBeInTheDocument()
+
     const alt = screen.getByRole('article', { name: 'Alt account felps iron' })
+    expect(
+      within(alt).getByText(/No WikiSync data. Install the WikiSync plugin/),
+    ).toBeInTheDocument()
     expect(within(alt).getByText('Alt · experience only')).toBeInTheDocument()
     expect(within(alt).getByRole('button', { name: 'Make main' })).toBeInTheDocument()
 

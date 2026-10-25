@@ -1,3 +1,5 @@
+import type { WikiSync } from '../profiles/types'
+import type { Skill } from '../profiles/skills'
 import type { CombatSkill } from '../profiles/types'
 
 export interface Team {
@@ -45,6 +47,10 @@ export interface AccountSnapshot {
   total_level: number | null
   combat_level: number | null
   combat: Partial<Record<CombatSkill, number>> | null
+  /** Every skill level from WOM (feature 032); null until the account is read again. */
+  skills?: Partial<Record<Skill, number>> | null
+  /** Quests and diaries (feature 034); null until the account is read again. */
+  wikisync?: WikiSync | null
   ehp: number | null
   ehb: number | null
   boss_kc: number | null

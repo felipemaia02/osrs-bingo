@@ -30,6 +30,12 @@ from app.modules.droptracker.router import router as droptracker_router
 from app.modules.droptracker.service import DropTrackerService
 from app.modules.events.repository import EventRepository
 from app.modules.events.router import router as events_router
+from app.modules.items.client import WikiItemClient
+from app.modules.items.quests import QuestPointClient, QuestPointService
+from app.modules.items.repository import ItemRepository
+from app.modules.items.router import router as items_router
+from app.modules.items.service import ItemService
+from app.modules.items.syncer import ItemSyncer
 from app.modules.maintenance.gate import maintenance_gate
 from app.modules.maintenance.router import router as maintenance_router
 from app.modules.players.repository import PlayerRepository
@@ -94,6 +100,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await IndexManager().ensure_all(db_client.database)
         await AdministrationRepository(db_client.database).initialize(settings.admin_discord_ids)
         app.state.droptracker_poller = start_droptracker(db_client.database)
+        app.state.item_syncer = ItemSyncer(
+            ItemService(ItemRepository(db_client.database), WikiItemClient()),
+            QuestPointService(db_client.database, QuestPointClient()),
+        )
+        app.state.item_syncer.start()
         log_event(logger, 20, "application_ready")
         yield
     finally:
@@ -103,6 +114,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         poller = getattr(app.state, "droptracker_poller", None)
         if poller is not None:
             await poller.stop()
+        syncer = getattr(app.state, "item_syncer", None)
+        if syncer is not None:
+            await syncer.stop()
         await db_client.disconnect()
 
 
@@ -181,6 +195,7 @@ app.include_router(admin_scoring_router)
 app.include_router(profile_router)
 app.include_router(maintenance_router)
 app.include_router(droptracker_router)
+app.include_router(items_router)
 
 
 @app.get("/health", tags=["infra"])

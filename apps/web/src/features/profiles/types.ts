@@ -1,3 +1,4 @@
+import type { Skill } from './skills'
 export const COMBAT_SKILLS = [
   'attack',
   'strength',
@@ -25,6 +26,10 @@ export interface LinkedAccount {
   boss_kc: number | null
   /** Missing until the account's first WOM read after feature 021 revision 2. */
   combat: Partial<Record<CombatSkill, number>> | null
+  /** Every skill level (feature 032); null until the account is read from WOM again. */
+  skills?: Partial<Record<Skill, number>> | null
+  /** null until the account is read again after feature 034. */
+  wikisync?: WikiSync | null
   wom_updated_at: string | null
   checked_at: string | null
   wom_url: string
@@ -62,4 +67,23 @@ export interface Member {
   user_id: string
   username: string
   main_rsn: string | null
+}
+
+export interface DiaryRegion {
+  region: string
+  easy: boolean
+  medium: boolean
+  hard: boolean
+  elite: boolean
+}
+
+/** Quests and achievement diaries from the WikiSync plugin (feature 034). */
+export interface WikiSync {
+  status: 'found' | 'not_found' | 'unavailable'
+  quest_points?: number | null
+  quests_completed?: number | null
+  quests_total?: number | null
+  hard_diaries?: number | null
+  diaries: DiaryRegion[]
+  checked_at?: string | null
 }

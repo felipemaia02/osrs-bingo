@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
 import { FormModal } from '../../../components/ui/FormModal'
 import { CombatLevels } from '../../profiles/components/CombatLevels'
+import { QuestsAndDiaries } from '../../profiles/components/QuestsAndDiaries'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { zoneLabel } from '../../profiles/timezones'
 import { useRequestedFormat } from '../../teams/hooks/useRequestedFormat'
@@ -105,7 +106,8 @@ function AccountDetail({ account, playing }: { account: AccountSnapshot; playing
           </div>
         ))}
       </dl>
-      {account.combat && <CombatLevels combat={account.combat} />}
+      {account.combat && <CombatLevels combat={account.combat} slayer={account.skills?.slayer} />}
+      <QuestsAndDiaries data={account.wikisync} />
     </article>
   )
 }

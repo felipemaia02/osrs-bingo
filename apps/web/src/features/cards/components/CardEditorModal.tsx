@@ -9,12 +9,13 @@ import { FormModal } from '../../../components/ui/FormModal'
 import {
   CARD_DIFFICULTIES,
   CARD_KINDS,
-  EMPTY_FORM,
   cardErrorKey,
   cardToForm,
+  emptyForm,
   toRevisionPayload,
   type CardForm,
 } from '../cardForm'
+import { DropListEditor } from './DropListEditor'
 import { useCardMutations } from '../hooks/useCards'
 import type { CardCreatePayload, CardDifficulty, CardKind, CardSummary } from '../types'
 
@@ -43,7 +44,7 @@ interface CardEditorModalProps {
 export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps) {
   const { t } = useTranslation()
   const mutations = useCardMutations()
-  const [form, setForm] = useState<CardForm>(() => (card ? cardToForm(card) : EMPTY_FORM))
+  const [form, setForm] = useState<CardForm>(() => (card ? cardToForm(card) : emptyForm()))
   const [errorKey, setErrorKey] = useState<string | null>(null)
   const pending =
     mutations.create.isPending || mutations.revise.isPending || mutations.resolveImage.isPending
@@ -65,7 +66,7 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
   async function submit(event: FormEvent) {
     event.preventDefault()
     setErrorKey(null)
-    const revision = toRevisionPayload(form, card?.revision.drops)
+    const revision = toRevisionPayload(form)
     if (!revision) {
       setErrorKey('cards.errors.drops')
       return
@@ -174,16 +175,12 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               className={TEXTAREA}
             />
           </Field>
-          <Field label={t('cards.form.drops')} wide>
-            <textarea
-              required
-              rows={5}
-              value={form.drops}
-              onChange={(event) => update('drops', event.target.value)}
-              placeholder={t('cards.form.dropsPlaceholder')}
-              className={TEXTAREA}
-            />
-          </Field>
+          <DropListEditor
+            rows={form.drops}
+            onChange={(drops) => update('drops', drops)}
+            requirement={form.requirement}
+            points={form.tileScore}
+          />
           <div className="flex flex-col gap-2 md:col-span-2">
             <Field label={t('cards.form.wikiArticle')}>
               <span className="flex gap-2">

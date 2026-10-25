@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request
 
 from app.modules.auth.dependencies import UserDependency
+from app.modules.items.quests import QuestPointService
 from app.modules.profiles.repository import ProfileRepository
 from app.modules.profiles.schemas import (
     MEMBER_SEARCH_MAX_LENGTH,
@@ -13,13 +14,18 @@ from app.modules.profiles.schemas import (
     ProfileResponse,
 )
 from app.modules.profiles.service import ProfileService
+from app.modules.profiles.wikisync import WikiSyncClient
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
 
 async def get_profile_service(request: Request) -> ProfileService:
+    database = request.app.state.db_client.database
     return ProfileService(
-        ProfileRepository(request.app.state.db_client.database), request.app.state.wom_client
+        ProfileRepository(database),
+        request.app.state.wom_client,
+        WikiSyncClient(),
+        QuestPointService(database).points,
     )
 
 

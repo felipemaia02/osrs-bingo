@@ -77,3 +77,18 @@ def test_wiki_result_keeps_attribution_and_pinned_file() -> None:
     assert result.file_name == "Vorkath.png"
     assert result.attribution == "Jagex"
     assert result.resolved_at <= datetime.now(UTC)
+
+
+def test_every_bundled_workbook_drop_is_linked_to_osrs_items() -> None:
+    """Feature 033: IDs checked against the OSRS Wiki item list on 2026-10-25."""
+    drops = {
+        (card["slug"], drop["key"]): drop
+        for card in load_workbook_catalog()["cards"]
+        for drop in card["drops"]
+    }
+
+    assert all(drop["item_ids"] for drop in drops.values())
+    assert drops[("alchemical-hydra", "hydra-s-tail")]["name"] == "Hydra tail"
+    brimstone = drops[("alchemical-hydra", "brimstone-ring-piece")]
+    assert brimstone["item_ids"] == [22969, 22971, 22973] and not brimstone["match_by_name"]
+    assert sum(not drop["match_by_name"] for drop in drops.values()) == 34

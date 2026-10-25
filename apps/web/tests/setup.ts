@@ -62,6 +62,11 @@ vi.mock('../src/features/cards/api/cardsApi', () => ({
   retireCard: vi.fn(),
   importWorkbookCatalog: vi.fn(),
   resolveWikiImage: vi.fn(),
+  searchItems: vi.fn().mockResolvedValue({ ready: true, items: [] }),
+  previewDropMatches: vi
+    .fn()
+    .mockResolvedValue({ available: false, days: 30, total: 0, per_drop: [] }),
+  linkCatalogItems: vi.fn(),
 }))
 
 vi.mock('../src/features/boards/api/boardsApi', () => ({

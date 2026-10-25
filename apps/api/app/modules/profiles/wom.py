@@ -14,6 +14,7 @@ BAD_REQUEST_STATUS = 400
 # WOM answers 400 with these codes when tracking an RSN that doesn't exist in OSRS.
 NOT_FOUND_CODES = {"HISCORES_USERNAME_NOT_FOUND", "INVALID_USERNAME"}
 UNRANKED_KILLS = -1
+OVERALL_SKILL = "overall"
 
 
 class WomUnavailableError(Exception):
@@ -28,6 +29,8 @@ class WomStats:
     ehb: float
     boss_kc: int
     combat: dict[str, int]
+    # Every skill WOM reports (feature 032), keyed by WOM's skill name; "overall" excluded.
+    skills: dict[str, int]
     updated_at: datetime | None
 
 
@@ -45,6 +48,7 @@ def parse_player(data: dict[str, Any]) -> WomStats:
         # Unranked bosses come back as -1 kills.
         boss_kc=sum(max(int(boss.get("kills", UNRANKED_KILLS)), 0) for boss in bosses.values()),
         combat={skill: _level(skills.get(skill)) for skill in COMBAT_SKILLS},
+        skills={name: _level(value) for name, value in skills.items() if name != OVERALL_SKILL},
         updated_at=datetime.fromisoformat(updated.replace("Z", "+00:00")) if updated else None,
     )
 

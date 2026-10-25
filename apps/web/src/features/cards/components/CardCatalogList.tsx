@@ -19,6 +19,10 @@ const CELL = 'border-b border-rs-border/45 px-3 py-2 align-middle'
 const HEAD =
   'whitespace-nowrap border-b border-rs-border bg-rs-inset px-3 py-2.5 text-left text-xs font-semibold text-rs-muted'
 
+/** Drops not linked to an OSRS item: DropTracker can only match them by name (033). */
+const unlinkedDrops = (card: CardSummary) =>
+  card.revision.drops.filter((drop) => !drop.item_ids?.length).length
+
 function RetiredBadge({ card }: { card: CardSummary }) {
   const { t } = useTranslation()
   return (
@@ -28,6 +32,9 @@ function RetiredBadge({ card }: { card: CardSummary }) {
       )}
       {card.status === 'retired' && (
         <Badge tone="danger-outline">{t('cards.status.retired')}</Badge>
+      )}
+      {unlinkedDrops(card) > 0 && card.status !== 'retired' && (
+        <Badge tone="gold">⚠ {t('cards.unlinked', { count: unlinkedDrops(card) })}</Badge>
       )}
     </>
   )

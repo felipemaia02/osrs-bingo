@@ -142,3 +142,37 @@ async def test_client_reports_network_failures() -> None:
 async def test_without_a_key_the_service_refuses_to_poll() -> None:
     with pytest.raises(DropTrackerError, match="not configured"):
         await DropTrackerService(FakeDrops(), None, SETTINGS).poll_once(NOW)  # type: ignore[arg-type]
+
+
+async def test_match_preview_counts_by_id_and_by_name_like_the_bingo() -> None:
+    from unittest.mock import AsyncMock
+
+    from app.modules.droptracker.schemas import DropMatchPreviewRequest
+
+    drops = AsyncMock()
+    drops.count.return_value = 50
+    drops.count_matching.side_effect = [4, 2, 0, 6]
+    service = DropTrackerService(drops, None, SETTINGS)
+    request = DropMatchPreviewRequest.model_validate(
+        {
+            "drops": [
+                {"name": "Oak logs", "item_ids": [1521]},
+                {"name": "Bird nest (seeds)", "item_ids": [22798], "match_by_name": False},
+                {"name": "Custom  task", "aliases": ["Task"]},
+            ]
+        }
+    )
+    now = datetime(2026, 10, 25, tzinfo=UTC)
+
+    preview = await service.match_preview(request, now)
+
+    assert preview.available and preview.days == 30
+    assert preview.per_drop == [4, 2, 0] and preview.total == 6
+    calls = [call.args for call in drops.count_matching.await_args_list]
+    assert calls[0] == (
+        [{"item_id": {"$in": [1521]}}, {"item_name": "Oak logs"}],
+        now - timedelta(days=30),
+    )
+    assert calls[1][0] == [{"item_id": {"$in": [22798]}}]
+    assert calls[2][0] == [{"item_name": "Custom task"}, {"item_name": "Task"}]
+    assert len(calls[3][0]) == 5

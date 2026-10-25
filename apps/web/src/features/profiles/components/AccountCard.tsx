@@ -13,6 +13,7 @@ import { useSubmissionTime } from '../../submissions/hooks/useSubmissionTime'
 import { useStatFormat } from '../hooks/useStatFormat'
 import type { AccountAction, LinkedAccount } from '../types'
 import { CombatLevels } from './CombatLevels'
+import { QuestsAndDiaries } from './QuestsAndDiaries'
 
 interface AccountCardProps {
   account: LinkedAccount
@@ -115,7 +116,10 @@ export function AccountCard({ account, removable, busy, error, onAction }: Accou
               <Stat label={t('profile.stats.bossKc')} value={format.whole(account.boss_kc)} />
             </div>
           )}
-          {account.combat && <CombatLevels combat={account.combat} />}
+          {account.combat && (
+            <CombatLevels combat={account.combat} slayer={account.skills?.slayer} />
+          )}
+          {hasStats && <QuestsAndDiaries data={account.wikisync} />}
           <span className="text-[13px] text-rs-muted">
             {account.wom_updated_at &&
               `${t('profile.account.updated', { ago: time.ago(account.wom_updated_at) })} · `}

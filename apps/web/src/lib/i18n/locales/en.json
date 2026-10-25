@@ -548,8 +548,6 @@
       "score": "Completion points",
       "requirement": "Progress requirement",
       "description": "Description",
-      "drops": "Accepted drops (one per line)",
-      "dropsPlaceholder": "Drop name | progress weight",
       "wikiArticle": "OSRS Wiki article",
       "resolveImage": "Find image",
       "changeReason": "Reason for this revision",
@@ -563,11 +561,12 @@
       "created": "Card created.",
       "revised": "New card revision published.",
       "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present.",
-      "retired": "{{name}} retired."
+      "retired": "{{name}} retired.",
+      "linked": "Linked {{drops}} drops on {{cards}} cards. {{unlinked}} drops weren't found on the OSRS Wiki and stay Manual only."
     },
     "errors": {
       "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
-      "drops": "Enter every drop as Name | positive weight.",
+      "drops": "Give every drop a name and a progress above 0, without repeating names.",
       "changed": "This card changed while you were editing. Reload and try again.",
       "slug": "This stable card key is already in use.",
       "importConflict": "The workbook import found conflicting keys: {{slugs}}."
@@ -624,7 +623,42 @@
       "workbook": "Approved workbook",
       "admin": "Administrator"
     },
-    "preverification": "Pre-verification"
+    "preverification": "Pre-verification",
+    "drops": {
+      "title": "Accepted drops",
+      "item": "Drop {{position}}",
+      "unnamed": "drop {{position}}",
+      "searchPlaceholder": "Search an OSRS item…",
+      "results": "OSRS items",
+      "anyVersion": "any version · {{count}} versions",
+      "thisVersion": "this version only",
+      "notReady": "The OSRS item list is still loading. A typed name is saved as Manual only.",
+      "noResults": "No OSRS item found. Keep the name to use it as Manual only.",
+      "linked": "Auto-tracked",
+      "manual": "Manual only",
+      "manualHint": "Not linked to an OSRS item: DropTracker won't send it, players can still submit it.",
+      "progress": "Progress",
+      "progressFor": "Progress for {{name}}",
+      "remove": "Remove {{name}}",
+      "add": "Add drop",
+      "paste": "Paste list",
+      "pasteHint": "One drop per line: Name | progress",
+      "pasteApply": "Add to list",
+      "pasteMissing_one": "{{count}} line wasn't found on the OSRS Wiki: marked Manual only.",
+      "pasteMissing_other": "{{count}} lines weren't found on the OSRS Wiki: marked Manual only.",
+      "summary": "Completes at {{requirement}} progress → {{points}} pts once.",
+      "summaryExamples": "e.g. {{examples}}.",
+      "example": "{{count}} × {{name}}",
+      "or": ", or ",
+      "checkTotal_one": "✓ This card would have matched {{count}} clan drop in the last {{days}} days.",
+      "checkTotal_other": "✓ This card would have matched {{count}} clan drops in the last {{days}} days.",
+      "checkNone": "No clan drop in the last {{days}} days matched these drops (normal for rare items).",
+      "checkMissing": "No match yet: {{names}}. Check the names if these drops are common.",
+      "checkUnavailable": "No DropTracker data yet, so the clan drop check is off."
+    },
+    "unlinked_one": "{{count}} drop not auto-tracked",
+    "unlinked_other": "{{count}} drops not auto-tracked",
+    "linkItems": "Link drops to OSRS items"
   },
   "boards": {
     "title": "Build board",
@@ -1035,7 +1069,8 @@
       "hitpoints": "Hitpoints",
       "ranged": "Ranged",
       "prayer": "Prayer",
-      "magic": "Magic"
+      "magic": "Magic",
+      "slayer": "Slayer"
     },
     "combatShort": {
       "attack": "Atk",
@@ -1044,7 +1079,25 @@
       "hitpoints": "HP",
       "ranged": "Rng",
       "prayer": "Pray",
-      "magic": "Mag"
+      "magic": "Mag",
+      "slayer": "Slay"
+    },
+    "wikisync": {
+      "title": "Quests & diaries",
+      "questPoints": "Quest points",
+      "quests": "Quests",
+      "hardDiaries": "Hard diaries",
+      "qp": "QP",
+      "regions": "Achievement diaries by region",
+      "elite": "Elite",
+      "hardDone": "{{region}}: Hard diary complete",
+      "eliteDone": "{{region}}: Elite diary complete",
+      "hardMissing": "{{region}}: Hard diary not complete",
+      "notLoaded": "Not loaded yet. Click \"Update from WOM\" to load quests and diaries.",
+      "notFound": "No WikiSync data. Install the WikiSync plugin in RuneLite, log in once, then click \"Update from WOM\".",
+      "unavailable": "WikiSync is unavailable right now. Try \"Update from WOM\" later.",
+      "noDataShort": "No quest/diary data (WikiSync)",
+      "source": "From the WikiSync plugin (OSRS Wiki), as of the last login with it."
     }
   },
   "join": {
@@ -1194,7 +1247,15 @@
       "accounts": "Linked accounts",
       "noAccounts": "No accounts linked (registered before profiles).",
       "playing": "Plays the bingo"
-    }
+    },
+    "skill": "Skill",
+    "anySkill": "Any",
+    "minLevel": "Min level",
+    "countSkill_one": "{{count}} player available · {{skill}} ≥ {{level}}",
+    "countSkill_other": "{{count}} players available · {{skill}} ≥ {{level}}",
+    "noSkillData_one": "{{count}} player has no skill data yet — they need to “Update from WOM” on My profile.",
+    "noSkillData_other": "{{count}} players have no skill data yet — they need to “Update from WOM” on My profile.",
+    "skillLevel": "{{skill}} {{level}}"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1240,5 +1301,31 @@
       "soon": "Please come back soon.",
       "adminBanner": "Maintenance mode is on — players can't use the site."
     }
+  },
+  "skills": {
+    "agility": "Agility",
+    "attack": "Attack",
+    "construction": "Construction",
+    "cooking": "Cooking",
+    "crafting": "Crafting",
+    "defence": "Defence",
+    "farming": "Farming",
+    "firemaking": "Firemaking",
+    "fishing": "Fishing",
+    "fletching": "Fletching",
+    "herblore": "Herblore",
+    "hitpoints": "Hitpoints",
+    "hunter": "Hunter",
+    "magic": "Magic",
+    "mining": "Mining",
+    "prayer": "Prayer",
+    "ranged": "Ranged",
+    "runecrafting": "Runecraft",
+    "sailing": "Sailing",
+    "slayer": "Slayer",
+    "smithing": "Smithing",
+    "strength": "Strength",
+    "thieving": "Thieving",
+    "woodcutting": "Woodcutting"
   }
 }

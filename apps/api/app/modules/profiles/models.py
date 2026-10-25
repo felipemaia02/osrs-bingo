@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import NotRequired, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 from bson import ObjectId
 
@@ -15,6 +15,9 @@ class LinkedAccount(TypedDict):
     ehb: NotRequired[float | None]
     boss_kc: NotRequired[int | None]
     combat: NotRequired[dict[str, int] | None]
+    skills: NotRequired[dict[str, int] | None]
+    # WikiSync quests and diaries (feature 034); see profiles.wikisync.stored().
+    wikisync: NotRequired[dict[str, Any] | None]
     wom_updated_at: NotRequired[datetime | None]
     checked_at: NotRequired[datetime | None]
 

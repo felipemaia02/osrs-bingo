@@ -548,8 +548,6 @@
       "score": "Pontos ao concluir",
       "requirement": "Requisito de progresso",
       "description": "Descrição",
-      "drops": "Drops aceitos (um por linha)",
-      "dropsPlaceholder": "Nome do drop | peso no progresso",
       "wikiArticle": "Artigo da OSRS Wiki",
       "resolveImage": "Buscar imagem",
       "changeReason": "Motivo desta revisão",
@@ -563,11 +561,12 @@
       "created": "Card criado.",
       "revised": "Nova revisão do card publicada.",
       "imported": "Catálogo da planilha pronto: {{imported}} importados e {{existing}} já existentes.",
-      "retired": "{{name}} retirado."
+      "retired": "{{name}} retirado.",
+      "linked": "{{drops}} drops vinculados em {{cards}} cards. {{unlinked}} drops não foram encontrados na OSRS Wiki e continuam Só manual."
     },
     "errors": {
       "wiki": "Não foi possível resolver a imagem da Wiki. Confira o artigo ou mantenha a imagem alternativa.",
-      "drops": "Informe cada drop como Nome | peso positivo.",
+      "drops": "Dê um nome e um progresso acima de 0 para cada drop, sem repetir nomes.",
       "changed": "Este card mudou durante a edição. Recarregue e tente novamente.",
       "slug": "Esta chave permanente já está em uso.",
       "importConflict": "A importação encontrou chaves conflitantes: {{slugs}}."
@@ -624,7 +623,42 @@
       "workbook": "Planilha aprovada",
       "admin": "Administrador"
     },
-    "preverification": "Pré-verificação"
+    "preverification": "Pré-verificação",
+    "drops": {
+      "title": "Drops aceitos",
+      "item": "Drop {{position}}",
+      "unnamed": "drop {{position}}",
+      "searchPlaceholder": "Buscar item do OSRS…",
+      "results": "Itens do OSRS",
+      "anyVersion": "qualquer versão · {{count}} versões",
+      "thisVersion": "só esta versão",
+      "notReady": "A lista de itens do OSRS ainda está carregando. Um nome digitado fica como Só manual.",
+      "noResults": "Nenhum item do OSRS encontrado. Mantenha o nome para usar como Só manual.",
+      "linked": "Automático",
+      "manual": "Só manual",
+      "manualHint": "Sem item do OSRS vinculado: o DropTracker não envia, mas os jogadores ainda podem enviar.",
+      "progress": "Progresso",
+      "progressFor": "Progresso de {{name}}",
+      "remove": "Remover {{name}}",
+      "add": "Adicionar drop",
+      "paste": "Colar lista",
+      "pasteHint": "Um drop por linha: Nome | progresso",
+      "pasteApply": "Adicionar à lista",
+      "pasteMissing_one": "{{count}} linha não foi encontrada na OSRS Wiki: marcada como Só manual.",
+      "pasteMissing_other": "{{count}} linhas não foram encontradas na OSRS Wiki: marcadas como Só manual.",
+      "summary": "Completa com {{requirement}} de progresso → {{points}} pts uma vez.",
+      "summaryExamples": "ex.: {{examples}}.",
+      "example": "{{count}} × {{name}}",
+      "or": ", ou ",
+      "checkTotal_one": "✓ Este card teria pego {{count}} drop do clã nos últimos {{days}} dias.",
+      "checkTotal_other": "✓ Este card teria pego {{count}} drops do clã nos últimos {{days}} dias.",
+      "checkNone": "Nenhum drop do clã nos últimos {{days}} dias bateu com estes drops (normal para itens raros).",
+      "checkMissing": "Ainda sem correspondência: {{names}}. Confira os nomes se forem drops comuns.",
+      "checkUnavailable": "Ainda não há dados do DropTracker, então a checagem de drops do clã está desligada."
+    },
+    "unlinked_one": "{{count}} drop não automático",
+    "unlinked_other": "{{count}} drops não automáticos",
+    "linkItems": "Vincular drops aos itens do OSRS"
   },
   "boards": {
     "title": "Montar tabuleiro",
@@ -1033,7 +1067,8 @@
       "hitpoints": "Vida",
       "ranged": "Distância",
       "prayer": "Oração",
-      "magic": "Magia"
+      "magic": "Magia",
+      "slayer": "Slayer"
     },
     "combatShort": {
       "attack": "Atq",
@@ -1042,7 +1077,25 @@
       "hitpoints": "Vida",
       "ranged": "Dist",
       "prayer": "Oraç",
-      "magic": "Mag"
+      "magic": "Mag",
+      "slayer": "Slay"
+    },
+    "wikisync": {
+      "title": "Quests e diários",
+      "questPoints": "Quest points",
+      "quests": "Quests",
+      "hardDiaries": "Diários Hard",
+      "qp": "QP",
+      "regions": "Diários de conquistas por região",
+      "elite": "Elite",
+      "hardDone": "{{region}}: diário Hard completo",
+      "eliteDone": "{{region}}: diário Elite completo",
+      "hardMissing": "{{region}}: diário Hard incompleto",
+      "notLoaded": "Ainda não carregado. Clique em \"Atualizar do WOM\" para carregar quests e diários.",
+      "notFound": "Sem dados do WikiSync. Instale o plugin WikiSync no RuneLite, entre no jogo uma vez e clique em \"Atualizar do WOM\".",
+      "unavailable": "O WikiSync está indisponível agora. Tente \"Atualizar do WOM\" mais tarde.",
+      "noDataShort": "Sem dados de quests/diários (WikiSync)",
+      "source": "Do plugin WikiSync (OSRS Wiki), conforme o último login com ele."
     }
   },
   "join": {
@@ -1192,7 +1245,15 @@
       "accounts": "Contas ligadas",
       "noAccounts": "Nenhuma conta ligada (inscrito antes dos perfis).",
       "playing": "Joga o bingo"
-    }
+    },
+    "skill": "Habilidade",
+    "anySkill": "Qualquer",
+    "minLevel": "Nível mín.",
+    "countSkill_one": "{{count}} jogador disponível · {{skill}} ≥ {{level}}",
+    "countSkill_other": "{{count}} jogadores disponíveis · {{skill}} ≥ {{level}}",
+    "noSkillData_one": "{{count}} jogador ainda não tem dados de habilidades — precisa clicar em “Atualizar do WOM” em Meu perfil.",
+    "noSkillData_other": "{{count}} jogadores ainda não têm dados de habilidades — precisam clicar em “Atualizar do WOM” em Meu perfil.",
+    "skillLevel": "{{skill}} {{level}}"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1238,5 +1299,31 @@
       "soon": "Volte daqui a pouco.",
       "adminBanner": "O modo manutenção está ligado — os jogadores não conseguem usar o site."
     }
+  },
+  "skills": {
+    "agility": "Agilidade",
+    "attack": "Ataque",
+    "construction": "Construção",
+    "cooking": "Culinária",
+    "crafting": "Artesanato",
+    "defence": "Defesa",
+    "farming": "Agricultura",
+    "firemaking": "Arte do Fogo",
+    "fishing": "Pesca",
+    "fletching": "Arco e Flecha",
+    "herblore": "Herbologia",
+    "hitpoints": "Vida",
+    "hunter": "Caça",
+    "magic": "Magia",
+    "mining": "Mineração",
+    "prayer": "Oração",
+    "ranged": "Distância",
+    "runecrafting": "Criação de Runas",
+    "sailing": "Navegação",
+    "slayer": "Extermínio (Slayer)",
+    "smithing": "Metalurgia",
+    "strength": "Força",
+    "thieving": "Roubo",
+    "woodcutting": "Corte de Lenha"
   }
 }

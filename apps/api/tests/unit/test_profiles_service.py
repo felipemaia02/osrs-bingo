@@ -18,7 +18,10 @@ USER = CurrentUser(id=str(ObjectId()), discord_id="1", username="Holy Hal", is_a
 
 def stats(boss_kc: int = 100, ehb: float = 10.5) -> WomStats:
     combat = {"attack": 99, "strength": 99, "defence": 90}
-    return WomStats("Main", 2000, 900.0, ehb, boss_kc, combat, datetime(2026, 10, 1, tzinfo=UTC))
+    skills = {**combat, "slayer": 95}
+    return WomStats(
+        "Main", 2000, 900.0, ehb, boss_kc, combat, skills, datetime(2026, 10, 1, tzinfo=UTC)
+    )
 
 
 class FakeProfiles:
@@ -72,6 +75,7 @@ async def test_first_account_is_main_and_others_are_alts(service: ProfileService
     assert [(a.rsn, a.is_main) for a in profile.accounts] == [("Main", True), ("Alt One", False)]
     assert profile.accounts[0].wom_url == "https://wiseoldman.net/players/Main"
     assert profile.accounts[0].combat == {"attack": 99, "strength": 99, "defence": 90}
+    assert profile.accounts[0].skills is not None and profile.accounts[0].skills["slayer"] == 95
     assert profile.totals.boss_kc == 200 and profile.totals.ehb == 21.0
 
 
@@ -244,3 +248,20 @@ async def test_untracked_players_are_tracked_when_added(
 
     assert profile.accounts[0].wom_status == "found" and profile.accounts[0].boss_kc == 42
     wom.track.assert_awaited_once_with("Newbie")
+
+
+async def test_accounts_without_all_skills_can_update_right_away(
+    service: ProfileService, profiles: FakeProfiles, wom: AsyncMock
+) -> None:
+    profile = await service.add_account(USER, AccountAdd(rsn="Main"))
+    assert profiles.document["accounts"][0]["skills"] == {
+        "attack": 99,
+        "strength": 99,
+        "defence": 90,
+        "slayer": 95,
+    }
+    del profiles.document["accounts"][0]["skills"]
+
+    await service.refresh(USER, profile.accounts[0].id)
+
+    assert profiles.document["accounts"][0]["skills"]["slayer"] == 95

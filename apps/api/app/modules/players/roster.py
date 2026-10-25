@@ -12,6 +12,7 @@ from app.modules.players.schemas import (
 )
 from app.modules.profiles.combat import combat_level
 from app.modules.profiles.schemas import Activity
+from app.modules.profiles.wikisync import summary as wikisync_summary
 
 
 def to_player_response(document: PlayerDocument) -> PlayerResponse:
@@ -94,6 +95,8 @@ def account_snapshots(document: RosterDocument) -> list[AccountSnapshot]:
             total_level=row.get("total_level"),
             combat_level=combat_level(row.get("combat")),
             combat=row.get("combat"),
+            skills=row.get("skills"),
+            wikisync=wikisync_summary(row.get("wikisync")),
             ehp=row.get("ehp"),
             ehb=row.get("ehb"),
             boss_kc=row.get("boss_kc"),

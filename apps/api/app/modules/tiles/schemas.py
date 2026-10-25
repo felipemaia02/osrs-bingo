@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from enum import StrEnum
+from typing import Annotated
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -42,6 +43,15 @@ class AcceptedDrop(BaseModel):
     aliases: list[str] = Field(default_factory=list, max_length=20)
     verification_note: str | None = Field(default=None, max_length=1000)
     counting_restriction: str | None = Field(default=None, max_length=1000)
+    # OSRS item IDs this drop accepts (feature 033); empty for free-text drops.
+    item_ids: list[Annotated[int, Field(ge=0)]] = Field(default_factory=list, max_length=200)
+    # False when a specific version was picked: only its IDs count, never the shared name.
+    match_by_name: bool = True
+
+    @field_validator("item_ids")
+    @classmethod
+    def unique_item_ids(cls, item_ids: list[int]) -> list[int]:
+        return sorted(set(item_ids))
 
     @field_validator("name", "verification_note", "counting_restriction")
     @classmethod
@@ -226,3 +236,12 @@ class WikiImageResolveRequest(BaseModel):
         if not normalized:
             raise ValueError("Wiki article title must contain visible content")
         return normalized
+
+
+class LinkItemsResponse(BaseModel):
+    """Result of linking catalog drops to OSRS items by exact name (feature 033)."""
+
+    linked_cards: int
+    linked_drops: int
+    unlinked_drops: int
+    skipped_cards: list[str]

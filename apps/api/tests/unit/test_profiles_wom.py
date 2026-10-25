@@ -22,6 +22,8 @@ PLAYER = {
                 "ranged": {"level": 95},
                 "prayer": {"level": 77},
                 "magic": {"level": 94},
+                "slayer": {"level": 96},
+                "agility": {"level": 87},
             },
             "bosses": {"zulrah": {"kills": 500}, "vorkath": {"kills": 120}, "obor": {"kills": -1}},
         }
@@ -48,6 +50,8 @@ def test_parses_totals_and_ignores_unranked_bosses() -> None:
         "prayer": 77,
         "magic": 94,
     }
+    assert stats.skills["slayer"] == 96 and stats.skills["agility"] == 87
+    assert stats.skills["attack"] == 99 and "overall" not in stats.skills
     assert stats.ehb == 140.25
     assert stats.updated_at is not None and stats.updated_at.tzinfo is not None
 
@@ -101,3 +105,4 @@ def test_new_accounts_without_a_snapshot_have_zero_levels() -> None:
 
     assert stats.total_level == 0 and stats.boss_kc == 0
     assert set(stats.combat.values()) == {0}
+    assert stats.skills == {}

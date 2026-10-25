@@ -1,3 +1,4 @@
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 from urllib.parse import quote
 
@@ -16,9 +17,13 @@ from app.modules.profiles.schemas import (
     MemberResponse,
     Preferences,
     ProfileResponse,
+    WikiSyncStatus,
     WomStatus,
     normalize_rsn,
 )
+from app.modules.profiles.wikisync import WikiSyncClient, WikiSyncUnavailableError
+from app.modules.profiles.wikisync import stored as wikisync_document
+from app.modules.profiles.wikisync import summary as wikisync_summary
 from app.modules.profiles.wom import WomClient, WomStats, WomUnavailableError
 
 REFRESH_COOLDOWN = timedelta(hours=1)
@@ -47,9 +52,18 @@ def main_rsn(profile: ProfileDocument | None) -> str | None:
 class ProfileService:
     """Linked OSRS accounts with cached Wise Old Man stats (feature 021)."""
 
-    def __init__(self, profiles: ProfileRepository, wom: WomClient) -> None:
+    def __init__(
+        self,
+        profiles: ProfileRepository,
+        wom: WomClient,
+        wikisync: WikiSyncClient | None = None,
+        quest_points: Callable[[], Awaitable[dict[str, int]]] | None = None,
+    ) -> None:
         self._profiles = profiles
         self._wom = wom
+        # Quests and diaries (feature 034); optional so WOM keeps working without them.
+        self._wikisync = wikisync
+        self._quest_points = quest_points
 
     async def get(self, user: CurrentUser) -> ProfileResponse:
         return self._response(user, await self._profiles.get_or_create(user.id))
@@ -107,8 +121,10 @@ class ProfileService:
         account = self._find(accounts, account_id)
         checked = account.get("checked_at")
         found = account["wom_status"] == WomStatus.FOUND
-        # Accounts read before combat levels existed may update right away to fill them.
-        complete = account.get("combat") is not None
+        # Accounts read before combat levels (021), all skills (032) or WikiSync (034) existed
+        # may update right away to fill them.
+        fields = ("combat", "skills", "wikisync") if self._wikisync else ("combat", "skills")
+        complete = all(account.get(field) is not None for field in fields)
         recent = checked is not None and self._utc(checked) > datetime.now(UTC) - REFRESH_COOLDOWN
         if found and complete and recent:
             raise AppException(429, REFRESHED_RECENTLY)
@@ -121,6 +137,27 @@ class ProfileService:
         return await self._save(user, accounts)
 
     async def _sync(self, account: LinkedAccount, track: bool) -> None:
+        await self._sync_wom(account, track)
+        await self._sync_wikisync(account)
+
+    async def _sync_wikisync(self, account: LinkedAccount) -> None:
+        """Quests and diaries; on failure the last data is kept (never blocks WOM)."""
+        if self._wikisync is None:
+            return
+        now = datetime.now(UTC)
+        try:
+            data = await self._wikisync.player(account["rsn"])
+        except WikiSyncUnavailableError:
+            if not account.get("wikisync"):
+                account["wikisync"] = {"status": WikiSyncStatus.UNAVAILABLE, "checked_at": now}
+            return
+        if data is None:
+            account["wikisync"] = {"status": WikiSyncStatus.NOT_FOUND, "checked_at": now}
+            return
+        points = await self._quest_points() if self._quest_points else {}
+        account["wikisync"] = wikisync_document(data, points, now)
+
+    async def _sync_wom(self, account: LinkedAccount, track: bool) -> None:
         """Reads the RSN on WOM, asking WOM to track it when it isn't tracked yet (players
         WOM never saw read as not found); on failure the last stats are kept."""
         try:
@@ -144,6 +181,7 @@ class ProfileService:
         account["ehb"] = stats.ehb
         account["boss_kc"] = stats.boss_kc
         account["combat"] = stats.combat
+        account["skills"] = stats.skills
         account["wom_updated_at"] = stats.updated_at
 
     async def _accounts(self, user: CurrentUser) -> list[LinkedAccount]:
@@ -191,6 +229,8 @@ class ProfileService:
                     ehb=item.get("ehb"),
                     boss_kc=item.get("boss_kc"),
                     combat=item.get("combat"),
+                    skills=item.get("skills"),
+                    wikisync=wikisync_summary(item.get("wikisync")),
                     wom_updated_at=cls._utc_or_none(item.get("wom_updated_at")),
                     checked_at=cls._utc_or_none(item.get("checked_at")),
                     wom_url=WOM_PROFILE_URL.format(rsn=quote(item["rsn"])),

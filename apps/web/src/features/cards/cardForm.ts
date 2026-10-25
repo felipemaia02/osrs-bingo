@@ -8,6 +8,22 @@ import type {
   WikiImage,
 } from './types'
 
+/** One accepted drop while the card is being edited (feature 033: rows instead of text). */
+export interface DropRow {
+  uid: string
+  /** Stable key of a drop that already exists in the revision; null for new drops. */
+  key: string | null
+  name: string
+  itemIds: number[]
+  matchByName: boolean
+  iconUrl: string | null
+  weight: string
+  // Kept untouched: the form doesn't edit them, saving must not erase them.
+  aliases: string[]
+  verificationNote: string | null
+  countingRestriction: string | null
+}
+
 export interface CardForm {
   slug: string
   name: string
@@ -16,7 +32,7 @@ export interface CardForm {
   difficulty: CardDifficulty
   tileScore: string
   requirement: string
-  drops: string
+  drops: DropRow[]
   wikiArticle: string
   wikiImage: WikiImage | null
   ruleNote: string
@@ -26,55 +42,86 @@ export interface CardForm {
 
 export const CARD_KINDS: CardKind[] = ['boss', 'boss_group', 'raid', 'activity', 'task']
 export const CARD_DIFFICULTIES: CardDifficulty[] = ['Low', 'Mid', 'High']
+export const DEFAULT_DROP_WEIGHT = '1'
 
-export const EMPTY_FORM: CardForm = {
-  slug: '',
-  name: '',
-  description: '',
-  kind: 'boss',
-  difficulty: 'Low',
-  tileScore: '5',
-  requirement: '1',
-  drops: '',
-  wikiArticle: '',
-  wikiImage: null,
-  ruleNote: '',
-  requiresPreverification: false,
-  changeReason: '',
+let rowCounter = 0
+
+export function newDropRow(changes: Partial<DropRow> = {}): DropRow {
+  rowCounter += 1
+  return {
+    uid: `drop-${rowCounter}`,
+    key: null,
+    name: '',
+    itemIds: [],
+    matchByName: true,
+    iconUrl: null,
+    weight: DEFAULT_DROP_WEIGHT,
+    aliases: [],
+    verificationNote: null,
+    countingRestriction: null,
+    ...changes,
+  }
+}
+
+export function emptyForm(): CardForm {
+  return {
+    slug: '',
+    name: '',
+    description: '',
+    kind: 'boss',
+    difficulty: 'Low',
+    tileScore: '5',
+    requirement: '1',
+    drops: [newDropRow()],
+    wikiArticle: '',
+    wikiImage: null,
+    ruleNote: '',
+    requiresPreverification: false,
+    changeReason: '',
+  }
+}
+
+/** Case-, accent- and spacing-insensitive, like the API compares item names. */
+export function normalizeName(name: string): string {
+  return name
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .join(' ')
 }
 
 function dropKey(name: string): string {
   return name
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
 }
 
-/**
- * Parses "name | weight" lines. Drops already present in the revision being edited keep
- * their stable key, aliases, verification note and counting restriction; the text form
- * only edits names and weights, so it must not silently erase the rest.
- */
-export function parseDrops(value: string, previous: AcceptedDrop[] = []): AcceptedDrop[] {
-  const previousByName = new Map(previous.map((drop) => [drop.name.toLocaleLowerCase(), drop]))
-  return value
+export const isLinked = (row: DropRow) => row.itemIds.length > 0
+
+/** "Name | progress" lines of the Paste list option; progress defaults to 1. */
+export function parsePastedDrops(text: string): { name: string; weight: string }[] {
+  return text
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
     .map((line) => {
       const [rawName, rawWeight] = line.split('|').map((part) => part.trim())
-      const existing = previousByName.get(rawName.toLocaleLowerCase())
-      return {
-        key: existing?.key ?? dropKey(rawName),
-        name: rawName,
-        progress_weight: Number(rawWeight),
-        aliases: existing?.aliases ?? [],
-        verification_note: existing?.verification_note ?? null,
-        counting_restriction: existing?.counting_restriction ?? null,
-      }
+      return { name: rawName.split(/\s+/).join(' '), weight: rawWeight || DEFAULT_DROP_WEIGHT }
     })
+    .filter((line) => line.name)
+}
+
+/** How many of a drop complete the card; null when the numbers aren't valid yet. */
+export function dropsNeeded(requirement: string, weight: string): number | null {
+  const needed = Number(requirement)
+  const each = Number(weight)
+  if (!(needed > 0) || !(each > 0)) return null
+  return Math.ceil(needed / each)
 }
 
 export function cardToForm(card: CardSummary): CardForm {
@@ -87,7 +134,18 @@ export function cardToForm(card: CardSummary): CardForm {
     difficulty: revision.difficulty,
     tileScore: String(revision.tile_score),
     requirement: String(revision.completion_requirement),
-    drops: revision.drops.map((drop) => `${drop.name} | ${drop.progress_weight}`).join('\n'),
+    drops: revision.drops.map((drop) =>
+      newDropRow({
+        key: drop.key,
+        name: drop.name,
+        itemIds: drop.item_ids ?? [],
+        matchByName: drop.match_by_name ?? true,
+        weight: String(drop.progress_weight),
+        aliases: drop.aliases,
+        verificationNote: drop.verification_note,
+        countingRestriction: drop.counting_restriction,
+      }),
+    ),
     wikiArticle: revision.wiki_image?.article_title ?? revision.name,
     wikiImage: revision.wiki_image,
     ruleNote: revision.rule_note ?? '',
@@ -96,13 +154,37 @@ export function cardToForm(card: CardSummary): CardForm {
   }
 }
 
-/** Revision payload, or null when a drop line is invalid. */
-export function toRevisionPayload(
-  form: CardForm,
-  previousDrops?: AcceptedDrop[],
-): CardRevisionPayload | null {
-  const drops = parseDrops(form.drops, previousDrops)
-  if (drops.some((drop) => !drop.name || !drop.key || !(drop.progress_weight > 0))) return null
+/** The rows that have a name, as the API stores them. */
+export function toAcceptedDrops(rows: DropRow[]): AcceptedDrop[] {
+  return rows
+    .filter((row) => row.name.trim())
+    .map((row) => {
+      const name = row.name.trim().split(/\s+/).join(' ')
+      return {
+        key: row.key ?? dropKey(name),
+        name,
+        progress_weight: Number(row.weight),
+        aliases: row.aliases,
+        verification_note: row.verificationNote,
+        counting_restriction: row.countingRestriction,
+        item_ids: row.itemIds,
+        match_by_name: row.matchByName,
+      }
+    })
+}
+
+/** Revision payload, or null when a drop is invalid (no name, progress ≤ 0 or repeated). */
+export function toRevisionPayload(form: CardForm): CardRevisionPayload | null {
+  const drops = toAcceptedDrops(form.drops)
+  const names = new Set(drops.map((drop) => normalizeName(drop.name)))
+  const keys = new Set(drops.map((drop) => drop.key))
+  if (
+    !drops.length ||
+    names.size !== drops.length ||
+    keys.size !== drops.length ||
+    drops.some((drop) => !drop.key || !(drop.progress_weight > 0))
+  )
+    return null
   return {
     name: form.name,
     description: form.description || null,

@@ -15,7 +15,14 @@ import { useDraftPreview } from '../../teams/hooks/useTeams'
 import { CaptainStrip } from '../components/CaptainStrip'
 import { DraftPlayerCard } from '../components/DraftPlayerCard'
 import { DraftPlayerModal } from '../components/DraftPlayerModal'
-import { DEFAULT_FILTER, SORTS, visiblePlayers, type DraftFilter } from '../filters'
+import { MAX_SKILL_LEVEL, MIN_SKILL_LEVEL, SKILLS, type Skill } from '../../profiles/skills'
+import {
+  DEFAULT_FILTER,
+  SORTS,
+  visiblePlayers,
+  withoutSkillData,
+  type DraftFilter,
+} from '../filters'
 
 const byCreation = (a: BingoEvent, b: BingoEvent) => a.created_at.localeCompare(b.created_at)
 
@@ -116,6 +123,13 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const players = useMemo(() => preview.data?.players ?? [], [preview.data])
   const shown = useMemo(() => visiblePlayers(players, filter), [players, filter])
+  const missingSkills = useMemo(() => withoutSkillData(players, filter), [players, filter])
+  const skill = filter.skill === 'any' ? null : filter.skill
+  // Skills sorted by their name in the current language.
+  const skillOptions = useMemo(
+    () => [...SKILLS].sort((a, b) => t(`skills.${a}`).localeCompare(t(`skills.${b}`))),
+    [t],
+  )
   // Read from the latest data so a refresh while it's open shows current values.
   const opened = players.find((player) => player.id === openId) ?? null
 
@@ -170,6 +184,29 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
           (activity) => setFilter({ ...filter, activity }),
         )}
         {select(
+          t('draft.skill'),
+          filter.skill,
+          ['any', ...skillOptions] as const,
+          (option) => (option === 'any' ? t('draft.anySkill') : t(`skills.${option}`)),
+          (value: Skill | 'any') => setFilter({ ...filter, skill: value }),
+        )}
+        {skill && (
+          <label className="flex items-center gap-2 whitespace-nowrap text-[13px]">
+            {t('draft.minLevel')}
+            <input
+              type="number"
+              inputMode="numeric"
+              min={MIN_SKILL_LEVEL}
+              max={MAX_SKILL_LEVEL}
+              value={filter.minLevel ?? ''}
+              onChange={(change) =>
+                setFilter({ ...filter, minLevel: levelOf(change.target.value) })
+              }
+              className={`${FIELD_CLASS} min-h-9 w-20`}
+            />
+          </label>
+        )}
+        {select(
           t('draft.sortBy'),
           filter.sort,
           SORTS,
@@ -177,9 +214,18 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
           (sort) => setFilter({ ...filter, sort }),
         )}
         <span role="status" className="text-[13px] text-rs-muted md:ml-auto">
-          {t('draft.count', { count: shown.length })}
+          {skill
+            ? t('draft.countSkill', {
+                count: shown.length,
+                skill: t(`skills.${skill}`),
+                level: filter.minLevel ?? MIN_SKILL_LEVEL,
+              })
+            : t('draft.count', { count: shown.length })}
         </span>
       </div>
+      {missingSkills > 0 && (
+        <InfoBanner>{t('draft.noSkillData', { count: missingSkills })}</InfoBanner>
+      )}
       {!players.length ? (
         <InfoBanner>{t('draft.everyoneAssigned')}</InfoBanner>
       ) : (
@@ -189,6 +235,7 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
               key={player.id}
               player={player}
               large={large}
+              skill={skill}
               onOpen={() => setOpenId(player.id)}
             />
           ))}
@@ -198,6 +245,14 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
       {opened && <DraftPlayerModal player={opened} onClose={() => setOpenId(null)} />}
     </>
   )
+}
+
+/** The typed minimum level, kept within 1–99; empty means no minimum yet. */
+function levelOf(value: string): number | null {
+  if (value.trim() === '') return null
+  const level = Math.trunc(Number(value))
+  if (Number.isNaN(level)) return null
+  return Math.min(MAX_SKILL_LEVEL, Math.max(MIN_SKILL_LEVEL, level))
 }
 
 /** Presentation mode: browser full screen when available; Escape or leaving full screen ends it. */

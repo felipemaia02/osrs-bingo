@@ -50,6 +50,21 @@ const MAIN = {
     prayer: 99,
     magic: 99,
   },
+  skills: { slayer: 96, agility: 99 },
+  wikisync: {
+    status: 'found' as const,
+    quest_points: 300,
+    quests_completed: 170,
+    quests_total: 184,
+    hard_diaries: 8,
+    diaries: Array.from({ length: 12 }, (_, index) => ({
+      region: `Region ${index + 1}`,
+      easy: true,
+      medium: true,
+      hard: index < 8,
+      elite: false,
+    })),
+  },
   ehp: 1402.6,
   ehb: 700.2,
   boss_kc: 15000,
@@ -62,7 +77,10 @@ const ALT = {
   total_level: 1500,
   combat_level: null,
   combat: null,
+  skills: null,
+  wikisync: null,
 }
+const HAL = { ...MAIN, id: 'acc-hal', rsn: 'Holy Hal', skills: { slayer: 93 } }
 
 const PLAYERS = [
   player('Ironman Iris', {
@@ -78,6 +96,7 @@ const PLAYERS = [
     teammates: ['Druid Duda'],
   }),
   player('Holy Hal', {
+    account: HAL,
     ehb_total: 702.5,
     boss_kc_total: 15230,
     timezone: 'Europe/London',
@@ -123,6 +142,10 @@ describe('Draft preview', () => {
     expect(within(iris).getByText('126')).toBeInTheDocument()
     const skills = within(iris).getByLabelText('Combat levels')
     expect(within(skills).getByText('Str')).toBeInTheDocument()
+    // Slayer sits with the combat levels (often a bingo requirement).
+    expect(within(skills).getByTitle('Slayer').nextElementSibling).toHaveTextContent('96')
+    expect(iris).toHaveTextContent('QP 300')
+    expect(iris).toHaveTextContent('Hard diaries 8/12')
 
     await user.click(within(iris).getByRole('button', { name: 'Show details of Ironman Iris' }))
     const dialog = screen.getByRole('dialog', { name: 'Ironman Iris' })
@@ -131,7 +154,11 @@ describe('Draft preview', () => {
     const main = within(dialog).getByRole('article', { name: 'Ironman Iris' })
     expect(within(main).getByText('Plays the bingo')).toBeInTheDocument()
     expect(within(main).getByText('Strength')).toBeInTheDocument()
+    expect(within(main).getByTitle('Slayer').nextElementSibling).toHaveTextContent('96')
+    const quests = within(main).getByRole('region', { name: 'Quests & diaries' })
+    expect(within(quests).getByText('Quests').nextSibling).toHaveTextContent('170/184')
     const alt = within(dialog).getByRole('article', { name: 'Iris Alt' })
+    expect(within(alt).getByText(/Not loaded yet/)).toBeInTheDocument()
     expect(within(alt).getByText('1,500')).toBeInTheDocument()
     expect(within(alt).queryByText('Plays the bingo')).toBeNull()
   })
@@ -181,6 +208,39 @@ describe('Draft preview', () => {
     const names = screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))
     expect(names).toEqual(['Varrock Vic', 'Holy Hal'])
     expect(screen.getByText('2 players available · captains not listed')).toBeInTheDocument()
+  })
+
+  it('filters by a skill level of the bingo account and shows it on the cards', async () => {
+    const user = userEvent.setup()
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    await screen.findByRole('article', { name: 'Ironman Iris' })
+    expect(screen.queryByLabelText('Min level')).toBeNull()
+    await user.selectOptions(screen.getByLabelText('Skill'), 'slayer')
+
+    expect(screen.getByLabelText('Min level')).toHaveValue(90)
+    expect(screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))).toEqual([
+      'Ironman Iris',
+      'Holy Hal',
+    ])
+    expect(screen.getByRole('article', { name: 'Holy Hal' })).toHaveTextContent('Slayer 93')
+    expect(
+      screen.getByText(
+        '2 players have no skill data yet — they need to “Update from WOM” on My profile.',
+      ),
+    ).toBeInTheDocument()
+
+    await user.clear(screen.getByLabelText('Min level'))
+    await user.type(screen.getByLabelText('Min level'), '95')
+    expect(screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))).toEqual([
+      'Ironman Iris',
+    ])
+    expect(screen.getByRole('article', { name: 'Ironman Iris' })).toHaveTextContent('Slayer 96')
+    expect(screen.getByText('1 player available · Slayer ≥ 95')).toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText('Skill'), 'any')
+    expect(screen.getAllByRole('article')).toHaveLength(4)
+    expect(screen.queryByText(/no skill data/)).toBeNull()
   })
 
   it('opens and closes presentation mode', async () => {
