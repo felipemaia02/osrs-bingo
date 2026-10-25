@@ -15,7 +15,9 @@ class DatabaseClient:
 
     async def connect(self, settings: Settings) -> None:
         log_event(logger, 20, "database_connecting", database=settings.mongodb_database)
-        self._motor_client = AsyncIOMotorClient(settings.mongodb_url)
+        # tz_aware: MongoDB stores UTC; without it dates come back naive and the API would send
+        # them without an offset, so browsers would read UTC times as their local time.
+        self._motor_client = AsyncIOMotorClient(settings.mongodb_url, tz_aware=True)
         self._db_name = settings.mongodb_database
         await self._motor_client.admin.command("ping")
         log_event(logger, 20, "database_connected", database=self._db_name)
