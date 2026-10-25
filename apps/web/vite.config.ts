@@ -14,6 +14,8 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     coverage: {
       provider: 'v8',
+      // Vitest 4 only counts files the tests load unless told which files to measure.
+      include: ['src/**/*.{ts,tsx}'],
       reporter: ['text-summary', 'lcov', 'json-summary'],
       // CI fails below these (measured 2026-10-24: lines 90%, branches 86%).
       thresholds: { lines: 85, statements: 85, branches: 80, functions: 80 },

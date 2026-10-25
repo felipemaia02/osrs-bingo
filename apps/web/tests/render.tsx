@@ -9,12 +9,7 @@ export function renderApp(element: ReactElement, route = '/') {
     return render(
         <QueryClientProvider client={queryClient}>
             <DateLocalizationProvider>
-                <MemoryRouter
-                    initialEntries={[route]}
-                    future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-                >
-                    {element}
-                </MemoryRouter>
+                <MemoryRouter initialEntries={[route]}>{element}</MemoryRouter>
             </DateLocalizationProvider>
         </QueryClientProvider>,
     )
