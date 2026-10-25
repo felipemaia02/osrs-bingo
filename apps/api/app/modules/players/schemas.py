@@ -114,6 +114,8 @@ class AccountSnapshot(BaseModel):
     total_level: int | None = None
     combat_level: int | None = None
     combat: dict[str, int] | None = None
+    # Every skill level from WOM (feature 032); None until the account is read again.
+    skills: dict[str, int] | None = None
     ehp: float | None = None
     ehb: float | None = None
     boss_kc: int | None = None

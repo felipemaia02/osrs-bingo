@@ -1194,7 +1194,15 @@
       "accounts": "Linked accounts",
       "noAccounts": "No accounts linked (registered before profiles).",
       "playing": "Plays the bingo"
-    }
+    },
+    "skill": "Skill",
+    "anySkill": "Any",
+    "minLevel": "Min level",
+    "countSkill_one": "{{count}} player available · {{skill}} ≥ {{level}}",
+    "countSkill_other": "{{count}} players available · {{skill}} ≥ {{level}}",
+    "noSkillData_one": "{{count}} player has no skill data yet — they need to “Update from WOM” on My profile.",
+    "noSkillData_other": "{{count}} players have no skill data yet — they need to “Update from WOM” on My profile.",
+    "skillLevel": "{{skill}} {{level}}"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1240,5 +1248,31 @@
       "soon": "Please come back soon.",
       "adminBanner": "Maintenance mode is on — players can't use the site."
     }
+  },
+  "skills": {
+    "agility": "Agility",
+    "attack": "Attack",
+    "construction": "Construction",
+    "cooking": "Cooking",
+    "crafting": "Crafting",
+    "defence": "Defence",
+    "farming": "Farming",
+    "firemaking": "Firemaking",
+    "fishing": "Fishing",
+    "fletching": "Fletching",
+    "herblore": "Herblore",
+    "hitpoints": "Hitpoints",
+    "hunter": "Hunter",
+    "magic": "Magic",
+    "mining": "Mining",
+    "prayer": "Prayer",
+    "ranged": "Ranged",
+    "runecrafting": "Runecraft",
+    "sailing": "Sailing",
+    "slayer": "Slayer",
+    "smithing": "Smithing",
+    "strength": "Strength",
+    "thieving": "Thieving",
+    "woodcutting": "Woodcutting"
   }
 }

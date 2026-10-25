@@ -15,6 +15,7 @@ class LinkedAccount(TypedDict):
     ehb: NotRequired[float | None]
     boss_kc: NotRequired[int | None]
     combat: NotRequired[dict[str, int] | None]
+    skills: NotRequired[dict[str, int] | None]
     wom_updated_at: NotRequired[datetime | None]
     checked_at: NotRequired[datetime | None]
 

@@ -1192,7 +1192,15 @@
       "accounts": "Cuentas vinculadas",
       "noAccounts": "Sin cuentas vinculadas (inscrito antes de los perfiles).",
       "playing": "Juega el bingo"
-    }
+    },
+    "skill": "Habilidad",
+    "anySkill": "Cualquiera",
+    "minLevel": "Nivel mín.",
+    "countSkill_one": "{{count}} jugador disponible · {{skill}} ≥ {{level}}",
+    "countSkill_other": "{{count}} jugadores disponibles · {{skill}} ≥ {{level}}",
+    "noSkillData_one": "{{count}} jugador aún no tiene datos de habilidades — debe pulsar “Actualizar desde WOM” en Mi perfil.",
+    "noSkillData_other": "{{count}} jugadores aún no tienen datos de habilidades — deben pulsar “Actualizar desde WOM” en Mi perfil.",
+    "skillLevel": "{{skill}} {{level}}"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1238,5 +1246,31 @@
       "soon": "Vuelve pronto.",
       "adminBanner": "El modo mantenimiento está activo — los jugadores no pueden usar el sitio."
     }
+  },
+  "skills": {
+    "agility": "Agilidad",
+    "attack": "Ataque",
+    "construction": "Construcción",
+    "cooking": "Cocina",
+    "crafting": "Artesanía",
+    "defence": "Defensa",
+    "farming": "Agricultura",
+    "firemaking": "Fuego",
+    "fishing": "Pesca",
+    "fletching": "Flechería",
+    "herblore": "Herbología",
+    "hitpoints": "Vida",
+    "hunter": "Caza",
+    "magic": "Magia",
+    "mining": "Minería",
+    "prayer": "Plegaria",
+    "ranged": "Distancia",
+    "runecrafting": "Runas",
+    "sailing": "Navegación",
+    "slayer": "Slayer",
+    "smithing": "Herrería",
+    "strength": "Fuerza",
+    "thieving": "Robo",
+    "woodcutting": "Tala"
   }
 }

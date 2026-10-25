@@ -50,6 +50,7 @@ const MAIN = {
     prayer: 99,
     magic: 99,
   },
+  skills: { slayer: 96, agility: 99 },
   ehp: 1402.6,
   ehb: 700.2,
   boss_kc: 15000,
@@ -62,7 +63,9 @@ const ALT = {
   total_level: 1500,
   combat_level: null,
   combat: null,
+  skills: null,
 }
+const HAL = { ...MAIN, id: 'acc-hal', rsn: 'Holy Hal', skills: { slayer: 93 } }
 
 const PLAYERS = [
   player('Ironman Iris', {
@@ -78,6 +81,7 @@ const PLAYERS = [
     teammates: ['Druid Duda'],
   }),
   player('Holy Hal', {
+    account: HAL,
     ehb_total: 702.5,
     boss_kc_total: 15230,
     timezone: 'Europe/London',
@@ -181,6 +185,39 @@ describe('Draft preview', () => {
     const names = screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))
     expect(names).toEqual(['Varrock Vic', 'Holy Hal'])
     expect(screen.getByText('2 players available · captains not listed')).toBeInTheDocument()
+  })
+
+  it('filters by a skill level of the bingo account and shows it on the cards', async () => {
+    const user = userEvent.setup()
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    await screen.findByRole('article', { name: 'Ironman Iris' })
+    expect(screen.queryByLabelText('Min level')).toBeNull()
+    await user.selectOptions(screen.getByLabelText('Skill'), 'slayer')
+
+    expect(screen.getByLabelText('Min level')).toHaveValue(90)
+    expect(screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))).toEqual([
+      'Ironman Iris',
+      'Holy Hal',
+    ])
+    expect(screen.getByRole('article', { name: 'Holy Hal' })).toHaveTextContent('Slayer 93')
+    expect(
+      screen.getByText(
+        '2 players have no skill data yet — they need to “Update from WOM” on My profile.',
+      ),
+    ).toBeInTheDocument()
+
+    await user.clear(screen.getByLabelText('Min level'))
+    await user.type(screen.getByLabelText('Min level'), '95')
+    expect(screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))).toEqual([
+      'Ironman Iris',
+    ])
+    expect(screen.getByRole('article', { name: 'Ironman Iris' })).toHaveTextContent('Slayer 96')
+    expect(screen.getByText('1 player available · Slayer ≥ 95')).toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText('Skill'), 'any')
+    expect(screen.getAllByRole('article')).toHaveLength(4)
+    expect(screen.queryByText(/no skill data/)).toBeNull()
   })
 
   it('opens and closes presentation mode', async () => {

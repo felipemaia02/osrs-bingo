@@ -107,8 +107,9 @@ class ProfileService:
         account = self._find(accounts, account_id)
         checked = account.get("checked_at")
         found = account["wom_status"] == WomStatus.FOUND
-        # Accounts read before combat levels existed may update right away to fill them.
-        complete = account.get("combat") is not None
+        # Accounts read before combat levels (021) or all skills (032) existed may update
+        # right away to fill them.
+        complete = account.get("combat") is not None and account.get("skills") is not None
         recent = checked is not None and self._utc(checked) > datetime.now(UTC) - REFRESH_COOLDOWN
         if found and complete and recent:
             raise AppException(429, REFRESHED_RECENTLY)
@@ -144,6 +145,7 @@ class ProfileService:
         account["ehb"] = stats.ehb
         account["boss_kc"] = stats.boss_kc
         account["combat"] = stats.combat
+        account["skills"] = stats.skills
         account["wom_updated_at"] = stats.updated_at
 
     async def _accounts(self, user: CurrentUser) -> list[LinkedAccount]:

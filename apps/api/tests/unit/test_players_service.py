@@ -392,7 +392,13 @@ def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
         "buy_in_admin": [{"_id": ADMIN_ID, "username": "felps_"}],
         "account_id": "alt-1",
         "profile_accounts": [
-            {"id": "alt-1", "rsn": "Iris Alt", "is_main": False, "wom_status": "found"},
+            {
+                "id": "alt-1",
+                "rsn": "Iris Alt",
+                "is_main": False,
+                "wom_status": "found",
+                "skills": {"slayer": 95, "agility": 87},
+            },
             {
                 "id": "main-1",
                 "rsn": "Ironman Iris",
@@ -414,6 +420,9 @@ def test_roster_entry_names_teammates_by_main_rsn_or_discord() -> None:
     assert [account.rsn for account in entry.accounts] == ["Ironman Iris", "Iris Alt"]
     assert entry.accounts[0].combat_level == 126
     assert entry.account is not None and entry.account.rsn == "Iris Alt"
+    # The skill filter (032) reads the bingo account's levels; old accounts have none yet.
+    assert entry.account.skills == {"slayer": 95, "agility": 87}
+    assert entry.accounts[0].skills is None
 
 
 async def test_events_without_a_buy_in_hide_the_buy_in_status(

@@ -6,7 +6,9 @@ import { Badge } from '../../../components/ui/Badge'
 import { CombatLevels } from '../../profiles/components/CombatLevels'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { zoneLabel } from '../../profiles/timezones'
+import type { Skill } from '../../profiles/skills'
 import type { Player } from '../../teams/types'
+import { skillLevel } from '../filters'
 
 /** Instructor first, then the buy-in; none for nickname registrations (FR-003). */
 function PlayerBadge({ player }: { player: Player }) {
@@ -33,10 +35,13 @@ export function DraftPlayerCard({
   player,
   large,
   onOpen,
+  skill,
 }: {
   player: Player
   large: boolean
   onOpen: () => void
+  /** The skill chosen in the filter (032), shown with this player's level. */
+  skill: Skill | null
 }) {
   const { t } = useTranslation()
   const format = useStatFormat()
@@ -88,6 +93,14 @@ export function DraftPlayerCard({
                 {format.whole(player.account.combat_level)}
               </strong>
             </span>
+            {skill && (
+              <span>
+                {t(`skills.${skill}`)}{' '}
+                <strong className="tabular-nums text-rs-gold-bright">
+                  {format.whole(skillLevel(player, skill))}
+                </strong>
+              </span>
+            )}
           </span>
           {player.account.combat && <CombatLevels combat={player.account.combat} compact />}
         </>

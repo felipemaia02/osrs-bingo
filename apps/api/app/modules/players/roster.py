@@ -94,6 +94,7 @@ def account_snapshots(document: RosterDocument) -> list[AccountSnapshot]:
             total_level=row.get("total_level"),
             combat_level=combat_level(row.get("combat")),
             combat=row.get("combat"),
+            skills=row.get("skills"),
             ehp=row.get("ehp"),
             ehb=row.get("ehb"),
             boss_kc=row.get("boss_kc"),
