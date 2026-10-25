@@ -23,9 +23,6 @@ export function MobileTileDetail({
   onClose: () => void
 }) {
   const { t } = useTranslation()
-  const position = tile.bonus
-    ? t('board.bonus.slot', { slot: tile.col })
-    : t('board.panel.position', { row: tile.row, column: tile.col })
   return (
     <section
       aria-label={t('board.panel.label')}
@@ -41,9 +38,9 @@ export function MobileTileDetail({
         >
           <ChevronLeftOutlinedIcon fontSize="small" aria-hidden="true" />
         </Button>
-        <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold">
-          {position}
-        </span>
+        <h2 className="m-0 min-w-0 text-center font-display text-[18px] leading-tight text-rs-gold-bright">
+          {tile.name}
+        </h2>
         <span className="flex gap-1.5">
           <Button
             size="icon"
@@ -58,7 +55,7 @@ export function MobileTileDetail({
           </Button>
         </span>
       </div>
-      <TileDetailContent tile={tile} match={match} showName unavailableReason={unavailableReason} />
+      <TileDetailContent tile={tile} match={match} unavailableReason={unavailableReason} />
     </section>
   )
 }

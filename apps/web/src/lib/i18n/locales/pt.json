@@ -85,7 +85,6 @@
     },
     "panel": {
       "label": "Detalhes do tile",
-      "position": "Linha {{row}} · Coluna {{column}}",
       "close": "Fechar detalhes",
       "prompt": "Selecione um tile para ver os drops aceitos e como ele é completado.",
       "completes": "Completa quando o progresso chega a <strong>{{requirement}}</strong>. Vale <strong>{{points}} pts uma única vez</strong> — progresso extra não dá pontos.",
@@ -102,9 +101,9 @@
     },
     "miniMap": {
       "label": "Minimapa do tabuleiro",
-      "title": "Mapa {{size}}×{{size}}",
+      "title": "Toque num card para ver os detalhes abaixo; toque de novo para fechar.",
       "cell": "{{name}}, linha {{row}} coluna {{column}}, {{tier}}: ver detalhes",
-      "legend": "★ Bronze = Fácil · ★ Prata = Médio · ★ Ouro = Difícil. Toque num card para vê-lo abaixo; toque de novo para fechar.",
+      "legend": "★ Bronze = Fácil · ★ Prata = Médio · ★ Ouro = Difícil",
       "bonusCell": "{{name}}, card bônus, {{tier}}: ver detalhes",
       "hint": "Toque num card do mapa para ver os detalhes aqui."
     },

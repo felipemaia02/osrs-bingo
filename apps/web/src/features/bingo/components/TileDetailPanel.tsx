@@ -22,9 +22,9 @@ export function TileDetailPanel({ tile, match, unavailableReason, onClose }: Til
       {tile ? (
         <>
           <div className="flex items-center justify-between border-b border-rs-border px-3.5 py-3">
-            <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold">
-              {t('board.panel.position', { row: tile.row, column: tile.col })}
-            </span>
+            <h2 className="m-0 min-w-0 font-display text-[20px] leading-tight text-rs-gold-bright">
+              {tile.name}
+            </h2>
             <button
               type="button"
               onClick={onClose}
@@ -35,12 +35,7 @@ export function TileDetailPanel({ tile, match, unavailableReason, onClose }: Til
               <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
             </button>
           </div>
-          <TileDetailContent
-            tile={tile}
-            match={match}
-            showName
-            unavailableReason={unavailableReason}
-          />
+          <TileDetailContent tile={tile} match={match} unavailableReason={unavailableReason} />
         </>
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-rs-muted">

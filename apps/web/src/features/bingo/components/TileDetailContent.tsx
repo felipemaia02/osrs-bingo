@@ -12,18 +12,12 @@ interface TileDetailContentProps {
   tile: Tile
   match?: TileMatch
   /** The dialog already shows the name as its title. */
-  showName: boolean
   /** i18n key: why team progress can't be shown (feature 025). */
   unavailableReason: string
 }
 
 /** Read-only tile rules (board-a-desktop detail panel). Drop weights are progress, never points. */
-export function TileDetailContent({
-  tile,
-  match,
-  showName,
-  unavailableReason,
-}: TileDetailContentProps) {
+export function TileDetailContent({ tile, match, unavailableReason }: TileDetailContentProps) {
   const { t } = useTranslation()
   const highlighted = match?.matches ? match.matchedDrop?.name : undefined
 
@@ -37,9 +31,6 @@ export function TileDetailContent({
       />
       <div className="flex flex-col gap-3 p-3.5">
         <div className="flex flex-col gap-1.5">
-          {showName && (
-            <h2 className="m-0 font-display text-[22px] text-rs-gold-bright">{tile.name}</h2>
-          )}
           <div className="flex flex-wrap gap-1.5">
             <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
             <Badge tone="neutral">{t('tile.points', { count: tile.points })}</Badge>

@@ -85,7 +85,6 @@
     },
     "panel": {
       "label": "Detalle de la casilla",
-      "position": "Fila {{row}} · Columna {{column}}",
       "close": "Cerrar detalle",
       "prompt": "Selecciona una casilla para ver los drops aceptados y cómo se completa.",
       "completes": "Se completa cuando el progreso llega a <strong>{{requirement}}</strong>. Vale <strong>{{points}} pts una sola vez</strong> — el progreso extra no da puntos.",
@@ -102,9 +101,9 @@
     },
     "miniMap": {
       "label": "Minimapa del tablero",
-      "title": "Mapa {{size}}×{{size}}",
+      "title": "Toca una casilla para ver los detalles abajo; tócala otra vez para cerrar.",
       "cell": "{{name}}, fila {{row}} columna {{column}}, {{tier}}: ver detalles",
-      "legend": "★ Bronce = Fácil · ★ Plata = Media · ★ Oro = Difícil. Toca una casilla para verla abajo; tócala otra vez para cerrar.",
+      "legend": "★ Bronce = Fácil · ★ Plata = Media · ★ Oro = Difícil",
       "bonusCell": "{{name}}, casilla bonus, {{tier}}: ver detalles",
       "hint": "Toca una casilla del mapa para ver sus detalles aquí."
     },
