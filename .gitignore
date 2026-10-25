@@ -43,3 +43,8 @@ Thumbs.db
 
 # Local screenshot storage (development)
 .storage/
+
+# Python coverage data
+.coverage
+.coverage.*
+coverage.xml

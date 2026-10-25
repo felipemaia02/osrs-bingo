@@ -45,5 +45,12 @@ jobs:
       - name: Type check (mypy)
         run: mypy app/
 
-      - name: Tests (pytest)
-        run: pytest --cov=app --cov-report=term-missing
+      - name: Tests (pytest) with coverage
+        # Fails below the minimum; the table lands on the run's summary page.
+        run: pytest --cov=app --cov-report=term-missing:skip-covered --cov-fail-under=80
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          echo "## API coverage" >> "$GITHUB_STEP_SUMMARY"
+          coverage report --format=markdown --skip-covered >> "$GITHUB_STEP_SUMMARY" || true
