@@ -4,9 +4,11 @@ import {
   createSubmission,
   fetchOwnSubmissions,
   fetchReviewQueue,
+  fetchTileHistory,
   rejectSubmission,
+  revertSubmission,
 } from '../api/submissionsApi'
-import type { SubmissionKind } from '../types'
+import type { ReviewStatus, SubmissionKind } from '../types'
 
 const SUBMISSIONS_KEY = ['submissions'] as const
 export const REVIEW_PAGE_SIZE = 50
@@ -27,11 +29,24 @@ export function useSubmit() {
   })
 }
 
-export function useReviewQueue(eventId: string | null, kind: SubmissionKind | null) {
+export function useReviewQueue(
+  eventId: string | null,
+  kind: SubmissionKind | null,
+  status: ReviewStatus = 'pending',
+  search = '',
+) {
   return useQuery({
-    queryKey: [...SUBMISSIONS_KEY, 'review', eventId, kind],
-    queryFn: () => fetchReviewQueue(eventId!, kind, REVIEW_PAGE_SIZE),
+    queryKey: [...SUBMISSIONS_KEY, 'review', eventId, kind, status, search.trim()],
+    queryFn: () => fetchReviewQueue(eventId!, kind, REVIEW_PAGE_SIZE, status, search),
     enabled: Boolean(eventId),
+  })
+}
+
+export function useTileHistory(submissionId: string | null) {
+  return useQuery({
+    queryKey: [...SUBMISSIONS_KEY, 'tile-history', submissionId],
+    queryFn: () => fetchTileHistory(submissionId!),
+    enabled: Boolean(submissionId),
   })
 }
 
@@ -51,5 +66,6 @@ export function useReviewActions() {
   return {
     accept: useMutation({ mutationFn: acceptSubmission, onSuccess: refresh }),
     reject: useMutation({ mutationFn: rejectSubmission, onSuccess: refresh }),
+    revert: useMutation({ mutationFn: revertSubmission, onSuccess: refresh }),
   }
 }

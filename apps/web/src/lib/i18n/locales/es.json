@@ -821,7 +821,8 @@
       "unreadable_screenshot": "captura ilegible",
       "item_mismatch": "el objeto no coincide con la captura",
       "outside_event_period": "fuera del período del evento",
-      "other": "otro"
+      "other": "otro",
+      "duplicate": "duplicado (ya enviado)"
     },
     "viewScreenshot": "Ver captura",
     "openScreenshot": "Abrir la captura",
@@ -872,12 +873,15 @@
       "imageSize": "La captura debe pesar 5 MB o menos.",
       "storage": "No se pudo guardar la captura ahora. Inténtalo de nuevo en un momento.",
       "cardRequired": "Elige una carta.",
-      "screenshotRequired": "Adjunta una captura."
+      "screenshotRequired": "Adjunta una captura.",
+      "notAccepted": "Solo los envíos aceptados se pueden revertir.",
+      "revertClosed": "Los envíos aceptados solo se pueden revertir mientras el evento está activo."
     },
     "source": {
       "droptracker": "DropTracker"
     },
-    "noDropTrackerImage": "Sin captura de DropTracker"
+    "noDropTrackerImage": "Sin captura de DropTracker",
+    "reverted": "Revertido por un admin después de ser aceptado."
   },
   "review": {
     "title": "Revisión de drops",
@@ -910,7 +914,8 @@
     "skip": "Omitir",
     "feedback": {
       "accepted": "Envío aceptado.",
-      "rejected": "Envío rechazado. El jugador ve el motivo."
+      "rejected": "Envío rechazado. El jugador ve el motivo.",
+      "reverted": "Envío revertido. El jugador ve el motivo."
     },
     "event": "Evento",
     "shortcuts": "J / K navegar · A aceptar · R motivo",
@@ -925,7 +930,30 @@
     "empty": "Nada que revisar. 🎉",
     "backToQueue": "Volver a la cola",
     "instructions": "Instrucciones",
-    "ownTeam": "Juegas en este equipo — otro admin revisa este envío."
+    "ownTeam": "Juegas en este equipo — otro admin revisa este envío.",
+    "history": {
+      "title": "Ya en esta casilla para {{team}}",
+      "progress": "Progreso {{progress}} / {{requirement}}",
+      "complete": "Completa",
+      "empty": "Nada más enviado para esta casilla todavía."
+    },
+    "duplicate": {
+      "badge": "Posible duplicado",
+      "hint": "Mismo jugador, ítem y casilla enviados con menos de una hora de diferencia, o exactamente la misma captura. Revisa el historial de la casilla abajo."
+    },
+    "revert": {
+      "hint": "Aceptado por {{name}}. Revertir lo deja como rechazado, quita su progreso y muestra el motivo al jugador.",
+      "reasonLabel": "Motivo para revertir",
+      "action": "Revertir"
+    },
+    "statusFilter": "Estado del envío",
+    "statuses": {
+      "pending": "Pendientes",
+      "accepted": "Aceptados"
+    },
+    "search": "Buscar jugador o ítem",
+    "latestFirst": "Más recientes primero",
+    "emptyAccepted": "Ningún envío aceptado coincide."
   },
   "score": {
     "tileComplete": "Completa +{{points}}",

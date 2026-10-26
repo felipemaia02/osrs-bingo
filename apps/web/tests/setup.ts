@@ -91,6 +91,16 @@ vi.mock('../src/features/submissions/api/submissionsApi', () => ({
   }),
   acceptSubmission: vi.fn(),
   rejectSubmission: vi.fn(),
+  revertSubmission: vi.fn(),
+  fetchTileHistory: vi.fn().mockResolvedValue({
+    team_id: 'team',
+    team_name: null,
+    card_name: '',
+    progress: 0,
+    requirement: 1,
+    complete: false,
+    items: [],
+  }),
 }))
 
 vi.mock('../src/features/scoring/api/scoringApi', () => ({

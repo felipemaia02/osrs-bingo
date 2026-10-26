@@ -144,6 +144,26 @@ class IndexManager:
             },
         ),
         ("osrs_items", [("normalized_name", 1)], {"name": "osrs_items_normalized_name"}),
+        # Review context (feature 035): a team's drops on a tile, a player's drops on a tile,
+        # and identical screenshot files.
+        (
+            "submissions",
+            [("event_id", 1), ("team_id", 1), ("position", 1), ("submitted_at", -1)],
+            {"name": "submissions_team_tile"},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("player_id", 1), ("position", 1)],
+            {"name": "submissions_player_tile"},
+        ),
+        (
+            "submissions",
+            [("event_id", 1), ("screenshot_sha256", 1)],
+            {
+                "name": "submissions_screenshot_sha256",
+                "partialFilterExpression": {"screenshot_sha256": {"$exists": True}},
+            },
+        ),
         ("osrs_items", [("batch", 1)], {"name": "osrs_items_batch"}),
         (
             "submissions",

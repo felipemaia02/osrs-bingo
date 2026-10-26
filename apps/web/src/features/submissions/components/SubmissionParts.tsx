@@ -47,9 +47,12 @@ export function SourceBadge({ submission }: { submission: Submission }) {
 export function Screenshot({
   submission,
   className,
+  compact = false,
 }: {
   submission: Submission
   className: string
+  /** Small thumbnails (tile history): icon only, the text goes to the tooltip. */
+  compact?: boolean
 }) {
   const { t } = useTranslation()
   const [failed, setFailed] = useState(false)
@@ -57,10 +60,15 @@ export function Screenshot({
   if (submission.has_screenshot === false)
     return (
       <span
+        title={compact ? t('submissions.noDropTrackerImage') : undefined}
         className={`flex flex-col items-center justify-center gap-1 rounded-[3px] border border-rs-border bg-rs-inset text-xs text-rs-muted ${className}`}
       >
         <ImageOutlinedIcon aria-hidden="true" />
-        {t('submissions.noDropTrackerImage')}
+        {compact ? (
+          <span className="sr-only">{t('submissions.noDropTrackerImage')}</span>
+        ) : (
+          t('submissions.noDropTrackerImage')
+        )}
       </span>
     )
   return (
@@ -72,9 +80,16 @@ export function Screenshot({
       className={`flex items-center justify-center overflow-hidden rounded-[3px] border border-rs-border bg-rs-inset ${className}`}
     >
       {failed ? (
-        <span className="flex flex-col items-center gap-1 text-xs text-rs-muted">
+        <span
+          title={compact ? t('submissions.screenshotUnavailable') : undefined}
+          className="flex flex-col items-center gap-1 text-xs text-rs-muted"
+        >
           <ImageOutlinedIcon aria-hidden="true" />
-          {t('submissions.screenshotUnavailable')}
+          {compact ? (
+            <span className="sr-only">{t('submissions.screenshotUnavailable')}</span>
+          ) : (
+            t('submissions.screenshotUnavailable')
+          )}
         </span>
       ) : (
         <img

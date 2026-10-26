@@ -3,9 +3,11 @@ import type {
   OwnSubmissions,
   RejectPayload,
   ReviewQueue,
+  ReviewStatus,
   Submission,
   SubmissionKind,
   SubmitPayload,
+  TileHistory,
 } from '../types'
 
 export async function fetchOwnSubmissions(eventId: string): Promise<OwnSubmissions> {
@@ -41,12 +43,30 @@ export async function fetchReviewQueue(
   eventId: string,
   kind: SubmissionKind | null,
   limit: number,
+  status: ReviewStatus = 'pending',
+  search = '',
 ): Promise<ReviewQueue> {
   return (
     await apiClient.get<ReviewQueue>(`/admin/events/${eventId}/submissions`, {
-      params: { status: 'pending', kind: kind ?? undefined, limit },
+      params: { status, kind: kind ?? undefined, limit, q: search.trim() || undefined },
     })
   ).data
+}
+
+/** The team's other drops on the submission's tile, for the review (feature 035). */
+export async function fetchTileHistory(submissionId: string): Promise<TileHistory> {
+  return (await apiClient.get<TileHistory>(`/admin/submissions/${submissionId}/tile-history`)).data
+}
+
+export async function revertSubmission({
+  submissionId,
+  payload,
+}: {
+  submissionId: string
+  payload: RejectPayload
+}): Promise<Submission> {
+  return (await apiClient.post<Submission>(`/admin/submissions/${submissionId}/revert`, payload))
+    .data
 }
 
 export async function acceptSubmission(submissionId: string): Promise<Submission> {

@@ -85,6 +85,17 @@ class ScoringService:
         score = score_team(str(team_id), inputs.tiles, inputs.size, inputs.drops, inputs.bonuses)
         return self._team_response(inputs, team, score)
 
+    async def tile_progress(
+        self, event_id: str, team_id: str, position: int
+    ) -> tuple[float, float, bool] | None:
+        """A team's progress, requirement and completion on one tile (review context, 035)."""
+        inputs = await self._inputs(event_id)
+        score = score_team(team_id, inputs.tiles, inputs.size, inputs.drops, inputs.bonuses)
+        result = score.tiles.get(position)
+        if result is None:
+            return None
+        return float(result.progress), float(result.tile.requirement), result.complete
+
     async def ranking(self, event_id: str) -> RankingResponse:
         inputs = await self._inputs(event_id)
         teams = await self._teams.list(event_id)

@@ -821,7 +821,8 @@
       "unreadable_screenshot": "screenshot ilegível",
       "item_mismatch": "o item não confere com o screenshot",
       "outside_event_period": "fora do período do evento",
-      "other": "outro"
+      "other": "outro",
+      "duplicate": "duplicado (já enviado)"
     },
     "viewScreenshot": "Ver screenshot",
     "openScreenshot": "Abrir o screenshot",
@@ -872,12 +873,15 @@
       "imageSize": "O screenshot precisa ter até 5 MB.",
       "storage": "Não foi possível salvar o screenshot agora. Tente de novo em instantes.",
       "cardRequired": "Escolha um card.",
-      "screenshotRequired": "Anexe um screenshot."
+      "screenshotRequired": "Anexe um screenshot.",
+      "notAccepted": "Só envios aceitos podem ser revertidos.",
+      "revertClosed": "Envios aceitos só podem ser revertidos enquanto o evento está ativo."
     },
     "source": {
       "droptracker": "DropTracker"
     },
-    "noDropTrackerImage": "Sem screenshot do DropTracker"
+    "noDropTrackerImage": "Sem screenshot do DropTracker",
+    "reverted": "Revertido por um admin depois de aceito."
   },
   "review": {
     "title": "Revisão de drops",
@@ -910,7 +914,8 @@
     "skip": "Pular",
     "feedback": {
       "accepted": "Submissão aceita.",
-      "rejected": "Submissão rejeitada. O jogador vê o motivo."
+      "rejected": "Submissão rejeitada. O jogador vê o motivo.",
+      "reverted": "Envio revertido. O jogador vê o motivo."
     },
     "event": "Evento",
     "shortcuts": "J / K navegar · A aceitar · R motivo",
@@ -925,7 +930,30 @@
     "empty": "Nada para revisar. 🎉",
     "backToQueue": "Voltar para a fila",
     "instructions": "Instruções",
-    "ownTeam": "Você joga neste time — outro admin revisa este envio."
+    "ownTeam": "Você joga neste time — outro admin revisa este envio.",
+    "history": {
+      "title": "Já neste card para {{team}}",
+      "progress": "Progresso {{progress}} / {{requirement}}",
+      "complete": "Completo",
+      "empty": "Nada mais enviado para este card ainda."
+    },
+    "duplicate": {
+      "badge": "Possível duplicado",
+      "hint": "Mesmo jogador, item e card enviado com menos de uma hora de diferença, ou exatamente o mesmo screenshot. Confira o histórico do card abaixo."
+    },
+    "revert": {
+      "hint": "Aceito por {{name}}. Reverter deixa como rejeitado, tira o progresso e mostra o motivo ao jogador.",
+      "reasonLabel": "Motivo para reverter",
+      "action": "Reverter"
+    },
+    "statusFilter": "Status do envio",
+    "statuses": {
+      "pending": "Pendentes",
+      "accepted": "Aceitos"
+    },
+    "search": "Buscar jogador ou item",
+    "latestFirst": "Mais recentes primeiro",
+    "emptyAccepted": "Nenhum envio aceito encontrado."
   },
   "score": {
     "tileComplete": "Completo +{{points}}",

@@ -821,7 +821,8 @@
       "unreadable_screenshot": "unreadable screenshot",
       "item_mismatch": "the item doesn't match the screenshot",
       "outside_event_period": "outside the event period",
-      "other": "other"
+      "other": "other",
+      "duplicate": "duplicate (already sent)"
     },
     "viewScreenshot": "View screenshot",
     "openScreenshot": "Open the screenshot",
@@ -872,12 +873,15 @@
       "imageSize": "The screenshot must be 5 MB or smaller.",
       "storage": "Screenshots can't be saved right now. Try again in a moment.",
       "cardRequired": "Choose a card.",
-      "screenshotRequired": "Attach a screenshot."
+      "screenshotRequired": "Attach a screenshot.",
+      "notAccepted": "Only accepted submissions can be reverted.",
+      "revertClosed": "Accepted submissions can only be reverted while the event is active."
     },
     "source": {
       "droptracker": "DropTracker"
     },
-    "noDropTrackerImage": "No screenshot from DropTracker"
+    "noDropTrackerImage": "No screenshot from DropTracker",
+    "reverted": "Reverted by an admin after being accepted."
   },
   "review": {
     "title": "Drop review",
@@ -910,7 +914,8 @@
     "skip": "Skip",
     "feedback": {
       "accepted": "Submission accepted.",
-      "rejected": "Submission rejected. The player sees the reason."
+      "rejected": "Submission rejected. The player sees the reason.",
+      "reverted": "Submission reverted. The player sees the reason."
     },
     "event": "Event",
     "shortcuts": "J / K navigate · A accept · R reason",
@@ -925,7 +930,30 @@
     "empty": "Nothing to review. 🎉",
     "backToQueue": "Back to the queue",
     "instructions": "Instructions",
-    "ownTeam": "You play on this team — another admin reviews it."
+    "ownTeam": "You play on this team — another admin reviews it.",
+    "history": {
+      "title": "Already on this tile for {{team}}",
+      "progress": "Progress {{progress}} / {{requirement}}",
+      "complete": "Complete",
+      "empty": "Nothing else sent for this tile yet."
+    },
+    "duplicate": {
+      "badge": "Possible duplicate",
+      "hint": "Same player, item and tile sent within an hour, or the exact same screenshot. Check the tile history below."
+    },
+    "revert": {
+      "hint": "Accepted by {{name}}. Reverting turns it into rejected, removes its progress and shows the reason to the player.",
+      "reasonLabel": "Reason for reverting",
+      "action": "Revert"
+    },
+    "statusFilter": "Submission status",
+    "statuses": {
+      "pending": "Pending",
+      "accepted": "Accepted"
+    },
+    "search": "Search player or item",
+    "latestFirst": "Latest first",
+    "emptyAccepted": "No accepted submissions match."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",

@@ -423,6 +423,20 @@ class PlayerRepository:
         cursor = self._collection.find({"_id": {"$in": player_ids}})
         return {document["_id"]: cast(PlayerDocument, document) async for document in cursor}
 
+    async def ids_named_like(self, event_id: str, text: str) -> builtin_list[ObjectId]:
+        """Players of the event whose name contains the text (review search, feature 035)."""
+        object_id = self._object_id(event_id)
+        if object_id is None or not text.strip():
+            return []
+        cursor = self._collection.find(
+            {
+                "event_id": object_id,
+                "normalized_display_name": {"$regex": re.escape(self._normalize(text))},
+            },
+            {"_id": 1},
+        )
+        return [document["_id"] async for document in cursor]
+
     async def list_assigned(self, event_id: str) -> builtin_list[PlayerDocument]:
         """Approved players that have a team, sorted by name."""
         object_id = self._object_id(event_id)

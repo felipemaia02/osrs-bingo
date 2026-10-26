@@ -5,16 +5,18 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { useEvents } from '../../events/hooks/useEvents'
 import { ReviewDetail } from '../components/ReviewDetail'
 import { ReviewList } from '../components/ReviewList'
 import { submissionErrorKey } from '../errors'
 import { useReviewActions, useReviewQueue } from '../hooks/useSubmissions'
-import type { RejectPayload, SubmissionKind } from '../types'
+import type { RejectPayload, ReviewStatus, SubmissionKind } from '../types'
 
 type KindFilter = SubmissionKind | 'all'
 const TYPING_TAGS = new Set(['INPUT', 'TEXTAREA', 'SELECT'])
+const SEARCH_DELAY_MS = 300
 
 /** Administrator review queue (future-review): every pending submission, oldest first. */
 export function ReviewPage() {
@@ -29,7 +31,12 @@ export function ReviewPage() {
     reviewable[0]?.id ??
     null
   const [kind, setKind] = useState<KindFilter>('all')
-  const queue = useReviewQueue(eventId, kind === 'all' ? null : kind)
+  // Feature 035: accepted submissions are browsed (latest first) to revert mistakes.
+  const [status, setStatus] = useState<ReviewStatus>('pending')
+  const [search, setSearch] = useState('')
+  const term = useDebouncedValue(search, SEARCH_DELAY_MS)
+  const queue = useReviewQueue(eventId, kind === 'all' ? null : kind, status, term)
+  const pendingCounts = useReviewQueue(eventId, null).data?.counts
   const actions = useReviewActions()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +51,8 @@ export function ReviewPage() {
     foundIndex >= 0 ? foundIndex : Math.min(lastIndex.current, Math.max(items.length - 1, 0))
   const selected = items[index] ?? null
   lastIndex.current = index
-  const busy = actions.accept.isPending || actions.reject.isPending
+  const busy = actions.accept.isPending || actions.reject.isPending || actions.revert.isPending
+  const reverting = status === 'accepted'
   const showList = isDesktop || selectedId === null
 
   function select(position: number) {
@@ -76,6 +84,13 @@ export function ReviewPage() {
       'review.feedback.rejected',
     )
 
+  const revert = (payload: RejectPayload) =>
+    selected &&
+    void decide(
+      () => actions.revert.mutateAsync({ submissionId: selected.id, payload }),
+      'review.feedback.reverted',
+    )
+
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       const target = event.target as HTMLElement | null
@@ -84,7 +99,7 @@ export function ReviewPage() {
       const key = event.key.toLowerCase()
       if (key === 'j') select(index + 1)
       else if (key === 'k') select(index - 1)
-      else if (key === 'a' && selected && !busy && !selected.own_team) {
+      else if (key === 'a' && selected && !busy && !selected.own_team && !reverting) {
         const waiting =
           selected.kind === 'drop' &&
           selected.requires_preverification &&
@@ -99,7 +114,7 @@ export function ReviewPage() {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  const counts = queue.data?.counts
+  const counts = pendingCounts ?? queue.data?.counts
   return (
     <AppShell desktopPadding="md:px-7 md:pt-[22px]">
       <div className="flex flex-col gap-3 md:gap-3.5">
@@ -171,6 +186,23 @@ export function ReviewPage() {
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-2">
+              <SegmentedControl<ReviewStatus>
+                label={t('review.statusFilter')}
+                variant="chip"
+                value={status}
+                onChange={(value) => {
+                  setStatus(value)
+                  setSelectedId(null)
+                  setSearch('')
+                }}
+                options={[
+                  {
+                    value: 'pending',
+                    label: `${t('review.statuses.pending')} ${counts?.pending ?? 0}`,
+                  },
+                  { value: 'accepted', label: t('review.statuses.accepted') },
+                ]}
+              />
               <SegmentedControl<KindFilter>
                 label={t('review.filter')}
                 variant="chip"
@@ -179,23 +211,49 @@ export function ReviewPage() {
                   setKind(value)
                   setSelectedId(null)
                 }}
-                options={[
-                  { value: 'all', label: `${t('review.filters.all')} ${counts?.pending ?? 0}` },
-                  {
-                    value: 'preverification',
-                    label: `${t('review.filters.preverification')} ${counts?.pending_preverification ?? 0}`,
-                  },
-                  {
-                    value: 'drop',
-                    label: `${t('review.filters.drop')} ${counts?.pending_drop ?? 0}`,
-                  },
-                ]}
+                options={
+                  reverting
+                    ? [
+                        { value: 'all', label: t('review.filters.all') },
+                        { value: 'preverification', label: t('review.filters.preverification') },
+                        { value: 'drop', label: t('review.filters.drop') },
+                      ]
+                    : [
+                        {
+                          value: 'all',
+                          label: `${t('review.filters.all')} ${counts?.pending ?? 0}`,
+                        },
+                        {
+                          value: 'preverification',
+                          label: `${t('review.filters.preverification')} ${counts?.pending_preverification ?? 0}`,
+                        },
+                        {
+                          value: 'drop',
+                          label: `${t('review.filters.drop')} ${counts?.pending_drop ?? 0}`,
+                        },
+                      ]
+                }
               />
-              <span className="ml-auto text-[13px] text-rs-muted">{t('review.oldestFirst')}</span>
+              {reverting && (
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(change) => {
+                    setSearch(change.target.value)
+                    setSelectedId(null)
+                  }}
+                  aria-label={t('review.search')}
+                  placeholder={t('review.search')}
+                  className="min-h-10 min-w-0 flex-1 rounded-[3px] border border-rs-border bg-rs-inset px-3 text-sm text-rs-text outline-none placeholder:text-rs-muted focus:border-rs-gold md:max-w-xs"
+                />
+              )}
+              <span className="ml-auto text-[13px] text-rs-muted">
+                {t(reverting ? 'review.latestFirst' : 'review.oldestFirst')}
+              </span>
             </div>
             {!items.length ? (
               <p className="m-0 rounded border border-rs-border bg-rs-surface p-8 text-center text-rs-muted">
-                {t('review.empty')}
+                {t(reverting ? 'review.emptyAccepted' : 'review.empty')}
               </p>
             ) : (
               <div className="flex flex-col items-start gap-4 md:flex-row">
@@ -235,6 +293,8 @@ export function ReviewPage() {
                       onNext={() => select(index + 1)}
                       onAccept={accept}
                       onReject={reject}
+                      mode={status}
+                      onRevert={revert}
                     />
                   </div>
                 )}
