@@ -1212,6 +1212,15 @@
       "showAll": "Ver todos os fusos",
       "none": "Nenhum fuso encontrado. Tente uma cidade, um país ou um fuso como +1.",
       "hint": "Usado só para mostrar onde os jogadores estão quando os admins balanceiam os times."
+    },
+    "bosses": {
+      "title": "Bosses",
+      "counted": "Boss KC (que conta)",
+      "raids": "Raids KC",
+      "top": "Bosses com mais KC"
+    },
+    "skills": {
+      "all": "Todas as habilidades ({{count}})"
     }
   },
   "join": {

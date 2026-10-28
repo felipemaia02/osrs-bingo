@@ -251,6 +251,32 @@ describe('My profile', () => {
     expect(within(main).getByText('21,340')).toBeInTheDocument()
   })
 
+  it('shows each account bosses (raids apart, excluded crossed out) and all skills', async () => {
+    vi.mocked(fetchProfile).mockResolvedValue(
+      profile([
+        account({
+          bosses: { brutus: 3000, vorkath: 1500, zulrah: 500, chambers_of_xeric: 400 },
+          skills: { slayer: 95, agility: 87, attack: 99 },
+        }),
+      ]),
+    )
+    const user = userEvent.setup()
+    renderApp(<ProfilePage />, '/profile')
+
+    const main = await screen.findByRole('article', { name: 'Main account felps' })
+    const bosses = await within(main).findByRole('region', { name: 'Bosses' })
+    await waitFor(() =>
+      expect(within(bosses).getByText('Boss KC (counted)').nextSibling).toHaveTextContent('2,000'),
+    )
+    expect(within(bosses).getByText('Raids KC').nextSibling).toHaveTextContent('400')
+    const top = within(bosses).getByRole('list', { name: 'Top bosses' })
+    expect(within(top).getAllByRole('listitem')[0]).toHaveTextContent('Brutus 3,000')
+
+    await user.click(within(main).getByText('All skills (24)'))
+    expect(within(main).getByText('Agility').nextSibling).toHaveTextContent('87')
+    expect(within(main).getByText('Woodcutting').nextSibling).toHaveTextContent('—')
+  })
+
   it('finds a time zone by country or UTC offset and saves it (043)', async () => {
     vi.mocked(fetchProfile).mockResolvedValue(profile([MAIN], { timezone: 'Europe/London' }))
     vi.mocked(savePreferences).mockResolvedValue(

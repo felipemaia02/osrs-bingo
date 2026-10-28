@@ -1214,6 +1214,15 @@
       "showAll": "Show all time zones",
       "none": "No time zone found. Try a city, a country or an offset like +1.",
       "hint": "Only used to show where players are when admins balance teams."
+    },
+    "bosses": {
+      "title": "Bosses",
+      "counted": "Boss KC (counted)",
+      "raids": "Raids KC",
+      "top": "Top bosses"
+    },
+    "skills": {
+      "all": "All skills ({{count}})"
     }
   },
   "join": {

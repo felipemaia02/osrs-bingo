@@ -1212,6 +1212,15 @@
       "showAll": "Ver todas las zonas",
       "none": "No se encontró ninguna zona. Prueba una ciudad, un país o un desfase como +1.",
       "hint": "Solo se usa para mostrar dónde están los jugadores cuando los admins equilibran los equipos."
+    },
+    "bosses": {
+      "title": "Jefes",
+      "counted": "Boss KC (que cuenta)",
+      "raids": "Raids KC",
+      "top": "Jefes con más KC"
+    },
+    "skills": {
+      "all": "Todas las habilidades ({{count}})"
     }
   },
   "join": {
