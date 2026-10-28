@@ -9,6 +9,7 @@ import { usePublicBoard } from '../../boards/hooks/useBoards'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { DEFAULT_BOARD_SIZE } from '../../boards/draft'
+import type { BoardPosition } from '../../boards/types'
 import { boardToTiles, isFiltering, matchTile } from '../boardTiles'
 import { BingoBoard } from '../components/BingoBoard'
 import { BoardToolbar, MobileSearch } from '../components/BoardToolbar'
@@ -23,6 +24,7 @@ import { useBoardView } from '../hooks/useBoardView'
 import { useProgressReason } from '../hooks/useProgressReason'
 import { useFilterSummary, type FilterSummary } from '../hooks/useFilterSummary'
 import { useTierOptions } from '../hooks/useTierOptions'
+import { BoardSubmitButton } from '../../submissions/components/BoardSubmitButton'
 import { TeamScorePanel } from '../../scoring/components/TeamScorePanel'
 import { useOwnTeamScore } from '../../scoring/hooks/useScoring'
 import { useOwnRegistration } from '../../teams/hooks/useTeams'
@@ -37,6 +39,7 @@ interface BoardState {
   score: TeamScore | null
   /** Rows (and columns) of the published board. */
   size: number
+  positions: BoardPosition[]
   matches: Map<string, TileMatch> | null
   summary: FilterSummary | null
   search: string
@@ -81,6 +84,7 @@ export function HomePage() {
     tiles,
     score,
     size: board.data?.size ?? DEFAULT_BOARD_SIZE,
+    positions: board.data?.positions ?? [],
     rowBonus: board.data?.row_bonus ?? null,
     columnBonus: board.data?.column_bonus ?? null,
     matches,
@@ -145,7 +149,10 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
 
   return (
     <>
-      <EventHeader event={event} />
+      <EventHeader
+        event={event}
+        action={<BoardSubmitButton eventId={event.id} positions={state.positions} />}
+      />
       {state.score ? (
         <TeamScorePanel score={state.score} />
       ) : (
@@ -226,6 +233,7 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
         unavailableReason={reason}
       />
       {state.score && <TeamScorePanel score={state.score} compact />}
+      <BoardSubmitButton eventId={event.id} positions={state.positions} />
       <MobileSearch value={state.search} onChange={state.setSearch} />
       <SegmentedControl
         label={t('board.filter.label')}

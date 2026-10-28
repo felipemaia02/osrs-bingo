@@ -15,6 +15,7 @@ import {
   rejectSubmission,
   revertSubmission,
 } from '../../src/features/submissions/api/submissionsApi'
+import { HomePage } from '../../src/features/bingo/pages/HomePage'
 import { MySubmissionsPage } from '../../src/features/submissions/pages/MySubmissionsPage'
 import { ReviewPage } from '../../src/features/submissions/pages/ReviewPage'
 import type { ReviewItem, Submission } from '../../src/features/submissions/types'
@@ -254,6 +255,39 @@ describe('My submissions', () => {
     renderApp(<MySubmissionsPage />, '/submissions')
 
     expect(await screen.findByText(/once an administrator puts you on a team/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Submit with screenshot' })).toBeNull()
+  })
+})
+
+describe('Submit from the board (044)', () => {
+  it('sends a drop from the board page', async () => {
+    vi.mocked(createSubmission).mockResolvedValue(submission({}))
+    const user = userEvent.setup()
+    renderApp(<HomePage />, '/')
+
+    await user.click(await screen.findByRole('button', { name: 'Submit with screenshot' }))
+    const dialog = screen.getByRole('dialog', { name: 'Submit with screenshot' })
+    await user.click(within(dialog).getByRole('radio', { name: /Vorkath/ }))
+    await user.click(within(dialog).getByRole('radio', { name: /Vorkath Unique/ }))
+    const file = new File([new Uint8Array([255, 216, 255])], 'drop.jpg', { type: 'image/jpeg' })
+    await user.upload(within(dialog).getByLabelText('Choose a screenshot'), file)
+    await user.click(within(dialog).getByRole('button', { name: 'Send' }))
+
+    await waitFor(() => expect(createSubmission).toHaveBeenCalledOnce())
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+  })
+
+  it('hides the button from players without a team', async () => {
+    vi.mocked(teamsApi.fetchOwnRegistration).mockResolvedValue({
+      id: 'player-1',
+      event_id: EVENT.id,
+      display_name: 'Holy Hal',
+      team_id: null,
+      status: 'approved',
+    })
+    renderApp(<HomePage />, '/')
+
+    expect(await screen.findByRole('heading', { name: 'Autumn Bingo 2026' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Submit with screenshot' })).toBeNull()
   })
 })
