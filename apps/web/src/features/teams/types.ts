@@ -16,6 +16,9 @@ export interface Player {
   id: string
   event_id: string
   team_id: string | null
+  /** Feature 037: requested while the event was active; when the player got a team. */
+  joined_late?: boolean
+  team_assigned_at?: string | null
   display_name: string
   status: 'pending' | 'approved' | 'removed'
   /** Linked Discord username; null for legacy registrations (administrator list only). */

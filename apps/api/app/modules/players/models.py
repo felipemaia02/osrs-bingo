@@ -18,6 +18,8 @@ class NewRegistration:
     account_id: str
     activity: str | None
     teammate_ids: list[str]
+    # Requested while the event was already active (feature 037).
+    joined_late: bool = False
 
 
 class PlayerDocument(TypedDict):
@@ -36,6 +38,9 @@ class PlayerDocument(TypedDict):
     buy_in: NotRequired[BuyInRecord]
     # captain | instructor (feature 023)
     role: NotRequired[str | None]
+    # Feature 037: late joiners, and when the player was placed in their team.
+    joined_late: NotRequired[bool]
+    team_assigned_at: NotRequired[datetime | None]
     created_at: datetime
     updated_at: datetime
 

@@ -137,7 +137,7 @@ async def test_registration_in_active_event_returns_conflict(
     repositories[2].get.return_value = {"status": EventStatus.ACTIVE}
     response = await client.post(f"/events/{EVENT_ID}/players", json=JOIN)
     assert response.status_code == 409
-    assert response.json() == {"detail": "Only draft events can be changed"}
+    assert response.json() == {"detail": "This event isn't taking new players"}
     repositories[0].create.assert_not_awaited()
 
 

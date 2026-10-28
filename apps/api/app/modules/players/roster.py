@@ -28,6 +28,8 @@ def to_player_response(document: PlayerDocument) -> PlayerResponse:
         account_id=document.get("account_id"),
         activity=Activity(activity) if activity else None,
         buy_in_status=BuyInStatus(buy_in["status"]) if buy_in else None,
+        joined_late=bool(document.get("joined_late")),
+        team_assigned_at=document.get("team_assigned_at"),
         created_at=document["created_at"],
         updated_at=document["updated_at"],
     )

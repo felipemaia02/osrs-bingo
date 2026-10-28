@@ -174,7 +174,9 @@
       "edit": "Editar",
       "board": "Tabuleiro",
       "activateShort": "Ativar",
-      "rules": "Regras"
+      "rules": "Regras",
+      "lateJoinOn": "Entrada tardia: ligada",
+      "lateJoinOff": "Entrada tardia: desligada"
     },
     "form": {
       "createTitle": "Criar evento",
@@ -203,7 +205,9 @@
       "activated": "Evento ativado.",
       "finished": "Evento finalizado.",
       "rulesSaved": "Regras salvas.",
-      "clarificationAdded": "Esclarecimento adicionado às regras."
+      "clarificationAdded": "Esclarecimento adicionado às regras.",
+      "lateJoinOn": "Entrada tardia ligada para {{name}}: jogadores podem pedir para entrar durante o evento.",
+      "lateJoinOff": "Entrada tardia desligada para {{name}}."
     },
     "confirm": {
       "activateTitle": "Ativar evento?",
@@ -311,7 +315,9 @@
       "captainNeedsTeam": "Coloque o jogador num time antes de torná-lo capitão.",
       "captainTaken": "Este time já tem um capitão.",
       "buyInAdmin": "Escolha um administrador atual.",
-      "changed": "Esta inscrição mudou nesse meio-tempo. Recarregue e tente de novo."
+      "changed": "Esta inscrição mudou nesse meio-tempo. Recarregue e tente de novo.",
+      "joinClosed": "Este evento não está aceitando novos jogadores.",
+      "teamLocked": "Jogadores que já têm time não podem ser movidos nem removidos durante o evento."
     },
     "roster": {
       "tabs": "Participantes e times",
@@ -358,7 +364,8 @@
       "mainAndAlts_other": "main + {{count}} alts",
       "experienceLine": "Σ EHB {{ehb}} · Σ KC de bosses {{kc}}",
       "wantsWith": "quer {{names}}",
-      "sorted": "Ordenado por EHB total ↓"
+      "sorted": "Ordenado por EHB total ↓",
+      "live": "Durante o evento: aprove, coloque em time e remova jogadores sem time; edite papéis e buy-ins. Quem já tem time fica travado."
     },
     "status": {
       "pending": "Pendente",
@@ -406,7 +413,8 @@
       "captainHint": "O capitão precisa estar aprovado e num time; cada time tem um capitão. Mudar o time dele remove a função."
     },
     "edit": "Editar",
-    "editTeam": "Editar {{name}}"
+    "editTeam": "Editar {{name}}",
+    "lateJoin": "Entrada tardia"
   },
   "language": {
     "label": "Idioma",
@@ -1253,7 +1261,8 @@
       "accountNotOnWom": "Esta conta não foi encontrada no Wise Old Man. Atualize em Meu perfil.",
       "teammateSelf": "Você não pode escolher a si mesmo.",
       "teammateUnknown": "Um dos companheiros não foi encontrado. Remova e escolha de novo."
-    }
+    },
+    "openLate": "entrada tardia aberta"
   },
   "draft": {
     "eyebrow": "Administração · {{event}} · Rascunho",

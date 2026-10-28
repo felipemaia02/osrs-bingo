@@ -8,6 +8,7 @@ import {
   activateEvent,
   addRulesAddendum,
   createEvent,
+  setLateJoin,
   fetchEvents,
   updateEvent,
 } from '../../src/features/events/api/eventsApi'
@@ -69,6 +70,26 @@ describe('Events feature', () => {
     })
 
     expect(await screen.findByText('Clarification added to the rules.')).toBeInTheDocument()
+  })
+
+  it('switches late join on for the active event (037)', async () => {
+    vi.mocked(fetchEvents).mockResolvedValue([ACTIVE_EVENT])
+    vi.mocked(setLateJoin).mockResolvedValue({ ...ACTIVE_EVENT, late_join: true })
+    const user = userEvent.setup()
+    renderApp(<AdminEventsPage />, '/admin/events')
+
+    const toggle = (
+      await screen.findAllByRole('button', { name: 'Late join: off · Thunder Summer' })
+    )[0]
+    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    await user.click(toggle)
+
+    await waitFor(() => expect(setLateJoin).toHaveBeenCalledOnce())
+    expect(vi.mocked(setLateJoin).mock.calls[0][0]).toEqual({
+      eventId: ACTIVE_EVENT.id,
+      enabled: true,
+    })
+    expect(await screen.findByText(/Late join is on for Thunder Summer/)).toBeInTheDocument()
   })
 
   it('creates an event using timezone-safe instants', async () => {

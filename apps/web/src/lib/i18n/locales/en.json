@@ -174,7 +174,9 @@
       "edit": "Edit",
       "board": "Board",
       "activateShort": "Activate",
-      "rules": "Rules"
+      "rules": "Rules",
+      "lateJoinOn": "Late join: on",
+      "lateJoinOff": "Late join: off"
     },
     "form": {
       "createTitle": "Create event",
@@ -203,7 +205,9 @@
       "activated": "Event activated.",
       "finished": "Event finished.",
       "rulesSaved": "Rules saved.",
-      "clarificationAdded": "Clarification added to the rules."
+      "clarificationAdded": "Clarification added to the rules.",
+      "lateJoinOn": "Late join is on for {{name}}: players can request to join during the event.",
+      "lateJoinOff": "Late join is off for {{name}}."
     },
     "confirm": {
       "activateTitle": "Activate event?",
@@ -311,7 +315,9 @@
       "captainNeedsTeam": "Assign a team before making this player captain.",
       "captainTaken": "This team already has a captain.",
       "buyInAdmin": "Choose a current administrator.",
-      "changed": "This registration changed meanwhile. Reload and try again."
+      "changed": "This registration changed meanwhile. Reload and try again.",
+      "joinClosed": "This event isn't taking new players.",
+      "teamLocked": "Players already on a team can't be moved or removed during the event."
     },
     "roster": {
       "tabs": "Participants and teams",
@@ -358,7 +364,8 @@
       "mainAndAlts_other": "main + {{count}} alts",
       "experienceLine": "EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
       "wantsWith": "wants {{names}}",
-      "sorted": "Sorted by EHB total ↓"
+      "sorted": "Sorted by EHB total ↓",
+      "live": "During the event: approve, place and remove players without a team; edit roles and buy-ins. Players on a team stay locked."
     },
     "status": {
       "pending": "Pending",
@@ -406,7 +413,8 @@
       "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role."
     },
     "edit": "Edit",
-    "editTeam": "Edit {{name}}"
+    "editTeam": "Edit {{name}}",
+    "lateJoin": "Late join"
   },
   "language": {
     "label": "Language",
@@ -1255,7 +1263,8 @@
       "accountNotOnWom": "This account isn't found on Wise Old Man. Update it in My profile.",
       "teammateSelf": "You can't pick yourself as a teammate.",
       "teammateUnknown": "One of the teammates wasn't found. Remove and pick them again."
-    }
+    },
+    "openLate": "late join open"
   },
   "draft": {
     "eyebrow": "Administration · {{event}} · Draft",

@@ -37,6 +37,7 @@ export function AdminEventsPage() {
         events={tabs.visible}
         onEdit={admin.openEdit}
         onRules={admin.openRules}
+        onLateJoin={(event) => void admin.toggleLateJoin(event)}
         onTransition={admin.openTransition}
       />
     ) : (
@@ -44,6 +45,7 @@ export function AdminEventsPage() {
         events={tabs.visible}
         onEdit={admin.openEdit}
         onRules={admin.openRules}
+        onLateJoin={(event) => void admin.toggleLateJoin(event)}
         onTransition={admin.openTransition}
       />
     )

@@ -1,3 +1,4 @@
+import { canJoin } from '../../events/rules'
 import type { ReactNode } from 'react'
 import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined'
 import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined'
@@ -41,7 +42,7 @@ export function EventRegistration({ event }: { event: BingoEvent }) {
       </Section>
     )
   if (!session.data)
-    return event.status === 'draft' ? (
+    return canJoin(event) ? (
       <Section>
         <Link
           to="/login"
@@ -85,7 +86,7 @@ export function EventRegistration({ event }: { event: BingoEvent }) {
       </Section>
     )
   }
-  if (event.status !== 'draft') return null
+  if (!canJoin(event)) return null
   return (
     <Section>
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">

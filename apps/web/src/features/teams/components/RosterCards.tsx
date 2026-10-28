@@ -3,7 +3,14 @@ import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import type { Player, RosterGroup, Team } from '../types'
 import { timezoneCity, useAccountsLine } from '../rosterFormat'
 import { useRequestedFormat } from '../hooks/useRequestedFormat'
-import { BuyInBadge, RoleBadge, RowActions, StatusBadge, type RowHandlers } from './RosterRowParts'
+import {
+  BuyInBadge,
+  LateJoinBadge,
+  RoleBadge,
+  RowActions,
+  StatusBadge,
+  type RowHandlers,
+} from './RosterRowParts'
 import { TeamEmblem } from './TeamEmblem'
 
 interface RosterCardsProps {
@@ -11,12 +18,22 @@ interface RosterCardsProps {
   group: RosterGroup
   teams: Team[]
   editable: boolean
+  /** Active event (feature 037). */
+  live?: boolean
   busy: boolean
   handlers: RowHandlers
 }
 
 /** Mobile registration cards (teams-a-mobile). No multi-select on mobile. */
-export function RosterCards({ players, group, teams, editable, busy, handlers }: RosterCardsProps) {
+export function RosterCards({
+  players,
+  group,
+  teams,
+  editable,
+  live = false,
+  busy,
+  handlers,
+}: RosterCardsProps) {
   const { t } = useTranslation()
   const requested = useRequestedFormat()
   const accountsLine = useAccountsLine()
@@ -32,7 +49,7 @@ export function RosterCards({ players, group, teams, editable, busy, handlers }:
           >
             <div className="flex items-start justify-between gap-2">
               <div>
-                <strong>{player.display_name}</strong>
+                <strong>{player.display_name}</strong> <LateJoinBadge player={player} />
                 <br />
                 <span className="text-xs text-rs-muted">
                   {accountsLine(player)}
@@ -73,7 +90,14 @@ export function RosterCards({ players, group, teams, editable, busy, handlers }:
               </span>
             )}
             {editable && (
-              <RowActions player={player} group={group} busy={busy} mobile handlers={handlers} />
+              <RowActions
+                player={player}
+                group={group}
+                busy={busy}
+                mobile
+                live={live}
+                handlers={handlers}
+              />
             )}
           </div>
         )

@@ -13,6 +13,7 @@ vi.mock('../src/features/events/api/eventsApi', () => ({
   updateEvent: vi.fn(),
   updateEventRules: vi.fn(),
   addRulesAddendum: vi.fn(),
+  setLateJoin: vi.fn(),
   activateEvent: vi.fn(),
   finishEvent: vi.fn(),
 }))

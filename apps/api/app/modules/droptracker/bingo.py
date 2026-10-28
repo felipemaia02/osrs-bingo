@@ -34,6 +34,8 @@ class Outcome:
     NO_CARD = "no_card"
     # Older runs (030) skipped drops sent manually; kept so their stored outcome still reads.
     MANUAL_DUPLICATE = "manual_duplicate"
+    # Received before the player was placed in their team (late join, feature 037).
+    BEFORE_TEAM = "before_team"
     # The same DropTracker drop was already a submission (unique drop ID).
     ALREADY_IMPORTED = "already_imported"
     OUTSIDE_WINDOW = "outside_window"
@@ -129,6 +131,9 @@ class DropTrackerBingo:
         player = players.get(normalize_rsn(drop["player_name"]))
         if player is None:
             return Outcome.NOT_IN_EVENT
+        joined = player.get("team_assigned_at")
+        if joined is not None and received < self._utc(joined):
+            return Outcome.BEFORE_TEAM
         matches = self._choose(cards.lookup(drop), drop)
         if not matches:
             return Outcome.NO_CARD

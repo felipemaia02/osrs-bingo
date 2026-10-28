@@ -1,3 +1,4 @@
+import { canJoin } from '../rules'
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -9,10 +10,10 @@ import { EventStatusBadge } from './EventStatusBadge'
 /** Where an event card leads: the board when active, joining when a draft is still open. */
 function useEventTarget(event: BingoEvent): { to: string; labelKey: string } | null {
   const session = useSession()
-  const draft = event.status === 'draft'
-  const registration = useOwnRegistration(event.id, draft ? session.data?.id : undefined)
+  const joinable = canJoin(event)
+  const registration = useOwnRegistration(event.id, joinable ? session.data?.id : undefined)
   if (event.status === 'active') return { to: '/', labelKey: 'events.openBoard' }
-  if (draft && !registration.isLoading && !registration.data)
+  if (joinable && !registration.isLoading && !registration.data)
     return { to: `/events/${event.id}/join`, labelKey: 'registration.join' }
   return null
 }

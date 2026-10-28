@@ -13,6 +13,7 @@ from app.modules.events.schemas import (
     EventRules,
     EventStatus,
     EventUpdate,
+    LateJoinUpdate,
     RulesAddendumCreate,
 )
 from app.modules.events.service import EventService
@@ -86,6 +87,17 @@ async def update_rules(
 ) -> EventResponse:
     log_event(logger, 20, "event_rules_update_requested", event_id=event_id)
     return await service.set_rules(event_id, payload)
+
+
+@router.patch("/{event_id}/late-join", response_model=EventResponse)
+async def set_late_join(
+    event_id: str,
+    payload: LateJoinUpdate,
+    admin: AdminDependency,
+    service: EventServiceDependency,
+) -> EventResponse:
+    """Let players join while the event is active (feature 037)."""
+    return await service.set_late_join(event_id, payload)
 
 
 @router.post("/{event_id}/rules/addenda", response_model=EventResponse)

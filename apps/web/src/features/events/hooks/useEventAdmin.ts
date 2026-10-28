@@ -40,6 +40,23 @@ export function useEventAdmin() {
     setRulesEvent(null)
   }
 
+  async function toggleLateJoin(event: BingoEvent) {
+    setFeedback(null)
+    try {
+      const updated = await mutations.setLateJoin.mutateAsync({
+        eventId: event.id,
+        enabled: !event.late_join,
+      })
+      setFeedback(
+        t(updated.late_join ? 'events.feedback.lateJoinOn' : 'events.feedback.lateJoinOff', {
+          name: event.name,
+        }),
+      )
+    } catch (error) {
+      setFeedback(t(eventErrorKey(error)))
+    }
+  }
+
   async function confirmTransition() {
     if (!transition) return
     setTransitionError(null)
@@ -76,6 +93,8 @@ export function useEventAdmin() {
     rulesEvent,
     savingRules: mutations.updateRules.isPending || mutations.addAddendum.isPending,
     addAddendum,
+    toggleLateJoin,
+    togglingLateJoin: mutations.setLateJoin.isPending,
     openRules: (event: BingoEvent) => {
       setFeedback(null)
       setRulesEvent(event)

@@ -11,6 +11,8 @@ export interface BingoEvent {
   rules_text?: string | null
   /** Dated clarifications added while the event is active (feature 036). */
   rules_addenda?: RulesAddendum[]
+  /** Players may request to join while the event is active (feature 037). */
+  late_join?: boolean
   /** Free text such as "5M gp" (feature 022); null when the event has no buy-in. */
   buy_in?: string | null
   created_at: string

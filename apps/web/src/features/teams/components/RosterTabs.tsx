@@ -63,6 +63,7 @@ export function RosterTabs({ tab, counts, eventStatus, onChange, mobile }: Roste
     )
   }
   const editable = eventStatus === 'draft'
+  const live = eventStatus === 'active'
   return (
     <div className="flex border-b border-rs-border px-2">
       <div role="tablist" aria-label={t('teams.roster.tabs')} className="flex">
@@ -110,7 +111,9 @@ export function RosterTabs({ tab, counts, eventStatus, onChange, mobile }: Roste
         )}
         {editable
           ? t('teams.roster.editable')
-          : t('teams.roster.readOnly', { status: t(`events.status.${eventStatus}`) })}
+          : live
+            ? t('teams.roster.live')
+            : t('teams.roster.readOnly', { status: t(`events.status.${eventStatus}`) })}
       </span>
     </div>
   )

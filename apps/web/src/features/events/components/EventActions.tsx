@@ -3,6 +3,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import PersonAddAlt1OutlinedIcon from '@mui/icons-material/PersonAddAlt1Outlined'
 import RuleOutlinedIcon from '@mui/icons-material/RuleOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -17,12 +18,21 @@ interface EventActionsProps {
   onEdit: (event: BingoEvent) => void
   onRules: (event: BingoEvent) => void
   onTransition: (event: BingoEvent, action: EventTransition) => void
+  /** Late join on/off (feature 037); omitted where the page doesn't offer it. */
+  onLateJoin?: (event: BingoEvent) => void
 }
 
 const ICON = { fontSize: 18 }
 
 /** Actions allowed by the event status (feature 002): drafts edit/board/activate, active finishes. */
-export function EventActions({ event, mobile, onEdit, onRules, onTransition }: EventActionsProps) {
+export function EventActions({
+  event,
+  mobile,
+  onEdit,
+  onRules,
+  onTransition,
+  onLateJoin,
+}: EventActionsProps) {
   const { t } = useTranslation()
   const size = mobile ? 'md' : 'sm'
   const grow = mobile ? 'flex-1' : ''
@@ -35,9 +45,24 @@ export function EventActions({ event, mobile, onEdit, onRules, onTransition }: E
         {t('events.readOnly')}
       </span>
     )
+  const lateJoin = onLateJoin && (
+    <Button
+      size={size}
+      className={grow}
+      aria-pressed={Boolean(event.late_join)}
+      aria-label={named(
+        event.late_join ? 'events.actions.lateJoinOn' : 'events.actions.lateJoinOff',
+      )}
+      onClick={() => onLateJoin(event)}
+    >
+      <PersonAddAlt1OutlinedIcon sx={ICON} aria-hidden="true" />
+      {t(event.late_join ? 'events.actions.lateJoinOn' : 'events.actions.lateJoinOff')}
+    </Button>
+  )
   if (event.status === 'active')
     return (
       <div className={`flex flex-wrap items-center gap-2 ${mobile ? '' : 'justify-end'}`}>
+        {lateJoin}
         <Button
           size={size}
           className={grow}
@@ -62,6 +87,7 @@ export function EventActions({ event, mobile, onEdit, onRules, onTransition }: E
   const linkSize = mobile ? 'min-h-11 px-3.5 text-sm' : 'min-h-[34px] px-2.5 text-[13px]'
   return (
     <div className={`flex flex-wrap items-center gap-2 ${mobile ? '' : 'justify-end'}`}>
+      {lateJoin}
       <Button
         size={size}
         className={grow}

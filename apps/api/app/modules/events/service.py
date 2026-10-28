@@ -13,6 +13,7 @@ from app.modules.events.schemas import (
     EventRules,
     EventStatus,
     EventUpdate,
+    LateJoinUpdate,
     RulesAddendum,
     RulesAddendumCreate,
 )
@@ -22,6 +23,7 @@ ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
 ADDENDUM_ACTIVE_ONLY = "Clarifications can only be added while the event is active"
+LATE_JOIN_CLOSED = "Late join can't change once the event is finished"
 LINE_BONUSES_REQUIRED_DETAIL = "Set the row and column bonuses on the board before activating"
 
 
@@ -85,6 +87,19 @@ class EventService:
         if updated is None:
             raise ConflictError(READ_ONLY_EVENT_DETAIL)
         log_event(self._logger, 20, "event_rules_updated", event_id=event_id)
+        return self._to_response(updated)
+
+    async def set_late_join(self, event_id: str, payload: LateJoinUpdate) -> EventResponse:
+        """Late join can be switched on or off before and during the event (feature 037)."""
+        event = await self._require_event(event_id)
+        if event["status"] == EventStatus.FINISHED:
+            raise ConflictError(LATE_JOIN_CLOSED)
+        updated = await self._repository.set_late_join(event_id, payload.enabled)
+        if updated is None:
+            raise ConflictError(LATE_JOIN_CLOSED)
+        log_event(
+            self._logger, 20, "event_late_join_set", event_id=event_id, enabled=payload.enabled
+        )
         return self._to_response(updated)
 
     async def add_rules_addendum(
@@ -164,6 +179,7 @@ class EventService:
             end_at=document["end_at"],
             status=document["status"],
             rules_text=document.get("rules_text"),
+            late_join=bool(document.get("late_join")),
             rules_addenda=[
                 RulesAddendum(text=item["text"], added_at=item["added_at"])
                 for item in document.get("rules_addenda") or []

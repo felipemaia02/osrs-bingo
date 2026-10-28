@@ -106,6 +106,7 @@ class PlayerRepository:
             "activity": registration.activity,
             "teammate_ids": [ObjectId(item) for item in registration.teammate_ids],
             "agreements_accepted_at": now,
+            "joined_late": registration.joined_late,
             "buy_in": {"status": BuyInStatus.PENDING, "admin_id": None, "updated_at": now},
             "created_at": now,
             "updated_at": now,
@@ -349,12 +350,17 @@ class PlayerRepository:
             {"status": RegistrationStatus.APPROVED},
         )
 
-    async def remove_selected(self, event_id: str, player_ids: builtin_list[str]) -> int:
+    async def remove_selected(
+        self, event_id: str, player_ids: builtin_list[str], only_without_team: bool = False
+    ) -> int:
         """Soft-removes listed pending/approved registrations, clearing their team."""
         return await self._update_selected(
             event_id,
             player_ids,
-            {"status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]}},
+            {
+                "status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]},
+                **({"team_id": None} if only_without_team else {}),
+            },
             {"status": RegistrationStatus.REMOVED, "team_id": None},
         )
 
@@ -391,7 +397,7 @@ class PlayerRepository:
         return {"pending": int(pending), "unassigned": int(unassigned), "assigned": int(assigned)}
 
     async def update(
-        self, event_id: str, player_id: str, payload: PlayerUpdate
+        self, event_id: str, player_id: str, payload: PlayerUpdate, only_without_team: bool = False
     ) -> PlayerDocument | None:
         event_object_id = self._object_id(event_id)
         player_object_id = self._object_id(player_id)
@@ -403,12 +409,15 @@ class PlayerRepository:
                 "_id": player_object_id,
                 "event_id": event_object_id,
                 "status": RegistrationStatus.APPROVED,
+                # During the event only players still without a team can be placed (037).
+                **({"team_id": None} if only_without_team else {}),
             },
             [
                 {
                     "$set": {
                         "role": _clear_captain(team_object_id),
                         "team_id": team_object_id,
+                        "team_assigned_at": datetime.now(UTC) if team_object_id else None,
                         "updated_at": datetime.now(UTC),
                     }
                 }
@@ -485,7 +494,9 @@ class PlayerRepository:
         )
         return int(result.modified_count)
 
-    async def remove(self, event_id: str, player_id: str) -> PlayerDocument | None:
+    async def remove(
+        self, event_id: str, player_id: str, only_without_team: bool = False
+    ) -> PlayerDocument | None:
         event_object_id, player_object_id = self._object_id(event_id), self._object_id(player_id)
         if event_object_id is None or player_object_id is None:
             return None
@@ -496,6 +507,7 @@ class PlayerRepository:
                     "_id": player_object_id,
                     "event_id": event_object_id,
                     "status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]},
+                    **({"team_id": None} if only_without_team else {}),
                 },
                 [
                     {

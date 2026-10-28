@@ -209,3 +209,18 @@ async def test_a_specific_version_ignores_other_items_with_the_same_name(deps) -
     assert counts == {Outcome.NO_CARD: 2, Outcome.CREATED: 1}
     [document] = inserted(deps)
     assert document["droptracker_drop_id"] == 3
+
+
+async def test_late_joiners_only_get_drops_from_after_they_joined_a_team(deps) -> None:  # type: ignore[no-untyped-def]
+    """037: drops received before the player was placed in a team don't count."""
+    late = {**PLAYER, "team_assigned_at": START + timedelta(days=1, hours=1)}
+    deps["players"].approved_with_team.return_value = [late]
+
+    counts = await run(
+        deps,
+        drop(1, "Hydra's claw"),  # START + 1 day: before joining the team
+        drop(2, "Hydra's claw", received_at=START + timedelta(days=2)),
+    )
+
+    assert counts == {Outcome.BEFORE_TEAM: 1, Outcome.CREATED: 1}
+    assert [doc["droptracker_drop_id"] for doc in inserted(deps)] == [2]

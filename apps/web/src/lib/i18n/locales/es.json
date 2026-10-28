@@ -174,7 +174,9 @@
       "edit": "Editar",
       "board": "Tablero",
       "activateShort": "Activar",
-      "rules": "Reglas"
+      "rules": "Reglas",
+      "lateJoinOn": "Entrada tardía: activada",
+      "lateJoinOff": "Entrada tardía: desactivada"
     },
     "form": {
       "createTitle": "Crear evento",
@@ -203,7 +205,9 @@
       "activated": "Evento activado.",
       "finished": "Evento finalizado.",
       "rulesSaved": "Reglas guardadas.",
-      "clarificationAdded": "Aclaración añadida a las reglas."
+      "clarificationAdded": "Aclaración añadida a las reglas.",
+      "lateJoinOn": "Entrada tardía activada para {{name}}: los jugadores pueden pedir unirse durante el evento.",
+      "lateJoinOff": "Entrada tardía desactivada para {{name}}."
     },
     "confirm": {
       "activateTitle": "¿Activar evento?",
@@ -311,7 +315,9 @@
       "captainNeedsTeam": "Asigna un equipo antes de hacerlo capitán.",
       "captainTaken": "Este equipo ya tiene capitán.",
       "buyInAdmin": "Elige un administrador actual.",
-      "changed": "Esta inscripción cambió mientras tanto. Recarga e inténtalo de nuevo."
+      "changed": "Esta inscripción cambió mientras tanto. Recarga e inténtalo de nuevo.",
+      "joinClosed": "Este evento no acepta nuevos jugadores.",
+      "teamLocked": "Los jugadores que ya tienen equipo no se pueden mover ni quitar durante el evento."
     },
     "roster": {
       "tabs": "Participantes y equipos",
@@ -358,7 +364,8 @@
       "mainAndAlts_other": "main + {{count}} alts",
       "experienceLine": "Σ EHB {{ehb}} · Σ KC de jefes {{kc}}",
       "wantsWith": "quiere {{names}}",
-      "sorted": "Ordenado por EHB total ↓"
+      "sorted": "Ordenado por EHB total ↓",
+      "live": "Durante el evento: aprueba, asigna y quita jugadores sin equipo; edita roles y buy-ins. Quien ya tiene equipo queda bloqueado."
     },
     "status": {
       "pending": "Pendiente",
@@ -406,7 +413,8 @@
       "captainHint": "El capitán debe estar aprobado y en un equipo; cada equipo tiene un capitán. Cambiar su equipo quita el rol."
     },
     "edit": "Editar",
-    "editTeam": "Editar {{name}}"
+    "editTeam": "Editar {{name}}",
+    "lateJoin": "Entrada tardía"
   },
   "language": {
     "label": "Idioma",
@@ -1253,7 +1261,8 @@
       "accountNotOnWom": "Esta cuenta no está en Wise Old Man. Actualízala en Mi perfil.",
       "teammateSelf": "No puedes elegirte a ti mismo.",
       "teammateUnknown": "No se encontró uno de los compañeros. Quítalo y elígelo de nuevo."
-    }
+    },
+    "openLate": "entrada tardía abierta"
   },
   "draft": {
     "eyebrow": "Administración · {{event}} · Borrador",

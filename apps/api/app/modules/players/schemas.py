@@ -97,6 +97,9 @@ class PlayerResponse(PlayerFields):
     account_id: str | None = None
     activity: Activity | None = None
     buy_in_status: BuyInStatus | None = None
+    # Feature 037: requested while the event was active; when the player got their team.
+    joined_late: bool = False
+    team_assigned_at: datetime | None = None
     status: RegistrationStatus
     event_id: str
     team_id: str | None

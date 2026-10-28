@@ -9,6 +9,7 @@ interface AdminEventListProps {
   onEdit: (event: BingoEvent) => void
   onRules: (event: BingoEvent) => void
   onTransition: (event: BingoEvent, action: EventTransition) => void
+  onLateJoin?: (event: BingoEvent) => void
 }
 
 const CELL = 'border-b border-rs-border/45 px-3 py-2.5 align-middle'
@@ -16,7 +17,13 @@ const HEAD =
   'whitespace-nowrap border-b border-rs-border bg-rs-inset px-3 py-2.5 text-left text-xs font-semibold text-rs-muted'
 
 /** Desktop table: event, status, schedule and per-status actions. */
-export function AdminEventTable({ events, onEdit, onRules, onTransition }: AdminEventListProps) {
+export function AdminEventTable({
+  events,
+  onEdit,
+  onRules,
+  onTransition,
+  onLateJoin,
+}: AdminEventListProps) {
   const { t } = useTranslation()
   return (
     <table className="w-full border-collapse">
@@ -52,6 +59,7 @@ export function AdminEventTable({ events, onEdit, onRules, onTransition }: Admin
                 onEdit={onEdit}
                 onRules={onRules}
                 onTransition={onTransition}
+                onLateJoin={onLateJoin}
               />
             </td>
           </tr>
@@ -62,7 +70,13 @@ export function AdminEventTable({ events, onEdit, onRules, onTransition }: Admin
 }
 
 /** Mobile cards with the same content and 44 px actions. */
-export function AdminEventCards({ events, onEdit, onRules, onTransition }: AdminEventListProps) {
+export function AdminEventCards({
+  events,
+  onEdit,
+  onRules,
+  onTransition,
+  onLateJoin,
+}: AdminEventListProps) {
   return (
     <ul className="m-0 flex list-none flex-col gap-3 p-0">
       {events.map((event) => (
@@ -84,6 +98,7 @@ export function AdminEventCards({ events, onEdit, onRules, onTransition }: Admin
             onEdit={onEdit}
             onRules={onRules}
             onTransition={onTransition}
+            onLateJoin={onLateJoin}
           />
         </li>
       ))}

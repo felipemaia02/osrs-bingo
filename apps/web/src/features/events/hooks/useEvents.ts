@@ -8,6 +8,7 @@ import {
   updateEvent,
   updateEventRules,
   addRulesAddendum,
+  setLateJoin,
 } from '../api/eventsApi'
 import type { EventPayload, EventStatus } from '../types'
 
@@ -37,6 +38,7 @@ export function useEventMutations() {
     }),
     updateRules: useMutation({ mutationFn: updateEventRules, onSuccess: refreshEvents }),
     addAddendum: useMutation({ mutationFn: addRulesAddendum, onSuccess: refreshEvents }),
+    setLateJoin: useMutation({ mutationFn: setLateJoin, onSuccess: refreshEvents }),
     activateEvent: useMutation({ mutationFn: activateEvent, onSuccess: refreshEvents }),
     finishEvent: useMutation({ mutationFn: finishEvent, onSuccess: refreshEvents }),
   }

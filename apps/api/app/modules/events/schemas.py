@@ -80,6 +80,14 @@ class EventRules(BaseModel):
         return text or None
 
 
+class LateJoinUpdate(BaseModel):
+    """Allow players to join while the event is active (feature 037)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool
+
+
 class RulesAddendumCreate(BaseModel):
     """A clarification added to the rules while the event is active (feature 036)."""
 
@@ -113,6 +121,7 @@ class EventResponse(BaseModel):
     status: EventStatus
     rules_text: str | None = None
     rules_addenda: list[RulesAddendum] = Field(default_factory=list)
+    late_join: bool = False
     buy_in: str | None = None
     created_at: datetime
     updated_at: datetime

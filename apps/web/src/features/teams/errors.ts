@@ -12,6 +12,8 @@ const ERROR_TRANSLATION: Record<string, string> = {
   'Player name already exists in this event': 'teams.errors.duplicatePlayer',
   'Team name already exists in this event': 'teams.errors.duplicateTeam',
   'Only draft events can be changed': 'teams.errors.readOnly',
+  "This event isn't taking new players": 'teams.errors.joinClosed',
+  "Players already on a team can't be moved or removed during the event": 'teams.errors.teamLocked',
   'Event not found': 'events.errors.notFound',
   'Player not found': 'teams.errors.playerNotFound',
   'Team not found': 'teams.errors.teamNotFound',

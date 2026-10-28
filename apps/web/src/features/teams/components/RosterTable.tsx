@@ -4,7 +4,13 @@ import type { Player, RosterGroup, Team } from '../types'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { timezoneCity, useAccountsLine } from '../rosterFormat'
 import { useRequestedFormat } from '../hooks/useRequestedFormat'
-import { BuyInBadge, RoleBadge, RowActions, type RowHandlers } from './RosterRowParts'
+import {
+  BuyInBadge,
+  LateJoinBadge,
+  RoleBadge,
+  RowActions,
+  type RowHandlers,
+} from './RosterRowParts'
 import { TeamEmblem } from './TeamEmblem'
 
 interface RosterTableProps {
@@ -12,6 +18,8 @@ interface RosterTableProps {
   group: RosterGroup
   teams: Team[]
   editable: boolean
+  /** Active event (feature 037). */
+  live?: boolean
   /** Events without a buy-in hide the Buy-in column. */
   showBuyIn: boolean
   busy: boolean
@@ -31,6 +39,7 @@ export function RosterTable({
   group,
   teams,
   editable,
+  live = false,
   showBuyIn,
   busy,
   selected,
@@ -96,7 +105,7 @@ export function RosterTable({
                 </td>
               )}
               <td className={CELL}>
-                <strong>{player.display_name}</strong>
+                <strong>{player.display_name}</strong> <LateJoinBadge player={player} />
                 <br />
                 <span className="text-xs text-rs-muted">{accountsLine(player)}</span>
               </td>
@@ -147,6 +156,7 @@ export function RosterTable({
                     group={group}
                     busy={busy}
                     mobile={false}
+                    live={live}
                     handlers={handlers}
                   />
                 </td>

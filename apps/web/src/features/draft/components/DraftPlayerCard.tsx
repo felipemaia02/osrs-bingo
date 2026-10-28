@@ -8,6 +8,7 @@ import { QuestsAndDiariesLine } from '../../profiles/components/QuestsAndDiaries
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { zoneLabel } from '../../profiles/timezones'
 import type { Skill } from '../../profiles/skills'
+import { LateJoinBadge } from '../../teams/components/RosterRowParts'
 import type { Player } from '../../teams/types'
 import { skillLevel } from '../filters'
 
@@ -69,7 +70,10 @@ export function DraftPlayerCard({
         >
           {player.display_name}
         </button>
-        <PlayerBadge player={player} />
+        <span className="flex flex-wrap justify-end gap-1">
+          <LateJoinBadge player={player} />
+          <PlayerBadge player={player} />
+        </span>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <Stat label={t('draft.ehb')} value={format.hours(player.ehb_total ?? null)} large={large} />

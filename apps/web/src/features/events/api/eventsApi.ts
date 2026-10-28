@@ -51,3 +51,14 @@ export async function addRulesAddendum({
 }): Promise<BingoEvent> {
   return (await apiClient.post<BingoEvent>(`/events/${eventId}/rules/addenda`, { text })).data
 }
+
+/** Lets players join while the event is active (feature 037). */
+export async function setLateJoin({
+  eventId,
+  enabled,
+}: {
+  eventId: string
+  enabled: boolean
+}): Promise<BingoEvent> {
+  return (await apiClient.patch<BingoEvent>(`/events/${eventId}/late-join`, { enabled })).data
+}
