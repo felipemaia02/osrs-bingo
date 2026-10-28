@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Any, cast
 
 from bson import ObjectId
@@ -29,31 +29,6 @@ class SubmissionRepository:
             return False
         return True
 
-    async def has_recent_manual_drop(
-        self,
-        event_id: ObjectId,
-        player_id: ObjectId,
-        position: int,
-        drop_key: str,
-        around: datetime,
-        window: timedelta,
-    ) -> bool:
-        """A manual, pending or accepted submission of this item on this card near `around`."""
-        found = await self._collection.find_one(
-            {
-                "event_id": event_id,
-                "player_id": player_id,
-                "position": position,
-                "drop_key": drop_key,
-                "kind": SubmissionKind.DROP,
-                "source": {"$ne": "droptracker"},
-                "status": {"$in": [SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED]},
-                "submitted_at": {"$gte": around - window, "$lte": around + window},
-            },
-            {"_id": 1},
-        )
-        return found is not None
-
     async def get(self, submission_id: str) -> SubmissionDocument | None:
         object_id = self._object_id(submission_id)
         if object_id is None:
@@ -77,13 +52,91 @@ class SubmissionRepository:
         kind: SubmissionKind | None,
         offset: int,
         limit: int,
+        newest_first: bool = False,
+        extra: dict[str, Any] | None = None,
     ) -> tuple[list[SubmissionDocument], int]:
-        query: dict[str, Any] = {"event_id": event_id, "status": status}
+        query: dict[str, Any] = {"event_id": event_id, "status": status, **(extra or {})}
         if kind is not None:
             query["kind"] = kind
         total = await self._collection.count_documents(query)
-        cursor = self._collection.find(query).sort("submitted_at", 1).skip(offset).limit(limit)
+        order = -1 if newest_first else 1
+        cursor = self._collection.find(query).sort("submitted_at", order).skip(offset).limit(limit)
         return cast(list[SubmissionDocument], await cursor.to_list(length=limit)), total
+
+    async def open_drops(
+        self,
+        event_id: ObjectId,
+        player_ids: set[ObjectId],
+        positions: set[int],
+        digests: set[str],
+    ) -> list[SubmissionDocument]:
+        """Pending/accepted drops of these players on these tiles, or with these screenshot
+        files: the candidates for possible duplicates (feature 035)."""
+        alternatives: list[dict[str, Any]] = []
+        if player_ids and positions:
+            alternatives.append(
+                {"player_id": {"$in": list(player_ids)}, "position": {"$in": list(positions)}}
+            )
+        if digests:
+            alternatives.append({"screenshot_sha256": {"$in": list(digests)}})
+        if not alternatives:
+            return []
+        cursor = self._collection.find(
+            {
+                "event_id": event_id,
+                "kind": SubmissionKind.DROP,
+                "status": {"$in": [SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED]},
+                "$or": alternatives,
+            }
+        )
+        return cast(list[SubmissionDocument], await cursor.to_list(length=None))
+
+    async def tile_drops(
+        self, event_id: ObjectId, team_id: ObjectId, position: int
+    ) -> list[SubmissionDocument]:
+        """A team's pending and accepted drops on one tile, newest first (feature 035)."""
+        cursor = self._collection.find(
+            {
+                "event_id": event_id,
+                "team_id": team_id,
+                "position": position,
+                "kind": SubmissionKind.DROP,
+                "status": {"$in": [SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED]},
+            }
+        ).sort("submitted_at", -1)
+        return cast(list[SubmissionDocument], await cursor.to_list(length=None))
+
+    async def revert(
+        self,
+        submission_id: ObjectId,
+        reviewer_id: str,
+        reviewer_name: str,
+        reason: str,
+        note: str | None,
+    ) -> SubmissionDocument | None:
+        """Turns an accepted submission into a rejected one, only if it's still accepted."""
+        now = datetime.now(UTC)
+        return cast(
+            SubmissionDocument | None,
+            await self._collection.find_one_and_update(
+                {"_id": submission_id, "status": SubmissionStatus.ACCEPTED},
+                {
+                    "$set": {
+                        "status": SubmissionStatus.REJECTED,
+                        "reviewed_at": now,
+                        "reviewed_by": reviewer_id,
+                        "reviewer_name": reviewer_name,
+                        "rejection_reason": reason,
+                        "rejection_note": note,
+                        "reverted_at": now,
+                        "reverted_by": reviewer_id,
+                    },
+                    # A reverted pre-verification frees the slot for a new one.
+                    "$unset": {"preverification_gate": ""},
+                },
+                return_document=ReturnDocument.AFTER,
+            ),
+        )
 
     async def pending_counts(self, event_id: ObjectId) -> dict[str, int]:
         pipeline: list[dict[str, Any]] = [

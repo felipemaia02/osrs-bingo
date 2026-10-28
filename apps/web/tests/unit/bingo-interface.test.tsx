@@ -263,6 +263,28 @@ describe('Board v2', () => {
       expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     })
 
+    it('tells players when a tile was fixed during the event (036)', async () => {
+      const board = makeBoard()
+      board.positions[0].updates = [
+        {
+          from_revision: 1,
+          to_revision: 2,
+          reason: 'Requirement was a typo',
+          updated_by_name: 'felps_',
+          updated_at: '2026-10-03T12:00:00Z',
+        },
+      ]
+      vi.mocked(fetchPublicBoard).mockResolvedValue(board)
+      const user = userEvent.setup()
+      await renderBoard()
+
+      await user.click(tileButton('Grotesque Guardians'))
+      const panel = screen.getByRole('complementary', { name: 'Tile detail' })
+      expect(within(panel).getByRole('note')).toHaveTextContent(
+        'Updated Oct 3, 2026: Requirement was a typo',
+      )
+    })
+
     it('shows the selected tile in the fixed panel and returns to the prompt on close', async () => {
       const user = userEvent.setup()
       await renderBoard()

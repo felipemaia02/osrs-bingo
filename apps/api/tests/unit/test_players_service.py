@@ -104,14 +104,12 @@ async def test_registration_starts_pending_without_team(
     teams.get.assert_not_awaited()
 
 
-@pytest.mark.parametrize("status", [EventStatus.ACTIVE, EventStatus.FINISHED])
-async def test_mutations_require_draft_event(
-    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock], status: EventStatus
+async def test_finished_events_refuse_every_registration_change(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
 ) -> None:
     service, players, _, events = repositories
-    events.get.return_value = {"status": status}
+    events.get.return_value = {"status": EventStatus.FINISHED}
     operations = [
-        service.create(EVENT_ID, join(), USER_ID),
         service.approve(EVENT_ID, PLAYER_ID),
         service.approve_all(EVENT_ID),
         service.update(EVENT_ID, PLAYER_ID, PlayerUpdate(team_id=TEAM_ID)),
@@ -120,11 +118,49 @@ async def test_mutations_require_draft_event(
     for operation in operations:
         with pytest.raises(ConflictError, match="Only draft"):
             await operation
+    with pytest.raises(ConflictError, match="isn't taking new players"):
+        await service.create(EVENT_ID, join(), USER_ID)
     players.create.assert_not_awaited()
-    players.approve.assert_not_awaited()
-    players.approve_all.assert_not_awaited()
     players.update.assert_not_awaited()
     players.remove.assert_not_awaited()
+
+
+async def test_joining_an_active_event_needs_late_join(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    """037: active events take new players only when late join is on; they're marked late."""
+    service, players, _, events = repositories
+    events.get.return_value = {"status": EventStatus.ACTIVE}
+    with pytest.raises(ConflictError, match="isn't taking new players"):
+        await service.create(EVENT_ID, join(), USER_ID)
+    players.create.assert_not_awaited()
+
+    events.get.return_value = {"status": EventStatus.ACTIVE, "late_join": True}
+    players.get_for_user.return_value = None
+    players.create.return_value = registration()
+    await service.create(EVENT_ID, join(), USER_ID)
+    assert players.create.await_args.args[1].joined_late is True
+
+
+async def test_during_the_event_only_players_without_a_team_change(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    """037: approve, place in a team or remove only players still without a team."""
+    service, players, teams, events = repositories
+    events.get.return_value = {"status": EventStatus.ACTIVE}
+    teams.get.return_value = {"_id": ObjectId(TEAM_ID)}
+    players.update.return_value = None
+    players.get.return_value = registration(RegistrationStatus.APPROVED)
+
+    with pytest.raises(ConflictError, match="can't be moved or removed"):
+        await service.update(EVENT_ID, PLAYER_ID, PlayerUpdate(team_id=TEAM_ID))
+    assert players.update.await_args.kwargs == {"only_without_team": True}
+    with pytest.raises(ConflictError, match="can't be moved or removed"):
+        await service.update(EVENT_ID, PLAYER_ID, PlayerUpdate(team_id=None))
+
+    players.remove_selected.return_value = 1
+    await service.remove_selected(EVENT_ID, [PLAYER_ID])
+    assert players.remove_selected.await_args.kwargs == {"only_without_team": True}
 
 
 async def test_registration_requires_existing_event(
@@ -228,7 +264,7 @@ async def test_selected_actions_report_changed_and_skipped(
     players.approve_selected.assert_awaited_once_with(EVENT_ID, ids)
 
 
-@pytest.mark.parametrize("status", [EventStatus.ACTIVE, EventStatus.FINISHED])
+@pytest.mark.parametrize("status", [EventStatus.FINISHED])
 async def test_selected_actions_require_draft_event(
     repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock], status: EventStatus
 ) -> None:
@@ -367,7 +403,7 @@ async def test_participation_requires_a_draft_event_and_a_consistent_buy_in(
     repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
 ) -> None:
     service, players = participants
-    repositories[3].get.return_value = {"status": EventStatus.ACTIVE}
+    repositories[3].get.return_value = {"status": EventStatus.FINISHED}
     with pytest.raises(ConflictError, match="Only draft"):
         await service.update_participation(EVENT_ID, PLAYER_ID, participation(None))
     players.set_participation.assert_not_awaited()
@@ -436,3 +472,28 @@ async def test_events_without_a_buy_in_hide_the_buy_in_status(
 
     events.get.return_value = {"status": EventStatus.DRAFT, "buy_in": "5M gp"}
     assert (await service.own_registration(EVENT_ID, USER_ID)).buy_in_status == "pending"  # type: ignore[union-attr]
+
+
+async def test_several_players_are_assigned_to_one_team(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    """038: changed players count; those already in the team aren't counted as skipped."""
+    service, players, teams, events = repositories
+    teams.get.return_value = {"_id": ObjectId(TEAM_ID)}
+    players.assign_selected.return_value = (2, 1)
+    ids = [str(ObjectId()) for _ in range(4)]
+
+    result = await service.assign_selected(EVENT_ID, ids, TEAM_ID)
+
+    assert (result.changed, result.skipped) == (2, 1)
+    players.assign_selected.assert_awaited_once_with(
+        EVENT_ID, ids, TEAM_ID, only_without_team=False
+    )
+
+    events.get.return_value = {"status": EventStatus.ACTIVE}
+    await service.assign_selected(EVENT_ID, ids, TEAM_ID)
+    assert players.assign_selected.await_args.kwargs == {"only_without_team": True}
+
+    teams.get.return_value = None
+    with pytest.raises(NotFoundError, match="Team"):
+        await service.assign_selected(EVENT_ID, ids, TEAM_ID)

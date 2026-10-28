@@ -53,7 +53,8 @@
       "excess": "El progreso por encima del requisito no da puntos extra.",
       "details": "Selecciona una casilla para ver los drops aceptados, valores de progreso y notas.",
       "lines": "Completar las {{size}} casillas de una fila da +{{row}} puntos; de una columna, +{{column}} puntos.",
-      "linesNotSet": "Los bonos de fila y columna aún no están definidos en este tablero."
+      "linesNotSet": "Los bonos de fila y columna aún no están definidos en este tablero.",
+      "updates": "Casillas cambiadas durante el evento"
     },
     "activeEvent": "Evento activo",
     "yourTeam": "Tu equipo",
@@ -93,7 +94,8 @@
       "imageSource": "Imagen: OSRS Wiki — {{name}}",
       "previous": "Casilla anterior",
       "next": "Siguiente casilla",
-      "closeTile": "Cerrar casilla"
+      "closeTile": "Cerrar casilla",
+      "updated": "Actualizada el {{date}}: {{reason}}"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} coinciden con la búsqueda",
@@ -172,7 +174,9 @@
       "edit": "Editar",
       "board": "Tablero",
       "activateShort": "Activar",
-      "rules": "Reglas"
+      "rules": "Reglas",
+      "lateJoinOn": "Entrada tardía: activada",
+      "lateJoinOff": "Entrada tardía: desactivada"
     },
     "form": {
       "createTitle": "Crear evento",
@@ -200,7 +204,10 @@
       "updated": "Evento actualizado.",
       "activated": "Evento activado.",
       "finished": "Evento finalizado.",
-      "rulesSaved": "Reglas guardadas."
+      "rulesSaved": "Reglas guardadas.",
+      "clarificationAdded": "Aclaración añadida a las reglas.",
+      "lateJoinOn": "Entrada tardía activada para {{name}}: los jugadores pueden pedir unirse durante el evento.",
+      "lateJoinOff": "Entrada tardía desactivada para {{name}}."
     },
     "confirm": {
       "activateTitle": "¿Activar evento?",
@@ -237,7 +244,14 @@
       "text": "Reglas del bingo",
       "placeholder": "Escribe cómo funciona este bingo: fechas, qué cuenta, capturas, reglas de equipos…",
       "hint": "Texto simple; se mantienen los saltos de línea. Los jugadores lo leen en la página de Eventos y en la ayuda del tablero.",
-      "section": "Reglas"
+      "section": "Reglas",
+      "clarifications": "Aclaraciones",
+      "clarificationOn": "Aclaración · {{date}}",
+      "none": "Este evento aún no tiene reglas escritas.",
+      "addClarification": "Añadir aclaración",
+      "clarificationPlaceholder": "p. ej. Las mascotas cuentan una vez por jugador.",
+      "clarificationHint": "Las reglas quedan congeladas mientras el evento está activo. Las aclaraciones se añaden debajo con la fecha de hoy y no se pueden editar.",
+      "addClarificationAction": "Añadir aclaración"
     },
     "openBoard": "Abrir tablero",
     "search": "Buscar eventos",
@@ -285,7 +299,9 @@
       "selectedRemoved_other": "{{count}} eliminados.",
       "skipped_one": "{{count}} omitido porque ya había cambiado.",
       "skipped_other": "{{count}} omitidos porque ya habían cambiado.",
-      "teamUpdated": "Equipo actualizado."
+      "teamUpdated": "Equipo actualizado.",
+      "selectedAssigned_one": "{{count}} asignado.",
+      "selectedAssigned_other": "{{count}} asignados."
     },
     "errors": {
       "duplicatePlayer": "Tú o este nombre de OSRS ya tenéis una inscripción en este evento.",
@@ -301,7 +317,9 @@
       "captainNeedsTeam": "Asigna un equipo antes de hacerlo capitán.",
       "captainTaken": "Este equipo ya tiene capitán.",
       "buyInAdmin": "Elige un administrador actual.",
-      "changed": "Esta inscripción cambió mientras tanto. Recarga e inténtalo de nuevo."
+      "changed": "Esta inscripción cambió mientras tanto. Recarga e inténtalo de nuevo.",
+      "joinClosed": "Este evento no acepta nuevos jugadores.",
+      "teamLocked": "Los jugadores que ya tienen equipo no se pueden mover ni quitar durante el evento."
     },
     "roster": {
       "tabs": "Participantes y equipos",
@@ -348,7 +366,9 @@
       "mainAndAlts_other": "main + {{count}} alts",
       "experienceLine": "Σ EHB {{ehb}} · Σ KC de jefes {{kc}}",
       "wantsWith": "quiere {{names}}",
-      "sorted": "Ordenado por EHB total ↓"
+      "sorted": "Ordenado por EHB total ↓",
+      "live": "Durante el evento: aprueba, asigna y quita jugadores sin equipo; edita roles y buy-ins. Quien ya tiene equipo queda bloqueado.",
+      "raidsKc": "Raids Σ"
     },
     "status": {
       "pending": "Pendiente",
@@ -364,7 +384,13 @@
       "select": "Seleccionar {{name}}",
       "removeTitle": "¿Eliminar inscripciones seleccionadas?",
       "removeConfirmation_one": "¿Eliminar {{count}} inscripción seleccionada? También se quitará su equipo. La solicitud se conserva y el jugador ve su estado como Eliminado.",
-      "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado."
+      "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado.",
+      "assign": "Asignar a un equipo…",
+      "assignTitle_one": "Asignar {{count}} jugador a un equipo",
+      "assignTitle_other": "Asignar {{count}} jugadores a un equipo",
+      "assignConfirm_one": "Asignar {{count}} jugador",
+      "assignConfirm_other": "Asignar {{count}} jugadores",
+      "captainsLoseRole": "{{names}} dejará(n) de ser capitán (cambia(n) de equipo)."
     },
     "balance": {
       "title": "Equilibrio de equipos",
@@ -376,7 +402,8 @@
       "noCaptain": "Sin capitán",
       "versus": "{{value}} vs media",
       "short_one": "falta {{count}} jugador",
-      "short_other": "faltan {{count}} jugadores"
+      "short_other": "faltan {{count}} jugadores",
+      "raidsKc": "Raids KC"
     },
     "roles": {
       "none": "Ninguno",
@@ -396,7 +423,8 @@
       "captainHint": "El capitán debe estar aprobado y en un equipo; cada equipo tiene un capitán. Cambiar su equipo quita el rol."
     },
     "edit": "Editar",
-    "editTeam": "Editar {{name}}"
+    "editTeam": "Editar {{name}}",
+    "lateJoin": "Entrada tardía"
   },
   "language": {
     "label": "Idioma",
@@ -555,21 +583,25 @@
       "requiresPreverification": "Requiere preverificación",
       "requiresPreverificationHint": "Los jugadores envían una captura inicial de esta carta antes de que se acepten sus drops. Describe abajo qué debe mostrar.",
       "preverificationNote": "Instrucciones de la preverificación",
-      "preverificationNotePlaceholder": "p. ej. Haz una captura de tu KC de Theatre of Blood antes de tu primera raid del evento."
+      "preverificationNotePlaceholder": "p. ej. Haz una captura de tu KC de Theatre of Blood antes de tu primera raid del evento.",
+      "categories": "Categorías"
     },
     "feedback": {
       "created": "Tarjeta creada.",
       "revised": "Nueva revisión publicada.",
       "imported": "Catálogo listo: {{imported}} importadas y {{existing}} ya existentes.",
       "retired": "{{name}} retirada.",
-      "linked": "{{drops}} drops vinculados en {{cards}} cartas. {{unlinked}} drops no se encontraron en la OSRS Wiki y siguen como Solo manual."
+      "linked": "{{drops}} drops vinculados en {{cards}} cartas. {{unlinked}} drops no se encontraron en la OSRS Wiki y siguen como Solo manual.",
+      "categorized_one": "{{count}} carta del workbook recibió sus categorías.",
+      "categorized_other": "{{count}} cartas del workbook recibieron sus categorías."
     },
     "errors": {
       "wiki": "No se pudo resolver la imagen de Wiki. Revisa el artículo o conserva la alternativa.",
       "drops": "Da a cada drop un nombre y un progreso mayor que 0, sin repetir nombres.",
       "changed": "Esta tarjeta cambió durante la edición. Recarga e inténtalo de nuevo.",
       "slug": "Esta clave permanente ya está en uso.",
-      "importConflict": "La importación encontró claves en conflicto: {{slugs}}."
+      "importConflict": "La importación encontró claves en conflicto: {{slugs}}.",
+      "artwork": "No se pudo subir el arte. Usa una imagen PNG, JPEG o WebP de hasta 5 MB."
     },
     "importDescription": "Importa las cartas de la hoja aprobada al catálogo reutilizable. Se conservan las cartas existentes que coincidan.",
     "rules": {
@@ -599,7 +631,10 @@
       "active": "Activas ({{count}})",
       "retired": "Retiradas ({{count}})",
       "all": "Todas ({{count}})",
-      "allDifficulties": "Todas"
+      "allDifficulties": "Todas",
+      "category": "Categoría",
+      "allCategories": "Todas las categorías",
+      "noCategory": "Sin categoría"
     },
     "table": {
       "card": "Carta",
@@ -658,7 +693,29 @@
     },
     "unlinked_one": "{{count}} drop no automático",
     "unlinked_other": "{{count}} drops no automáticos",
-    "linkItems": "Vincular drops a ítems de OSRS"
+    "linkItems": "Vincular drops a ítems de OSRS",
+    "category": {
+      "solo_bosses": "Jefes en solitario",
+      "slayer_bosses": "Jefes de Slayer",
+      "wilderness_bosses": "Jefes del Wilderness",
+      "raids": "Raids",
+      "skilling_bosses": "Jefes de skilling",
+      "skilling": "Skilling",
+      "minigames": "Minijuegos",
+      "other": "Otros"
+    },
+    "artwork": {
+      "title": "Arte del clan (opcional)",
+      "file": "Imagen del arte",
+      "upload": "Subir arte",
+      "replace": "Cambiar arte",
+      "remove": "Quitar arte",
+      "artist": "Artista",
+      "artistPlaceholder": "p. ej. Rune Rita",
+      "hint": "PNG, JPEG o WebP, hasta 5 MB. Se muestra en lugar de la imagen de la OSRS Wiki. Sube solo arte del clan o que puedan usar.",
+      "inUse": "Arte del clan",
+      "credit": "Arte de {{artist}}"
+    }
   },
   "boards": {
     "title": "Armar tablero",
@@ -758,6 +815,24 @@
       "shrinkConfirm": "Quitar cartas",
       "shrinkConfirmation_one": "{{count}} carta saldrá de la fila de bonus: {{names}}. Nada se guarda hasta que guardes el tablero.",
       "shrinkConfirmation_other": "{{count}} cartas saldrán de la fila de bonus: {{names}}. Nada se guarda hasta que guardes el tablero."
+    },
+    "live": {
+      "title": "Correcciones de cartas durante el evento",
+      "hint": "Corrige la carta en el catálogo primero (Editar → nueva revisión) y luego actualiza su casilla aquí. Las puntuaciones se recalculan y los jugadores ven el motivo.",
+      "none": "Ninguna casilla tiene una revisión más nueva de su carta.",
+      "revisions": "rev. {{from}} → {{to}}",
+      "review": "Revisar actualización",
+      "history_one": "{{count}} cambio hecho",
+      "history_other": "{{count}} cambios hechos",
+      "modalTitle": "Actualizar {{name}} en el tablero en vivo",
+      "onBoard": "En el tablero (rev. {{revision}})",
+      "newRevision": "Nueva (rev. {{revision}})",
+      "changed": "cambiado",
+      "effect": "Los drops aceptados usarán los nuevos pesos; los que ya no estén en la carta dejan de contar y los pendientes solo se pueden rechazar.",
+      "reason": "Motivo que verán los jugadores",
+      "reasonPlaceholder": "p. ej. El requisito era un error: 6, no 8.",
+      "confirm": "Actualizar casilla",
+      "done": "{{name}} actualizada en el tablero en vivo."
     }
   },
   "brand": {
@@ -821,7 +896,8 @@
       "unreadable_screenshot": "captura ilegible",
       "item_mismatch": "el objeto no coincide con la captura",
       "outside_event_period": "fuera del período del evento",
-      "other": "otro"
+      "other": "otro",
+      "duplicate": "duplicado (ya enviado)"
     },
     "viewScreenshot": "Ver captura",
     "openScreenshot": "Abrir la captura",
@@ -872,12 +948,15 @@
       "imageSize": "La captura debe pesar 5 MB o menos.",
       "storage": "No se pudo guardar la captura ahora. Inténtalo de nuevo en un momento.",
       "cardRequired": "Elige una carta.",
-      "screenshotRequired": "Adjunta una captura."
+      "screenshotRequired": "Adjunta una captura.",
+      "notAccepted": "Solo los envíos aceptados se pueden revertir.",
+      "revertClosed": "Los envíos aceptados solo se pueden revertir mientras el evento está activo."
     },
     "source": {
       "droptracker": "DropTracker"
     },
-    "noDropTrackerImage": "Sin captura de DropTracker"
+    "noDropTrackerImage": "Sin captura de DropTracker",
+    "reverted": "Revertido por un admin después de ser aceptado."
   },
   "review": {
     "title": "Revisión de drops",
@@ -910,7 +989,8 @@
     "skip": "Omitir",
     "feedback": {
       "accepted": "Envío aceptado.",
-      "rejected": "Envío rechazado. El jugador ve el motivo."
+      "rejected": "Envío rechazado. El jugador ve el motivo.",
+      "reverted": "Envío revertido. El jugador ve el motivo."
     },
     "event": "Evento",
     "shortcuts": "J / K navegar · A aceptar · R motivo",
@@ -925,7 +1005,31 @@
     "empty": "Nada que revisar. 🎉",
     "backToQueue": "Volver a la cola",
     "instructions": "Instrucciones",
-    "ownTeam": "Juegas en este equipo — otro admin revisa este envío."
+    "ownTeam": "Juegas en este equipo — otro admin revisa este envío.",
+    "history": {
+      "title": "Ya en esta casilla para {{team}}",
+      "progress": "Progreso {{progress}} / {{requirement}}",
+      "complete": "Completa",
+      "empty": "Nada más enviado para esta casilla todavía."
+    },
+    "duplicate": {
+      "badge": "Posible duplicado",
+      "hint": "Mismo jugador, ítem y casilla enviados con menos de una hora de diferencia, o exactamente la misma captura. Revisa el historial de la casilla abajo."
+    },
+    "revert": {
+      "hint": "Aceptado por {{name}}. Revertir lo deja como rechazado, quita su progreso y muestra el motivo al jugador.",
+      "reasonLabel": "Motivo para revertir",
+      "action": "Revertir"
+    },
+    "statusFilter": "Estado del envío",
+    "statuses": {
+      "pending": "Pendientes",
+      "accepted": "Aceptados"
+    },
+    "search": "Buscar jugador o ítem",
+    "latestFirst": "Más recientes primero",
+    "emptyAccepted": "Ningún envío aceptado coincide.",
+    "dropRemoved": "Este ítem ya no está en esta carta (corregida durante el evento). Solo se puede rechazar."
   },
   "score": {
     "tileComplete": "Completa +{{points}}",
@@ -1033,7 +1137,8 @@
       "bossKc": "Total de KC de jefes",
       "ehb": "Total de EHB",
       "counted": "{{counted}} de {{total}} cuentas contadas",
-      "notFound": "{{names}} no encontrada(s)"
+      "notFound": "{{names}} no encontrada(s)",
+      "raidsKc": "Total de Raids KC"
     },
     "preferences": {
       "title": "Preferencias del clan",
@@ -1096,6 +1201,26 @@
       "unavailable": "WikiSync no está disponible ahora. Prueba \"Actualizar desde WOM\" más tarde.",
       "noDataShort": "Sin datos de quests/diarios (WikiSync)",
       "source": "Del plugin WikiSync (OSRS Wiki), según el último inicio de sesión con él."
+    },
+    "timezone": {
+      "detected": "Detectado: {{zone}}",
+      "useDetected": "Usar el detectado",
+      "search": "Buscar ciudad, país o desfase UTC (p. ej. -3)",
+      "results": "Zonas horarias",
+      "common": "Zonas más comunes",
+      "all": "Todas las zonas",
+      "showAll": "Ver todas las zonas",
+      "none": "No se encontró ninguna zona. Prueba una ciudad, un país o un desfase como +1.",
+      "hint": "Solo se usa para mostrar dónde están los jugadores cuando los admins equilibran los equipos."
+    },
+    "bosses": {
+      "title": "Jefes",
+      "counted": "Boss KC (que cuenta)",
+      "raids": "Raids KC",
+      "top": "Jefes con más KC"
+    },
+    "skills": {
+      "all": "Todas las habilidades ({{count}})"
     }
   },
   "join": {
@@ -1196,7 +1321,8 @@
       "accountNotOnWom": "Esta cuenta no está en Wise Old Man. Actualízala en Mi perfil.",
       "teammateSelf": "No puedes elegirte a ti mismo.",
       "teammateUnknown": "No se encontró uno de los compañeros. Quítalo y elígelo de nuevo."
-    }
+    },
+    "openLate": "entrada tardía abierta"
   },
   "draft": {
     "eyebrow": "Administración · {{event}} · Borrador",
@@ -1253,7 +1379,8 @@
     "countSkill_other": "{{count}} jugadores disponibles · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} jugador aún no tiene datos de habilidades — debe pulsar “Actualizar desde WOM” en Mi perfil.",
     "noSkillData_other": "{{count}} jugadores aún no tienen datos de habilidades — deben pulsar “Actualizar desde WOM” en Mi perfil.",
-    "skillLevel": "{{skill}} {{level}}"
+    "skillLevel": "{{skill}} {{level}}",
+    "raidsKc": "Raids Σ"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1325,5 +1452,25 @@
     "strength": "Fuerza",
     "thieving": "Robo",
     "woodcutting": "Tala"
+  },
+  "balance": {
+    "raid": "Raid",
+    "notCounted": "No cuenta",
+    "breakdown": {
+      "open": "KC por jefe",
+      "for": "KC por jefe de {{name}}",
+      "title": "Boss KC · {{name}}",
+      "hint": "Kill count por jefe en Wise Old Man. Las raids cuentan como Raids KC; los jefes tachados no entran en los totales.",
+      "notLoaded": "Aún no cargado: \"Actualizar desde WOM\" en el perfil carga el KC por jefe.",
+      "none": "Ningún jefe derrotado en Wise Old Man."
+    },
+    "settings": {
+      "open": "Ajustes de boss KC",
+      "title": "Ajustes de boss KC",
+      "hint": "Los jefes marcados no cuentan en los totales de boss KC (balance de equipos, inscripciones, draft, perfiles). Las raids siempre se muestran aparte como Raids KC.",
+      "search": "Buscar jefe",
+      "save": "Guardar ajustes",
+      "saved": "Ajustes de boss KC guardados; totales actualizados."
+    }
   }
 }

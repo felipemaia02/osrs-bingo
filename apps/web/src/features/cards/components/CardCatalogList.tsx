@@ -1,3 +1,4 @@
+import { cardImageUrl } from '../artwork'
 import { useState } from 'react'
 import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
@@ -33,6 +34,11 @@ function RetiredBadge({ card }: { card: CardSummary }) {
       {card.status === 'retired' && (
         <Badge tone="danger-outline">{t('cards.status.retired')}</Badge>
       )}
+      {card.revision.categories?.map((category) => (
+        <Badge key={category} tone="neutral">
+          {t(`cards.category.${category}`)}
+        </Badge>
+      ))}
       {unlinkedDrops(card) > 0 && card.status !== 'retired' && (
         <Badge tone="gold">⚠ {t('cards.unlinked', { count: unlinkedDrops(card) })}</Badge>
       )}
@@ -84,11 +90,11 @@ export function CardCatalogTable({
                 <span className="flex items-center gap-3">
                   <CardImage
                     name={card.revision.name}
-                    imageUrl={card.revision.wiki_image?.image_url}
+                    imageUrl={cardImageUrl(card.revision)}
                     className="h-10 w-12 shrink-0"
                   />
                   <span className="flex min-w-0 flex-col">
-                    <span className="flex items-center gap-2 font-semibold">
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold">
                       {card.revision.name} <RetiredBadge card={card} />
                     </span>
                     <span className="text-xs text-rs-muted">
@@ -138,7 +144,7 @@ export function CardCatalogCards({ cards, onEdit, onRetire }: CardListProps) {
             <div className="flex items-center gap-3">
               <CardImage
                 name={card.revision.name}
-                imageUrl={card.revision.wiki_image?.image_url}
+                imageUrl={cardImageUrl(card.revision)}
                 className="h-12 w-[52px] shrink-0"
               />
               <div className="flex min-w-0 flex-1 flex-col gap-1">

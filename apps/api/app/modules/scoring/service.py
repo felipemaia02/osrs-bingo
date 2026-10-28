@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from decimal import Decimal
+from typing import Any
 
 from bson import ObjectId
 
@@ -84,6 +86,17 @@ class ScoringService:
             raise AppException(403, NOT_ON_A_TEAM)
         score = score_team(str(team_id), inputs.tiles, inputs.size, inputs.drops, inputs.bonuses)
         return self._team_response(inputs, team, score)
+
+    async def tile_progress(
+        self, event_id: str, team_id: str, position: int
+    ) -> tuple[float, float, bool] | None:
+        """A team's progress, requirement and completion on one tile (review context, 035)."""
+        inputs = await self._inputs(event_id)
+        score = score_team(team_id, inputs.tiles, inputs.size, inputs.drops, inputs.bonuses)
+        result = score.tiles.get(position)
+        if result is None:
+            return None
+        return float(result.progress), float(result.tile.requirement), result.complete
 
     async def ranking(self, event_id: str) -> RankingResponse:
         inputs = await self._inputs(event_id)
@@ -177,6 +190,9 @@ class ScoringService:
             )
             for item in positions
         ]
+        # A square fixed during the event (036) scores every accepted drop with its card's
+        # current weight; drops no longer on the card stop counting.
+        weights = current_weights(positions)
         drops = [
             AcceptedDrop(
                 team_id=str(document["team_id"]),
@@ -184,10 +200,11 @@ class ScoringService:
                 position=document["position"],
                 drop_key=document["drop_key"] or "",
                 drop_name=document["drop_name"] or "",
-                weight=decimal(document["progress_weight"] or 0),
+                weight=weights[(document["position"], document["drop_key"] or "")],
                 quantity=document["quantity"],
             )
             for document in await self._submissions.accepted_drops(event["_id"])
+            if (document["position"], document["drop_key"] or "") in weights
         ]
         return ScoringInputs(
             event=event,
@@ -246,3 +263,12 @@ class ScoringService:
             ],
             calculated_at=datetime.now(UTC),
         )
+
+
+def current_weights(positions: list[dict[str, Any]]) -> dict[tuple[int, str], Decimal]:
+    """(position, drop key) -> progress weight of the card now on that square."""
+    return {
+        (item["position"], drop["key"]): decimal(drop["progress_weight"])
+        for item in positions
+        for drop in item["card"].get("drops", [])
+    }

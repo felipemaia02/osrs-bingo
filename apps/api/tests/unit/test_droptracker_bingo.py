@@ -82,7 +82,6 @@ def deps() -> dict[str, AsyncMock]:
     events.list.return_value = [EVENT]
     boards.get_by_event.return_value = BOARD
     players.approved_with_team.return_value = [PLAYER]
-    submissions.has_recent_manual_drop.return_value = False
     submissions.insert.return_value = True
     return {
         "drops": drops,
@@ -145,13 +144,18 @@ async def test_the_card_named_like_the_npc_wins_otherwise_every_card_is_queued(d
     assert "Also matches: Wilderness Trio" in documents[0]["note"]
 
 
-async def test_a_recent_manual_submission_blocks_the_automatic_one(deps) -> None:  # type: ignore[no-untyped-def]
-    deps["submissions"].has_recent_manual_drop.return_value = True
+async def test_manual_submissions_never_cancel_automatic_drops(deps) -> None:  # type: ignore[no-untyped-def]
+    """035: every automatic drop reaches review; likely duplicates are flagged there."""
+    counts = await run(deps, drop(1, "Hydra's claw"), drop(2, "Hydra's claw"))
 
-    assert await run(deps, drop(1, "Hydra's claw")) == {Outcome.MANUAL_DUPLICATE: 1}
-    deps["submissions"].insert.assert_not_awaited()
-    window = deps["submissions"].has_recent_manual_drop.await_args.args[5]
-    assert window == timedelta(hours=24)
+    assert counts == {Outcome.CREATED: 2}
+    assert len(inserted(deps)) == 2
+
+
+async def test_a_drop_already_imported_is_reported_as_such(deps) -> None:  # type: ignore[no-untyped-def]
+    deps["submissions"].insert.return_value = False
+
+    assert await run(deps, drop(1, "Hydra's claw")) == {Outcome.ALREADY_IMPORTED: 1}
 
 
 async def test_nothing_happens_without_an_active_event_or_published_board(deps) -> None:  # type: ignore[no-untyped-def]
@@ -205,3 +209,18 @@ async def test_a_specific_version_ignores_other_items_with_the_same_name(deps) -
     assert counts == {Outcome.NO_CARD: 2, Outcome.CREATED: 1}
     [document] = inserted(deps)
     assert document["droptracker_drop_id"] == 3
+
+
+async def test_late_joiners_only_get_drops_from_after_they_joined_a_team(deps) -> None:  # type: ignore[no-untyped-def]
+    """037: drops received before the player was placed in a team don't count."""
+    late = {**PLAYER, "team_assigned_at": START + timedelta(days=1, hours=1)}
+    deps["players"].approved_with_team.return_value = [late]
+
+    counts = await run(
+        deps,
+        drop(1, "Hydra's claw"),  # START + 1 day: before joining the team
+        drop(2, "Hydra's claw", received_at=START + timedelta(days=2)),
+    )
+
+    assert counts == {Outcome.BEFORE_TEAM: 1, Outcome.CREATED: 1}
+    assert [doc["droptracker_drop_id"] for doc in inserted(deps)] == [2]

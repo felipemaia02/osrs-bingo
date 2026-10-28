@@ -53,7 +53,8 @@
       "excess": "Progress beyond the requirement does not award extra tile points.",
       "details": "Select a tile to see its accepted drops, progress values and notes.",
       "lines": "Completing all {{size}} tiles of a row gives +{{row}} points; of a column, +{{column}} points.",
-      "linesNotSet": "Row and column bonuses aren't set for this board yet."
+      "linesNotSet": "Row and column bonuses aren't set for this board yet.",
+      "updates": "Tiles changed during the event"
     },
     "activeEvent": "Active event",
     "yourTeam": "Your team",
@@ -93,7 +94,8 @@
       "imageSource": "Image: OSRS Wiki — {{name}}",
       "previous": "Previous tile",
       "next": "Next tile",
-      "closeTile": "Close tile"
+      "closeTile": "Close tile",
+      "updated": "Updated {{date}}: {{reason}}"
     },
     "rowSummary": {
       "some": "{{count}} of {{total}} match the search",
@@ -172,7 +174,9 @@
       "edit": "Edit",
       "board": "Board",
       "activateShort": "Activate",
-      "rules": "Rules"
+      "rules": "Rules",
+      "lateJoinOn": "Late join: on",
+      "lateJoinOff": "Late join: off"
     },
     "form": {
       "createTitle": "Create event",
@@ -200,7 +204,10 @@
       "updated": "Event updated.",
       "activated": "Event activated.",
       "finished": "Event finished.",
-      "rulesSaved": "Rules saved."
+      "rulesSaved": "Rules saved.",
+      "clarificationAdded": "Clarification added to the rules.",
+      "lateJoinOn": "Late join is on for {{name}}: players can request to join during the event.",
+      "lateJoinOff": "Late join is off for {{name}}."
     },
     "confirm": {
       "activateTitle": "Activate event?",
@@ -237,7 +244,14 @@
       "text": "Rules of the bingo",
       "placeholder": "Write how this bingo works: dates, what counts, screenshots, team rules…",
       "hint": "Plain text; line breaks are kept. Players read it on the Events page and in the board's help.",
-      "section": "Rules"
+      "section": "Rules",
+      "clarifications": "Clarifications",
+      "clarificationOn": "Clarification · {{date}}",
+      "none": "This event has no written rules yet.",
+      "addClarification": "Add a clarification",
+      "clarificationPlaceholder": "e.g. Pets count once per player.",
+      "clarificationHint": "Rules are frozen while the event is active. Clarifications are added below them with today's date and can't be edited.",
+      "addClarificationAction": "Add clarification"
     },
     "openBoard": "Open board",
     "search": "Search events",
@@ -285,7 +299,9 @@
       "selectedRemoved_other": "{{count}} removed.",
       "skipped_one": "{{count}} skipped because it had already changed.",
       "skipped_other": "{{count}} skipped because they had already changed.",
-      "teamUpdated": "Team updated."
+      "teamUpdated": "Team updated.",
+      "selectedAssigned_one": "{{count}} assigned.",
+      "selectedAssigned_other": "{{count}} assigned."
     },
     "errors": {
       "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
@@ -301,7 +317,9 @@
       "captainNeedsTeam": "Assign a team before making this player captain.",
       "captainTaken": "This team already has a captain.",
       "buyInAdmin": "Choose a current administrator.",
-      "changed": "This registration changed meanwhile. Reload and try again."
+      "changed": "This registration changed meanwhile. Reload and try again.",
+      "joinClosed": "This event isn't taking new players.",
+      "teamLocked": "Players already on a team can't be moved or removed during the event."
     },
     "roster": {
       "tabs": "Participants and teams",
@@ -348,7 +366,9 @@
       "mainAndAlts_other": "main + {{count}} alts",
       "experienceLine": "EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
       "wantsWith": "wants {{names}}",
-      "sorted": "Sorted by EHB total ↓"
+      "sorted": "Sorted by EHB total ↓",
+      "live": "During the event: approve, place and remove players without a team; edit roles and buy-ins. Players on a team stay locked.",
+      "raidsKc": "Raids Σ"
     },
     "status": {
       "pending": "Pending",
@@ -364,7 +384,13 @@
       "select": "Select {{name}}",
       "removeTitle": "Remove selected registrations?",
       "removeConfirmation_one": "Remove {{count}} selected registration? Its team assignment will also be cleared. The request is kept and the player sees their status as Removed.",
-      "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed."
+      "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed.",
+      "assign": "Assign to team…",
+      "assignTitle_one": "Assign {{count}} player to a team",
+      "assignTitle_other": "Assign {{count}} players to a team",
+      "assignConfirm_one": "Assign {{count}} player",
+      "assignConfirm_other": "Assign {{count}} players",
+      "captainsLoseRole": "{{names}} will stop being captain (they move to another team)."
     },
     "balance": {
       "title": "Team balance",
@@ -376,7 +402,8 @@
       "noCaptain": "No captain",
       "versus": "{{value}} vs average",
       "short_one": "{{count}} player short",
-      "short_other": "{{count}} players short"
+      "short_other": "{{count}} players short",
+      "raidsKc": "Raids KC"
     },
     "roles": {
       "none": "None",
@@ -396,7 +423,8 @@
       "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role."
     },
     "edit": "Edit",
-    "editTeam": "Edit {{name}}"
+    "editTeam": "Edit {{name}}",
+    "lateJoin": "Late join"
   },
   "language": {
     "label": "Language",
@@ -555,21 +583,25 @@
       "requiresPreverification": "Requires pre-verification",
       "requiresPreverificationHint": "Players send a starting screenshot for this card before their drops can be accepted. Describe below what it must show.",
       "preverificationNote": "Pre-verification instructions",
-      "preverificationNotePlaceholder": "e.g. Screenshot your Theatre of Blood KC before your first raid of the event."
+      "preverificationNotePlaceholder": "e.g. Screenshot your Theatre of Blood KC before your first raid of the event.",
+      "categories": "Categories"
     },
     "feedback": {
       "created": "Card created.",
       "revised": "New card revision published.",
       "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present.",
       "retired": "{{name}} retired.",
-      "linked": "Linked {{drops}} drops on {{cards}} cards. {{unlinked}} drops weren't found on the OSRS Wiki and stay Manual only."
+      "linked": "Linked {{drops}} drops on {{cards}} cards. {{unlinked}} drops weren't found on the OSRS Wiki and stay Manual only.",
+      "categorized_one": "{{count}} workbook card got its categories.",
+      "categorized_other": "{{count}} workbook cards got their categories."
     },
     "errors": {
       "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
       "drops": "Give every drop a name and a progress above 0, without repeating names.",
       "changed": "This card changed while you were editing. Reload and try again.",
       "slug": "This stable card key is already in use.",
-      "importConflict": "The workbook import found conflicting keys: {{slugs}}."
+      "importConflict": "The workbook import found conflicting keys: {{slugs}}.",
+      "artwork": "The artwork couldn't be uploaded. Use a PNG, JPEG or WebP image up to 5 MB."
     },
     "importDescription": "Import the approved workbook cards into the reusable catalog. Existing matching cards are kept.",
     "rules": {
@@ -599,7 +631,10 @@
       "active": "Active ({{count}})",
       "retired": "Retired ({{count}})",
       "all": "All ({{count}})",
-      "allDifficulties": "All"
+      "allDifficulties": "All",
+      "category": "Category",
+      "allCategories": "All categories",
+      "noCategory": "No category"
     },
     "table": {
       "card": "Card",
@@ -658,7 +693,29 @@
     },
     "unlinked_one": "{{count}} drop not auto-tracked",
     "unlinked_other": "{{count}} drops not auto-tracked",
-    "linkItems": "Link drops to OSRS items"
+    "linkItems": "Link drops to OSRS items",
+    "category": {
+      "solo_bosses": "Solo bosses",
+      "slayer_bosses": "Slayer bosses",
+      "wilderness_bosses": "Wilderness bosses",
+      "raids": "Raids",
+      "skilling_bosses": "Skilling bosses",
+      "skilling": "Skilling",
+      "minigames": "Minigames",
+      "other": "Other"
+    },
+    "artwork": {
+      "title": "Clan artwork (optional)",
+      "file": "Artwork image",
+      "upload": "Upload artwork",
+      "replace": "Replace artwork",
+      "remove": "Remove artwork",
+      "artist": "Artist",
+      "artistPlaceholder": "e.g. Rune Rita",
+      "hint": "PNG, JPEG or WebP, up to 5 MB. Shown instead of the OSRS Wiki image. Only upload the clan's own art or art you may use.",
+      "inUse": "Clan artwork",
+      "credit": "Art by {{artist}}"
+    }
   },
   "boards": {
     "title": "Build board",
@@ -758,6 +815,24 @@
       "shrinkConfirm": "Remove cards",
       "shrinkConfirmation_one": "{{count}} card will leave the bonus row: {{names}}. Nothing is saved until you save the board.",
       "shrinkConfirmation_other": "{{count}} cards will leave the bonus row: {{names}}. Nothing is saved until you save the board."
+    },
+    "live": {
+      "title": "Card fixes during the event",
+      "hint": "Fix a card in the catalog first (Edit → new revision), then update its square here. Scores are recalculated and players see the reason.",
+      "none": "No square has a newer card revision.",
+      "revisions": "rev. {{from}} → {{to}}",
+      "review": "Review update",
+      "history_one": "{{count}} change made",
+      "history_other": "{{count}} changes made",
+      "modalTitle": "Update {{name}} on the live board",
+      "onBoard": "On the board (rev. {{revision}})",
+      "newRevision": "New (rev. {{revision}})",
+      "changed": "changed",
+      "effect": "Accepted drops will use the new weights; drops no longer on the card stop counting and pending ones can only be rejected.",
+      "reason": "Reason players will see",
+      "reasonPlaceholder": "e.g. The requirement was a typo: 6, not 8.",
+      "confirm": "Update square",
+      "done": "{{name}} updated on the live board."
     }
   },
   "brand": {
@@ -821,7 +896,8 @@
       "unreadable_screenshot": "unreadable screenshot",
       "item_mismatch": "the item doesn't match the screenshot",
       "outside_event_period": "outside the event period",
-      "other": "other"
+      "other": "other",
+      "duplicate": "duplicate (already sent)"
     },
     "viewScreenshot": "View screenshot",
     "openScreenshot": "Open the screenshot",
@@ -872,12 +948,15 @@
       "imageSize": "The screenshot must be 5 MB or smaller.",
       "storage": "Screenshots can't be saved right now. Try again in a moment.",
       "cardRequired": "Choose a card.",
-      "screenshotRequired": "Attach a screenshot."
+      "screenshotRequired": "Attach a screenshot.",
+      "notAccepted": "Only accepted submissions can be reverted.",
+      "revertClosed": "Accepted submissions can only be reverted while the event is active."
     },
     "source": {
       "droptracker": "DropTracker"
     },
-    "noDropTrackerImage": "No screenshot from DropTracker"
+    "noDropTrackerImage": "No screenshot from DropTracker",
+    "reverted": "Reverted by an admin after being accepted."
   },
   "review": {
     "title": "Drop review",
@@ -910,7 +989,8 @@
     "skip": "Skip",
     "feedback": {
       "accepted": "Submission accepted.",
-      "rejected": "Submission rejected. The player sees the reason."
+      "rejected": "Submission rejected. The player sees the reason.",
+      "reverted": "Submission reverted. The player sees the reason."
     },
     "event": "Event",
     "shortcuts": "J / K navigate · A accept · R reason",
@@ -925,7 +1005,31 @@
     "empty": "Nothing to review. 🎉",
     "backToQueue": "Back to the queue",
     "instructions": "Instructions",
-    "ownTeam": "You play on this team — another admin reviews it."
+    "ownTeam": "You play on this team — another admin reviews it.",
+    "history": {
+      "title": "Already on this tile for {{team}}",
+      "progress": "Progress {{progress}} / {{requirement}}",
+      "complete": "Complete",
+      "empty": "Nothing else sent for this tile yet."
+    },
+    "duplicate": {
+      "badge": "Possible duplicate",
+      "hint": "Same player, item and tile sent within an hour, or the exact same screenshot. Check the tile history below."
+    },
+    "revert": {
+      "hint": "Accepted by {{name}}. Reverting turns it into rejected, removes its progress and shows the reason to the player.",
+      "reasonLabel": "Reason for reverting",
+      "action": "Revert"
+    },
+    "statusFilter": "Submission status",
+    "statuses": {
+      "pending": "Pending",
+      "accepted": "Accepted"
+    },
+    "search": "Search player or item",
+    "latestFirst": "Latest first",
+    "emptyAccepted": "No accepted submissions match.",
+    "dropRemoved": "This item is no longer on this card (fixed during the event). It can only be rejected."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",
@@ -1035,7 +1139,8 @@
       "bossKc": "Boss KC total",
       "ehb": "EHB total",
       "counted": "{{counted}} of {{total}} accounts counted",
-      "notFound": "{{names}} not found"
+      "notFound": "{{names}} not found",
+      "raidsKc": "Raids KC total"
     },
     "preferences": {
       "title": "Clan preferences",
@@ -1098,6 +1203,26 @@
       "unavailable": "WikiSync is unavailable right now. Try \"Update from WOM\" later.",
       "noDataShort": "No quest/diary data (WikiSync)",
       "source": "From the WikiSync plugin (OSRS Wiki), as of the last login with it."
+    },
+    "timezone": {
+      "detected": "Detected: {{zone}}",
+      "useDetected": "Use detected",
+      "search": "Search city, country or UTC offset (e.g. -3)",
+      "results": "Time zones",
+      "common": "Common time zones",
+      "all": "All time zones",
+      "showAll": "Show all time zones",
+      "none": "No time zone found. Try a city, a country or an offset like +1.",
+      "hint": "Only used to show where players are when admins balance teams."
+    },
+    "bosses": {
+      "title": "Bosses",
+      "counted": "Boss KC (counted)",
+      "raids": "Raids KC",
+      "top": "Top bosses"
+    },
+    "skills": {
+      "all": "All skills ({{count}})"
     }
   },
   "join": {
@@ -1198,7 +1323,8 @@
       "accountNotOnWom": "This account isn't found on Wise Old Man. Update it in My profile.",
       "teammateSelf": "You can't pick yourself as a teammate.",
       "teammateUnknown": "One of the teammates wasn't found. Remove and pick them again."
-    }
+    },
+    "openLate": "late join open"
   },
   "draft": {
     "eyebrow": "Administration · {{event}} · Draft",
@@ -1255,7 +1381,8 @@
     "countSkill_other": "{{count}} players available · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} player has no skill data yet — they need to “Update from WOM” on My profile.",
     "noSkillData_other": "{{count}} players have no skill data yet — they need to “Update from WOM” on My profile.",
-    "skillLevel": "{{skill}} {{level}}"
+    "skillLevel": "{{skill}} {{level}}",
+    "raidsKc": "Raids Σ"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1327,5 +1454,25 @@
     "strength": "Strength",
     "thieving": "Thieving",
     "woodcutting": "Woodcutting"
+  },
+  "balance": {
+    "raid": "Raid",
+    "notCounted": "Not counted",
+    "breakdown": {
+      "open": "Boss KC breakdown",
+      "for": "Boss KC breakdown of {{name}}",
+      "title": "Boss KC · {{name}}",
+      "hint": "Kill count per boss on Wise Old Man. Raids count as Raids KC; crossed-out bosses don't count in the totals.",
+      "notLoaded": "Not loaded yet: \"Update from WOM\" on the profile loads the per-boss KC.",
+      "none": "No boss kills on Wise Old Man."
+    },
+    "settings": {
+      "open": "Boss KC settings",
+      "title": "Boss KC settings",
+      "hint": "Ticked bosses don't count in boss KC totals (team balance, roster, draft, profiles). Raids are always shown apart as Raids KC.",
+      "search": "Search boss",
+      "save": "Save settings",
+      "saved": "Boss KC settings saved; totals updated."
+    }
   }
 }

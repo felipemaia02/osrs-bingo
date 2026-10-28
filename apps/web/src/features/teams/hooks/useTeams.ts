@@ -3,6 +3,7 @@ import {
   approvePlayer,
   approveAllPlayers,
   approveSelectedPlayers,
+  assignSelectedPlayers,
   removePlayer,
   removeSelectedPlayers,
   fetchOwnRegistration,
@@ -78,6 +79,7 @@ export function useTeamMutations() {
     removePlayer: useMutation({ mutationFn: removePlayer, onSuccess: refresh }),
     approveSelectedPlayers: useMutation({ mutationFn: approveSelectedPlayers, onSuccess: refresh }),
     removeSelectedPlayers: useMutation({ mutationFn: removeSelectedPlayers, onSuccess: refresh }),
+    assignSelectedPlayers: useMutation({ mutationFn: assignSelectedPlayers, onSuccess: refresh }),
     updatePlayer: useMutation({ mutationFn: updatePlayer, onSuccess: refresh }),
     updateParticipation: useMutation({ mutationFn: updateParticipation, onSuccess: refresh }),
   }

@@ -6,6 +6,7 @@ import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
 import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined'
 import { Trans, useTranslation } from 'react-i18next'
 import { EventRulesText } from '../../events/components/EventRulesText'
+import type { RulesAddendum } from '../../events/types'
 import { AGREEMENTS, type Agreement } from '../state'
 
 const SUMMARY: Array<{ key: string; icon: ReactNode }> = [
@@ -19,12 +20,15 @@ const SUMMARY: Array<{ key: string; icon: ReactNode }> = [
 /** Step 3: fixed summary, the event's written rules and the 3 agreements (FR-004). */
 export function RulesStep({
   rulesText,
+  addenda = [],
   hasBuyIn,
   rsn,
   agreed,
   onAgree,
 }: {
   rulesText: string | null
+  /** Clarifications added during the event (036; late join, 037). */
+  addenda?: RulesAddendum[]
   /** Events without a buy-in don't mention it (feature 025 follow-up). */
   hasBuyIn: boolean
   rsn: string | null
@@ -46,11 +50,11 @@ export function RulesStep({
           </li>
         ))}
       </ul>
-      {rulesText && (
+      {(rulesText || addenda.length > 0) && (
         <div className="flex flex-col gap-1.5">
           <h3 className="m-0 text-sm font-semibold text-rs-gold-bright">{t('join.rules.event')}</h3>
           <div className="rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2">
-            <EventRulesText text={rulesText} collapsible={false} />
+            <EventRulesText text={rulesText} addenda={addenda} collapsible={false} />
           </div>
         </div>
       )}

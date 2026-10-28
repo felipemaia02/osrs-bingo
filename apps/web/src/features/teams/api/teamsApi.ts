@@ -62,6 +62,18 @@ export const approveSelectedPlayers = async ({ eventId, playerIds }: SelectionRe
       player_ids: playerIds,
     })
   ).data
+/** Several approved players to one team (feature 038). */
+export const assignSelectedPlayers = async ({
+  eventId,
+  playerIds,
+  teamId,
+}: SelectionRequest & { teamId: string }) =>
+  (
+    await apiClient.post<SelectionResult>(`/events/${eventId}/players/assign-selected`, {
+      player_ids: playerIds,
+      team_id: teamId,
+    })
+  ).data
 export const removeSelectedPlayers = async ({ eventId, playerIds }: SelectionRequest) =>
   (
     await apiClient.post<SelectionResult>(`/events/${eventId}/players/remove-selected`, {

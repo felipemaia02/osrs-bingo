@@ -1,5 +1,7 @@
 import type {
   AcceptedDrop,
+  CardArtwork,
+  CardCategory,
   CardDifficulty,
   CardKind,
   CardProvenance,
@@ -18,10 +20,21 @@ export interface BoardCardSnapshot {
   completion_requirement: number
   drops: AcceptedDrop[]
   wiki_image: WikiImage | null
+  artwork?: CardArtwork | null
   fallback_image_accepted: boolean
   rule_note: string | null
   provenance: CardProvenance
   requires_preverification?: boolean
+  categories?: CardCategory[]
+}
+
+/** A live fix of a square during the event (feature 036). */
+export interface PositionUpdate {
+  from_revision: number
+  to_revision: number
+  reason: string
+  updated_by_name: string
+  updated_at: string
 }
 
 export interface BoardPosition {
@@ -31,6 +44,8 @@ export interface BoardPosition {
   /** Bonus-row card (feature 020). */
   bonus?: boolean
   card: BoardCardSnapshot
+  /** Changes made while the event was active, oldest first (feature 036). */
+  updates?: PositionUpdate[]
 }
 
 export interface EventBoard {

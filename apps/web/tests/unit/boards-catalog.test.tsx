@@ -13,8 +13,13 @@ import {
   resolveWikiImage,
   retireCard,
   searchItems,
+  uploadCardArtwork,
 } from '../../src/features/cards/api/cardsApi'
-import { fetchAdminBoard, saveBoard } from '../../src/features/boards/api/boardsApi'
+import {
+  fetchAdminBoard,
+  saveBoard,
+  updateBoardPosition,
+} from '../../src/features/boards/api/boardsApi'
 import type { CardSummary } from '../../src/features/cards/types'
 import type { BingoEvent } from '../../src/features/events/types'
 import { renderApp } from '../render'
@@ -163,9 +168,14 @@ describe('board builder v2', () => {
         { ...CARD.revision.drops[0], key: 'tail', name: "Hydra's Tail", progress_weight: 2 },
         { ...CARD.revision.drops[0], key: 'leather', name: "Hydra's Leather", progress_weight: 2 },
       ],
+      categories: ['slayer_bosses'],
     },
   })
-  const BARROWS = card('66d000000000000000000012', 'Barrows', 'Low')
+  const BARROWS = card('66d000000000000000000012', 'Barrows', 'Low', {
+    revision: { categories: ['minigames'] } as Partial<
+      CardSummary['revision']
+    > as CardSummary['revision'],
+  })
   const RETIRED = card('66d000000000000000000013', 'Kalphite Queen', 'Mid', { status: 'retired' })
 
   function boardWith(placed: Array<[number, CardSummary]>, size = 6) {
@@ -429,6 +439,11 @@ describe('board builder v2', () => {
     expect(rules).toHaveTextContent("Hydra's Claw+3")
 
     await user.clear(within(catalog).getByRole('searchbox'))
+    // Feature 040: category filter.
+    await user.selectOptions(within(catalog).getByLabelText('Category'), 'minigames')
+    expect(within(catalog).getByText('Barrows')).toBeInTheDocument()
+    expect(within(catalog).queryByText('Alchemical Hydra')).toBeNull()
+    await user.selectOptions(within(catalog).getByLabelText('Category'), 'all')
     await user.click(within(catalog).getByRole('button', { name: 'On board (1)' }))
     expect(within(catalog).getByText('Vorkath')).toBeInTheDocument()
     expect(within(catalog).queryByText('Barrows')).toBeNull()
@@ -481,6 +496,47 @@ describe('board builder v2', () => {
     expect(screen.queryByRole('button', { name: 'Save board' })).toBeNull()
     expect(screen.queryByRole('button', { name: /^Remove .* from this position$/ })).toBeNull()
     expect(screen.getAllByRole('button', { name: /empty — choose card$/ })[0]).toBeDisabled()
+  })
+
+  it('updates a live square to a newer card revision with a reason (036)', async () => {
+    const fixed: CardSummary = {
+      ...CARD,
+      current_revision: 2,
+      revision: { ...CARD.revision, revision: 2, completion_requirement: 6 },
+    }
+    vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
+    vi.mocked(fetchCards).mockResolvedValue([fixed])
+    vi.mocked(fetchAdminBoard).mockResolvedValue({ ...boardWith([[1, CARD]]), status: 'published' })
+    vi.mocked(updateBoardPosition).mockResolvedValue({
+      ...boardWith([[1, fixed]]),
+      status: 'published',
+    })
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Active' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    const fixes = await screen.findByRole('region', { name: 'Card fixes during the event' })
+    expect(fixes).toHaveTextContent('Vorkath')
+    expect(fixes).toHaveTextContent('rev. 1 → 2')
+    await user.click(within(fixes).getByRole('button', { name: 'Review update' }))
+    const dialog = screen.getByRole('dialog', { name: 'Update Vorkath on the live board' })
+    expect(
+      within(dialog).getByRole('rowheader', { name: /Progress requirement/ }),
+    ).toHaveTextContent('changed')
+    const confirm = within(dialog).getByRole('button', { name: 'Update square' })
+    expect(confirm).toBeDisabled()
+    await user.type(within(dialog).getByLabelText('Reason players will see'), 'Typo: 6, not 8')
+    await user.click(confirm)
+
+    await waitFor(() => expect(updateBoardPosition).toHaveBeenCalledOnce())
+    expect(vi.mocked(updateBoardPosition).mock.calls[0][0]).toEqual({
+      eventId: EVENT.id,
+      position: 1,
+      cardRevision: 2,
+      reason: 'Typo: 6, not 8',
+    })
+    expect(await screen.findByText('Vorkath updated on the live board.')).toBeInTheDocument()
   })
 
   it('offers catalog setup when no cards exist', async () => {
@@ -663,8 +719,13 @@ const NESTS = [
   },
 ]
 
-async function openEditor(drops = CARD.revision.drops) {
-  vi.mocked(fetchCards).mockResolvedValue([{ ...CARD, revision: { ...CARD.revision, drops } }])
+async function openEditor(
+  drops = CARD.revision.drops,
+  extra: Partial<CardSummary['revision']> = {},
+) {
+  vi.mocked(fetchCards).mockResolvedValue([
+    { ...CARD, revision: { ...CARD.revision, drops, ...extra } },
+  ])
   vi.mocked(createCardRevision).mockResolvedValue({
     ...CARD,
     revisions: [CARD.revision],
@@ -808,6 +869,33 @@ it('flags cards with drops that are not linked and links them from the catalog',
       "Linked 1 drops on 1 cards. 0 drops weren't found on the OSRS Wiki and stay Manual only.",
     ),
   ).toBeInTheDocument()
+})
+
+it('filters the catalog by category and saves the categories of a card (040)', async () => {
+  const { user, dialog } = await openEditor([CARD.revision.drops[0]], {
+    categories: ['solo_bosses'],
+  })
+  expect(within(dialog).getByRole('checkbox', { name: 'Solo bosses' })).toBeChecked()
+  await user.click(within(dialog).getByRole('checkbox', { name: 'Raids' }))
+  const payload = await save(user, dialog)
+  expect(payload.categories).toEqual(['solo_bosses', 'raids'])
+})
+
+it('uploads clan artwork with the artist credit and saves it on the card (041)', async () => {
+  const key = `cards/artwork/${'a'.repeat(32)}.png`
+  vi.mocked(uploadCardArtwork).mockResolvedValue({ key, content_type: 'image/png' })
+  const { user, dialog } = await openEditor()
+
+  const file = new File(['png'], 'vorkath.png', { type: 'image/png' })
+  await user.upload(within(dialog).getByLabelText('Artwork image'), file)
+  await waitFor(() => expect(uploadCardArtwork).toHaveBeenCalledOnce())
+  expect(vi.mocked(uploadCardArtwork).mock.calls[0][0]).toBe(file)
+  await user.type(await within(dialog).findByLabelText('Artist'), 'Rune Rita')
+  expect(within(dialog).getByText('Clan artwork')).toBeInTheDocument()
+
+  const payload = await save(user, dialog)
+  expect(payload.artwork).toEqual({ key, content_type: 'image/png', artist: 'Rune Rita' })
+  expect(payload.fallback_image_accepted).toBe(false)
 })
 
 it('resolves a Wiki image in the editor and sends it with the revision', async () => {

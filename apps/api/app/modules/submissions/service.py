@@ -1,3 +1,5 @@
+import hashlib
+import re
 from datetime import UTC, datetime
 from typing import Any
 
@@ -14,6 +16,8 @@ from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import RegistrationStatus
+from app.modules.scoring.service import ScoringService
+from app.modules.submissions.duplicates import possible_duplicates
 from app.modules.submissions.images import EXTENSIONS, validate_screenshot
 from app.modules.submissions.models import SubmissionDocument
 from app.modules.submissions.repository import SubmissionRepository, preverification_gate
@@ -29,6 +33,8 @@ from app.modules.submissions.schemas import (
     SubmissionResponse,
     SubmissionSource,
     SubmissionStatus,
+    TileHistoryItem,
+    TileHistoryResponse,
 )
 from app.modules.teams.repository import TeamRepository
 
@@ -46,6 +52,9 @@ PREVERIFICATION_NOT_ACCEPTED = "Accept this player's pre-verification for the ca
 ALREADY_REVIEWED = "Submission already reviewed"
 OWN_TEAM_REVIEW = "You play on this team — another admin reviews it"
 REVIEW_CLOSED = "Submissions can only be reviewed for active or finished events"
+NOT_ACCEPTED = "Only accepted submissions can be reverted"
+DROP_REMOVED = "This item is no longer on this card"
+REVERT_CLOSED = "Accepted submissions can only be reverted while the event is active"
 
 REVIEWABLE_EVENT_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
 OPEN_PREVERIFICATION = {SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED}
@@ -135,6 +144,7 @@ class SubmissionService:
             "note": self._clean_note(note),
             "screenshot_key": key,
             "screenshot_type": content_type,
+            "screenshot_sha256": hashlib.sha256(screenshot).hexdigest(),
             "submitted_at": datetime.now(UTC),
         }
         if kind == SubmissionKind.PREVERIFICATION:
@@ -162,8 +172,32 @@ class SubmissionService:
         event = await self._require_event(event_id)
         own_team = await self._reviewer_team(event_id, admin)
         documents, total = await self._submissions.page(
-            event["_id"], query.status, query.kind, query.offset, query.limit
+            event["_id"],
+            query.status,
+            query.kind,
+            query.offset,
+            query.limit,
+            # Accepted ones are browsed to revert mistakes: latest first (feature 035).
+            newest_first=query.status != SubmissionStatus.PENDING,
+            extra=await self._search_filter(event_id, query.q),
         )
+        candidates = await self._submissions.open_drops(
+            event["_id"],
+            {document["player_id"] for document in documents},
+            {document["position"] for document in documents},
+            {
+                document["screenshot_sha256"]
+                for document in documents
+                if document.get("screenshot_sha256")
+            },
+        )
+        duplicates = possible_duplicates(documents, candidates)
+        board = await self._boards.get_by_event(event_id)
+        card_drops = {
+            (slot["position"], drop["key"]): float(drop["progress_weight"])
+            for slot in (board or {}).get("positions", [])
+            for drop in slot["card"].get("drops", [])
+        }
         players = await self._players.get_many([document["player_id"] for document in documents])
         teams = {team["_id"]: team for team in await self._teams.list(event_id)}
         gated = {
@@ -182,9 +216,18 @@ class SubmissionService:
                 if document["kind"] == SubmissionKind.DROP
                 else None
             )
+            response = self._response(document)
+            removed = (
+                document["kind"] == SubmissionKind.DROP
+                and (document["position"], document["drop_key"]) not in card_drops
+            )
+            if not removed and document["kind"] == SubmissionKind.DROP:
+                # The card may have been fixed during the event (036): show today's weight.
+                response.progress_weight = card_drops[(document["position"], document["drop_key"])]
             items.append(
                 ReviewItem(
-                    **self._response(document).model_dump(),
+                    **response.model_dump(),
+                    drop_removed=removed,
                     player_id=str(document["player_id"]),
                     player_name=player["display_name"] if player else "—",
                     team_id=str(document["team_id"]),
@@ -194,6 +237,7 @@ class SubmissionService:
                     preverification_status=SubmissionStatus(gate) if gate else None,
                     within_event=self._within_event(event, document["submitted_at"]),
                     own_team=own_team is not None and document["team_id"] == own_team,
+                    possible_duplicates=duplicates.get(document["_id"], []),
                 )
             )
         return ReviewQueueResponse(
@@ -208,6 +252,74 @@ class SubmissionService:
             ),
         )
 
+    async def tile_history(self, submission_id: str, admin: CurrentUser) -> TileHistoryResponse:
+        """What the submission's team already has on that tile (feature 035)."""
+        document = await self._submissions.get(submission_id)
+        if document is None:
+            raise NotFoundError("Submission")
+        event_id = str(document["event_id"])
+        drops = await self._submissions.tile_drops(
+            document["event_id"], document["team_id"], document["position"]
+        )
+        others = [item for item in drops if item["_id"] != document["_id"]]
+        flagged = set(possible_duplicates([document], others).get(document["_id"], []))
+        players = await self._players.get_many([item["player_id"] for item in others])
+        team = await self._teams.get(event_id, str(document["team_id"]))
+        progress = (
+            await ScoringService(
+                self._events, self._boards, self._teams, self._players, self._submissions
+            ).tile_progress(event_id, str(document["team_id"]), document["position"])
+        ) or (0.0, 0.0, False)
+        return TileHistoryResponse(
+            team_id=str(document["team_id"]),
+            team_name=team["name"] if team else None,
+            card_name=document["card_name"],
+            progress=progress[0],
+            requirement=progress[1],
+            complete=progress[2],
+            items=[
+                TileHistoryItem(
+                    id=str(item["_id"]),
+                    player_name=(
+                        players[item["player_id"]]["display_name"]
+                        if item["player_id"] in players
+                        else "—"
+                    ),
+                    drop_name=item["drop_name"],
+                    progress_weight=item["progress_weight"],
+                    status=SubmissionStatus(item["status"]),
+                    source=SubmissionSource(item.get("source", SubmissionSource.MANUAL)),
+                    submitted_at=item["submitted_at"],
+                    has_screenshot=bool(item.get("screenshot_key") or item.get("screenshot_url")),
+                    same_item=item["drop_key"] == document["drop_key"],
+                    possible_duplicate=str(item["_id"]) in flagged,
+                )
+                for item in others
+            ],
+        )
+
+    async def revert(
+        self, submission_id: str, payload: SubmissionReject, admin: CurrentUser
+    ) -> SubmissionResponse:
+        """Undoes an acceptance (feature 035): the submission becomes rejected with a reason."""
+        document = await self._submissions.get(submission_id)
+        if document is None:
+            raise NotFoundError("Submission")
+        if document["status"] != SubmissionStatus.ACCEPTED:
+            raise AppException(409, NOT_ACCEPTED)
+        event = await self._events.get(str(document["event_id"]))
+        if event is None or event["status"] != EventStatus.ACTIVE:
+            raise AppException(409, REVERT_CLOSED)
+        own_team = await self._reviewer_team(str(document["event_id"]), admin)
+        if own_team is not None and own_team == document["team_id"]:
+            raise AppException(403, OWN_TEAM_REVIEW)
+        updated = await self._submissions.revert(
+            document["_id"], admin.id, admin.username, payload.reason, payload.note
+        )
+        if updated is None:
+            raise AppException(409, NOT_ACCEPTED)
+        return self._response(updated)
+
     async def accept(self, submission_id: str, admin: CurrentUser) -> SubmissionResponse:
         document = await self._require_reviewable(submission_id, admin)
         if document["kind"] == SubmissionKind.DROP and document["requires_preverification"]:
@@ -217,6 +329,11 @@ class SubmissionService:
             gate = gates.get((document["player_id"], document["position"]))
             if gate != SubmissionStatus.ACCEPTED:
                 raise AppException(409, PREVERIFICATION_NOT_ACCEPTED)
+        if document["kind"] == SubmissionKind.DROP:
+            # A square fixed during the event (036) may no longer accept this item.
+            slot = await self._board_position(str(document["event_id"]), document["position"])
+            if document["drop_key"] not in {drop["key"] for drop in slot["card"]["drops"]}:
+                raise AppException(409, DROP_REMOVED)
         return await self._decide(document, SubmissionStatus.ACCEPTED, admin)
 
     async def reject(
@@ -259,6 +376,21 @@ class SubmissionService:
         if updated is None:
             raise AppException(409, ALREADY_REVIEWED)
         return self._response(updated)
+
+    async def _search_filter(self, event_id: str, text: str) -> dict[str, Any] | None:
+        """Player, item or card name containing the text, ignoring case."""
+        cleaned = " ".join(text.split())
+        if not cleaned:
+            return None
+        pattern = {"$regex": re.escape(cleaned), "$options": "i"}
+        players = await self._players.ids_named_like(event_id, cleaned)
+        return {
+            "$or": [
+                {"drop_name": pattern},
+                {"card_name": pattern},
+                {"player_id": {"$in": players}},
+            ]
+        }
 
     async def _reviewer_team(self, event_id: str, admin: CurrentUser) -> ObjectId | None:
         """The team an admin plays on in this event, if any (feature 026)."""
@@ -353,4 +485,5 @@ class SubmissionService:
             rejection_note=document.get("rejection_note"),
             source=SubmissionSource(document.get("source", SubmissionSource.MANUAL)),
             has_screenshot=bool(document.get("screenshot_key") or document.get("screenshot_url")),
+            reverted_at=document.get("reverted_at"),
         )

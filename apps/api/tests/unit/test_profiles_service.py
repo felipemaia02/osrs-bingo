@@ -19,8 +19,9 @@ USER = CurrentUser(id=str(ObjectId()), discord_id="1", username="Holy Hal", is_a
 def stats(boss_kc: int = 100, ehb: float = 10.5) -> WomStats:
     combat = {"attack": 99, "strength": 99, "defence": 90}
     skills = {**combat, "slayer": 95}
+    bosses = {"vorkath": boss_kc}
     return WomStats(
-        "Main", 2000, 900.0, ehb, boss_kc, combat, skills, datetime(2026, 10, 1, tzinfo=UTC)
+        "Main", 2000, 900.0, ehb, boss_kc, combat, skills, bosses, datetime(2026, 10, 1, tzinfo=UTC)
     )
 
 

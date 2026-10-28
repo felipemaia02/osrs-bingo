@@ -15,9 +15,17 @@ import {
   toRevisionPayload,
   type CardForm,
 } from '../cardForm'
+import { cardImageUrl } from '../artwork'
+import { ArtworkField } from './ArtworkField'
 import { DropListEditor } from './DropListEditor'
 import { useCardMutations } from '../hooks/useCards'
-import type { CardCreatePayload, CardDifficulty, CardKind, CardSummary } from '../types'
+import {
+  CARD_CATEGORIES,
+  type CardCreatePayload,
+  type CardDifficulty,
+  type CardKind,
+  type CardSummary,
+} from '../types'
 
 const FIELD = `${FIELD_CLASS} font-normal`
 const TEXTAREA = `${FIELD} resize-y py-2`
@@ -47,7 +55,10 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
   const [form, setForm] = useState<CardForm>(() => (card ? cardToForm(card) : emptyForm()))
   const [errorKey, setErrorKey] = useState<string | null>(null)
   const pending =
-    mutations.create.isPending || mutations.revise.isPending || mutations.resolveImage.isPending
+    mutations.create.isPending ||
+    mutations.revise.isPending ||
+    mutations.resolveImage.isPending ||
+    mutations.uploadArtwork.isPending
 
   function update<K extends keyof CardForm>(key: K, value: CardForm[K]) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -60,6 +71,16 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
       update('wikiImage', await mutations.resolveImage.mutateAsync(form.wikiArticle.trim()))
     } catch {
       setErrorKey('cards.errors.wiki')
+    }
+  }
+
+  async function uploadArtwork(file: File) {
+    setErrorKey(null)
+    try {
+      const uploaded = await mutations.uploadArtwork.mutateAsync(file)
+      update('artwork', { ...uploaded, artist: form.artwork?.artist ?? null })
+    } catch {
+      setErrorKey('cards.errors.artwork')
     }
   }
 
@@ -175,6 +196,41 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               className={TEXTAREA}
             />
           </Field>
+          <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0 md:col-span-2">
+            <legend className="mb-1 p-0 text-[13px] font-semibold">
+              {t('cards.form.categories')}
+            </legend>
+            <span className="flex flex-wrap gap-1.5">
+              {CARD_CATEGORIES.map((category) => {
+                const checked = form.categories.includes(category)
+                return (
+                  <label
+                    key={category}
+                    className={`inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-2xl border px-2.5 text-[13px] ${
+                      checked
+                        ? 'border-rs-gold bg-rs-raised text-rs-gold-bright'
+                        : 'border-rs-border bg-rs-inset'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        update(
+                          'categories',
+                          checked
+                            ? form.categories.filter((item) => item !== category)
+                            : [...form.categories, category],
+                        )
+                      }
+                      className="accent-rs-gold"
+                    />
+                    {t(`cards.category.${category}`)}
+                  </label>
+                )
+              })}
+            </span>
+          </fieldset>
           <DropListEditor
             rows={form.drops}
             onChange={(drops) => update('drops', drops)}
@@ -198,13 +254,27 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
                 </Button>
               </span>
             </Field>
+            <ArtworkField
+              artwork={form.artwork}
+              busy={pending}
+              uploading={mutations.uploadArtwork.isPending}
+              onUpload={(file) => void uploadArtwork(file)}
+              onArtist={(artist) =>
+                form.artwork && update('artwork', { ...form.artwork, artist: artist || null })
+              }
+              onRemove={() => update('artwork', null)}
+            />
             <span className="flex items-center gap-3 text-xs text-rs-muted">
               <CardImage
                 name={form.name || '?'}
-                imageUrl={form.wikiImage?.image_url}
+                imageUrl={cardImageUrl({ artwork: form.artwork, wiki_image: form.wikiImage })}
                 className="size-16 shrink-0"
               />
-              {form.wikiImage ? form.wikiImage.file_name : t('cards.form.fallbackImage')}
+              {form.artwork
+                ? t('cards.artwork.inUse')
+                : form.wikiImage
+                  ? form.wikiImage.file_name
+                  : t('cards.form.fallbackImage')}
             </span>
           </div>
           <div className="flex flex-col gap-3 rounded-[3px] border border-rs-border bg-rs-inset p-3 md:col-span-2">

@@ -18,6 +18,8 @@ class NewRegistration:
     account_id: str
     activity: str | None
     teammate_ids: list[str]
+    # Requested while the event was already active (feature 037).
+    joined_late: bool = False
 
 
 class PlayerDocument(TypedDict):
@@ -36,6 +38,9 @@ class PlayerDocument(TypedDict):
     buy_in: NotRequired[BuyInRecord]
     # captain | instructor (feature 023)
     role: NotRequired[str | None]
+    # Feature 037: late joiners, and when the player was placed in their team.
+    joined_late: NotRequired[bool]
+    team_assigned_at: NotRequired[datetime | None]
     created_at: datetime
     updated_at: datetime
 
@@ -44,6 +49,7 @@ class RosterDocument(PlayerDocument, total=False):
     """A roster row with its profile experience and lookups (feature 023)."""
 
     boss_kc_total: int | None
+    raids_kc_total: int | None
     ehb_total: float | None
     account_count: int | None
     profile_accounts: list[dict[str, Any]]
@@ -57,5 +63,6 @@ class TeamExperience(TypedDict):
     _id: ObjectId
     player_count: int
     boss_kc_total: int
+    raids_kc_total: int
     ehb_total: float
     captains: list[str]

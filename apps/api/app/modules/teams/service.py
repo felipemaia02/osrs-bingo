@@ -80,6 +80,7 @@ class TeamService:
                     emblem_url=team.get("emblem_url"),
                     player_count=size,
                     boss_kc_total=row["boss_kc_total"] if row else 0,
+                    raids_kc_total=row.get("raids_kc_total", 0) if row else 0,
                     ehb_total=team_ehb,
                     captain=row["captains"][0] if row and row["captains"] else None,
                     ehb_vs_average=versus,

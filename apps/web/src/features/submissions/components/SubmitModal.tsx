@@ -1,3 +1,4 @@
+import { cardImageUrl } from '../../cards/artwork'
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
@@ -151,7 +152,7 @@ export function SubmitModal({
                 >
                   <CardImage
                     name={item.card.name}
-                    imageUrl={item.card.wiki_image?.image_url}
+                    imageUrl={cardImageUrl(item.card)}
                     className="h-9 w-10 shrink-0"
                   />
                   <span className="flex min-w-0 flex-1 flex-col">

@@ -16,6 +16,8 @@ class LinkedAccount(TypedDict):
     boss_kc: NotRequired[int | None]
     combat: NotRequired[dict[str, int] | None]
     skills: NotRequired[dict[str, int] | None]
+    # Kill count per boss (feature 039); None until the account is read again.
+    bosses: NotRequired[dict[str, int] | None]
     # WikiSync quests and diaries (feature 034); see profiles.wikisync.stored().
     wikisync: NotRequired[dict[str, Any] | None]
     wom_updated_at: NotRequired[datetime | None]

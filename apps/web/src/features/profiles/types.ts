@@ -28,6 +28,8 @@ export interface LinkedAccount {
   combat: Partial<Record<CombatSkill, number>> | null
   /** Every skill level (feature 032); null until the account is read from WOM again. */
   skills?: Partial<Record<Skill, number>> | null
+  /** Kill count per boss (feature 039); null until the account is read again. */
+  bosses?: Record<string, number> | null
   /** null until the account is read again after feature 034. */
   wikisync?: WikiSync | null
   wom_updated_at: string | null
@@ -37,6 +39,8 @@ export interface LinkedAccount {
 
 export interface BalanceTotals {
   boss_kc: number
+  /** Raids KC apart from boss KC (feature 039). */
+  raids_kc?: number
   ehb: number
   counted: number
   total: number

@@ -12,6 +12,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
+from app.modules.balance.kc import kc_expression
+from app.modules.balance.repository import BossKcSettingsRepository
 from app.modules.players.models import (
     NewRegistration,
     PlayerDocument,
@@ -34,9 +36,10 @@ class CaptainTakenError(Exception):
     """The team already has a captain (unique partial index, feature 023)."""
 
 
-def _experience_stages() -> builtin_list[dict[str, Any]]:
+def _experience_stages(excluded: builtin_list[str]) -> builtin_list[dict[str, Any]]:
     """Adds the player's current profile totals (feature 021 rule) to registrations made
-    with an account (feature 022); nickname registrations get None."""
+    with an account (feature 022); nickname registrations get None. Boss KC leaves out the
+    excluded bosses and the raids, which get their own total (feature 039)."""
     accounts = {"$ifNull": [{"$first": "$profile.accounts"}, []]}
     counted = {
         "$filter": {
@@ -63,7 +66,19 @@ def _experience_stages() -> builtin_list[dict[str, Any]]:
         {"$addFields": {"counted_accounts": counted}},
         {
             "$addFields": {
-                "boss_kc_total": {"$cond": [joined, {"$sum": "$counted_accounts.boss_kc"}, None]},
+                "account_kc": {
+                    "$map": {
+                        "input": "$counted_accounts",
+                        "as": "account",
+                        "in": kc_expression("$$account", excluded),
+                    }
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "boss_kc_total": {"$cond": [joined, {"$sum": "$account_kc.boss"}, None]},
+                "raids_kc_total": {"$cond": [joined, {"$sum": "$account_kc.raids"}, None]},
                 "ehb_total": {
                     "$cond": [joined, {"$round": [{"$sum": "$counted_accounts.ehb"}, 2]}, None]
                 },
@@ -72,7 +87,7 @@ def _experience_stages() -> builtin_list[dict[str, Any]]:
                 "timezone": {"$first": "$profile.timezone"},
             }
         },
-        {"$project": {"profile": 0, "counted_accounts": 0}},
+        {"$project": {"profile": 0, "counted_accounts": 0, "account_kc": 0}},
     ]
 
 
@@ -85,6 +100,7 @@ def _clear_captain(team: Any) -> dict[str, Any]:
 class PlayerRepository:
     def __init__(self, database: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
         self._collection = database[PLAYERS_COLLECTION]
+        self._kc_settings = BossKcSettingsRepository(database)
 
     async def create(
         self, event_id: str, registration: NewRegistration, user_id: str
@@ -106,6 +122,7 @@ class PlayerRepository:
             "activity": registration.activity,
             "teammate_ids": [ObjectId(item) for item in registration.teammate_ids],
             "agreements_accepted_at": now,
+            "joined_late": registration.joined_late,
             "buy_in": {"status": BuyInStatus.PENDING, "admin_id": None, "updated_at": now},
             "created_at": now,
             "updated_at": now,
@@ -182,7 +199,7 @@ class PlayerRepository:
                     }
                 }
             )
-        pipeline.extend(_experience_stages())
+        pipeline.extend(_experience_stages(await self._kc_settings.excluded()))
         pipeline.append(
             {
                 "$facet": {
@@ -269,7 +286,7 @@ class PlayerRepository:
                     "role": ParticipantRole.CAPTAIN,
                 }
             },
-            *_experience_stages(),
+            *_experience_stages(await self._kc_settings.excluded()),
         ]
         return cast(
             builtin_list[RosterDocument],
@@ -286,12 +303,13 @@ class PlayerRepository:
                     "team_id": {"$ne": None},
                 }
             },
-            *_experience_stages(),
+            *_experience_stages(await self._kc_settings.excluded()),
             {
                 "$group": {
                     "_id": "$team_id",
                     "player_count": {"$sum": 1},
                     "boss_kc_total": {"$sum": {"$ifNull": ["$boss_kc_total", 0]}},
+                    "raids_kc_total": {"$sum": {"$ifNull": ["$raids_kc_total", 0]}},
                     "ehb_total": {"$sum": {"$ifNull": ["$ehb_total", 0]}},
                     "captains": {
                         "$push": {
@@ -349,12 +367,54 @@ class PlayerRepository:
             {"status": RegistrationStatus.APPROVED},
         )
 
-    async def remove_selected(self, event_id: str, player_ids: builtin_list[str]) -> int:
+    async def assign_selected(
+        self,
+        event_id: str,
+        player_ids: builtin_list[str],
+        team_id: str,
+        only_without_team: bool = False,
+    ) -> tuple[int, int]:
+        """Assigns approved players to a team; returns (changed, already in that team)."""
+        team_object_id = self._object_id(team_id)
+        object_ids = [oid for oid in map(self._object_id, player_ids) if oid is not None]
+        event_object_id = self._object_id(event_id)
+        if event_object_id is None or team_object_id is None or not object_ids:
+            return 0, 0
+        scope = {"_id": {"$in": object_ids}, "event_id": event_object_id}
+        already = await self._collection.count_documents(
+            {**scope, "status": RegistrationStatus.APPROVED, "team_id": team_object_id}
+        )
+        now = datetime.now(UTC)
+        result = await self._collection.update_many(
+            {
+                **scope,
+                "status": RegistrationStatus.APPROVED,
+                "team_id": None if only_without_team else {"$ne": team_object_id},
+            },
+            [
+                {
+                    "$set": {
+                        "role": _clear_captain(team_object_id),
+                        "team_id": team_object_id,
+                        "team_assigned_at": now,
+                        "updated_at": now,
+                    }
+                }
+            ],
+        )
+        return int(result.modified_count), int(already)
+
+    async def remove_selected(
+        self, event_id: str, player_ids: builtin_list[str], only_without_team: bool = False
+    ) -> int:
         """Soft-removes listed pending/approved registrations, clearing their team."""
         return await self._update_selected(
             event_id,
             player_ids,
-            {"status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]}},
+            {
+                "status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]},
+                **({"team_id": None} if only_without_team else {}),
+            },
             {"status": RegistrationStatus.REMOVED, "team_id": None},
         )
 
@@ -391,7 +451,7 @@ class PlayerRepository:
         return {"pending": int(pending), "unassigned": int(unassigned), "assigned": int(assigned)}
 
     async def update(
-        self, event_id: str, player_id: str, payload: PlayerUpdate
+        self, event_id: str, player_id: str, payload: PlayerUpdate, only_without_team: bool = False
     ) -> PlayerDocument | None:
         event_object_id = self._object_id(event_id)
         player_object_id = self._object_id(player_id)
@@ -403,12 +463,15 @@ class PlayerRepository:
                 "_id": player_object_id,
                 "event_id": event_object_id,
                 "status": RegistrationStatus.APPROVED,
+                # During the event only players still without a team can be placed (037).
+                **({"team_id": None} if only_without_team else {}),
             },
             [
                 {
                     "$set": {
                         "role": _clear_captain(team_object_id),
                         "team_id": team_object_id,
+                        "team_assigned_at": datetime.now(UTC) if team_object_id else None,
                         "updated_at": datetime.now(UTC),
                     }
                 }
@@ -422,6 +485,20 @@ class PlayerRepository:
             return {}
         cursor = self._collection.find({"_id": {"$in": player_ids}})
         return {document["_id"]: cast(PlayerDocument, document) async for document in cursor}
+
+    async def ids_named_like(self, event_id: str, text: str) -> builtin_list[ObjectId]:
+        """Players of the event whose name contains the text (review search, feature 035)."""
+        object_id = self._object_id(event_id)
+        if object_id is None or not text.strip():
+            return []
+        cursor = self._collection.find(
+            {
+                "event_id": object_id,
+                "normalized_display_name": {"$regex": re.escape(self._normalize(text))},
+            },
+            {"_id": 1},
+        )
+        return [document["_id"] async for document in cursor]
 
     async def list_assigned(self, event_id: str) -> builtin_list[PlayerDocument]:
         """Approved players that have a team, sorted by name."""
@@ -471,7 +548,9 @@ class PlayerRepository:
         )
         return int(result.modified_count)
 
-    async def remove(self, event_id: str, player_id: str) -> PlayerDocument | None:
+    async def remove(
+        self, event_id: str, player_id: str, only_without_team: bool = False
+    ) -> PlayerDocument | None:
         event_object_id, player_object_id = self._object_id(event_id), self._object_id(player_id)
         if event_object_id is None or player_object_id is None:
             return None
@@ -482,6 +561,7 @@ class PlayerRepository:
                     "_id": player_object_id,
                     "event_id": event_object_id,
                     "status": {"$in": [RegistrationStatus.PENDING, RegistrationStatus.APPROVED]},
+                    **({"team_id": None} if only_without_team else {}),
                 },
                 [
                     {

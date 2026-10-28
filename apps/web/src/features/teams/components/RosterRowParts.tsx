@@ -65,15 +65,19 @@ export function RowActions({
   busy,
   mobile,
   handlers,
+  live = false,
 }: {
   player: Player
   group: RosterGroup
   busy: boolean
   mobile: boolean
   handlers: RowHandlers
+  /** Active event (feature 037): players on a team can't be moved or removed. */
+  live?: boolean
 }) {
   const { t } = useTranslation()
   const size = mobile ? 'md' : 'sm'
+  const locked = live && group === 'assigned'
   return (
     <span className={`inline-flex gap-1.5 ${mobile ? 'w-full gap-2' : ''}`}>
       {group === 'pending' ? (
@@ -87,7 +91,7 @@ export function RowActions({
           {mobile && <CheckOutlinedIcon fontSize="small" aria-hidden="true" />}
           {t('teams.approve')}
         </Button>
-      ) : (
+      ) : locked ? null : (
         <Button
           size={size}
           className={mobile ? 'flex-1' : ''}
@@ -107,15 +111,24 @@ export function RowActions({
       >
         <EditOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
       </Button>
-      <Button
-        size={mobile ? 'icon' : 'sm'}
-        disabled={busy}
-        aria-label={t('teams.removePlayer', { name: player.display_name })}
-        title={t('teams.removePlayer', { name: player.display_name })}
-        onClick={() => handlers.onRemove(player)}
-      >
-        <PersonRemoveOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
-      </Button>
+      {!locked && (
+        <Button
+          size={mobile ? 'icon' : 'sm'}
+          disabled={busy}
+          aria-label={t('teams.removePlayer', { name: player.display_name })}
+          title={t('teams.removePlayer', { name: player.display_name })}
+          onClick={() => handlers.onRemove(player)}
+        >
+          <PersonRemoveOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
+        </Button>
+      )}
     </span>
   )
+}
+
+/** Requested while the event was active (feature 037). */
+export function LateJoinBadge({ player }: { player: Player }) {
+  const { t } = useTranslation()
+  if (!player.joined_late) return null
+  return <Badge tone="info">{t('teams.lateJoin')}</Badge>
 }

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import NotRequired, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 from bson import ObjectId
 
@@ -17,4 +17,8 @@ class EventDocument(TypedDict):
     updated_at: datetime
     active_slot: NotRequired[int]
     rules_text: NotRequired[str | None]
+    # Players may request to join while the event is active (feature 037).
+    late_join: NotRequired[bool]
+    # Clarifications added while the event is active (feature 036).
+    rules_addenda: NotRequired[list[dict[str, Any]]]
     buy_in: NotRequired[str | None]

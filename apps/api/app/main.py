@@ -19,6 +19,7 @@ from app.database.mongodb import DatabaseClient
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.router import router as administration_router
 from app.modules.auth.router import router as auth_router
+from app.modules.balance.router import router as balance_router
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
@@ -53,8 +54,8 @@ from app.modules.submissions.router import (
 from app.modules.submissions.router import admin_router as admin_submissions_router
 from app.modules.submissions.router import player_router as submissions_router
 from app.modules.teams.router import router as teams_router
+from app.modules.tiles.router import artwork_router, wiki_router
 from app.modules.tiles.router import router as tiles_router
-from app.modules.tiles.router import wiki_router
 
 logger = get_logger(__name__)
 logging.getLogger("uvicorn.access").addFilter(OAuthAccessLogFilter())
@@ -186,6 +187,7 @@ app.include_router(teams_router)
 app.include_router(players_router)
 app.include_router(tiles_router)
 app.include_router(wiki_router)
+app.include_router(artwork_router)
 app.include_router(public_boards_router)
 app.include_router(admin_boards_router)
 app.include_router(submissions_router)
@@ -196,6 +198,7 @@ app.include_router(profile_router)
 app.include_router(maintenance_router)
 app.include_router(droptracker_router)
 app.include_router(items_router)
+app.include_router(balance_router)
 
 
 @app.get("/health", tags=["infra"])

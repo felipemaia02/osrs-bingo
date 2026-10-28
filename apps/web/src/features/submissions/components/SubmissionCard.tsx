@@ -49,6 +49,9 @@ export function SubmissionCard({ submission }: { submission: Submission }) {
       {progress && submission.status !== 'rejected' && <span className="text-xs">{progress}</span>}
       {submission.status === 'rejected' && (
         <span className="rounded-[3px] bg-rs-danger-bg px-2.5 py-2 text-[13px]">
+          {submission.reverted_at && (
+            <span className="mb-0.5 block text-xs">{t('submissions.reverted')}</span>
+          )}
           <strong>{t('submissions.reason')}</strong>{' '}
           {t(`submissions.reasons.${submission.rejection_reason ?? 'other'}`)}
           {submission.rejection_note ? ` — ${submission.rejection_note}` : ''}

@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 NOTE_MAX_LENGTH = 280
+QUERY_MAX_LENGTH = 60
 
 
 class SubmissionKind(StrEnum):
@@ -22,6 +23,8 @@ class RejectionReason(StrEnum):
     UNREADABLE_SCREENSHOT = "unreadable_screenshot"
     ITEM_MISMATCH = "item_mismatch"
     OUTSIDE_EVENT_PERIOD = "outside_event_period"
+    # Feature 035: the same drop was already sent (manually or by DropTracker).
+    DUPLICATE = "duplicate"
     OTHER = "other"
 
 
@@ -69,6 +72,8 @@ class SubmissionResponse(BaseModel):
     rejection_note: str | None
     source: SubmissionSource = SubmissionSource.MANUAL
     has_screenshot: bool = True
+    # Set when an admin reverted an accepted submission (feature 035).
+    reverted_at: datetime | None = None
 
 
 class SubmissionCounts(BaseModel):
@@ -95,6 +100,10 @@ class ReviewItem(SubmissionResponse):
     within_event: bool
     # The reviewing admin plays on this submission's team: someone else reviews it (026).
     own_team: bool = False
+    # The card on this square was fixed during the event and no longer has this item (036).
+    drop_removed: bool = False
+    # IDs of pending/accepted submissions that look like the same drop (feature 035).
+    possible_duplicates: list[str] = Field(default_factory=list)
 
 
 class ReviewCounts(BaseModel):
@@ -106,6 +115,8 @@ class ReviewCounts(BaseModel):
 class ReviewQueueQuery(BaseModel):
     status: SubmissionStatus = SubmissionStatus.PENDING
     kind: SubmissionKind | None = None
+    # Player, item or card name (feature 035, for finding accepted submissions to revert).
+    q: str = Field(default="", max_length=QUERY_MAX_LENGTH)
     offset: int = Field(default=0, ge=0, le=1_000_000)
     limit: int = Field(default=25, ge=1, le=100)
 
@@ -119,3 +130,29 @@ class ReviewQueueResponse(BaseModel):
 
 
 ReviewDecision = Literal["accepted", "rejected"]
+
+
+class TileHistoryItem(BaseModel):
+    id: str
+    player_name: str
+    drop_name: str | None
+    progress_weight: float | None
+    status: SubmissionStatus
+    source: SubmissionSource
+    submitted_at: datetime
+    has_screenshot: bool
+    # The same item as the submission under review.
+    same_item: bool
+    possible_duplicate: bool
+
+
+class TileHistoryResponse(BaseModel):
+    """What a team already has on a tile, shown next to a submission in review (035)."""
+
+    team_id: str
+    team_name: str | None
+    card_name: str
+    progress: float
+    requirement: float
+    complete: bool
+    items: list[TileHistoryItem]

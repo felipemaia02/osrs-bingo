@@ -12,6 +12,8 @@ vi.mock('../src/features/events/api/eventsApi', () => ({
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
   updateEventRules: vi.fn(),
+  addRulesAddendum: vi.fn(),
+  setLateJoin: vi.fn(),
   activateEvent: vi.fn(),
   finishEvent: vi.fn(),
 }))
@@ -42,6 +44,7 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
   removePlayer: vi.fn(),
   approveSelectedPlayers: vi.fn(),
   removeSelectedPlayers: vi.fn(),
+  assignSelectedPlayers: vi.fn(),
   fetchTeamBalance: vi.fn().mockResolvedValue({ average_ehb: 0, teams: [] }),
   fetchDraftPreview: vi.fn().mockResolvedValue({ captains: [], players: [] }),
   updateParticipation: vi.fn(),
@@ -67,12 +70,14 @@ vi.mock('../src/features/cards/api/cardsApi', () => ({
     .fn()
     .mockResolvedValue({ available: false, days: 30, total: 0, per_drop: [] }),
   linkCatalogItems: vi.fn(),
+  uploadCardArtwork: vi.fn(),
 }))
 
 vi.mock('../src/features/boards/api/boardsApi', () => ({
   fetchAdminBoard: vi.fn().mockResolvedValue(null),
   fetchPublicBoard: vi.fn().mockResolvedValue(null),
   saveBoard: vi.fn(),
+  updateBoardPosition: vi.fn(),
 }))
 
 vi.mock('../src/features/submissions/api/submissionsApi', () => ({
@@ -91,6 +96,16 @@ vi.mock('../src/features/submissions/api/submissionsApi', () => ({
   }),
   acceptSubmission: vi.fn(),
   rejectSubmission: vi.fn(),
+  revertSubmission: vi.fn(),
+  fetchTileHistory: vi.fn().mockResolvedValue({
+    team_id: 'team',
+    team_name: null,
+    card_name: '',
+    progress: 0,
+    requirement: 1,
+    complete: false,
+    items: [],
+  }),
 }))
 
 vi.mock('../src/features/scoring/api/scoringApi', () => ({
@@ -109,4 +124,13 @@ vi.mock('../src/features/profiles/api/profileApi', () => ({
 
 vi.mock('../src/features/maintenance/siteStatusApi', () => ({
   fetchSiteStatus: vi.fn().mockResolvedValue({ maintenance: false, message: null }),
+}))
+
+vi.mock('../src/features/balance/api', () => ({
+  fetchBossKcSettings: vi.fn().mockResolvedValue({
+    excluded: ['brutus'],
+    raids: ['chambers_of_xeric', 'theatre_of_blood'],
+    known: ['brutus', 'chambers_of_xeric', 'vorkath'],
+  }),
+  saveBossKcSettings: vi.fn(),
 }))

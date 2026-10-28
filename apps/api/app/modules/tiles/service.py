@@ -73,10 +73,11 @@ class CardService:
         link when their name is exactly an OSRS item (any version).
         """
         workbook = _workbook_links()
+        categories = _workbook_categories()
         cards = await self.list()
         names = [drop.name for card in cards for drop in card.revision.drops if not drop.item_ids]
         ids = await items.ids_by_name(names)
-        linked_cards = linked_drops = unlinked = 0
+        linked_cards = linked_drops = unlinked = categorized = 0
         skipped: list[str] = []
         for card in cards:
             fields = card.revision.model_dump(include=set(CardRevisionFields.model_fields))
@@ -99,7 +100,11 @@ class CardService:
                     changed += 1
                 else:
                     unlinked += 1
-            if not changed:
+            # Feature 040: workbook cards without categories get the bundled ones.
+            suggested = categories.get(card.slug) if not fields["categories"] else None
+            if suggested:
+                fields["categories"] = suggested
+            if not changed and not suggested:
                 continue
             try:
                 payload = CardRevisionCreate(
@@ -113,12 +118,14 @@ class CardService:
             if await self._repository.add_revision(card.id, payload, actor.id) is None:
                 skipped.append(card.revision.name)
                 continue
-            linked_cards += 1
+            linked_cards += int(changed > 0)
             linked_drops += changed
+            categorized += int(bool(suggested))
         return LinkItemsResponse(
             linked_cards=linked_cards,
             linked_drops=linked_drops,
             unlinked_drops=unlinked,
+            categorized_cards=categorized,
             skipped_cards=skipped,
         )
 
@@ -179,4 +186,13 @@ def _workbook_links() -> dict[tuple[str, str], dict[str, Any]]:
         for card in load_workbook_catalog()["cards"]
         for drop in card["drops"]
         if drop.get("item_ids")
+    }
+
+
+def _workbook_categories() -> dict[str, list[str]]:
+    """Bundled workbook categories by card slug (feature 040)."""
+    return {
+        card["slug"]: card["categories"]
+        for card in load_workbook_catalog()["cards"]
+        if card.get("categories")
     }

@@ -9,6 +9,7 @@ import {
   resolveWikiImage,
   retireCard,
   searchItems,
+  uploadCardArtwork,
 } from '../api/cardsApi'
 import type { DropMatchInput } from '../types'
 
@@ -34,6 +35,7 @@ export function useCardMutations() {
     retire: useMutation({ mutationFn: retireCard, onSuccess: refresh }),
     importWorkbook: useMutation({ mutationFn: importWorkbookCatalog, onSuccess: refresh }),
     resolveImage: useMutation({ mutationFn: resolveWikiImage }),
+    uploadArtwork: useMutation({ mutationFn: uploadCardArtwork }),
     linkItems: useMutation({ mutationFn: linkCatalogItems, onSuccess: refresh }),
   }
 }

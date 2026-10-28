@@ -10,6 +10,7 @@ import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { JOINED_STATE } from '../../join/state'
 import { EventRegistration } from '../../teams/components/EventRegistration'
 import { EventRulesText } from '../components/EventRulesText'
+import { hasRules } from '../rules'
 import { EventSchedule } from '../components/EventSchedule'
 import { EventCardTitle } from '../components/EventCardTitle'
 import { EVENT_PANEL_ID, EventTabs } from '../components/EventTabs'
@@ -112,7 +113,9 @@ export function PlayerEventsPage() {
                   {event.description && (
                     <p className="m-0 text-sm text-rs-muted">{event.description}</p>
                   )}
-                  {event.rules_text && <EventRulesText text={event.rules_text} />}
+                  {hasRules(event) && (
+                    <EventRulesText text={event.rules_text ?? null} addenda={event.rules_addenda} />
+                  )}
                   <EventRegistration event={event} />
                 </article>
               ))}

@@ -20,12 +20,13 @@ from app.modules.submissions.schemas import (
     SubmissionKind,
     SubmissionReject,
     SubmissionResponse,
+    TileHistoryResponse,
 )
 from app.modules.submissions.service import SubmissionService
 from app.modules.teams.repository import TeamRepository
 
 # Matched by RequestSafetyMiddleware to allow screenshot-sized bodies on this route only.
-UPLOAD_PATH_PATTERN = re.compile(r"/events/[^/]+/submissions")
+UPLOAD_PATH_PATTERN = re.compile(r"/events/[^/]+/submissions|/admin/cards/artwork")
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
 
 player_router = APIRouter(tags=["submissions"])
@@ -114,3 +115,20 @@ async def reject(
     service: SubmissionServiceDependency,
 ) -> SubmissionResponse:
     return await service.reject(submission_id, payload, admin)
+
+
+@admin_router.post("/submissions/{submission_id}/revert", response_model=SubmissionResponse)
+async def revert(
+    submission_id: str,
+    payload: SubmissionReject,
+    admin: AdminDependency,
+    service: SubmissionServiceDependency,
+) -> SubmissionResponse:
+    return await service.revert(submission_id, payload, admin)
+
+
+@admin_router.get("/submissions/{submission_id}/tile-history", response_model=TileHistoryResponse)
+async def tile_history(
+    submission_id: str, admin: AdminDependency, service: SubmissionServiceDependency
+) -> TileHistoryResponse:
+    return await service.tile_history(submission_id, admin)

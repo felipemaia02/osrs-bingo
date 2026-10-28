@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui/Button'
 import { Panel } from '../../../components/ui/Panel'
-import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { useSavePreferences } from '../hooks/useProfile'
-import { browserTimezone, timezoneGroups } from '../timezones'
+import { browserTimezone } from '../timezones'
 import { ACTIVITIES, type Activity, type Preferences } from '../types'
+import { TimezonePicker } from './TimezonePicker'
 
 /** Time zone and usual activity, saved on the profile (FR-006). */
 export function ClanPreferences({ saved }: { saved: Preferences }) {
@@ -14,7 +14,6 @@ export function ClanPreferences({ saved }: { saved: Preferences }) {
   // With nothing saved yet, the browser's zone is suggested (saved only on "Save").
   const [timezone, setTimezone] = useState<string | null>(saved.timezone ?? browserTimezone())
   const [activity, setActivity] = useState<Activity | null>(saved.activity)
-  const groups = useMemo(() => timezoneGroups(saved.timezone), [saved.timezone])
   const changed = timezone !== saved.timezone || activity !== saved.activity
 
   return (
@@ -28,32 +27,10 @@ export function ClanPreferences({ saved }: { saved: Preferences }) {
         </h2>
         <span className="text-[13px] text-rs-muted">{t('profile.preferences.description')}</span>
       </div>
-      <div className="flex flex-col gap-1.5 text-sm">
-        <label htmlFor="profile-timezone" className="font-semibold">
-          {t('profile.preferences.timezone')}
-        </label>
-        <select
-          id="profile-timezone"
-          value={timezone ?? ''}
-          onChange={(event) => setTimezone(event.target.value || null)}
-          aria-describedby={saved.timezone ? undefined : 'profile-timezone-hint'}
-          className={FIELD_CLASS}
-        >
-          <option value="">{t('profile.preferences.noTimezone')}</option>
-          {groups.map((group) => (
-            <optgroup key={group.area} label={group.area}>
-              {group.zones.map((zone) => (
-                <option key={zone.id} value={zone.id}>
-                  {zone.label}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+      <div className="flex flex-col gap-1">
+        <TimezonePicker value={timezone} onChange={setTimezone} />
         {!saved.timezone && timezone && (
-          <span id="profile-timezone-hint" className="text-[13px] text-rs-muted">
-            {t('profile.preferences.detected')}
-          </span>
+          <span className="text-[13px] text-rs-muted">{t('profile.preferences.detected')}</span>
         )}
       </div>
       <OptionGroup

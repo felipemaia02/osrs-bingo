@@ -4,7 +4,7 @@ Every automatic drop starts Pending; admins accept or reject it like a manual on
 """
 
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Any
 
 from bson import ObjectId
@@ -24,7 +24,6 @@ from app.modules.submissions.repository import SubmissionRepository
 from app.modules.submissions.schemas import SubmissionKind, SubmissionSource, SubmissionStatus
 
 BATCH_SIZE = 1000
-MANUAL_DUPLICATE_WINDOW = timedelta(hours=24)
 SCREENSHOT_TYPE = "image/png"
 SUBMISSION_QUANTITY = 1
 
@@ -33,7 +32,12 @@ class Outcome:
     CREATED = "created"
     NOT_IN_EVENT = "not_in_event"
     NO_CARD = "no_card"
+    # Older runs (030) skipped drops sent manually; kept so their stored outcome still reads.
     MANUAL_DUPLICATE = "manual_duplicate"
+    # Received before the player was placed in their team (late join, feature 037).
+    BEFORE_TEAM = "before_team"
+    # The same DropTracker drop was already a submission (unique drop ID).
+    ALREADY_IMPORTED = "already_imported"
     OUTSIDE_WINDOW = "outside_window"
 
 
@@ -127,24 +131,20 @@ class DropTrackerBingo:
         player = players.get(normalize_rsn(drop["player_name"]))
         if player is None:
             return Outcome.NOT_IN_EVENT
+        joined = player.get("team_assigned_at")
+        if joined is not None and received < self._utc(joined):
+            return Outcome.BEFORE_TEAM
         matches = self._choose(cards.lookup(drop), drop)
         if not matches:
             return Outcome.NO_CARD
+        # Manual submissions never cancel automatic drops (035): reviewers see likely
+        # duplicates flagged in the review queue instead.
         created = 0
         for match in matches:
-            if await self._submissions.has_recent_manual_drop(
-                event["_id"],
-                player["_id"],
-                match.slot["position"],
-                match.drop["key"],
-                received,
-                MANUAL_DUPLICATE_WINDOW,
-            ):
-                continue
             others = [item.slot["card"]["name"] for item in matches if item is not match]
             document = self._submission(drop, event, player, match, others, received)
             created += int(await self._submissions.insert(document))
-        return Outcome.CREATED if created else Outcome.MANUAL_DUPLICATE
+        return Outcome.CREATED if created else Outcome.ALREADY_IMPORTED
 
     @staticmethod
     def _card_index(positions: list[dict[str, Any]]) -> "CardIndex":

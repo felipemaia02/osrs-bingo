@@ -1,3 +1,5 @@
+import { CategorySelect } from '../../cards/components/CardCatalogToolbar'
+import type { CategoryFilter } from '../../cards/hooks/useCatalogView'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined'
 import DragIndicatorOutlinedIcon from '@mui/icons-material/DragIndicatorOutlined'
@@ -28,6 +30,9 @@ interface BuilderCatalogProps {
   drag: DragSource | null
   onModeChange: (mode: CatalogMode) => void
   onDifficultyChange: (difficulty: DifficultyFilter) => void
+  /** Feature 040. */
+  category: CategoryFilter
+  onCategoryChange: (category: CategoryFilter) => void
   onQueryChange: (query: string) => void
   onSelect: (card: BuilderCard) => void
   onAdd: (card: BuilderCard) => void
@@ -94,6 +99,7 @@ export function BuilderCatalog(props: BuilderCatalogProps) {
               ))}
             </select>
           </label>
+          <CategorySelect value={props.category} onChange={props.onCategoryChange} />
         </div>
       </div>
       <div className="max-h-[60vh] overflow-y-auto">

@@ -9,7 +9,7 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.auth.schemas import CurrentUser
 from app.modules.boards.models import BoardDocument
 from app.modules.boards.repository import BoardRepository
-from app.modules.boards.schemas import BoardSave, BoardStatus
+from app.modules.boards.schemas import BoardPositionUpdate, BoardSave, BoardStatus
 from app.modules.boards.service import BoardService, is_publishable_board
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
@@ -352,3 +352,87 @@ def test_publishable_board_needs_every_created_bonus_slot() -> None:
         ),
     ]
     assert is_publishable_board(board) is True
+
+
+def live_board(card_revision: int = 1) -> BoardDocument:
+    """Published 1-square board whose square shows Vorkath revision `card_revision` (036)."""
+    snapshot = {
+        "card_id": CARD_ID,
+        "slug": "vorkath",
+        "card_revision": card_revision,
+        **{
+            key: value
+            for key, value in card_document()["revisions"][0].items()
+            if key not in {"revision", "change_reason", "created_by", "created_at"}
+        },
+    }
+    board = saved_board([{"position": 1, "row": 1, "column": 1, "card": snapshot}])
+    board["status"] = BoardStatus.PUBLISHED
+    return board
+
+
+def card_with_revision_two() -> CardDocument:
+    card = card_document()
+    second = {**card["revisions"][0], "revision": 2, "completion_requirement": 6}
+    card["revisions"].append(second)
+    card["current_revision"] = 2
+    return card
+
+
+async def test_a_live_square_moves_to_a_newer_revision_with_a_reason(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    events.get.return_value = event_document(EventStatus.ACTIVE)
+    boards.get_by_event.return_value = live_board()
+    cards.get.return_value = card_with_revision_two()
+    updated = live_board(2)
+    updated["positions"][0]["updates"] = [
+        {
+            "from_revision": 1,
+            "to_revision": 2,
+            "reason": "Requirement was too high",
+            "updated_by_name": ADMIN.username,
+            "updated_at": NOW,
+        }
+    ]
+    boards.replace_card.return_value = updated
+
+    response = await BoardService(boards, cards, events).update_position(
+        EVENT_ID,
+        1,
+        BoardPositionUpdate(card_revision=2, reason="  Requirement  was too high "),
+        ADMIN,
+    )
+
+    event_id, revision, position, snapshot, record = boards.replace_card.await_args.args
+    assert (event_id, revision, position) == (EVENT_ID, 1, 1)
+    assert snapshot["card_revision"] == 2 and snapshot["completion_requirement"] == 6
+    assert record["reason"] == "Requirement was too high" and record["from_revision"] == 1
+    assert record["updated_by"] == ADMIN.id
+    assert response.positions[0].updates[0].reason == "Requirement was too high"
+
+
+@pytest.mark.parametrize(
+    ("event_status", "card_revision", "message"),
+    [
+        (EventStatus.DRAFT, 2, "active event"),
+        (EventStatus.ACTIVE, 1, "newer revision"),
+    ],
+)
+async def test_live_fixes_need_an_active_event_and_a_newer_revision(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+    event_status: EventStatus,
+    card_revision: int,
+    message: str,
+) -> None:
+    boards, cards, events = repositories
+    events.get.return_value = event_document(event_status)
+    boards.get_by_event.return_value = live_board()
+    cards.get.return_value = card_with_revision_two()
+
+    with pytest.raises(ConflictError, match=message):
+        await BoardService(boards, cards, events).update_position(
+            EVENT_ID, 1, BoardPositionUpdate(card_revision=card_revision, reason="fix"), ADMIN
+        )
+    boards.replace_card.assert_not_awaited()

@@ -1,6 +1,6 @@
 from builtins import list as builtin_list
 from datetime import UTC, datetime
-from typing import cast
+from typing import Any, cast
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -85,6 +85,30 @@ class EventRepository:
             "event_draft_updated",
             event_id=event_id,
             updated=bool(document),
+        )
+        return cast(EventDocument | None, document)
+
+    async def set_late_join(self, event_id: str, enabled: bool) -> EventDocument | None:
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return None
+        document = await self._collection.find_one_and_update(
+            {"_id": object_id, "status": {"$ne": EventStatus.FINISHED}},
+            {"$set": {"late_join": enabled, "updated_at": datetime.now(UTC)}},
+            return_document=ReturnDocument.AFTER,
+        )
+        return cast(EventDocument | None, document)
+
+    async def add_rules_addendum(
+        self, event_id: str, addendum: dict[str, Any]
+    ) -> EventDocument | None:
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return None
+        document = await self._collection.find_one_and_update(
+            {"_id": object_id, "status": EventStatus.ACTIVE},
+            {"$push": {"rules_addenda": addendum}, "$set": {"updated_at": datetime.now(UTC)}},
+            return_document=ReturnDocument.AFTER,
         )
         return cast(EventDocument | None, document)
 

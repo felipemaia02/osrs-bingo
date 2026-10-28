@@ -70,6 +70,8 @@ class TeamBalance(BaseModel):
     emblem_url: str | None
     player_count: int
     boss_kc_total: int
+    # Raids KC apart from boss KC (feature 039).
+    raids_kc_total: int = 0
     ehb_total: float
     captain: str | None
     # EHB versus the average per team, in percent (rounded).

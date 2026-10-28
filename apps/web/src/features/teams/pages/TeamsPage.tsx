@@ -15,6 +15,8 @@ import { useSession } from '../../auth/hooks/useSession'
 import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
+import { BossKcSettingsModal } from '../../balance/components/BossKcSettingsModal'
+import { BulkAssignModal } from '../components/BulkAssignModal'
 import { BulkBar } from '../components/BulkBar'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 import { PlayerAssignment } from '../components/RosterDialogs'
@@ -130,7 +132,10 @@ export function TeamsPage() {
 
 function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }) {
   const { t } = useTranslation()
-  const editable = event.status === 'draft'
+  // Drafts allow every change; during the event only players without a team (feature 037).
+  const editable = event.status === 'draft' || event.status === 'active'
+  const live = event.status === 'active'
+  const teamsEditable = event.status === 'draft'
   const [tab, setTab] = useState<RosterTab>('pending')
   const [searchInput, setSearchInput] = useState('')
   const search = useDebouncedValue(searchInput.trim(), SEARCH_DELAY_MS)
@@ -139,6 +144,8 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [removing, setRemoving] = useState<Player | null>(null)
   const [removingSelected, setRemovingSelected] = useState(false)
+  const [assigningSelected, setAssigningSelected] = useState(false)
+  const [kcSettings, setKcSettings] = useState(false)
   const [confirmAll, setConfirmAll] = useState(false)
   const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
@@ -233,6 +240,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const dialogOpen = Boolean(
     removing ||
     removingSelected ||
+    assigningSelected ||
     confirmAll ||
     assigning ||
     creatingTeam ||
@@ -312,7 +320,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const list =
     tab === 'teams' ? (
       <>
-        {editable && (
+        {teamsEditable && (
           <div className={desktop ? 'flex justify-end p-3' : ''}>
             <Button className={desktop ? '' : 'w-full'} onClick={() => setCreatingTeam(true)}>
               {t('teams.roster.createTeam')}
@@ -330,7 +338,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             mobile={!desktop}
             onViewMembers={(team) => changeTab('assigned', team.id)}
             onEdit={
-              editable
+              teamsEditable
                 ? (team) => {
                     actions.clearFeedback()
                     setEditingTeam(team)
@@ -360,6 +368,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
         group={group}
         teams={teams.data ?? []}
         editable={editable}
+        live={live}
         busy={actions.saving}
         selected={selected}
         onToggle={toggle}
@@ -372,6 +381,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
         group={group}
         teams={teams.data ?? []}
         editable={editable}
+        live={live}
         busy={actions.saving}
         handlers={handlers}
       />
@@ -412,7 +422,18 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
 
   return (
     <>
-      {balance.data && <TeamBalanceCards balance={balance.data} />}
+      {balance.data && (
+        <TeamBalanceCards balance={balance.data} onSettings={() => setKcSettings(true)} />
+      )}
+      {kcSettings && (
+        <BossKcSettingsModal
+          onSaved={(message) => {
+            setKcSettings(false)
+            actions.notify(message)
+          }}
+          onClose={() => setKcSettings(false)}
+        />
+      )}
       {desktop ? (
         <>
           <div className="flex flex-col rounded border border-rs-border bg-rs-surface">
@@ -426,24 +447,35 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             <div role="tabpanel" id="roster-panel" aria-labelledby={`roster-tab-${tab}`}>
               {toolbar}
               {feedbackLine}
-              {editable && tab !== 'teams' && selected.size > 0 && (
-                <BulkBar
-                  count={selected.size}
-                  canApprove={tab === 'pending'}
-                  busy={actions.saving}
-                  onApprove={() =>
-                    void confirm(
-                      () => actions.approveSelected([...selected]),
-                      () => undefined,
-                    )
-                  }
-                  onRemove={() => {
-                    actions.clearFeedback()
-                    setRemovingSelected(true)
-                  }}
-                  onClear={() => setSelected(new Set())}
-                />
-              )}
+              {editable &&
+                tab !== 'teams' &&
+                !(live && tab === 'assigned') &&
+                selected.size > 0 && (
+                  <BulkBar
+                    count={selected.size}
+                    canApprove={tab === 'pending'}
+                    busy={actions.saving}
+                    onApprove={() =>
+                      void confirm(
+                        () => actions.approveSelected([...selected]),
+                        () => undefined,
+                      )
+                    }
+                    onAssign={
+                      tab === 'unassigned' || (tab === 'assigned' && !live)
+                        ? () => {
+                            actions.clearFeedback()
+                            setAssigningSelected(true)
+                          }
+                        : undefined
+                    }
+                    onRemove={() => {
+                      actions.clearFeedback()
+                      setRemovingSelected(true)
+                    }}
+                    onClear={() => setSelected(new Set())}
+                  />
+                )}
               {list}
               {pagination}
             </div>
@@ -473,9 +505,11 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             aria-labelledby={`roster-tab-${tab}`}
             className="flex flex-col gap-3"
           >
-            {!editable && (
+            {(!editable || live) && (
               <p className="m-0 text-xs text-rs-muted">
-                {t('teams.roster.readOnly', { status: t(`events.status.${event.status}`) })}
+                {live
+                  ? t('teams.roster.live')
+                  : t('teams.roster.readOnly', { status: t(`events.status.${event.status}`) })}
               </p>
             )}
             {toolbar}
@@ -501,6 +535,20 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             )
           }
           onClose={() => setRemoving(null)}
+        />
+      )}
+      {assigningSelected && (
+        <BulkAssignModal
+          players={items.filter((player) => selected.has(player.id))}
+          teams={teams.data ?? []}
+          balance={balance.data?.teams ?? []}
+          busy={actions.saving}
+          onConfirm={async (teamId) => {
+            const done = await actions.assignSelected([...selected], teamId)
+            if (done) setSelected(new Set())
+            return done
+          }}
+          onClose={() => setAssigningSelected(false)}
         />
       )}
       {removingSelected && (

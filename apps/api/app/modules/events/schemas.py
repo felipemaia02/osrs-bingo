@@ -60,6 +60,7 @@ class EventUpdate(EventFields):
 
 
 RULES_TEXT_MAX_LENGTH = 5000
+ADDENDUM_MAX_LENGTH = 1000
 
 
 class EventRules(BaseModel):
@@ -79,6 +80,36 @@ class EventRules(BaseModel):
         return text or None
 
 
+class LateJoinUpdate(BaseModel):
+    """Allow players to join while the event is active (feature 037)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool
+
+
+class RulesAddendumCreate(BaseModel):
+    """A clarification added to the rules while the event is active (feature 036)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(min_length=1, max_length=ADDENDUM_MAX_LENGTH)
+
+    @field_validator("text")
+    @classmethod
+    def visible_text(cls, value: str) -> str:
+        lines = [line.rstrip() for line in value.replace("\r\n", "\n").split("\n")]
+        text = "\n".join(lines).strip()
+        if not text:
+            raise ValueError("Write the clarification")
+        return text
+
+
+class RulesAddendum(BaseModel):
+    text: str
+    added_at: datetime
+
+
 class EventResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -89,6 +120,8 @@ class EventResponse(BaseModel):
     end_at: datetime
     status: EventStatus
     rules_text: str | None = None
+    rules_addenda: list[RulesAddendum] = Field(default_factory=list)
+    late_join: bool = False
     buy_in: str | None = None
     created_at: datetime
     updated_at: datetime

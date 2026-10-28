@@ -108,6 +108,7 @@ async def test_page_joins_discord_name_and_searches_both_names_with_bounds() -> 
     database = MagicMock()
     collection = database.__getitem__.return_value
     row = {"_id": ObjectId(), "display_name": "Crab", "discord_username": "crabby"}
+    collection.find_one = AsyncMock(return_value=None)  # boss KC settings: defaults (039)
     collection.aggregate.return_value.to_list = AsyncMock(
         return_value=[{"items": [row], "total": [{"value": 42}]}]
     )
@@ -154,6 +155,7 @@ async def test_page_joins_discord_name_and_searches_both_names_with_bounds() -> 
 async def test_page_without_search_or_rows_returns_an_empty_page() -> None:
     database = MagicMock()
     collection = database.__getitem__.return_value
+    collection.find_one = AsyncMock(return_value=None)  # boss KC settings: defaults (039)
     collection.aggregate.return_value.to_list = AsyncMock(return_value=[{"items": [], "total": []}])
     result = await PlayerRepository(database).page(
         str(ObjectId()),

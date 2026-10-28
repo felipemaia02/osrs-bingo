@@ -27,6 +27,8 @@ class SubmissionDocument(TypedDict):
     preverification_note: NotRequired[str | None]
     screenshot_key: str
     screenshot_type: str
+    # Manual uploads (feature 035): the exact same file flags a possible duplicate.
+    screenshot_sha256: NotRequired[str]
     submitted_at: datetime
     reviewed_at: NotRequired[datetime | None]
     reviewed_by: NotRequired[str | None]
@@ -41,3 +43,6 @@ class SubmissionDocument(TypedDict):
     source: NotRequired[str]
     droptracker_drop_id: NotRequired[int]
     screenshot_url: NotRequired[str | None]
+    # An accepted submission undone by an admin (feature 035).
+    reverted_at: NotRequired[datetime]
+    reverted_by: NotRequired[str]

@@ -31,7 +31,14 @@ def board() -> dict[str, Any]:
                 "position": (row - 1) * 3 + column,
                 "row": row,
                 "column": column,
-                "card": {"tile_score": 10, "completion_requirement": 2},
+                "card": {
+                    "tile_score": 10,
+                    "completion_requirement": 2,
+                    "drops": [
+                        {"key": "unique", "name": "Unique", "progress_weight": 1},
+                        {"key": "rare", "name": "Rare", "progress_weight": 2},
+                    ],
+                },
             }
             for row in range(1, 4)
             for column in range(1, 4)
@@ -44,8 +51,9 @@ def accepted(team: ObjectId, player: ObjectId, position: int, weight: float = 1)
         "team_id": team,
         "player_id": player,
         "position": position,
-        "drop_key": "unique",
-        "drop_name": "Unique",
+        # The board card decides the weight (036): "rare" is worth 2, "unique" 1.
+        "drop_key": "rare" if weight == 2 else "unique",
+        "drop_name": "Rare" if weight == 2 else "Unique",
         "progress_weight": weight,
         "quantity": 1,
     }
@@ -144,3 +152,20 @@ async def test_equal_totals_share_the_position(deps: dict[str, Any]) -> None:
     deps["service"]._submissions.accepted_drops.return_value = []
     result = await deps["service"].ranking(str(EVENT_ID))
     assert {(team.position, team.tied) for team in result.teams} == {(1, True)}
+
+
+async def test_live_card_fixes_rescore_accepted_drops_with_the_new_weights(
+    deps: dict[str, Any],
+) -> None:
+    """036: the square's current card decides weights; removed drops stop counting."""
+    fixed = board()
+    first = fixed["positions"][0]["card"]
+    first["drops"] = [{"key": "rare", "name": "Rare", "progress_weight": 1}]  # was 2; no "unique"
+    deps["service"]._boards.get_by_event.return_value = fixed
+
+    score = await deps["service"].own_team(str(EVENT_ID), USER)
+
+    assert score.tiles[0].progress == 1 and not score.tiles[0].complete
+    ranking = await deps["service"].ranking(str(EVENT_ID))
+    zamorak = next(team for team in ranking.teams if team.team_name == "Zamorak")
+    assert zamorak.total == 0  # its two "unique" drops on tile 1 no longer count

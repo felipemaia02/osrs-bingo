@@ -31,6 +31,8 @@ class WomStats:
     combat: dict[str, int]
     # Every skill WOM reports (feature 032), keyed by WOM's skill name; "overall" excluded.
     skills: dict[str, int]
+    # Kill count per boss with at least one kill (feature 039), keyed by WOM's boss name.
+    bosses: dict[str, int]
     updated_at: datetime | None
 
 
@@ -49,6 +51,11 @@ def parse_player(data: dict[str, Any]) -> WomStats:
         boss_kc=sum(max(int(boss.get("kills", UNRANKED_KILLS)), 0) for boss in bosses.values()),
         combat={skill: _level(skills.get(skill)) for skill in COMBAT_SKILLS},
         skills={name: _level(value) for name, value in skills.items() if name != OVERALL_SKILL},
+        bosses={
+            name: int(boss.get("kills", UNRANKED_KILLS))
+            for name, boss in bosses.items()
+            if int(boss.get("kills", UNRANKED_KILLS)) > 0
+        },
         updated_at=datetime.fromisoformat(updated.replace("Z", "+00:00")) if updated else None,
     )
 

@@ -1,3 +1,4 @@
+import type { CategoryFilter } from '../../cards/hooks/useCatalogView'
 import { useMemo, useState, type ReactNode } from 'react'
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
@@ -18,6 +19,7 @@ import type { BingoEvent } from '../../events/types'
 import { BoardSizeControl } from '../components/BoardSizeControl'
 import { LineBonusFields } from '../components/LineBonusFields'
 import { BuilderCatalog } from '../components/BuilderCatalog'
+import { LiveCardFixes } from '../components/LiveCardFixes'
 import { BuilderGrid } from '../components/BuilderGrid'
 import { BuilderStatusPanel } from '../components/BuilderStatusPanel'
 import { CardRulesSummary } from '../components/CardRulesSummary'
@@ -186,6 +188,7 @@ function EventBoardBuilder({
   const [drag, setDrag] = useState<DragSource | null>(null)
   const [mode, setMode] = useState<CatalogMode>('available')
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('all')
+  const [category, setCategory] = useState<CategoryFilter>('all')
   const [query, setQuery] = useState('')
   const [swapping, setSwapping] = useState(false)
   const [pendingResize, setPendingResize] = useState<PendingResize | null>(null)
@@ -193,8 +196,8 @@ function EventBoardBuilder({
   const positionLabel = usePositionLabel(draft.size)
 
   const catalog = useMemo(
-    () => filterCatalog(builder.catalogCards, draft.draft, { mode, difficulty, query }),
-    [builder.catalogCards, draft.draft, mode, difficulty, query],
+    () => filterCatalog(builder.catalogCards, draft.draft, { mode, difficulty, query, category }),
+    [builder.catalogCards, draft.draft, mode, difficulty, query, category],
   )
   const placed = Object.values(draft.draft).map((key) => builder.cardFor(key))
   const filled = placed.length
@@ -336,6 +339,15 @@ function EventBoardBuilder({
       {feedback.message}
     </p>
   )
+  // Feature 036: during the event, squares can be fixed with newer card revisions.
+  const liveFixes = event.status === 'active' && board.data && (
+    <LiveCardFixes
+      eventId={event.id}
+      board={board.data}
+      cards={cards.data ?? []}
+      onDone={(message) => setFeedback({ message, isError: false })}
+    />
+  )
   const noCards = !builder.catalogCards.length && (
     <p className="m-0 text-sm text-rs-muted">
       {t('boards.noCards')}{' '}
@@ -413,6 +425,7 @@ function EventBoardBuilder({
           onSave={() => void saveBoard()}
         />
         {feedbackLine}
+        {liveFixes}
         {noCards}
         <div className="flex items-start gap-5">
           <BuilderGrid
@@ -449,6 +462,8 @@ function EventBoardBuilder({
               drag={drag}
               onModeChange={setMode}
               onDifficultyChange={setDifficulty}
+              category={category}
+              onCategoryChange={setCategory}
               onQueryChange={setQuery}
               onSelect={(card) => setSelectedKey(card.key)}
               onAdd={(card) => addCard(card)}
@@ -470,6 +485,7 @@ function EventBoardBuilder({
     <>
       {mobileHeader}
       {feedbackLine}
+      {liveFixes}
       {noCards}
       <MobilePositionMap
         draft={draft.draft}

@@ -2,6 +2,19 @@ export type CardStatus = 'active' | 'retired'
 export type CardDifficulty = 'Low' | 'Mid' | 'High'
 export type CardKind = 'boss' | 'boss_group' | 'raid' | 'activity' | 'task'
 
+/** Clan-style groups for browsing (feature 040); never used for scoring. */
+export const CARD_CATEGORIES = [
+  'solo_bosses',
+  'slayer_bosses',
+  'wilderness_bosses',
+  'raids',
+  'skilling_bosses',
+  'skilling',
+  'minigames',
+  'other',
+] as const
+export type CardCategory = (typeof CARD_CATEGORIES)[number]
+
 export interface AcceptedDrop {
   key: string
   name: string
@@ -48,7 +61,16 @@ export interface LinkItemsResult {
   linked_cards: number
   linked_drops: number
   unlinked_drops: number
+  /** Workbook cards that got their bundled categories (feature 040). */
+  categorized_cards?: number
   skipped_cards: string[]
+}
+
+/** Clan artwork uploaded for a card (feature 041). */
+export interface CardArtwork {
+  key: string
+  content_type: string
+  artist: string | null
 }
 
 export interface WikiImage {
@@ -83,9 +105,11 @@ export interface CardRevision {
   completion_requirement: number
   drops: AcceptedDrop[]
   wiki_image: WikiImage | null
+  artwork?: CardArtwork | null
   fallback_image_accepted: boolean
   rule_note: string | null
   requires_preverification?: boolean
+  categories?: CardCategory[]
   provenance: CardProvenance
   change_reason: string
   created_by: string
@@ -118,9 +142,11 @@ export interface CardRevisionPayload {
   completion_requirement: number
   drops: AcceptedDrop[]
   wiki_image: WikiImage | null
+  artwork: CardArtwork | null
   fallback_image_accepted: boolean
   rule_note: string | null
   requires_preverification: boolean
+  categories: CardCategory[]
   change_reason: string
 }
 

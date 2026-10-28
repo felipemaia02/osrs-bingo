@@ -1,5 +1,6 @@
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined'
 import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined'
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
 import { SourceBadge } from './SubmissionParts'
@@ -13,7 +14,7 @@ interface ReviewListProps {
   onSelect: (item: ReviewItem) => void
 }
 
-/** Pending submissions, oldest first (future-review queue). */
+/** Pending submissions, oldest first (future-review queue); accepted ones latest first (035). */
 export function ReviewList({ items, selectedId, onSelect }: ReviewListProps) {
   const { t } = useTranslation()
   const { ago } = useSubmissionTime()
@@ -49,6 +50,12 @@ export function ReviewList({ items, selectedId, onSelect }: ReviewListProps) {
                 {item.player_name}
               </span>
               <span className="flex flex-wrap gap-1">
+                {(item.possible_duplicates?.length ?? 0) > 0 && (
+                  <Badge tone="danger">
+                    <WarningAmberOutlinedIcon sx={{ fontSize: 13 }} aria-hidden="true" />
+                    {t('review.duplicate.badge')}
+                  </Badge>
+                )}
                 <SourceBadge submission={item} />
                 <Badge tone={preverification ? 'info' : 'gold'}>
                   <Icon sx={{ fontSize: 13 }} aria-hidden="true" />

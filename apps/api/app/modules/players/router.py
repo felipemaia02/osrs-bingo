@@ -16,6 +16,7 @@ from app.modules.players.schemas import (
     PlayerSelection,
     PlayerUpdate,
     SelectionResult,
+    TeamAssignmentSelection,
 )
 from app.modules.players.service import PlayerService
 from app.modules.profiles.repository import ProfileRepository
@@ -77,6 +78,17 @@ async def approve_selected(
     service: PlayerServiceDependency,
 ) -> SelectionResult:
     return await service.approve_selected(event_id, payload.player_ids)
+
+
+@router.post("/assign-selected", response_model=SelectionResult)
+async def assign_selected(
+    event_id: str,
+    payload: TeamAssignmentSelection,
+    admin: AdminDependency,
+    service: PlayerServiceDependency,
+) -> SelectionResult:
+    """Assign several approved players to one team (feature 038)."""
+    return await service.assign_selected(event_id, payload.player_ids, payload.team_id)
 
 
 @router.post("/remove-selected", response_model=SelectionResult)

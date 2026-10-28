@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Any
 
 from app.core.exceptions import ConflictError, NotFoundError
@@ -8,16 +9,22 @@ from app.modules.boards.schemas import (
     DEFAULT_BOARD_SIZE,
     BoardCardSnapshot,
     BoardPositionResponse,
+    BoardPositionUpdate,
     BoardResponse,
     BoardSave,
+    BoardStatus,
+    PositionUpdateRecord,
 )
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
+from app.modules.tiles.models import CardDocument
 from app.modules.tiles.repository import CardRepository
 from app.modules.tiles.schemas import CardRevisionResponse, CardStatus
 
 BOARD_CHANGED_DETAIL = "Board changed while you were editing"
 BOARD_REQUIRED_DETAIL = "A complete valid board is required"
+LIVE_ONLY_DETAIL = "Only the active event's board can be fixed"
+NOT_NEWER_DETAIL = "Choose a newer revision of this card"
 
 
 class BoardService:
@@ -52,15 +59,7 @@ class BoardService:
             )
             if revision_data is None:
                 raise ConflictError("Selected card revision is unavailable")
-            revision = CardRevisionResponse.model_validate(revision_data)
-            snapshot = BoardCardSnapshot(
-                card_id=str(card["_id"]),
-                slug=card["slug"],
-                card_revision=revision.revision,
-                **revision.model_dump(
-                    exclude={"revision", "change_reason", "created_by", "created_at"}
-                ),
-            )
+            snapshot = card_snapshot(card, revision_data)
             row, column, bonus = grid_place(selected.position, payload.size)
             positions.append(
                 BoardPositionResponse(
@@ -84,6 +83,50 @@ class BoardService:
         if document is None:
             raise ConflictError(BOARD_CHANGED_DETAIL)
         return self._response(document)
+
+    async def update_position(
+        self, event_id: str, position: int, payload: BoardPositionUpdate, actor: CurrentUser
+    ) -> BoardResponse:
+        """Replaces a live square's card snapshot with a newer revision of the same card (036)."""
+        event = await self._events.get(event_id)
+        if event is None:
+            raise NotFoundError("Event")
+        if event["status"] != EventStatus.ACTIVE:
+            raise ConflictError(LIVE_ONLY_DETAIL)
+        board = await self._require_board(event_id)
+        if board.get("status") != BoardStatus.PUBLISHED:
+            raise ConflictError(LIVE_ONLY_DETAIL)
+        slot = next((item for item in board["positions"] if item["position"] == position), None)
+        if slot is None:
+            raise NotFoundError("Board position")
+        current = slot["card"]
+        card = await self._cards.get(current["card_id"])
+        if card is None:
+            raise NotFoundError("Card")
+        if card["status"] != CardStatus.ACTIVE:
+            raise ConflictError("Retired cards cannot be selected")
+        if payload.card_revision <= current["card_revision"]:
+            raise ConflictError(NOT_NEWER_DETAIL)
+        revision_data = next(
+            (item for item in card["revisions"] if item["revision"] == payload.card_revision),
+            None,
+        )
+        if revision_data is None:
+            raise ConflictError("Selected card revision is unavailable")
+        snapshot = card_snapshot(card, revision_data).model_dump(mode="python")
+        record = PositionUpdateRecord(
+            from_revision=current["card_revision"],
+            to_revision=payload.card_revision,
+            reason=payload.reason,
+            updated_by_name=actor.username,
+            updated_at=datetime.now(UTC),
+        ).model_dump(mode="python")
+        updated = await self._boards.replace_card(
+            event_id, board["revision"], position, snapshot, {**record, "updated_by": actor.id}
+        )
+        if updated is None:
+            raise ConflictError(BOARD_CHANGED_DETAIL)
+        return self._response(updated)
 
     async def get_admin(self, event_id: str) -> BoardResponse:
         if await self._events.get(event_id) is None:
@@ -134,6 +177,17 @@ class BoardService:
         )
 
 
+def card_snapshot(card: CardDocument, revision_data: dict[str, Any]) -> BoardCardSnapshot:
+    """What a board square keeps of a card revision."""
+    revision = CardRevisionResponse.model_validate(revision_data)
+    return BoardCardSnapshot(
+        card_id=str(card["_id"]),
+        slug=card["slug"],
+        card_revision=revision.revision,
+        **revision.model_dump(exclude={"revision", "change_reason", "created_by", "created_at"}),
+    )
+
+
 def board_size(document: BoardDocument | dict[str, Any]) -> int:
     """Boards saved before sizes existed are 6x6."""
     return int(document.get("size", DEFAULT_BOARD_SIZE))
@@ -164,6 +218,7 @@ def is_publishable_board(document: BoardDocument | dict[str, Any] | None) -> boo
         return False
     return all(
         position.get("card", {}).get("wiki_image") is not None
+        or position.get("card", {}).get("artwork") is not None
         or position.get("card", {}).get("fallback_image_accepted") is True
         for position in positions
     )

@@ -11,7 +11,9 @@ import {
   createSubmission,
   fetchOwnSubmissions,
   fetchReviewQueue,
+  fetchTileHistory,
   rejectSubmission,
+  revertSubmission,
 } from '../../src/features/submissions/api/submissionsApi'
 import { MySubmissionsPage } from '../../src/features/submissions/pages/MySubmissionsPage'
 import { ReviewPage } from '../../src/features/submissions/pages/ReviewPage'
@@ -222,6 +224,25 @@ describe('My submissions', () => {
     })
   })
 
+  it('tells the player when an accepted submission was reverted', async () => {
+    vi.mocked(fetchOwnSubmissions).mockResolvedValue({
+      items: [
+        submission({
+          status: 'rejected',
+          rejection_reason: 'duplicate',
+          reverted_at: '2026-10-23T10:00:00Z',
+        }),
+      ],
+      counts: { all: 1, pending: 0, accepted: 0, rejected: 1 },
+    })
+    renderApp(<MySubmissionsPage />, '/submissions')
+
+    expect(
+      await screen.findByText('Reverted by an admin after being accepted.'),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/duplicate \(already sent\)/)).toBeInTheDocument()
+  })
+
   it('explains why a player without a team cannot submit', async () => {
     vi.mocked(teamsApi.fetchOwnRegistration).mockResolvedValue({
       id: 'player-1',
@@ -323,7 +344,24 @@ describe('Drop review', () => {
     expect(within(detail).getByText('DropTracker')).toBeInTheDocument()
     expect(within(detail).getByText('No screenshot from DropTracker')).toBeInTheDocument()
     expect(within(detail).getByRole('button', { name: /Accept/ })).toBeEnabled()
-    expect(screen.getByRole('list', { name: 'Pending submissions' })).toHaveTextContent('DropTracker')
+    expect(screen.getByRole('list', { name: 'Pending submissions' })).toHaveTextContent(
+      'DropTracker',
+    )
+  })
+
+  it('blocks accepting an item no longer on a card fixed during the event (036)', async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [reviewItem({ id: 'gone-1', drop_removed: true })],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(within(detail).getByText(/no longer on this card/)).toBeInTheDocument()
+    expect(within(detail).getByRole('button', { name: /Accept/ })).toBeDisabled()
   })
 
   it("doesn't let admins review their own team", async () => {
@@ -365,5 +403,92 @@ describe('Drop review', () => {
       submissionId: 'drop-1',
       payload: { reason: 'other', note: 'Wrong boss' },
     })
+  })
+
+  it('flags a possible duplicate and shows what the team already has on the tile', async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [reviewItem({ id: 'dup-1', possible_duplicates: ['auto-9'] })],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    vi.mocked(fetchTileHistory).mockResolvedValue({
+      team_id: 'team-1',
+      team_name: 'Saradomin',
+      card_name: 'Vorkath',
+      progress: 4,
+      requirement: 8,
+      complete: false,
+      items: [
+        {
+          id: 'auto-9',
+          player_name: 'Holy Hal',
+          drop_name: 'Vorkath Unique',
+          progress_weight: 2,
+          status: 'accepted',
+          source: 'droptracker',
+          submitted_at: '2026-10-22T17:58:00Z',
+          has_screenshot: true,
+          same_item: true,
+          possible_duplicate: true,
+        },
+      ],
+    })
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(within(detail).getByRole('note')).toHaveTextContent('Possible duplicate')
+    expect(screen.getByRole('list', { name: 'Pending submissions' })).toHaveTextContent(
+      'Possible duplicate',
+    )
+    const history = await within(detail).findByRole('region', {
+      name: 'Already on this tile for Saradomin',
+    })
+    expect(history).toHaveTextContent('Progress 4 / 8')
+    expect(history).toHaveTextContent('Vorkath Unique')
+    expect(history).toHaveTextContent('DropTracker')
+    expect(fetchTileHistory).toHaveBeenCalledWith('dup-1')
+  })
+
+  it('lists accepted submissions and reverts one with a reason', async () => {
+    vi.mocked(fetchReviewQueue).mockImplementation(async (_event, _kind, _limit, status) =>
+      status === 'accepted'
+        ? {
+            items: [reviewItem({ id: 'acc-1', status: 'accepted', reviewer_name: 'felps_' })],
+            total: 1,
+            offset: 0,
+            limit: 50,
+            counts: { pending: 0, pending_preverification: 0, pending_drop: 0 },
+          }
+        : {
+            items: [],
+            total: 0,
+            offset: 0,
+            limit: 50,
+            counts: { pending: 0, pending_preverification: 0, pending_drop: 0 },
+          },
+    )
+    vi.mocked(revertSubmission).mockResolvedValue(submission({ status: 'rejected' }))
+    const user = userEvent.setup()
+    renderApp(<ReviewPage />, '/admin/review')
+
+    await user.click(await screen.findByRole('button', { name: 'Accepted' }))
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(within(detail).getByText(/Accepted by felps_/)).toBeInTheDocument()
+    expect(within(detail).queryByRole('button', { name: /^Accept/ })).toBeNull()
+    const revert = within(detail).getByRole('button', { name: 'Revert' })
+    expect(revert).toBeDisabled()
+    await user.selectOptions(within(detail).getByLabelText(/Reason for reverting/), 'duplicate')
+    await user.click(revert)
+
+    await waitFor(() => expect(revertSubmission).toHaveBeenCalledOnce())
+    expect(vi.mocked(revertSubmission).mock.calls[0][0]).toEqual({
+      submissionId: 'acc-1',
+      payload: { reason: 'duplicate', note: null },
+    })
+    expect(
+      await screen.findByText('Submission reverted. The player sees the reason.'),
+    ).toBeInTheDocument()
   })
 })

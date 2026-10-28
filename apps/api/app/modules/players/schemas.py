@@ -97,6 +97,9 @@ class PlayerResponse(PlayerFields):
     account_id: str | None = None
     activity: Activity | None = None
     buy_in_status: BuyInStatus | None = None
+    # Feature 037: requested while the event was active; when the player got their team.
+    joined_late: bool = False
+    team_assigned_at: datetime | None = None
     status: RegistrationStatus
     event_id: str
     team_id: str | None
@@ -116,6 +119,8 @@ class AccountSnapshot(BaseModel):
     combat: dict[str, int] | None = None
     # Every skill level from WOM (feature 032); None until the account is read again.
     skills: dict[str, int] | None = None
+    # Kill count per boss (feature 039), for the breakdown; None until read again.
+    bosses: dict[str, int] | None = None
     # Quests and diaries from WikiSync (feature 034); None until read again.
     wikisync: WikiSyncResponse | None = None
     ehp: float | None = None
@@ -129,6 +134,8 @@ class RosterEntry(PlayerResponse):
     role: ParticipantRole | None = None
     # None for nickname registrations (before feature 022).
     boss_kc_total: int | None = None
+    # Raids KC apart from boss KC (feature 039).
+    raids_kc_total: int | None = None
     ehb_total: float | None = None
     alt_count: int | None = None
     timezone: str | None = None
@@ -179,6 +186,12 @@ class PlayerSelection(BaseModel):
         if len({player_id.lower() for player_id in value}) != len(value):
             raise ValueError("Each registration can be selected only once")
         return value
+
+
+class TeamAssignmentSelection(PlayerSelection):
+    """Several approved players assigned to one team at once (feature 038)."""
+
+    team_id: str = Field(pattern=OBJECT_ID_PATTERN)
 
 
 class SelectionResult(BaseModel):

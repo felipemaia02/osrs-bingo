@@ -1,6 +1,8 @@
 import { AxiosError } from 'axios'
 import type {
   AcceptedDrop,
+  CardArtwork,
+  CardCategory,
   CardDifficulty,
   CardKind,
   CardRevisionPayload,
@@ -35,8 +37,11 @@ export interface CardForm {
   drops: DropRow[]
   wikiArticle: string
   wikiImage: WikiImage | null
+  /** Clan artwork (feature 041); shown instead of the Wiki image when set. */
+  artwork: CardArtwork | null
   ruleNote: string
   requiresPreverification: boolean
+  categories: CardCategory[]
   changeReason: string
 }
 
@@ -75,8 +80,10 @@ export function emptyForm(): CardForm {
     drops: [newDropRow()],
     wikiArticle: '',
     wikiImage: null,
+    artwork: null,
     ruleNote: '',
     requiresPreverification: false,
+    categories: [],
     changeReason: '',
   }
 }
@@ -148,8 +155,10 @@ export function cardToForm(card: CardSummary): CardForm {
     ),
     wikiArticle: revision.wiki_image?.article_title ?? revision.name,
     wikiImage: revision.wiki_image,
+    artwork: revision.artwork ?? null,
     ruleNote: revision.rule_note ?? '',
     requiresPreverification: revision.requires_preverification ?? false,
+    categories: revision.categories ?? [],
     changeReason: '',
   }
 }
@@ -194,9 +203,11 @@ export function toRevisionPayload(form: CardForm): CardRevisionPayload | null {
     completion_requirement: Number(form.requirement),
     drops,
     wiki_image: form.wikiImage,
-    fallback_image_accepted: !form.wikiImage,
+    artwork: form.artwork,
+    fallback_image_accepted: !form.wikiImage && !form.artwork,
     rule_note: form.ruleNote || null,
     requires_preverification: form.requiresPreverification,
+    categories: form.categories,
     change_reason: form.changeReason,
   }
 }

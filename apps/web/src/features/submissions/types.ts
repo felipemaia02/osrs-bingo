@@ -1,12 +1,13 @@
 export type SubmissionKind = 'drop' | 'preverification'
 export type SubmissionStatus = 'pending' | 'accepted' | 'rejected'
 export type RejectionReason =
-  'unreadable_screenshot' | 'item_mismatch' | 'outside_event_period' | 'other'
+  'unreadable_screenshot' | 'item_mismatch' | 'outside_event_period' | 'duplicate' | 'other'
 
 export const REJECTION_REASONS: RejectionReason[] = [
   'unreadable_screenshot',
   'item_mismatch',
   'outside_event_period',
+  'duplicate',
   'other',
 ]
 
@@ -37,6 +38,8 @@ export interface Submission {
   source?: 'manual' | 'droptracker'
   /** DropTracker drops can arrive without an image. */
   has_screenshot?: boolean
+  /** Set when an admin reverted this accepted submission (feature 035). */
+  reverted_at?: string | null
 }
 
 export interface SubmissionCounts {
@@ -62,7 +65,37 @@ export interface ReviewItem extends Submission {
   within_event: boolean
   /** The reviewing admin plays on this team: another admin reviews it (feature 026). */
   own_team?: boolean
+  /** The card was fixed during the event and no longer has this item (feature 036). */
+  drop_removed?: boolean
+  /** IDs of pending/accepted submissions that look like the same drop (feature 035). */
+  possible_duplicates?: string[]
 }
+
+/** What the submission's team already has on that tile (feature 035). */
+export interface TileHistoryItem {
+  id: string
+  player_name: string
+  drop_name: string | null
+  progress_weight: number | null
+  status: SubmissionStatus
+  source: 'manual' | 'droptracker'
+  submitted_at: string
+  has_screenshot: boolean
+  same_item: boolean
+  possible_duplicate: boolean
+}
+
+export interface TileHistory {
+  team_id: string
+  team_name: string | null
+  card_name: string
+  progress: number
+  requirement: number
+  complete: boolean
+  items: TileHistoryItem[]
+}
+
+export type ReviewStatus = 'pending' | 'accepted'
 
 export interface ReviewQueue {
   items: ReviewItem[]

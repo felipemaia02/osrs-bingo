@@ -9,6 +9,10 @@ export interface BingoEvent {
   status: EventStatus
   /** The event's written rules (feature 019); null when not written. */
   rules_text?: string | null
+  /** Dated clarifications added while the event is active (feature 036). */
+  rules_addenda?: RulesAddendum[]
+  /** Players may request to join while the event is active (feature 037). */
+  late_join?: boolean
   /** Free text such as "5M gp" (feature 022); null when the event has no buy-in. */
   buy_in?: string | null
   created_at: string
@@ -29,4 +33,9 @@ export interface EventListResponse {
 
 export interface EventRules {
   rules_text: string | null
+}
+
+export interface RulesAddendum {
+  text: string
+  added_at: string
 }
