@@ -6,6 +6,7 @@ from bson import ObjectId
 
 from app.core.exceptions import AppException, NotFoundError
 from app.modules.auth.schemas import CurrentUser
+from app.modules.balance.kc import DEFAULT_EXCLUDED, split_kc
 from app.modules.profiles.models import LinkedAccount, ProfileDocument
 from app.modules.profiles.repository import ProfileRepository, RsnTakenError
 from app.modules.profiles.schemas import (
@@ -58,15 +59,18 @@ class ProfileService:
         wom: WomClient,
         wikisync: WikiSyncClient | None = None,
         quest_points: Callable[[], Awaitable[dict[str, int]]] | None = None,
+        excluded_bosses: Callable[[], Awaitable[list[str]]] | None = None,
     ) -> None:
         self._profiles = profiles
         self._wom = wom
         # Quests and diaries (feature 034); optional so WOM keeps working without them.
         self._wikisync = wikisync
         self._quest_points = quest_points
+        # Bosses left out of the boss KC total (feature 039).
+        self._excluded_bosses = excluded_bosses
 
     async def get(self, user: CurrentUser) -> ProfileResponse:
-        return self._response(user, await self._profiles.get_or_create(user.id))
+        return await self._profile(user, await self._profiles.get_or_create(user.id))
 
     async def members(self, user: CurrentUser, search: str) -> list[MemberResponse]:
         rows = await self._profiles.search_members(
@@ -82,7 +86,7 @@ class ProfileService:
     async def set_preferences(self, user: CurrentUser, preferences: Preferences) -> ProfileResponse:
         await self._profiles.get_or_create(user.id)
         document = await self._profiles.save_preferences(user.id, preferences.model_dump())
-        return self._response(user, document)
+        return await self._profile(user, document)
 
     async def add_account(self, user: CurrentUser, payload: AccountAdd) -> ProfileResponse:
         profile = await self._profiles.get_or_create(user.id)
@@ -123,7 +127,11 @@ class ProfileService:
         found = account["wom_status"] == WomStatus.FOUND
         # Accounts read before combat levels (021), all skills (032) or WikiSync (034) existed
         # may update right away to fill them.
-        fields = ("combat", "skills", "wikisync") if self._wikisync else ("combat", "skills")
+        fields = (
+            ("combat", "skills", "bosses", "wikisync")
+            if self._wikisync
+            else ("combat", "skills", "bosses")
+        )
         complete = all(account.get(field) is not None for field in fields)
         recent = checked is not None and self._utc(checked) > datetime.now(UTC) - REFRESH_COOLDOWN
         if found and complete and recent:
@@ -182,6 +190,7 @@ class ProfileService:
         account["boss_kc"] = stats.boss_kc
         account["combat"] = stats.combat
         account["skills"] = stats.skills
+        account["bosses"] = stats.bosses
         account["wom_updated_at"] = stats.updated_at
 
     async def _accounts(self, user: CurrentUser) -> list[LinkedAccount]:
@@ -192,7 +201,7 @@ class ProfileService:
             document = await self._profiles.save_accounts(user.id, accounts)
         except RsnTakenError as exc:
             raise AppException(409, RSN_TAKEN) from exc
-        return self._response(user, document)
+        return await self._profile(user, document)
 
     @staticmethod
     def _find(accounts: list[LinkedAccount], account_id: str) -> LinkedAccount:
@@ -209,10 +218,19 @@ class ProfileService:
     def _utc_or_none(cls, moment: datetime | None) -> datetime | None:
         return cls._utc(moment) if moment else None
 
+    async def _profile(self, user: CurrentUser, document: ProfileDocument) -> ProfileResponse:
+        excluded = (
+            await self._excluded_bosses() if self._excluded_bosses else list(DEFAULT_EXCLUDED)
+        )
+        return self._response(user, document, excluded)
+
     @classmethod
-    def _response(cls, user: CurrentUser, document: ProfileDocument) -> ProfileResponse:
+    def _response(
+        cls, user: CurrentUser, document: ProfileDocument, excluded: list[str]
+    ) -> ProfileResponse:
         accounts = sorted(document["accounts"], key=lambda item: not item["is_main"])
         counted = [item for item in accounts if has_wom_stats(item)]
+        split = [split_kc(item.get("bosses"), item.get("boss_kc"), excluded) for item in counted]
         return ProfileResponse(
             discord_id=user.discord_id,
             username=user.username,
@@ -230,6 +248,7 @@ class ProfileService:
                     boss_kc=item.get("boss_kc"),
                     combat=item.get("combat"),
                     skills=item.get("skills"),
+                    bosses=item.get("bosses"),
                     wikisync=wikisync_summary(item.get("wikisync")),
                     wom_updated_at=cls._utc_or_none(item.get("wom_updated_at")),
                     checked_at=cls._utc_or_none(item.get("checked_at")),
@@ -238,7 +257,8 @@ class ProfileService:
                 for item in accounts
             ],
             totals=BalanceTotals(
-                boss_kc=sum(item.get("boss_kc") or 0 for item in counted),
+                boss_kc=sum(kc[0] for kc in split),
+                raids_kc=sum(kc[1] for kc in split),
                 ehb=round(sum(item.get("ehb") or 0 for item in counted), 2),
                 counted=len(counted),
                 total=len(accounts),

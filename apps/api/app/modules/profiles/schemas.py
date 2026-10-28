@@ -100,6 +100,8 @@ class AccountResponse(BaseModel):
     combat: dict[str, int] | None
     # Every skill level from WOM (feature 032); None until the account is read again.
     skills: dict[str, int] | None = None
+    # Kill count per boss (feature 039); None until the account is read again.
+    bosses: dict[str, int] | None = None
     # None until the account is read again after feature 034.
     wikisync: WikiSyncResponse | None = None
     wom_updated_at: datetime | None
@@ -108,7 +110,9 @@ class AccountResponse(BaseModel):
 
 
 class BalanceTotals(BaseModel):
+    # Without excluded bosses and raids (feature 039).
     boss_kc: int
+    raids_kc: int = 0
     ehb: float
     counted: int
     total: int

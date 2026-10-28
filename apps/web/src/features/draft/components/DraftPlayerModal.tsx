@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { BossKcBreakdownButton } from '../../balance/components/BossKcBreakdown'
 import { Badge } from '../../../components/ui/Badge'
 import { FormModal } from '../../../components/ui/FormModal'
 import { CombatLevels } from '../../profiles/components/CombatLevels'
@@ -25,6 +26,7 @@ export function DraftPlayerModal({ player, onClose }: { player: Player; onClose:
     [t('teams.roster.requested'), requested(player)],
     [t('draft.ehb'), format.hours(player.ehb_total ?? null)],
     [t('draft.bossKc'), format.whole(player.boss_kc_total ?? null)],
+    [t('draft.raidsKc'), format.whole(player.raids_kc_total ?? null)],
   ]
   if (player.buy_in_status)
     facts.splice(2, 0, [t('teams.roster.buyIn'), t(`teams.buyIn.${player.buy_in_status}`)])
@@ -41,12 +43,17 @@ export function DraftPlayerModal({ player, onClose }: { player: Player; onClose:
           ))}
         </dl>
         <section aria-labelledby="draft-accounts-title" className="flex flex-col gap-2">
-          <h3
-            id="draft-accounts-title"
-            className="m-0 font-display text-base font-bold text-rs-gold-bright"
-          >
-            {t('draft.modal.accounts')}
-          </h3>
+          <div className="flex items-center justify-between gap-2">
+            <h3
+              id="draft-accounts-title"
+              className="m-0 font-display text-base font-bold text-rs-gold-bright"
+            >
+              {t('draft.modal.accounts')}
+            </h3>
+            {player.accounts?.length ? (
+              <BossKcBreakdownButton name={player.display_name} accounts={player.accounts} />
+            ) : null}
+          </div>
           {player.accounts?.length ? (
             player.accounts.map((account) => (
               <AccountDetail

@@ -1,7 +1,9 @@
 import BalanceOutlinedIcon from '@mui/icons-material/BalanceOutlined'
+import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
+import { Button } from '../../../components/ui/Button'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import type { TeamBalance, TeamBalanceResponse } from '../types'
 import { TeamEmblem } from './TeamEmblem'
@@ -9,7 +11,14 @@ import { TeamEmblem } from './TeamEmblem'
 const FULL_BAR = 100
 
 /** Team totals versus the average EHB per team (feature 023, FR-001). */
-export function TeamBalanceCards({ balance }: { balance: TeamBalanceResponse }) {
+export function TeamBalanceCards({
+  balance,
+  onSettings,
+}: {
+  balance: TeamBalanceResponse
+  /** Admins open the boss KC settings (feature 039). */
+  onSettings?: () => void
+}) {
   const { t } = useTranslation()
   const format = useStatFormat()
   if (!balance.teams.length) return null
@@ -26,6 +35,12 @@ export function TeamBalanceCards({ balance }: { balance: TeamBalanceResponse }) 
         <span className="text-[13px] text-rs-muted">
           {t('teams.balance.description', { average: format.whole(balance.average_ehb) })}
         </span>
+        {onSettings && (
+          <Button size="sm" variant="ghost" className="ml-auto" onClick={onSettings}>
+            <TuneOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
+            {t('balance.settings.open')}
+          </Button>
+        )}
       </div>
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] md:overflow-visible md:px-0">
         {balance.teams.map((team) => (
@@ -62,6 +77,7 @@ function TeamCard({ team, strongest }: { team: TeamBalance; strongest: number })
         <span className="block h-full bg-rs-gold" style={{ width: `${width}%` }} />
       </div>
       <Metric label={t('teams.balance.bossKc')} value={format.whole(team.boss_kc_total)} />
+      <Metric label={t('teams.balance.raidsKc')} value={format.whole(team.raids_kc_total ?? 0)} />
       <div className="flex items-center justify-between py-0.5 text-[13px]">
         <span className="text-rs-muted">{t('teams.roles.captain')}</span>
         {team.captain ? (

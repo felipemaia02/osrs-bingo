@@ -367,7 +367,8 @@
       "experienceLine": "Σ EHB {{ehb}} · Σ KC de jefes {{kc}}",
       "wantsWith": "quiere {{names}}",
       "sorted": "Ordenado por EHB total ↓",
-      "live": "Durante el evento: aprueba, asigna y quita jugadores sin equipo; edita roles y buy-ins. Quien ya tiene equipo queda bloqueado."
+      "live": "Durante el evento: aprueba, asigna y quita jugadores sin equipo; edita roles y buy-ins. Quien ya tiene equipo queda bloqueado.",
+      "raidsKc": "Raids Σ"
     },
     "status": {
       "pending": "Pendiente",
@@ -401,7 +402,8 @@
       "noCaptain": "Sin capitán",
       "versus": "{{value}} vs media",
       "short_one": "falta {{count}} jugador",
-      "short_other": "faltan {{count}} jugadores"
+      "short_other": "faltan {{count}} jugadores",
+      "raidsKc": "Raids KC"
     },
     "roles": {
       "none": "Ninguno",
@@ -1106,7 +1108,8 @@
       "bossKc": "Total de KC de jefes",
       "ehb": "Total de EHB",
       "counted": "{{counted}} de {{total}} cuentas contadas",
-      "notFound": "{{names}} no encontrada(s)"
+      "notFound": "{{names}} no encontrada(s)",
+      "raidsKc": "Total de Raids KC"
     },
     "preferences": {
       "title": "Preferencias del clan",
@@ -1327,7 +1330,8 @@
     "countSkill_other": "{{count}} jugadores disponibles · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} jugador aún no tiene datos de habilidades — debe pulsar “Actualizar desde WOM” en Mi perfil.",
     "noSkillData_other": "{{count}} jugadores aún no tienen datos de habilidades — deben pulsar “Actualizar desde WOM” en Mi perfil.",
-    "skillLevel": "{{skill}} {{level}}"
+    "skillLevel": "{{skill}} {{level}}",
+    "raidsKc": "Raids Σ"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1399,5 +1403,25 @@
     "strength": "Fuerza",
     "thieving": "Robo",
     "woodcutting": "Tala"
+  },
+  "balance": {
+    "raid": "Raid",
+    "notCounted": "No cuenta",
+    "breakdown": {
+      "open": "KC por jefe",
+      "for": "KC por jefe de {{name}}",
+      "title": "Boss KC · {{name}}",
+      "hint": "Kill count por jefe en Wise Old Man. Las raids cuentan como Raids KC; los jefes tachados no entran en los totales.",
+      "notLoaded": "Aún no cargado: \"Actualizar desde WOM\" en el perfil carga el KC por jefe.",
+      "none": "Ningún jefe derrotado en Wise Old Man."
+    },
+    "settings": {
+      "open": "Ajustes de boss KC",
+      "title": "Ajustes de boss KC",
+      "hint": "Los jefes marcados no cuentan en los totales de boss KC (balance de equipos, inscripciones, draft, perfiles). Las raids siempre se muestran aparte como Raids KC.",
+      "search": "Buscar jefe",
+      "save": "Guardar ajustes",
+      "saved": "Ajustes de boss KC guardados; totales actualizados."
+    }
   }
 }

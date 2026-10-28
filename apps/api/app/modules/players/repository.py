@@ -12,6 +12,8 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
+from app.modules.balance.kc import kc_expression
+from app.modules.balance.repository import BossKcSettingsRepository
 from app.modules.players.models import (
     NewRegistration,
     PlayerDocument,
@@ -34,9 +36,10 @@ class CaptainTakenError(Exception):
     """The team already has a captain (unique partial index, feature 023)."""
 
 
-def _experience_stages() -> builtin_list[dict[str, Any]]:
+def _experience_stages(excluded: builtin_list[str]) -> builtin_list[dict[str, Any]]:
     """Adds the player's current profile totals (feature 021 rule) to registrations made
-    with an account (feature 022); nickname registrations get None."""
+    with an account (feature 022); nickname registrations get None. Boss KC leaves out the
+    excluded bosses and the raids, which get their own total (feature 039)."""
     accounts = {"$ifNull": [{"$first": "$profile.accounts"}, []]}
     counted = {
         "$filter": {
@@ -63,7 +66,19 @@ def _experience_stages() -> builtin_list[dict[str, Any]]:
         {"$addFields": {"counted_accounts": counted}},
         {
             "$addFields": {
-                "boss_kc_total": {"$cond": [joined, {"$sum": "$counted_accounts.boss_kc"}, None]},
+                "account_kc": {
+                    "$map": {
+                        "input": "$counted_accounts",
+                        "as": "account",
+                        "in": kc_expression("$$account", excluded),
+                    }
+                }
+            }
+        },
+        {
+            "$addFields": {
+                "boss_kc_total": {"$cond": [joined, {"$sum": "$account_kc.boss"}, None]},
+                "raids_kc_total": {"$cond": [joined, {"$sum": "$account_kc.raids"}, None]},
                 "ehb_total": {
                     "$cond": [joined, {"$round": [{"$sum": "$counted_accounts.ehb"}, 2]}, None]
                 },
@@ -72,7 +87,7 @@ def _experience_stages() -> builtin_list[dict[str, Any]]:
                 "timezone": {"$first": "$profile.timezone"},
             }
         },
-        {"$project": {"profile": 0, "counted_accounts": 0}},
+        {"$project": {"profile": 0, "counted_accounts": 0, "account_kc": 0}},
     ]
 
 
@@ -85,6 +100,7 @@ def _clear_captain(team: Any) -> dict[str, Any]:
 class PlayerRepository:
     def __init__(self, database: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
         self._collection = database[PLAYERS_COLLECTION]
+        self._kc_settings = BossKcSettingsRepository(database)
 
     async def create(
         self, event_id: str, registration: NewRegistration, user_id: str
@@ -183,7 +199,7 @@ class PlayerRepository:
                     }
                 }
             )
-        pipeline.extend(_experience_stages())
+        pipeline.extend(_experience_stages(await self._kc_settings.excluded()))
         pipeline.append(
             {
                 "$facet": {
@@ -270,7 +286,7 @@ class PlayerRepository:
                     "role": ParticipantRole.CAPTAIN,
                 }
             },
-            *_experience_stages(),
+            *_experience_stages(await self._kc_settings.excluded()),
         ]
         return cast(
             builtin_list[RosterDocument],
@@ -287,12 +303,13 @@ class PlayerRepository:
                     "team_id": {"$ne": None},
                 }
             },
-            *_experience_stages(),
+            *_experience_stages(await self._kc_settings.excluded()),
             {
                 "$group": {
                     "_id": "$team_id",
                     "player_count": {"$sum": 1},
                     "boss_kc_total": {"$sum": {"$ifNull": ["$boss_kc_total", 0]}},
+                    "raids_kc_total": {"$sum": {"$ifNull": ["$raids_kc_total", 0]}},
                     "ehb_total": {"$sum": {"$ifNull": ["$ehb_total", 0]}},
                     "captains": {
                         "$push": {

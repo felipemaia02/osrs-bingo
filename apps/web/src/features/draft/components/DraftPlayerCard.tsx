@@ -75,11 +75,16 @@ export function DraftPlayerCard({
           <PlayerBadge player={player} />
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <Stat label={t('draft.ehb')} value={format.hours(player.ehb_total ?? null)} large={large} />
         <Stat
           label={t('draft.bossKc')}
           value={format.whole(player.boss_kc_total ?? null)}
+          large={large}
+        />
+        <Stat
+          label={t('draft.raidsKc')}
+          value={format.whole(player.raids_kc_total ?? null)}
           large={large}
         />
       </div>

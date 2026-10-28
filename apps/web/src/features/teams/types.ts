@@ -32,6 +32,8 @@ export interface Player {
   /** Admin roster only (feature 023): the player's current profile and roles. */
   role?: ParticipantRole | null
   boss_kc_total?: number | null
+  /** Raids KC apart from boss KC (feature 039). */
+  raids_kc_total?: number | null
   ehb_total?: number | null
   alt_count?: number | null
   timezone?: string | null
@@ -52,6 +54,8 @@ export interface AccountSnapshot {
   combat: Partial<Record<CombatSkill, number>> | null
   /** Every skill level from WOM (feature 032); null until the account is read again. */
   skills?: Partial<Record<Skill, number>> | null
+  /** Kill count per boss (feature 039); null until the account is read again. */
+  bosses?: Record<string, number> | null
   /** Quests and diaries (feature 034); null until the account is read again. */
   wikisync?: WikiSync | null
   ehp: number | null
@@ -77,6 +81,8 @@ export interface TeamBalance {
   emblem_url?: string | null
   player_count: number
   boss_kc_total: number
+  /** Raids KC apart from boss KC (feature 039). */
+  raids_kc_total?: number
   ehb_total: number
   captain: string | null
   /** EHB versus the average per team, in percent. */

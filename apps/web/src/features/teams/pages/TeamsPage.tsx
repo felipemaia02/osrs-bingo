@@ -15,6 +15,7 @@ import { useSession } from '../../auth/hooks/useSession'
 import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
+import { BossKcSettingsModal } from '../../balance/components/BossKcSettingsModal'
 import { BulkAssignModal } from '../components/BulkAssignModal'
 import { BulkBar } from '../components/BulkBar'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
@@ -144,6 +145,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const [removing, setRemoving] = useState<Player | null>(null)
   const [removingSelected, setRemovingSelected] = useState(false)
   const [assigningSelected, setAssigningSelected] = useState(false)
+  const [kcSettings, setKcSettings] = useState(false)
   const [confirmAll, setConfirmAll] = useState(false)
   const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
@@ -420,7 +422,18 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
 
   return (
     <>
-      {balance.data && <TeamBalanceCards balance={balance.data} />}
+      {balance.data && (
+        <TeamBalanceCards balance={balance.data} onSettings={() => setKcSettings(true)} />
+      )}
+      {kcSettings && (
+        <BossKcSettingsModal
+          onSaved={(message) => {
+            setKcSettings(false)
+            actions.notify(message)
+          }}
+          onClose={() => setKcSettings(false)}
+        />
+      )}
       {desktop ? (
         <>
           <div className="flex flex-col rounded border border-rs-border bg-rs-surface">

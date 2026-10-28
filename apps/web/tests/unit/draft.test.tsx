@@ -189,7 +189,7 @@ describe('Draft preview', () => {
     ).toBeInTheDocument()
     expect(
       within(screen.getByRole('article', { name: 'Old Nick' })).getAllByText('—'),
-    ).toHaveLength(3)
+    ).toHaveLength(4) // EHB, boss KC, raids KC (039) and time zone
     expect(screen.getByText('4 players available · captains not listed')).toBeInTheDocument()
 
     const names = screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))

@@ -124,3 +124,12 @@ vi.mock('../src/features/profiles/api/profileApi', () => ({
 vi.mock('../src/features/maintenance/siteStatusApi', () => ({
   fetchSiteStatus: vi.fn().mockResolvedValue({ maintenance: false, message: null }),
 }))
+
+vi.mock('../src/features/balance/api', () => ({
+  fetchBossKcSettings: vi.fn().mockResolvedValue({
+    excluded: ['brutus'],
+    raids: ['chambers_of_xeric', 'theatre_of_blood'],
+    known: ['brutus', 'chambers_of_xeric', 'vorkath'],
+  }),
+  saveBossKcSettings: vi.fn(),
+}))

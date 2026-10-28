@@ -119,6 +119,8 @@ class AccountSnapshot(BaseModel):
     combat: dict[str, int] | None = None
     # Every skill level from WOM (feature 032); None until the account is read again.
     skills: dict[str, int] | None = None
+    # Kill count per boss (feature 039), for the breakdown; None until read again.
+    bosses: dict[str, int] | None = None
     # Quests and diaries from WikiSync (feature 034); None until read again.
     wikisync: WikiSyncResponse | None = None
     ehp: float | None = None
@@ -132,6 +134,8 @@ class RosterEntry(PlayerResponse):
     role: ParticipantRole | None = None
     # None for nickname registrations (before feature 022).
     boss_kc_total: int | None = None
+    # Raids KC apart from boss KC (feature 039).
+    raids_kc_total: int | None = None
     ehb_total: float | None = None
     alt_count: int | None = None
     timezone: str | None = None

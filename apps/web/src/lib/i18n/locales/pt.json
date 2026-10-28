@@ -367,7 +367,8 @@
       "experienceLine": "Σ EHB {{ehb}} · Σ KC de bosses {{kc}}",
       "wantsWith": "quer {{names}}",
       "sorted": "Ordenado por EHB total ↓",
-      "live": "Durante o evento: aprove, coloque em time e remova jogadores sem time; edite papéis e buy-ins. Quem já tem time fica travado."
+      "live": "Durante o evento: aprove, coloque em time e remova jogadores sem time; edite papéis e buy-ins. Quem já tem time fica travado.",
+      "raidsKc": "Raids Σ"
     },
     "status": {
       "pending": "Pendente",
@@ -401,7 +402,8 @@
       "noCaptain": "Sem capitão",
       "versus": "{{value}} vs média",
       "short_one": "falta {{count}} jogador",
-      "short_other": "faltam {{count}} jogadores"
+      "short_other": "faltam {{count}} jogadores",
+      "raidsKc": "Raids KC"
     },
     "roles": {
       "none": "Nenhuma",
@@ -1106,7 +1108,8 @@
       "bossKc": "Total de KC de bosses",
       "ehb": "Total de EHB",
       "counted": "{{counted}} de {{total}} contas contadas",
-      "notFound": "{{names}} não encontrada(s)"
+      "notFound": "{{names}} não encontrada(s)",
+      "raidsKc": "Total de Raids KC"
     },
     "preferences": {
       "title": "Preferências do clã",
@@ -1327,7 +1330,8 @@
     "countSkill_other": "{{count}} jogadores disponíveis · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} jogador ainda não tem dados de habilidades — precisa clicar em “Atualizar do WOM” em Meu perfil.",
     "noSkillData_other": "{{count}} jogadores ainda não têm dados de habilidades — precisam clicar em “Atualizar do WOM” em Meu perfil.",
-    "skillLevel": "{{skill}} {{level}}"
+    "skillLevel": "{{skill}} {{level}}",
+    "raidsKc": "Raids Σ"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1399,5 +1403,25 @@
     "strength": "Força",
     "thieving": "Roubo",
     "woodcutting": "Corte de Lenha"
+  },
+  "balance": {
+    "raid": "Raid",
+    "notCounted": "Não conta",
+    "breakdown": {
+      "open": "KC por boss",
+      "for": "KC por boss de {{name}}",
+      "title": "Boss KC · {{name}}",
+      "hint": "Kill count por boss no Wise Old Man. Raids contam como Raids KC; bosses riscados não entram nos totais.",
+      "notLoaded": "Ainda não carregado: \"Atualizar do WOM\" no perfil carrega o KC por boss.",
+      "none": "Nenhum boss abatido no Wise Old Man."
+    },
+    "settings": {
+      "open": "Ajustes de boss KC",
+      "title": "Ajustes de boss KC",
+      "hint": "Bosses marcados não entram nos totais de boss KC (balanço dos times, inscrições, draft, perfis). Raids sempre aparecem à parte como Raids KC.",
+      "search": "Buscar boss",
+      "save": "Salvar ajustes",
+      "saved": "Ajustes de boss KC salvos; totais atualizados."
+    }
   }
 }

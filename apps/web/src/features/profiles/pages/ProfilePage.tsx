@@ -118,7 +118,7 @@ export function ProfilePage() {
                 )}
               </section>
               <aside className="flex flex-col gap-3.5">
-                <BalanceTotals totals={profile.data.totals} />
+                <BalanceTotals totals={profile.data.totals} accounts={profile.data.accounts} />
                 <ClanPreferences
                   saved={{ timezone: profile.data.timezone, activity: profile.data.activity }}
                 />

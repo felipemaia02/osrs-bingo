@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request
 
 from app.modules.auth.dependencies import UserDependency
+from app.modules.balance.repository import BossKcSettingsRepository
 from app.modules.items.quests import QuestPointService
 from app.modules.profiles.repository import ProfileRepository
 from app.modules.profiles.schemas import (
@@ -26,6 +27,7 @@ async def get_profile_service(request: Request) -> ProfileService:
         request.app.state.wom_client,
         WikiSyncClient(),
         QuestPointService(database).points,
+        BossKcSettingsRepository(database).excluded,
     )
 
 

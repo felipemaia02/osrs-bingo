@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { BossKcBreakdown } from '../../balance/components/BossKcBreakdown'
 import type { Player, RosterGroup, Team } from '../types'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { timezoneCity, useAccountsLine } from '../rosterFormat'
@@ -51,6 +52,7 @@ export function RosterTable({
   const requested = useRequestedFormat()
   const accountsLine = useAccountsLine()
   const format = useStatFormat()
+  const [breakdown, setBreakdown] = useState<Player | null>(null)
   const allSelected = players.length > 0 && players.every((player) => selected.has(player.id))
   const someSelected = !allSelected && players.some((player) => selected.has(player.id))
   const headerBox = useRef<HTMLInputElement>(null)
@@ -80,6 +82,7 @@ export function RosterTable({
           <th className={HEAD}>{t('teams.roster.timezone')}</th>
           <th className={HEAD}>{t('teams.roster.activity')}</th>
           <th className={`${HEAD} text-right`}>{t('teams.roster.bossKc')}</th>
+          <th className={`${HEAD} text-right`}>{t('teams.roster.raidsKc')}</th>
           <th className={`${HEAD} text-right`}>{t('teams.roster.ehb')}</th>
           <th className={HEAD}>{t('teams.roster.teammates')}</th>
           <th className={HEAD}>{t('teams.roster.role')}</th>
@@ -129,7 +132,21 @@ export function RosterTable({
                 {player.activity ? t(`join.activity.short.${player.activity}`) : '—'}
               </td>
               <td className={`${CELL} text-right tabular-nums`}>
-                {format.whole(player.boss_kc_total ?? null)}
+                {player.accounts?.length ? (
+                  <button
+                    type="button"
+                    onClick={() => setBreakdown(player)}
+                    aria-label={t('balance.breakdown.for', { name: player.display_name })}
+                    className="tabular-nums text-rs-gold-bright underline decoration-dotted underline-offset-2"
+                  >
+                    {format.whole(player.boss_kc_total ?? null)}
+                  </button>
+                ) : (
+                  format.whole(player.boss_kc_total ?? null)
+                )}
+              </td>
+              <td className={`${CELL} text-right tabular-nums`}>
+                {format.whole(player.raids_kc_total ?? null)}
               </td>
               <td className={`${CELL} text-right tabular-nums`}>
                 <strong>{format.hours(player.ehb_total ?? null)}</strong>
@@ -165,6 +182,13 @@ export function RosterTable({
           )
         })}
       </tbody>
+      {breakdown && (
+        <BossKcBreakdown
+          name={breakdown.display_name}
+          accounts={breakdown.accounts ?? []}
+          onClose={() => setBreakdown(null)}
+        />
+      )}
     </table>
   )
 }

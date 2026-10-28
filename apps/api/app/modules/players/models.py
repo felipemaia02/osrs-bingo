@@ -49,6 +49,7 @@ class RosterDocument(PlayerDocument, total=False):
     """A roster row with its profile experience and lookups (feature 023)."""
 
     boss_kc_total: int | None
+    raids_kc_total: int | None
     ehb_total: float | None
     account_count: int | None
     profile_accounts: list[dict[str, Any]]
@@ -62,5 +63,6 @@ class TeamExperience(TypedDict):
     _id: ObjectId
     player_count: int
     boss_kc_total: int
+    raids_kc_total: int
     ehb_total: float
     captains: list[str]

@@ -367,7 +367,8 @@
       "experienceLine": "EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
       "wantsWith": "wants {{names}}",
       "sorted": "Sorted by EHB total ↓",
-      "live": "During the event: approve, place and remove players without a team; edit roles and buy-ins. Players on a team stay locked."
+      "live": "During the event: approve, place and remove players without a team; edit roles and buy-ins. Players on a team stay locked.",
+      "raidsKc": "Raids Σ"
     },
     "status": {
       "pending": "Pending",
@@ -401,7 +402,8 @@
       "noCaptain": "No captain",
       "versus": "{{value}} vs average",
       "short_one": "{{count}} player short",
-      "short_other": "{{count}} players short"
+      "short_other": "{{count}} players short",
+      "raidsKc": "Raids KC"
     },
     "roles": {
       "none": "None",
@@ -1108,7 +1110,8 @@
       "bossKc": "Boss KC total",
       "ehb": "EHB total",
       "counted": "{{counted}} of {{total}} accounts counted",
-      "notFound": "{{names}} not found"
+      "notFound": "{{names}} not found",
+      "raidsKc": "Raids KC total"
     },
     "preferences": {
       "title": "Clan preferences",
@@ -1329,7 +1332,8 @@
     "countSkill_other": "{{count}} players available · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} player has no skill data yet — they need to “Update from WOM” on My profile.",
     "noSkillData_other": "{{count}} players have no skill data yet — they need to “Update from WOM” on My profile.",
-    "skillLevel": "{{skill}} {{level}}"
+    "skillLevel": "{{skill}} {{level}}",
+    "raidsKc": "Raids Σ"
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1401,5 +1405,25 @@
     "strength": "Strength",
     "thieving": "Thieving",
     "woodcutting": "Woodcutting"
+  },
+  "balance": {
+    "raid": "Raid",
+    "notCounted": "Not counted",
+    "breakdown": {
+      "open": "Boss KC breakdown",
+      "for": "Boss KC breakdown of {{name}}",
+      "title": "Boss KC · {{name}}",
+      "hint": "Kill count per boss on Wise Old Man. Raids count as Raids KC; crossed-out bosses don't count in the totals.",
+      "notLoaded": "Not loaded yet: \"Update from WOM\" on the profile loads the per-boss KC.",
+      "none": "No boss kills on Wise Old Man."
+    },
+    "settings": {
+      "open": "Boss KC settings",
+      "title": "Boss KC settings",
+      "hint": "Ticked bosses don't count in boss KC totals (team balance, roster, draft, profiles). Raids are always shown apart as Raids KC.",
+      "search": "Search boss",
+      "save": "Save settings",
+      "saved": "Boss KC settings saved; totals updated."
+    }
   }
 }

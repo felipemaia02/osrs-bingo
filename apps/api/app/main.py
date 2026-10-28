@@ -19,6 +19,7 @@ from app.database.mongodb import DatabaseClient
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.router import router as administration_router
 from app.modules.auth.router import router as auth_router
+from app.modules.balance.router import router as balance_router
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
@@ -196,6 +197,7 @@ app.include_router(profile_router)
 app.include_router(maintenance_router)
 app.include_router(droptracker_router)
 app.include_router(items_router)
+app.include_router(balance_router)
 
 
 @app.get("/health", tags=["infra"])
