@@ -125,6 +125,31 @@ class WikiImage(BaseModel):
         return value
 
 
+ARTWORK_KEY = re.compile(r"^cards/artwork/[0-9a-f]{32}\.(?:png|jpg|webp)$")
+ARTIST_MAX_LENGTH = 80
+
+
+class CardArtwork(BaseModel):
+    """Clan artwork uploaded for a card (feature 041); shown instead of the Wiki image."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(pattern=ARTWORK_KEY.pattern)
+    content_type: str = Field(pattern=r"^image/(?:png|jpeg|webp)$")
+    artist: str | None = Field(default=None, max_length=ARTIST_MAX_LENGTH)
+
+    @field_validator("artist")
+    @classmethod
+    def normalize_artist(cls, value: str | None) -> str | None:
+        cleaned = " ".join((value or "").split())
+        return cleaned or None
+
+
+class CardArtworkUpload(BaseModel):
+    key: str
+    content_type: str
+
+
 class CardRevisionFields(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -136,6 +161,7 @@ class CardRevisionFields(BaseModel):
     completion_requirement: float = Field(gt=0, le=100000)
     drops: list[AcceptedDrop] = Field(min_length=1, max_length=100)
     wiki_image: WikiImage | None = None
+    artwork: CardArtwork | None = None
     fallback_image_accepted: bool = False
     rule_note: str | None = Field(default=None, max_length=2000)
     # Players must have an accepted pre-verification before drops of this card count.
@@ -161,7 +187,7 @@ class CardRevisionFields(BaseModel):
         names = [drop.name.casefold() for drop in self.drops]
         if len(set(keys)) != len(keys) or len(set(names)) != len(names):
             raise ValueError("Accepted drops must have unique keys and names")
-        if self.wiki_image is None and not self.fallback_image_accepted:
+        if self.wiki_image is None and self.artwork is None and not self.fallback_image_accepted:
             raise ValueError("Select a validated Wiki image or explicitly accept the fallback")
         return self
 

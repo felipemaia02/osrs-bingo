@@ -1,11 +1,16 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Request, status
+from fastapi import APIRouter, Depends, File, Query, Request, UploadFile, status
+from fastapi.responses import RedirectResponse, Response
 
+from app.core.config import settings
+from app.core.storage import ScreenshotStorage
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.items.router import ItemServiceDependency
+from app.modules.tiles.artwork import artwork_file, store_artwork
 from app.modules.tiles.repository import CardRepository
 from app.modules.tiles.schemas import (
+    CardArtworkUpload,
     CardCreate,
     CardDetail,
     CardListResponse,
@@ -21,6 +26,8 @@ from app.modules.tiles.wiki import WikiImageResolver
 
 router = APIRouter(prefix="/admin/cards", tags=["card catalog"])
 wiki_router = APIRouter(prefix="/admin/wiki-images", tags=["card catalog"])
+artwork_router = APIRouter(prefix="/card-artwork", tags=["card catalog"])
+ARTWORK_CACHE = "public, max-age=604800, immutable"
 
 
 def get_card_service(request: Request) -> CardService:
@@ -101,3 +108,23 @@ async def retire_card(
     service: CardServiceDependency,
 ) -> CardDetail:
     return await service.retire(card_id, payload, admin)
+
+
+@router.post("/artwork", response_model=CardArtworkUpload, status_code=status.HTTP_201_CREATED)
+async def upload_artwork(
+    request: Request, admin: AdminDependency, image: Annotated[UploadFile, File()]
+) -> CardArtworkUpload:
+    """Clan artwork for a card (feature 041); saved with the next card revision."""
+    storage: ScreenshotStorage = request.app.state.screenshot_storage
+    data = await image.read(settings.max_screenshot_bytes + 1)
+    return await store_artwork(storage, data, settings.max_screenshot_bytes)
+
+
+@artwork_router.get("/{name}")
+async def artwork(name: str, request: Request) -> Response:
+    """Public: boards show the artwork to everyone. Names are random and never change."""
+    storage: ScreenshotStorage = request.app.state.screenshot_storage
+    url, data, content_type = await artwork_file(storage, name)
+    if url is not None:
+        return RedirectResponse(url, status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+    return Response(content=data, media_type=content_type, headers={"Cache-Control": ARTWORK_CACHE})

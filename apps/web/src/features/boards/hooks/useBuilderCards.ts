@@ -1,3 +1,4 @@
+import { cardImageUrl } from '../../cards/artwork'
 import { useMemo } from 'react'
 import type {
   AcceptedDrop,
@@ -41,7 +42,7 @@ function fromCatalog(card: CardSummary): BuilderCard {
     requirement: revision.completion_requirement,
     drops: revision.drops,
     categories: revision.categories ?? [],
-    imageUrl: revision.wiki_image?.image_url ?? null,
+    imageUrl: cardImageUrl(revision),
     changeReason: revision.provenance.source === 'admin' ? revision.change_reason : null,
     retired: card.status === 'retired',
   }
@@ -71,7 +72,7 @@ export function useBuilderCards(board: EventBoard | null | undefined, catalog: C
         requirement: card.completion_requirement,
         drops: card.drops,
         categories: card.categories ?? byKey.get(key)?.categories ?? [],
-        imageUrl: card.wiki_image?.image_url ?? null,
+        imageUrl: cardImageUrl(card),
         changeReason: byKey.get(key)?.changeReason ?? null,
         retired: retiredIds.has(card.card_id),
       })

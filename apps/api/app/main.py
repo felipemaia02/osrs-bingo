@@ -54,8 +54,8 @@ from app.modules.submissions.router import (
 from app.modules.submissions.router import admin_router as admin_submissions_router
 from app.modules.submissions.router import player_router as submissions_router
 from app.modules.teams.router import router as teams_router
+from app.modules.tiles.router import artwork_router, wiki_router
 from app.modules.tiles.router import router as tiles_router
-from app.modules.tiles.router import wiki_router
 
 logger = get_logger(__name__)
 logging.getLogger("uvicorn.access").addFilter(OAuthAccessLogFilter())
@@ -187,6 +187,7 @@ app.include_router(teams_router)
 app.include_router(players_router)
 app.include_router(tiles_router)
 app.include_router(wiki_router)
+app.include_router(artwork_router)
 app.include_router(public_boards_router)
 app.include_router(admin_boards_router)
 app.include_router(submissions_router)

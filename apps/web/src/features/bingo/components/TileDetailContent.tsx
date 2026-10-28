@@ -146,6 +146,11 @@ export function TileDetailContent({ tile, match, unavailableReason }: TileDetail
             <strong>{t('cards.preverification')}:</strong> {tile.ruleNote}
           </p>
         )}
+        {tile.imageArtist && (
+          <span className="text-xs text-rs-muted">
+            {t('cards.artwork.credit', { artist: tile.imageArtist })}
+          </span>
+        )}
         {tile.imageSourceUrl && (
           <a
             href={tile.imageSourceUrl}

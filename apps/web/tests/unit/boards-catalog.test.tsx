@@ -13,6 +13,7 @@ import {
   resolveWikiImage,
   retireCard,
   searchItems,
+  uploadCardArtwork,
 } from '../../src/features/cards/api/cardsApi'
 import {
   fetchAdminBoard,
@@ -878,6 +879,23 @@ it('filters the catalog by category and saves the categories of a card (040)', a
   await user.click(within(dialog).getByRole('checkbox', { name: 'Raids' }))
   const payload = await save(user, dialog)
   expect(payload.categories).toEqual(['solo_bosses', 'raids'])
+})
+
+it('uploads clan artwork with the artist credit and saves it on the card (041)', async () => {
+  const key = `cards/artwork/${'a'.repeat(32)}.png`
+  vi.mocked(uploadCardArtwork).mockResolvedValue({ key, content_type: 'image/png' })
+  const { user, dialog } = await openEditor()
+
+  const file = new File(['png'], 'vorkath.png', { type: 'image/png' })
+  await user.upload(within(dialog).getByLabelText('Artwork image'), file)
+  await waitFor(() => expect(uploadCardArtwork).toHaveBeenCalledOnce())
+  expect(vi.mocked(uploadCardArtwork).mock.calls[0][0]).toBe(file)
+  await user.type(await within(dialog).findByLabelText('Artist'), 'Rune Rita')
+  expect(within(dialog).getByText('Clan artwork')).toBeInTheDocument()
+
+  const payload = await save(user, dialog)
+  expect(payload.artwork).toEqual({ key, content_type: 'image/png', artist: 'Rune Rita' })
+  expect(payload.fallback_image_accepted).toBe(false)
 })
 
 it('resolves a Wiki image in the editor and sends it with the revision', async () => {

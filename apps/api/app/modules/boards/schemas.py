@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.modules.tiles.schemas import (
     AcceptedDrop,
+    CardArtwork,
     CardCategory,
     CardDifficulty,
     CardKind,
@@ -75,6 +76,7 @@ class BoardCardSnapshot(BaseModel):
     completion_requirement: float
     drops: list[AcceptedDrop]
     wiki_image: WikiImage | None
+    artwork: CardArtwork | None = None
     fallback_image_accepted: bool
     rule_note: str | None
     provenance: CardProvenance

@@ -1,5 +1,6 @@
 import type {
   AcceptedDrop,
+  CardArtwork,
   CardCategory,
   CardDifficulty,
   CardKind,
@@ -19,6 +20,7 @@ export interface BoardCardSnapshot {
   completion_requirement: number
   drops: AcceptedDrop[]
   wiki_image: WikiImage | null
+  artwork?: CardArtwork | null
   fallback_image_accepted: boolean
   rule_note: string | null
   provenance: CardProvenance

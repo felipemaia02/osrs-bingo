@@ -66,6 +66,13 @@ export interface LinkItemsResult {
   skipped_cards: string[]
 }
 
+/** Clan artwork uploaded for a card (feature 041). */
+export interface CardArtwork {
+  key: string
+  content_type: string
+  artist: string | null
+}
+
 export interface WikiImage {
   article_title: string
   article_url: string
@@ -98,6 +105,7 @@ export interface CardRevision {
   completion_requirement: number
   drops: AcceptedDrop[]
   wiki_image: WikiImage | null
+  artwork?: CardArtwork | null
   fallback_image_accepted: boolean
   rule_note: string | null
   requires_preverification?: boolean
@@ -134,6 +142,7 @@ export interface CardRevisionPayload {
   completion_requirement: number
   drops: AcceptedDrop[]
   wiki_image: WikiImage | null
+  artwork: CardArtwork | null
   fallback_image_accepted: boolean
   rule_note: string | null
   requires_preverification: boolean

@@ -1,3 +1,4 @@
+import { cardImageUrl } from '../artwork'
 import { useState } from 'react'
 import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
@@ -89,7 +90,7 @@ export function CardCatalogTable({
                 <span className="flex items-center gap-3">
                   <CardImage
                     name={card.revision.name}
-                    imageUrl={card.revision.wiki_image?.image_url}
+                    imageUrl={cardImageUrl(card.revision)}
                     className="h-10 w-12 shrink-0"
                   />
                   <span className="flex min-w-0 flex-col">
@@ -143,7 +144,7 @@ export function CardCatalogCards({ cards, onEdit, onRetire }: CardListProps) {
             <div className="flex items-center gap-3">
               <CardImage
                 name={card.revision.name}
-                imageUrl={card.revision.wiki_image?.image_url}
+                imageUrl={cardImageUrl(card.revision)}
                 className="h-12 w-[52px] shrink-0"
               />
               <div className="flex min-w-0 flex-1 flex-col gap-1">

@@ -81,3 +81,16 @@ export async function previewDropMatches(drops: DropMatchInput[]): Promise<DropM
 export async function linkCatalogItems(): Promise<LinkItemsResult> {
   return (await apiClient.post<LinkItemsResult>('/admin/cards/link-items')).data
 }
+
+/** Uploads clan artwork; it's saved on the card with the next revision (feature 041). */
+export async function uploadCardArtwork(
+  file: File,
+): Promise<{ key: string; content_type: string }> {
+  const form = new FormData()
+  form.append('image', file)
+  return (
+    await apiClient.post<{ key: string; content_type: string }>('/admin/cards/artwork', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  ).data
+}

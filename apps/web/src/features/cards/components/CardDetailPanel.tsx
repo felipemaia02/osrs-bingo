@@ -1,3 +1,4 @@
+import { cardImageUrl } from '../artwork'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined'
 import { useTranslation } from 'react-i18next'
@@ -44,7 +45,7 @@ export function CardDetailPanel({ card, onClose }: CardDetailPanelProps) {
           <div className="flex flex-col gap-3 p-3.5">
             <CardImage
               name={card.revision.name}
-              imageUrl={card.revision.wiki_image?.image_url}
+              imageUrl={cardImageUrl(card.revision)}
               className="h-32 w-full"
               large
             />

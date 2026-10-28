@@ -70,6 +70,7 @@ vi.mock('../src/features/cards/api/cardsApi', () => ({
     .fn()
     .mockResolvedValue({ available: false, days: 30, total: 0, per_drop: [] }),
   linkCatalogItems: vi.fn(),
+  uploadCardArtwork: vi.fn(),
 }))
 
 vi.mock('../src/features/boards/api/boardsApi', () => ({

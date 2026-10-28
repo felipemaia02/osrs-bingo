@@ -26,7 +26,7 @@ from app.modules.submissions.service import SubmissionService
 from app.modules.teams.repository import TeamRepository
 
 # Matched by RequestSafetyMiddleware to allow screenshot-sized bodies on this route only.
-UPLOAD_PATH_PATTERN = re.compile(r"/events/[^/]+/submissions")
+UPLOAD_PATH_PATTERN = re.compile(r"/events/[^/]+/submissions|/admin/cards/artwork")
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
 
 player_router = APIRouter(tags=["submissions"])

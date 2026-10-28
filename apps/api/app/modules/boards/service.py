@@ -218,6 +218,7 @@ def is_publishable_board(document: BoardDocument | dict[str, Any] | None) -> boo
         return False
     return all(
         position.get("card", {}).get("wiki_image") is not None
+        or position.get("card", {}).get("artwork") is not None
         or position.get("card", {}).get("fallback_image_accepted") is True
         for position in positions
     )

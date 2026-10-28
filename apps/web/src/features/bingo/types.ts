@@ -32,6 +32,8 @@ export interface Tile {
   imageUrl?: string | null
   imageSourceUrl?: string | null
   imageAttribution?: string | null
+  /** Clan artwork credit (feature 041). */
+  imageArtist?: string | null
   /** Latest fix of this square during the event (feature 036). */
   lastUpdate?: { reason: string; at: string } | null
 }

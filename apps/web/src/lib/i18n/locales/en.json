@@ -600,7 +600,8 @@
       "drops": "Give every drop a name and a progress above 0, without repeating names.",
       "changed": "This card changed while you were editing. Reload and try again.",
       "slug": "This stable card key is already in use.",
-      "importConflict": "The workbook import found conflicting keys: {{slugs}}."
+      "importConflict": "The workbook import found conflicting keys: {{slugs}}.",
+      "artwork": "The artwork couldn't be uploaded. Use a PNG, JPEG or WebP image up to 5 MB."
     },
     "importDescription": "Import the approved workbook cards into the reusable catalog. Existing matching cards are kept.",
     "rules": {
@@ -702,6 +703,18 @@
       "skilling": "Skilling",
       "minigames": "Minigames",
       "other": "Other"
+    },
+    "artwork": {
+      "title": "Clan artwork (optional)",
+      "file": "Artwork image",
+      "upload": "Upload artwork",
+      "replace": "Replace artwork",
+      "remove": "Remove artwork",
+      "artist": "Artist",
+      "artistPlaceholder": "e.g. Rune Rita",
+      "hint": "PNG, JPEG or WebP, up to 5 MB. Shown instead of the OSRS Wiki image. Only upload the clan's own art or art you may use.",
+      "inUse": "Clan artwork",
+      "credit": "Art by {{artist}}"
     }
   },
   "boards": {

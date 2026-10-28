@@ -600,7 +600,8 @@
       "drops": "Dê um nome e um progresso acima de 0 para cada drop, sem repetir nomes.",
       "changed": "Este card mudou durante a edição. Recarregue e tente novamente.",
       "slug": "Esta chave permanente já está em uso.",
-      "importConflict": "A importação encontrou chaves conflitantes: {{slugs}}."
+      "importConflict": "A importação encontrou chaves conflitantes: {{slugs}}.",
+      "artwork": "Não foi possível enviar a arte. Use uma imagem PNG, JPEG ou WebP de até 5 MB."
     },
     "importDescription": "Importe os cards da planilha aprovada para o catálogo reutilizável. Cards existentes correspondentes são mantidos.",
     "rules": {
@@ -702,6 +703,18 @@
       "skilling": "Skilling",
       "minigames": "Minigames",
       "other": "Outros"
+    },
+    "artwork": {
+      "title": "Arte do clã (opcional)",
+      "file": "Imagem da arte",
+      "upload": "Enviar arte",
+      "replace": "Trocar arte",
+      "remove": "Remover arte",
+      "artist": "Artista",
+      "artistPlaceholder": "ex.: Rune Rita",
+      "hint": "PNG, JPEG ou WebP, até 5 MB. Aparece no lugar da imagem da OSRS Wiki. Envie só arte do próprio clã ou que vocês possam usar.",
+      "inUse": "Arte do clã",
+      "credit": "Arte de {{artist}}"
     }
   },
   "boards": {
