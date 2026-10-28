@@ -40,3 +40,14 @@ export async function finishEvent(eventId: string): Promise<BingoEvent> {
   const response = await apiClient.post<BingoEvent>(`/events/${eventId}/finish`)
   return response.data
 }
+
+/** Adds a dated clarification to the rules of the active event (feature 036). */
+export async function addRulesAddendum({
+  eventId,
+  text,
+}: {
+  eventId: string
+  text: string
+}): Promise<BingoEvent> {
+  return (await apiClient.post<BingoEvent>(`/events/${eventId}/rules/addenda`, { text })).data
+}

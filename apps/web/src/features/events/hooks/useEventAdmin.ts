@@ -33,6 +33,13 @@ export function useEventAdmin() {
     setRulesEvent(null)
   }
 
+  async function addAddendum(text: string) {
+    if (!rulesEvent) return
+    await mutations.addAddendum.mutateAsync({ eventId: rulesEvent.id, text })
+    setFeedback(t('events.feedback.clarificationAdded'))
+    setRulesEvent(null)
+  }
+
   async function confirmTransition() {
     if (!transition) return
     setTransitionError(null)
@@ -67,7 +74,8 @@ export function useEventAdmin() {
     },
     closeForm: () => setForm(null),
     rulesEvent,
-    savingRules: mutations.updateRules.isPending,
+    savingRules: mutations.updateRules.isPending || mutations.addAddendum.isPending,
+    addAddendum,
     openRules: (event: BingoEvent) => {
       setFeedback(null)
       setRulesEvent(event)

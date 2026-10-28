@@ -195,6 +195,10 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
           rowBonus={state.rowBonus}
           columnBonus={state.columnBonus}
           rulesText={event.rules_text ?? null}
+          addenda={event.rules_addenda}
+          tileUpdates={state.tiles.flatMap((tile) =>
+            tile.lastUpdate ? [{ name: tile.name, ...tile.lastUpdate }] : [],
+          )}
           onClose={() => setHelpOpen(false)}
         />
       )}

@@ -6,7 +6,7 @@ import type { TierFilter, Tile, TileMatch } from './types'
 /** Maps the published board snapshot to tiles. No progress or score exists yet (BR-001). */
 export function boardToTiles(board: EventBoard, score?: TeamScore | null): Tile[] {
   const progress = new Map(score?.tiles.map((tile) => [tile.position, tile]))
-  return board.positions.map(({ position, row, column, card, bonus }) => ({
+  return board.positions.map(({ position, row, column, card, bonus, updates }) => ({
     id: `${card.card_id}:${card.card_revision}`,
     position,
     row,
@@ -24,6 +24,9 @@ export function boardToTiles(board: EventBoard, score?: TeamScore | null): Tile[
     imageSourceUrl: card.wiki_image?.file_page_url ?? null,
     imageAttribution: card.wiki_image?.attribution ?? null,
     progress: toProgress(progress.get(position)),
+    lastUpdate: updates?.length
+      ? { reason: updates[updates.length - 1].reason, at: updates[updates.length - 1].updated_at }
+      : null,
   }))
 }
 

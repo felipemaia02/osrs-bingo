@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request
 
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.boards.repository import BoardRepository
-from app.modules.boards.schemas import BoardResponse, BoardSave
+from app.modules.boards.schemas import BoardPositionUpdate, BoardResponse, BoardSave
 from app.modules.boards.service import BoardService
 from app.modules.events.repository import EventRepository
 from app.modules.tiles.repository import CardRepository
@@ -43,3 +43,15 @@ async def save_board(
     service: BoardServiceDependency,
 ) -> BoardResponse:
     return await service.save(event_id, payload, admin)
+
+
+@admin_router.put("/positions/{position}", response_model=BoardResponse)
+async def update_position(
+    event_id: str,
+    position: int,
+    payload: BoardPositionUpdate,
+    admin: AdminDependency,
+    service: BoardServiceDependency,
+) -> BoardResponse:
+    """Fix a live square with a newer revision of its card (feature 036)."""
+    return await service.update_position(event_id, position, payload, admin)

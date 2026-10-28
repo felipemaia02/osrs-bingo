@@ -65,6 +65,8 @@ export interface ReviewItem extends Submission {
   within_event: boolean
   /** The reviewing admin plays on this team: another admin reviews it (feature 026). */
   own_team?: boolean
+  /** The card was fixed during the event and no longer has this item (feature 036). */
+  drop_removed?: boolean
   /** IDs of pending/accepted submissions that look like the same drop (feature 035). */
   possible_duplicates?: string[]
 }

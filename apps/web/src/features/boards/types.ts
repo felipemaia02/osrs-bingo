@@ -24,6 +24,15 @@ export interface BoardCardSnapshot {
   requires_preverification?: boolean
 }
 
+/** A live fix of a square during the event (feature 036). */
+export interface PositionUpdate {
+  from_revision: number
+  to_revision: number
+  reason: string
+  updated_by_name: string
+  updated_at: string
+}
+
 export interface BoardPosition {
   position: number
   row: number
@@ -31,6 +40,8 @@ export interface BoardPosition {
   /** Bonus-row card (feature 020). */
   bonus?: boolean
   card: BoardCardSnapshot
+  /** Changes made while the event was active, oldest first (feature 036). */
+  updates?: PositionUpdate[]
 }
 
 export interface EventBoard {

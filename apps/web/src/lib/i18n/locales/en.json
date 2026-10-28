@@ -53,7 +53,8 @@
       "excess": "Progress beyond the requirement does not award extra tile points.",
       "details": "Select a tile to see its accepted drops, progress values and notes.",
       "lines": "Completing all {{size}} tiles of a row gives +{{row}} points; of a column, +{{column}} points.",
-      "linesNotSet": "Row and column bonuses aren't set for this board yet."
+      "linesNotSet": "Row and column bonuses aren't set for this board yet.",
+      "updates": "Tiles changed during the event"
     },
     "activeEvent": "Active event",
     "yourTeam": "Your team",
@@ -93,7 +94,8 @@
       "imageSource": "Image: OSRS Wiki — {{name}}",
       "previous": "Previous tile",
       "next": "Next tile",
-      "closeTile": "Close tile"
+      "closeTile": "Close tile",
+      "updated": "Updated {{date}}: {{reason}}"
     },
     "rowSummary": {
       "some": "{{count}} of {{total}} match the search",
@@ -200,7 +202,8 @@
       "updated": "Event updated.",
       "activated": "Event activated.",
       "finished": "Event finished.",
-      "rulesSaved": "Rules saved."
+      "rulesSaved": "Rules saved.",
+      "clarificationAdded": "Clarification added to the rules."
     },
     "confirm": {
       "activateTitle": "Activate event?",
@@ -237,7 +240,14 @@
       "text": "Rules of the bingo",
       "placeholder": "Write how this bingo works: dates, what counts, screenshots, team rules…",
       "hint": "Plain text; line breaks are kept. Players read it on the Events page and in the board's help.",
-      "section": "Rules"
+      "section": "Rules",
+      "clarifications": "Clarifications",
+      "clarificationOn": "Clarification · {{date}}",
+      "none": "This event has no written rules yet.",
+      "addClarification": "Add a clarification",
+      "clarificationPlaceholder": "e.g. Pets count once per player.",
+      "clarificationHint": "Rules are frozen while the event is active. Clarifications are added below them with today's date and can't be edited.",
+      "addClarificationAction": "Add clarification"
     },
     "openBoard": "Open board",
     "search": "Search events",
@@ -758,6 +768,24 @@
       "shrinkConfirm": "Remove cards",
       "shrinkConfirmation_one": "{{count}} card will leave the bonus row: {{names}}. Nothing is saved until you save the board.",
       "shrinkConfirmation_other": "{{count}} cards will leave the bonus row: {{names}}. Nothing is saved until you save the board."
+    },
+    "live": {
+      "title": "Card fixes during the event",
+      "hint": "Fix a card in the catalog first (Edit → new revision), then update its square here. Scores are recalculated and players see the reason.",
+      "none": "No square has a newer card revision.",
+      "revisions": "rev. {{from}} → {{to}}",
+      "review": "Review update",
+      "history_one": "{{count}} change made",
+      "history_other": "{{count}} changes made",
+      "modalTitle": "Update {{name}} on the live board",
+      "onBoard": "On the board (rev. {{revision}})",
+      "newRevision": "New (rev. {{revision}})",
+      "changed": "changed",
+      "effect": "Accepted drops will use the new weights; drops no longer on the card stop counting and pending ones can only be rejected.",
+      "reason": "Reason players will see",
+      "reasonPlaceholder": "e.g. The requirement was a typo: 6, not 8.",
+      "confirm": "Update square",
+      "done": "{{name}} updated on the live board."
     }
   },
   "brand": {
@@ -953,7 +981,8 @@
     },
     "search": "Search player or item",
     "latestFirst": "Latest first",
-    "emptyAccepted": "No accepted submissions match."
+    "emptyAccepted": "No accepted submissions match.",
+    "dropRemoved": "This item is no longer on this card (fixed during the event). It can only be rejected."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",

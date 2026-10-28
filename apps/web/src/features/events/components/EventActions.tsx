@@ -37,16 +37,27 @@ export function EventActions({ event, mobile, onEdit, onRules, onTransition }: E
     )
   if (event.status === 'active')
     return (
-      <Button
-        variant="danger"
-        size={size}
-        className={grow}
-        aria-label={named('events.actions.finish')}
-        onClick={() => onTransition(event, 'finish')}
-      >
-        <CheckCircleOutlinedIcon sx={ICON} aria-hidden="true" />
-        {t('events.actions.finish')}
-      </Button>
+      <div className={`flex flex-wrap items-center gap-2 ${mobile ? '' : 'justify-end'}`}>
+        <Button
+          size={size}
+          className={grow}
+          aria-label={named('events.actions.rules')}
+          onClick={() => onRules(event)}
+        >
+          <RuleOutlinedIcon sx={ICON} aria-hidden="true" />
+          {t('events.actions.rules')}
+        </Button>
+        <Button
+          variant="danger"
+          size={size}
+          className={grow}
+          aria-label={named('events.actions.finish')}
+          onClick={() => onTransition(event, 'finish')}
+        >
+          <CheckCircleOutlinedIcon sx={ICON} aria-hidden="true" />
+          {t('events.actions.finish')}
+        </Button>
+      </div>
     )
   const linkSize = mobile ? 'min-h-11 px-3.5 text-sm' : 'min-h-[34px] px-2.5 text-[13px]'
   return (

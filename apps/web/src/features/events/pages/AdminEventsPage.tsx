@@ -125,6 +125,7 @@ export function AdminEventsPage() {
           event={admin.rulesEvent}
           saving={admin.savingRules}
           onSave={admin.saveRules}
+          onAddAddendum={admin.addAddendum}
           onClose={admin.closeRules}
         />
       )}

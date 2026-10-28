@@ -100,6 +100,8 @@ class ReviewItem(SubmissionResponse):
     within_event: bool
     # The reviewing admin plays on this submission's team: someone else reviews it (026).
     own_team: bool = False
+    # The card on this square was fixed during the event and no longer has this item (036).
+    drop_removed: bool = False
     # IDs of pending/accepted submissions that look like the same drop (feature 035).
     possible_duplicates: list[str] = Field(default_factory=list)
 

@@ -60,6 +60,7 @@ export function ReviewDetail({
   const preverification = item.kind === 'preverification'
   const waiting =
     !preverification && item.requires_preverification && item.preverification_status !== 'accepted'
+  const removed = Boolean(item.drop_removed)
   const rejectReady = reason !== '' && (reason !== 'other' || note.trim() !== '')
   const reverting = mode === 'accepted'
   const duplicates = item.possible_duplicates?.length ?? 0
@@ -198,6 +199,11 @@ export function ReviewDetail({
               {t('review.revert.hint', { name: item.reviewer_name ?? '—' })}
             </p>
           )}
+          {removed && (
+            <p className="m-0 rounded-[3px] border border-rs-danger/70 bg-rs-danger-bg px-3 py-2 text-[13px]">
+              {t('review.dropRemoved')}
+            </p>
+          )}
           {waiting && !reverting && (
             <p className="m-0 rounded-[3px] border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-[13px]">
               {t('review.waitingPreverification')}
@@ -267,7 +273,7 @@ export function ReviewDetail({
             )}
             {!item.own_team && !reverting && (
               <>
-                <Button variant="success" onClick={onAccept} disabled={busy || waiting}>
+                <Button variant="success" onClick={onAccept} disabled={busy || waiting || removed}>
                   <CheckOutlinedIcon fontSize="small" aria-hidden="true" />
                   {t('review.accept')}
                   <kbd className="hidden rounded-[3px] border border-rs-canvas px-1.5 text-[11px] md:inline">

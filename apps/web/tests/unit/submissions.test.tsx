@@ -349,6 +349,21 @@ describe('Drop review', () => {
     )
   })
 
+  it('blocks accepting an item no longer on a card fixed during the event (036)', async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [reviewItem({ id: 'gone-1', drop_removed: true })],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(within(detail).getByText(/no longer on this card/)).toBeInTheDocument()
+    expect(within(detail).getByRole('button', { name: /Accept/ })).toBeDisabled()
+  })
+
   it("doesn't let admins review their own team", async () => {
     vi.mocked(fetchReviewQueue).mockResolvedValue({
       items: [reviewItem({ id: 'own-1', own_team: true })],

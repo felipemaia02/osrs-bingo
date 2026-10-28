@@ -1,4 +1,5 @@
 from builtins import list as builtin_list
+from datetime import UTC, datetime
 
 from app.core.exceptions import ConflictError, NotFoundError
 from app.core.logging import get_logger, log_event
@@ -12,12 +13,15 @@ from app.modules.events.schemas import (
     EventRules,
     EventStatus,
     EventUpdate,
+    RulesAddendum,
+    RulesAddendumCreate,
 )
 from app.modules.players.repository import PlayerRepository
 
 ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
+ADDENDUM_ACTIVE_ONLY = "Clarifications can only be added while the event is active"
 LINE_BONUSES_REQUIRED_DETAIL = "Set the row and column bonuses on the board before activating"
 
 
@@ -83,6 +87,21 @@ class EventService:
         log_event(self._logger, 20, "event_rules_updated", event_id=event_id)
         return self._to_response(updated)
 
+    async def add_rules_addendum(
+        self, event_id: str, payload: RulesAddendumCreate, actor_id: str
+    ) -> EventResponse:
+        """Clarifications are added (never edited) while the event is active (feature 036)."""
+        event = await self._require_event(event_id)
+        if event["status"] != EventStatus.ACTIVE:
+            raise ConflictError(ADDENDUM_ACTIVE_ONLY)
+        updated = await self._repository.add_rules_addendum(
+            event_id, {"text": payload.text, "added_at": datetime.now(UTC), "added_by": actor_id}
+        )
+        if updated is None:
+            raise ConflictError(ADDENDUM_ACTIVE_ONLY)
+        log_event(self._logger, 20, "event_rules_addendum_added", event_id=event_id)
+        return self._to_response(updated)
+
     async def activate(self, event_id: str, actor_id: str = "system") -> EventResponse:
         event = await self._require_event(event_id)
         self._require_status(event, EventStatus.DRAFT)
@@ -145,6 +164,10 @@ class EventService:
             end_at=document["end_at"],
             status=document["status"],
             rules_text=document.get("rules_text"),
+            rules_addenda=[
+                RulesAddendum(text=item["text"], added_at=item["added_at"])
+                for item in document.get("rules_addenda") or []
+            ],
             buy_in=document.get("buy_in"),
             created_at=document["created_at"],
             updated_at=document["updated_at"],

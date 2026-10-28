@@ -234,6 +234,7 @@ def pending(kind: str = "drop", requires: bool = True) -> dict[str, Any]:
         "position": 2,
         "kind": kind,
         "status": "pending",
+        "drop_key": "skeletal-visage" if kind == "drop" else None,
         "requires_preverification": requires,
         "screenshot_key": "events/x/submissions/y.png",
         "screenshot_type": "image/png",
@@ -316,6 +317,7 @@ async def test_admins_never_review_their_own_team(deps: dict[str, Any]) -> None:
         "position": 1,
         "kind": "drop",
         "status": "pending",
+        "drop_key": "skeletal-visage",
         "requires_preverification": False,
     }
     deps["submissions"].get.return_value = pending
@@ -332,3 +334,13 @@ async def test_admins_never_review_their_own_team(deps: dict[str, Any]) -> None:
     with contextlib.suppress(Exception):
         await deps["service"].accept(str(pending["_id"]), ADMIN)
     deps["submissions"].review.assert_awaited_once()
+
+
+async def test_items_removed_from_a_fixed_card_cannot_be_accepted(deps: dict[str, Any]) -> None:
+    """036: the square's card no longer accepts this drop."""
+    document = {**pending(requires=False), "position": 1, "drop_key": "gone-item"}
+    deps["submissions"].get.return_value = document
+
+    with pytest.raises(AppException, match="no longer on this card"):
+        await deps["service"].accept(str(document["_id"]), ADMIN)
+    deps["submissions"].review.assert_not_awaited()

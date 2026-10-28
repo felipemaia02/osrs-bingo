@@ -13,6 +13,7 @@ from app.modules.events.schemas import (
     EventRules,
     EventStatus,
     EventUpdate,
+    RulesAddendumCreate,
 )
 from app.modules.events.service import EventService
 from app.modules.players.repository import PlayerRepository
@@ -85,6 +86,17 @@ async def update_rules(
 ) -> EventResponse:
     log_event(logger, 20, "event_rules_update_requested", event_id=event_id)
     return await service.set_rules(event_id, payload)
+
+
+@router.post("/{event_id}/rules/addenda", response_model=EventResponse)
+async def add_rules_addendum(
+    event_id: str,
+    payload: RulesAddendumCreate,
+    admin: AdminDependency,
+    service: EventServiceDependency,
+) -> EventResponse:
+    """Add a dated clarification to the rules of the active event (feature 036)."""
+    return await service.add_rules_addendum(event_id, payload, admin.id)
 
 
 @router.post("/{event_id}/activate", response_model=EventResponse)

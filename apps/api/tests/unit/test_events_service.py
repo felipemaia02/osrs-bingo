@@ -220,3 +220,30 @@ async def test_mine_lists_only_the_users_events(
 
     players.event_ids_for_user.return_value = []
     assert await service.mine(str(ObjectId())) == []
+
+
+async def test_clarifications_are_added_only_while_the_event_is_active(
+    repository: AsyncMock, service: EventService
+) -> None:
+    """036: dated clarifications are appended; the original rules stay as they were."""
+    from app.modules.events.schemas import RulesAddendumCreate
+
+    repository.get.return_value = event_document(EventStatus.DRAFT)
+    with pytest.raises(ConflictError, match="while the event is active"):
+        await service.add_rules_addendum("event", RulesAddendumCreate(text="x"), "admin")
+
+    active = event_document(EventStatus.ACTIVE)
+    repository.get.return_value = active
+    added_at = datetime.now(UTC)
+    repository.add_rules_addendum.return_value = {
+        **active,
+        "rules_addenda": [{"text": "Pets count once", "added_at": added_at, "added_by": "admin"}],
+    }
+
+    response = await service.add_rules_addendum(
+        "event", RulesAddendumCreate(text="  Pets count once  "), "admin"
+    )
+
+    addendum = repository.add_rules_addendum.await_args.args[1]
+    assert addendum["text"] == "Pets count once" and addendum["added_by"] == "admin"
+    assert [item.text for item in response.rules_addenda] == ["Pets count once"]

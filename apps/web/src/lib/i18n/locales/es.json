@@ -53,7 +53,8 @@
       "excess": "El progreso por encima del requisito no da puntos extra.",
       "details": "Selecciona una casilla para ver los drops aceptados, valores de progreso y notas.",
       "lines": "Completar las {{size}} casillas de una fila da +{{row}} puntos; de una columna, +{{column}} puntos.",
-      "linesNotSet": "Los bonos de fila y columna aún no están definidos en este tablero."
+      "linesNotSet": "Los bonos de fila y columna aún no están definidos en este tablero.",
+      "updates": "Casillas cambiadas durante el evento"
     },
     "activeEvent": "Evento activo",
     "yourTeam": "Tu equipo",
@@ -93,7 +94,8 @@
       "imageSource": "Imagen: OSRS Wiki — {{name}}",
       "previous": "Casilla anterior",
       "next": "Siguiente casilla",
-      "closeTile": "Cerrar casilla"
+      "closeTile": "Cerrar casilla",
+      "updated": "Actualizada el {{date}}: {{reason}}"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} coinciden con la búsqueda",
@@ -200,7 +202,8 @@
       "updated": "Evento actualizado.",
       "activated": "Evento activado.",
       "finished": "Evento finalizado.",
-      "rulesSaved": "Reglas guardadas."
+      "rulesSaved": "Reglas guardadas.",
+      "clarificationAdded": "Aclaración añadida a las reglas."
     },
     "confirm": {
       "activateTitle": "¿Activar evento?",
@@ -237,7 +240,14 @@
       "text": "Reglas del bingo",
       "placeholder": "Escribe cómo funciona este bingo: fechas, qué cuenta, capturas, reglas de equipos…",
       "hint": "Texto simple; se mantienen los saltos de línea. Los jugadores lo leen en la página de Eventos y en la ayuda del tablero.",
-      "section": "Reglas"
+      "section": "Reglas",
+      "clarifications": "Aclaraciones",
+      "clarificationOn": "Aclaración · {{date}}",
+      "none": "Este evento aún no tiene reglas escritas.",
+      "addClarification": "Añadir aclaración",
+      "clarificationPlaceholder": "p. ej. Las mascotas cuentan una vez por jugador.",
+      "clarificationHint": "Las reglas quedan congeladas mientras el evento está activo. Las aclaraciones se añaden debajo con la fecha de hoy y no se pueden editar.",
+      "addClarificationAction": "Añadir aclaración"
     },
     "openBoard": "Abrir tablero",
     "search": "Buscar eventos",
@@ -758,6 +768,24 @@
       "shrinkConfirm": "Quitar cartas",
       "shrinkConfirmation_one": "{{count}} carta saldrá de la fila de bonus: {{names}}. Nada se guarda hasta que guardes el tablero.",
       "shrinkConfirmation_other": "{{count}} cartas saldrán de la fila de bonus: {{names}}. Nada se guarda hasta que guardes el tablero."
+    },
+    "live": {
+      "title": "Correcciones de cartas durante el evento",
+      "hint": "Corrige la carta en el catálogo primero (Editar → nueva revisión) y luego actualiza su casilla aquí. Las puntuaciones se recalculan y los jugadores ven el motivo.",
+      "none": "Ninguna casilla tiene una revisión más nueva de su carta.",
+      "revisions": "rev. {{from}} → {{to}}",
+      "review": "Revisar actualización",
+      "history_one": "{{count}} cambio hecho",
+      "history_other": "{{count}} cambios hechos",
+      "modalTitle": "Actualizar {{name}} en el tablero en vivo",
+      "onBoard": "En el tablero (rev. {{revision}})",
+      "newRevision": "Nueva (rev. {{revision}})",
+      "changed": "cambiado",
+      "effect": "Los drops aceptados usarán los nuevos pesos; los que ya no estén en la carta dejan de contar y los pendientes solo se pueden rechazar.",
+      "reason": "Motivo que verán los jugadores",
+      "reasonPlaceholder": "p. ej. El requisito era un error: 6, no 8.",
+      "confirm": "Actualizar casilla",
+      "done": "{{name}} actualizada en el tablero en vivo."
     }
   },
   "brand": {
@@ -953,7 +981,8 @@
     },
     "search": "Buscar jugador o ítem",
     "latestFirst": "Más recientes primero",
-    "emptyAccepted": "Ningún envío aceptado coincide."
+    "emptyAccepted": "Ningún envío aceptado coincide.",
+    "dropRemoved": "Este ítem ya no está en esta carta (corregida durante el evento). Solo se puede rechazar."
   },
   "score": {
     "tileComplete": "Completa +{{points}}",

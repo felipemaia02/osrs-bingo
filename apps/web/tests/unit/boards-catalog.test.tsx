@@ -14,7 +14,11 @@ import {
   retireCard,
   searchItems,
 } from '../../src/features/cards/api/cardsApi'
-import { fetchAdminBoard, saveBoard } from '../../src/features/boards/api/boardsApi'
+import {
+  fetchAdminBoard,
+  saveBoard,
+  updateBoardPosition,
+} from '../../src/features/boards/api/boardsApi'
 import type { CardSummary } from '../../src/features/cards/types'
 import type { BingoEvent } from '../../src/features/events/types'
 import { renderApp } from '../render'
@@ -481,6 +485,47 @@ describe('board builder v2', () => {
     expect(screen.queryByRole('button', { name: 'Save board' })).toBeNull()
     expect(screen.queryByRole('button', { name: /^Remove .* from this position$/ })).toBeNull()
     expect(screen.getAllByRole('button', { name: /empty — choose card$/ })[0]).toBeDisabled()
+  })
+
+  it('updates a live square to a newer card revision with a reason (036)', async () => {
+    const fixed: CardSummary = {
+      ...CARD,
+      current_revision: 2,
+      revision: { ...CARD.revision, revision: 2, completion_requirement: 6 },
+    }
+    vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
+    vi.mocked(fetchCards).mockResolvedValue([fixed])
+    vi.mocked(fetchAdminBoard).mockResolvedValue({ ...boardWith([[1, CARD]]), status: 'published' })
+    vi.mocked(updateBoardPosition).mockResolvedValue({
+      ...boardWith([[1, fixed]]),
+      status: 'published',
+    })
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Active' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    const fixes = await screen.findByRole('region', { name: 'Card fixes during the event' })
+    expect(fixes).toHaveTextContent('Vorkath')
+    expect(fixes).toHaveTextContent('rev. 1 → 2')
+    await user.click(within(fixes).getByRole('button', { name: 'Review update' }))
+    const dialog = screen.getByRole('dialog', { name: 'Update Vorkath on the live board' })
+    expect(
+      within(dialog).getByRole('rowheader', { name: /Progress requirement/ }),
+    ).toHaveTextContent('changed')
+    const confirm = within(dialog).getByRole('button', { name: 'Update square' })
+    expect(confirm).toBeDisabled()
+    await user.type(within(dialog).getByLabelText('Reason players will see'), 'Typo: 6, not 8')
+    await user.click(confirm)
+
+    await waitFor(() => expect(updateBoardPosition).toHaveBeenCalledOnce())
+    expect(vi.mocked(updateBoardPosition).mock.calls[0][0]).toEqual({
+      eventId: EVENT.id,
+      position: 1,
+      cardRevision: 2,
+      reason: 'Typo: 6, not 8',
+    })
+    expect(await screen.findByText('Vorkath updated on the live board.')).toBeInTheDocument()
   })
 
   it('offers catalog setup when no cards exist', async () => {

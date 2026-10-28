@@ -18,7 +18,7 @@ interface TileDetailContentProps {
 
 /** Read-only tile rules (board-a-desktop detail panel). Drop weights are progress, never points. */
 export function TileDetailContent({ tile, match, unavailableReason }: TileDetailContentProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const highlighted = match?.matches ? match.matchedDrop?.name : undefined
 
   return (
@@ -41,6 +41,19 @@ export function TileDetailContent({ tile, match, unavailableReason }: TileDetail
             )}
           </div>
         </div>
+        {tile.lastUpdate && (
+          <p
+            role="note"
+            className="m-0 rounded-[3px] border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-[13px]"
+          >
+            {t('board.panel.updated', {
+              date: new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' }).format(
+                new Date(tile.lastUpdate.at),
+              ),
+              reason: tile.lastUpdate.reason,
+            })}
+          </p>
+        )}
         <p className="m-0 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5 text-[13px]">
           <Trans
             i18nKey="board.panel.completes"

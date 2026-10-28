@@ -6,6 +6,7 @@ import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
 import {
   activateEvent,
+  addRulesAddendum,
   createEvent,
   fetchEvents,
   updateEvent,
@@ -42,6 +43,32 @@ describe('Events feature', () => {
         .getAllByRole('link', { name: 'Events' })
         .some((link) => link.getAttribute('aria-current') === 'page'),
     ).toBe(true)
+  })
+
+  it('adds a dated clarification to the rules of the active event (036)', async () => {
+    const live: BingoEvent = { ...ACTIVE_EVENT, rules_text: 'Only drops during the event count.' }
+    vi.mocked(fetchEvents).mockResolvedValue([live])
+    vi.mocked(addRulesAddendum).mockResolvedValue({
+      ...live,
+      rules_addenda: [{ text: 'Pets count once.', added_at: '2026-09-01T12:00:00Z' }],
+    })
+    const user = userEvent.setup()
+    renderApp(<AdminEventsPage />, '/admin/events')
+
+    await user.click((await screen.findAllByRole('button', { name: 'Rules · Thunder Summer' }))[0])
+    const dialog = screen.getByRole('dialog', { name: 'Rules · Thunder Summer' })
+    expect(within(dialog).getByText('Only drops during the event count.')).toBeInTheDocument()
+    expect(within(dialog).queryByLabelText('Rules of the bingo')).toBeNull()
+    await user.type(within(dialog).getByLabelText('Add a clarification'), 'Pets count once.')
+    await user.click(within(dialog).getByRole('button', { name: 'Add clarification' }))
+
+    await waitFor(() => expect(addRulesAddendum).toHaveBeenCalledOnce())
+    expect(vi.mocked(addRulesAddendum).mock.calls[0][0]).toEqual({
+      eventId: live.id,
+      text: 'Pets count once.',
+    })
+
+    expect(await screen.findByText('Clarification added to the rules.')).toBeInTheDocument()
   })
 
   it('creates an event using timezone-safe instants', async () => {

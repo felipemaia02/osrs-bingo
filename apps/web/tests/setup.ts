@@ -12,6 +12,7 @@ vi.mock('../src/features/events/api/eventsApi', () => ({
   createEvent: vi.fn(),
   updateEvent: vi.fn(),
   updateEventRules: vi.fn(),
+  addRulesAddendum: vi.fn(),
   activateEvent: vi.fn(),
   finishEvent: vi.fn(),
 }))
@@ -73,6 +74,7 @@ vi.mock('../src/features/boards/api/boardsApi', () => ({
   fetchAdminBoard: vi.fn().mockResolvedValue(null),
   fetchPublicBoard: vi.fn().mockResolvedValue(null),
   saveBoard: vi.fn(),
+  updateBoardPosition: vi.fn(),
 }))
 
 vi.mock('../src/features/submissions/api/submissionsApi', () => ({

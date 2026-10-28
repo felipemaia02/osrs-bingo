@@ -18,6 +18,7 @@ import type { BingoEvent } from '../../events/types'
 import { BoardSizeControl } from '../components/BoardSizeControl'
 import { LineBonusFields } from '../components/LineBonusFields'
 import { BuilderCatalog } from '../components/BuilderCatalog'
+import { LiveCardFixes } from '../components/LiveCardFixes'
 import { BuilderGrid } from '../components/BuilderGrid'
 import { BuilderStatusPanel } from '../components/BuilderStatusPanel'
 import { CardRulesSummary } from '../components/CardRulesSummary'
@@ -336,6 +337,15 @@ function EventBoardBuilder({
       {feedback.message}
     </p>
   )
+  // Feature 036: during the event, squares can be fixed with newer card revisions.
+  const liveFixes = event.status === 'active' && board.data && (
+    <LiveCardFixes
+      eventId={event.id}
+      board={board.data}
+      cards={cards.data ?? []}
+      onDone={(message) => setFeedback({ message, isError: false })}
+    />
+  )
   const noCards = !builder.catalogCards.length && (
     <p className="m-0 text-sm text-rs-muted">
       {t('boards.noCards')}{' '}
@@ -413,6 +423,7 @@ function EventBoardBuilder({
           onSave={() => void saveBoard()}
         />
         {feedbackLine}
+        {liveFixes}
         {noCards}
         <div className="flex items-start gap-5">
           <BuilderGrid
@@ -470,6 +481,7 @@ function EventBoardBuilder({
     <>
       {mobileHeader}
       {feedbackLine}
+      {liveFixes}
       {noCards}
       <MobilePositionMap
         draft={draft.draft}

@@ -53,6 +53,7 @@ ALREADY_REVIEWED = "Submission already reviewed"
 OWN_TEAM_REVIEW = "You play on this team — another admin reviews it"
 REVIEW_CLOSED = "Submissions can only be reviewed for active or finished events"
 NOT_ACCEPTED = "Only accepted submissions can be reverted"
+DROP_REMOVED = "This item is no longer on this card"
 REVERT_CLOSED = "Accepted submissions can only be reverted while the event is active"
 
 REVIEWABLE_EVENT_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
@@ -191,6 +192,12 @@ class SubmissionService:
             },
         )
         duplicates = possible_duplicates(documents, candidates)
+        board = await self._boards.get_by_event(event_id)
+        card_drops = {
+            (slot["position"], drop["key"]): float(drop["progress_weight"])
+            for slot in (board or {}).get("positions", [])
+            for drop in slot["card"].get("drops", [])
+        }
         players = await self._players.get_many([document["player_id"] for document in documents])
         teams = {team["_id"]: team for team in await self._teams.list(event_id)}
         gated = {
@@ -209,9 +216,18 @@ class SubmissionService:
                 if document["kind"] == SubmissionKind.DROP
                 else None
             )
+            response = self._response(document)
+            removed = (
+                document["kind"] == SubmissionKind.DROP
+                and (document["position"], document["drop_key"]) not in card_drops
+            )
+            if not removed and document["kind"] == SubmissionKind.DROP:
+                # The card may have been fixed during the event (036): show today's weight.
+                response.progress_weight = card_drops[(document["position"], document["drop_key"])]
             items.append(
                 ReviewItem(
-                    **self._response(document).model_dump(),
+                    **response.model_dump(),
+                    drop_removed=removed,
                     player_id=str(document["player_id"]),
                     player_name=player["display_name"] if player else "—",
                     team_id=str(document["team_id"]),
@@ -313,6 +329,11 @@ class SubmissionService:
             gate = gates.get((document["player_id"], document["position"]))
             if gate != SubmissionStatus.ACCEPTED:
                 raise AppException(409, PREVERIFICATION_NOT_ACCEPTED)
+        if document["kind"] == SubmissionKind.DROP:
+            # A square fixed during the event (036) may no longer accept this item.
+            slot = await self._board_position(str(document["event_id"]), document["position"])
+            if document["drop_key"] not in {drop["key"] for drop in slot["card"]["drops"]}:
+                raise AppException(409, DROP_REMOVED)
         return await self._decide(document, SubmissionStatus.ACCEPTED, admin)
 
     async def reject(

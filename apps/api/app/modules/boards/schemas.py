@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.modules.tiles.schemas import (
     AcceptedDrop,
@@ -15,6 +15,7 @@ MIN_BOARD_SIZE = 3
 MAX_BOARD_SIZE = 6
 DEFAULT_BOARD_SIZE = MAX_BOARD_SIZE
 LINE_BONUS_MAX = 1000
+UPDATE_REASON_MAX_LENGTH = 500
 # Grid positions plus a bonus row of up to `size` cards (feature 020).
 MAX_BOARD_POSITIONS = MAX_BOARD_SIZE**2 + MAX_BOARD_SIZE
 
@@ -79,12 +80,39 @@ class BoardCardSnapshot(BaseModel):
     requires_preverification: bool = False
 
 
+class BoardPositionUpdate(BaseModel):
+    """Fix a square of the live board with a newer revision of its card (feature 036)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    card_revision: int = Field(ge=1)
+    reason: str = Field(min_length=1, max_length=UPDATE_REASON_MAX_LENGTH)
+
+    @field_validator("reason")
+    @classmethod
+    def visible_reason(cls, value: str) -> str:
+        cleaned = " ".join(value.split())
+        if not cleaned:
+            raise ValueError("Explain the change")
+        return cleaned
+
+
+class PositionUpdateRecord(BaseModel):
+    from_revision: int
+    to_revision: int
+    reason: str
+    updated_by_name: str
+    updated_at: datetime
+
+
 class BoardPositionResponse(BaseModel):
     position: int
     row: int
     column: int
     bonus: bool = False
     card: BoardCardSnapshot
+    # Changes made while the event was active, oldest first (feature 036).
+    updates: list[PositionUpdateRecord] = Field(default_factory=list)
 
 
 class BoardResponse(BaseModel):

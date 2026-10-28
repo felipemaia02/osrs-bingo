@@ -29,3 +29,23 @@ export async function saveBoard({
 }): Promise<EventBoard> {
   return (await apiClient.put<EventBoard>(`/admin/events/${eventId}/board`, payload)).data
 }
+
+/** Fix a live square with a newer revision of its card (feature 036). */
+export async function updateBoardPosition({
+  eventId,
+  position,
+  cardRevision,
+  reason,
+}: {
+  eventId: string
+  position: number
+  cardRevision: number
+  reason: string
+}): Promise<EventBoard> {
+  return (
+    await apiClient.put<EventBoard>(`/admin/events/${eventId}/board/positions/${position}`, {
+      card_revision: cardRevision,
+      reason,
+    })
+  ).data
+}

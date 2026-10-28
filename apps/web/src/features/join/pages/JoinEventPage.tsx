@@ -193,6 +193,7 @@ function JoinFlow({ event, profile }: { event: BingoEvent; profile: Profile }) {
       body: (
         <RulesStep
           rulesText={event.rules_text ?? null}
+          addenda={event.rules_addenda}
           hasBuyIn={Boolean(event.buy_in)}
           rsn={account?.rsn ?? null}
           agreed={form.agreed}

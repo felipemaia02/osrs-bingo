@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import cast
+from typing import Any, cast
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -75,6 +75,38 @@ class BoardRepository:
                     "updated_by": actor_id,
                     "updated_at": now,
                 },
+                "$inc": {"revision": 1},
+            },
+            return_document=ReturnDocument.AFTER,
+        )
+        return cast(BoardDocument | None, document)
+
+    async def replace_card(
+        self,
+        event_id: str,
+        expected_revision: int,
+        position: int,
+        snapshot: dict[str, Any],
+        record: dict[str, Any],
+    ) -> BoardDocument | None:
+        """Live fix of one square (feature 036); None if the board changed meanwhile."""
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return None
+        document = await self._collection.find_one_and_update(
+            {
+                "event_id": object_id,
+                "status": BoardStatus.PUBLISHED,
+                "revision": expected_revision,
+                "positions.position": position,
+            },
+            {
+                "$set": {
+                    "positions.$.card": snapshot,
+                    "updated_by": record["updated_by"],
+                    "updated_at": record["updated_at"],
+                },
+                "$push": {"positions.$.updates": record},
                 "$inc": {"revision": 1},
             },
             return_document=ReturnDocument.AFTER,

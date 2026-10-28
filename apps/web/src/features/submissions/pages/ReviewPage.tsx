@@ -101,9 +101,10 @@ export function ReviewPage() {
       else if (key === 'k') select(index - 1)
       else if (key === 'a' && selected && !busy && !selected.own_team && !reverting) {
         const waiting =
-          selected.kind === 'drop' &&
-          selected.requires_preverification &&
-          selected.preverification_status !== 'accepted'
+          (selected.kind === 'drop' &&
+            selected.requires_preverification &&
+            selected.preverification_status !== 'accepted') ||
+          Boolean(selected.drop_removed)
         if (!waiting) accept()
       } else if (key === 'r') {
         event.preventDefault()

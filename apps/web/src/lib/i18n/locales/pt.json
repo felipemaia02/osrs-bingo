@@ -53,7 +53,8 @@
       "excess": "Progresso além do requisito não dá pontos extras de tile.",
       "details": "Selecione um tile para ver os drops aceitos, valores de progresso e observações.",
       "lines": "Completar todos os {{size}} tiles de uma linha dá +{{row}} pontos; de uma coluna, +{{column}} pontos.",
-      "linesNotSet": "Os bônus de linha e coluna ainda não foram definidos neste tabuleiro."
+      "linesNotSet": "Os bônus de linha e coluna ainda não foram definidos neste tabuleiro.",
+      "updates": "Cards alterados durante o evento"
     },
     "activeEvent": "Evento ativo",
     "yourTeam": "Seu time",
@@ -93,7 +94,8 @@
       "imageSource": "Imagem: OSRS Wiki — {{name}}",
       "previous": "Card anterior",
       "next": "Próximo card",
-      "closeTile": "Fechar card"
+      "closeTile": "Fechar card",
+      "updated": "Atualizado em {{date}}: {{reason}}"
     },
     "rowSummary": {
       "some": "{{count}} de {{total}} correspondem à busca",
@@ -200,7 +202,8 @@
       "updated": "Evento atualizado.",
       "activated": "Evento ativado.",
       "finished": "Evento finalizado.",
-      "rulesSaved": "Regras salvas."
+      "rulesSaved": "Regras salvas.",
+      "clarificationAdded": "Esclarecimento adicionado às regras."
     },
     "confirm": {
       "activateTitle": "Ativar evento?",
@@ -237,7 +240,14 @@
       "text": "Regras do bingo",
       "placeholder": "Escreva como este bingo funciona: datas, o que conta, screenshots, regras dos times…",
       "hint": "Texto simples; as quebras de linha são mantidas. Os jogadores leem na página de Eventos e na ajuda do tabuleiro.",
-      "section": "Regras"
+      "section": "Regras",
+      "clarifications": "Esclarecimentos",
+      "clarificationOn": "Esclarecimento · {{date}}",
+      "none": "Este evento ainda não tem regras escritas.",
+      "addClarification": "Adicionar esclarecimento",
+      "clarificationPlaceholder": "ex.: Pets contam uma vez por jogador.",
+      "clarificationHint": "As regras ficam congeladas com o evento ativo. Esclarecimentos são adicionados abaixo delas com a data de hoje e não podem ser editados.",
+      "addClarificationAction": "Adicionar esclarecimento"
     },
     "openBoard": "Abrir board",
     "search": "Buscar eventos",
@@ -758,6 +768,24 @@
       "shrinkConfirm": "Remover cards",
       "shrinkConfirmation_one": "{{count}} card vai sair da linha bônus: {{names}}. Nada é salvo até você salvar o tabuleiro.",
       "shrinkConfirmation_other": "{{count}} cards vão sair da linha bônus: {{names}}. Nada é salvo até você salvar o tabuleiro."
+    },
+    "live": {
+      "title": "Correções de cards durante o evento",
+      "hint": "Corrija o card no catálogo primeiro (Editar → nova revisão) e depois atualize o quadrado aqui. As pontuações são recalculadas e os jogadores veem o motivo.",
+      "none": "Nenhum quadrado tem uma revisão mais nova do card.",
+      "revisions": "rev. {{from}} → {{to}}",
+      "review": "Revisar atualização",
+      "history_one": "{{count}} alteração feita",
+      "history_other": "{{count}} alterações feitas",
+      "modalTitle": "Atualizar {{name}} no board ao vivo",
+      "onBoard": "No board (rev. {{revision}})",
+      "newRevision": "Nova (rev. {{revision}})",
+      "changed": "alterado",
+      "effect": "Drops aceitos passam a usar os novos pesos; drops que saíram do card deixam de contar e os pendentes só podem ser rejeitados.",
+      "reason": "Motivo que os jogadores vão ver",
+      "reasonPlaceholder": "ex.: O requisito estava errado: 6, não 8.",
+      "confirm": "Atualizar quadrado",
+      "done": "{{name}} atualizado no board ao vivo."
     }
   },
   "brand": {
@@ -953,7 +981,8 @@
     },
     "search": "Buscar jogador ou item",
     "latestFirst": "Mais recentes primeiro",
-    "emptyAccepted": "Nenhum envio aceito encontrado."
+    "emptyAccepted": "Nenhum envio aceito encontrado.",
+    "dropRemoved": "Este item não está mais neste card (corrigido durante o evento). Só pode ser rejeitado."
   },
   "score": {
     "tileComplete": "Completo +{{points}}",
