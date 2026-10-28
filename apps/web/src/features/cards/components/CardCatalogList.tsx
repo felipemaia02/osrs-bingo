@@ -94,7 +94,7 @@ export function CardCatalogTable({
                     className="h-10 w-12 shrink-0"
                   />
                   <span className="flex min-w-0 flex-col">
-                    <span className="flex items-center gap-2 font-semibold">
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold">
                       {card.revision.name} <RetiredBadge card={card} />
                     </span>
                     <span className="text-xs text-rs-muted">
