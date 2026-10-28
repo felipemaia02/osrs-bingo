@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from app.modules.tiles.schemas import (
     AcceptedDrop,
+    CardCategory,
     CardDifficulty,
     CardKind,
     CardProvenance,
@@ -78,6 +79,7 @@ class BoardCardSnapshot(BaseModel):
     rule_note: str | None
     provenance: CardProvenance
     requires_preverification: bool = False
+    categories: list[CardCategory] = Field(default_factory=list)
 
 
 class BoardPositionUpdate(BaseModel):

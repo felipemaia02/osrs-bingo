@@ -583,14 +583,17 @@
       "requiresPreverification": "Exige pré-verificação",
       "requiresPreverificationHint": "Os jogadores enviam um screenshot inicial deste card antes de os drops serem aceitos. Descreva abaixo o que ele precisa mostrar.",
       "preverificationNote": "Instruções da pré-verificação",
-      "preverificationNotePlaceholder": "ex.: Tire um print do seu KC de Theatre of Blood antes da primeira raid do evento."
+      "preverificationNotePlaceholder": "ex.: Tire um print do seu KC de Theatre of Blood antes da primeira raid do evento.",
+      "categories": "Categorias"
     },
     "feedback": {
       "created": "Card criado.",
       "revised": "Nova revisão do card publicada.",
       "imported": "Catálogo da planilha pronto: {{imported}} importados e {{existing}} já existentes.",
       "retired": "{{name}} retirado.",
-      "linked": "{{drops}} drops vinculados em {{cards}} cards. {{unlinked}} drops não foram encontrados na OSRS Wiki e continuam Só manual."
+      "linked": "{{drops}} drops vinculados em {{cards}} cards. {{unlinked}} drops não foram encontrados na OSRS Wiki e continuam Só manual.",
+      "categorized_one": "{{count}} card do workbook recebeu as categorias.",
+      "categorized_other": "{{count}} cards do workbook receberam as categorias."
     },
     "errors": {
       "wiki": "Não foi possível resolver a imagem da Wiki. Confira o artigo ou mantenha a imagem alternativa.",
@@ -627,7 +630,10 @@
       "active": "Ativos ({{count}})",
       "retired": "Retirados ({{count}})",
       "all": "Todos ({{count}})",
-      "allDifficulties": "Todas"
+      "allDifficulties": "Todas",
+      "category": "Categoria",
+      "allCategories": "Todas as categorias",
+      "noCategory": "Sem categoria"
     },
     "table": {
       "card": "Card",
@@ -686,7 +692,17 @@
     },
     "unlinked_one": "{{count}} drop não automático",
     "unlinked_other": "{{count}} drops não automáticos",
-    "linkItems": "Vincular drops aos itens do OSRS"
+    "linkItems": "Vincular drops aos itens do OSRS",
+    "category": {
+      "solo_bosses": "Bosses solo",
+      "slayer_bosses": "Bosses de Slayer",
+      "wilderness_bosses": "Bosses da Wilderness",
+      "raids": "Raids",
+      "skilling_bosses": "Bosses de skilling",
+      "skilling": "Skilling",
+      "minigames": "Minigames",
+      "other": "Outros"
+    }
   },
   "boards": {
     "title": "Montar tabuleiro",

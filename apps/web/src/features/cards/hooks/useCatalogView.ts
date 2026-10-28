@@ -1,9 +1,17 @@
 import { useState } from 'react'
 import { normalizeSearch } from '../../../lib/text/search'
-import type { CardDifficulty, CardStatus, CardSummary } from '../types'
+import type { CardCategory, CardDifficulty, CardStatus, CardSummary } from '../types'
 
 export type StatusFilter = CardStatus | 'all'
 export type DifficultyFilter = CardDifficulty | 'all'
+/** Feature 040: one category, every card, or cards without a category. */
+export type CategoryFilter = CardCategory | 'all' | 'none'
+
+export function matchesCategory(categories: CardCategory[] | undefined, filter: CategoryFilter) {
+  if (filter === 'all') return true
+  if (filter === 'none') return !categories?.length
+  return Boolean(categories?.includes(filter))
+}
 export const STATUS_FILTERS: StatusFilter[] = ['active', 'retired', 'all']
 
 /** Card, drop and alias names, accent- and case-insensitive. */
@@ -22,6 +30,7 @@ export function useCatalogView(cards: CardSummary[]) {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<StatusFilter>('active')
   const [difficulty, setDifficulty] = useState<DifficultyFilter>('all')
+  const [category, setCategory] = useState<CategoryFilter>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const counts: Record<StatusFilter, number> = {
@@ -33,6 +42,7 @@ export function useCatalogView(cards: CardSummary[]) {
     (card) =>
       (status === 'all' || card.status === status) &&
       (difficulty === 'all' || card.revision.difficulty === difficulty) &&
+      matchesCategory(card.revision.categories, category) &&
       matchesCardSearch(card, query),
   )
   return {
@@ -42,6 +52,8 @@ export function useCatalogView(cards: CardSummary[]) {
     setStatus,
     difficulty,
     setDifficulty,
+    category,
+    setCategory,
     counts,
     visible,
     selected: cards.find((card) => card.id === selectedId) ?? null,

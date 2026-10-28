@@ -29,6 +29,19 @@ class CardKind(StrEnum):
     TASK = "task"
 
 
+class CardCategory(StrEnum):
+    """Clan-style groups for browsing the catalog (feature 040); never used for scoring."""
+
+    SKILLING_BOSSES = "skilling_bosses"
+    SLAYER_BOSSES = "slayer_bosses"
+    WILDERNESS_BOSSES = "wilderness_bosses"
+    RAIDS = "raids"
+    SOLO_BOSSES = "solo_bosses"
+    SKILLING = "skilling"
+    MINIGAMES = "minigames"
+    OTHER = "other"
+
+
 class CardSource(StrEnum):
     WORKBOOK = "workbook"
     ADMIN = "admin"
@@ -127,6 +140,12 @@ class CardRevisionFields(BaseModel):
     rule_note: str | None = Field(default=None, max_length=2000)
     # Players must have an accepted pre-verification before drops of this card count.
     requires_preverification: bool = False
+    categories: list[CardCategory] = Field(default_factory=list, max_length=len(CardCategory))
+
+    @field_validator("categories")
+    @classmethod
+    def unique_categories(cls, values: list[CardCategory]) -> list[CardCategory]:
+        return sorted(set(values))
 
     @field_validator("name", "description", "rule_note")
     @classmethod
@@ -244,4 +263,6 @@ class LinkItemsResponse(BaseModel):
     linked_cards: int
     linked_drops: int
     unlinked_drops: int
+    # Workbook cards that got their bundled categories (feature 040).
+    categorized_cards: int = 0
     skipped_cards: list[str]

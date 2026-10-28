@@ -583,14 +583,17 @@
       "requiresPreverification": "Requiere preverificación",
       "requiresPreverificationHint": "Los jugadores envían una captura inicial de esta carta antes de que se acepten sus drops. Describe abajo qué debe mostrar.",
       "preverificationNote": "Instrucciones de la preverificación",
-      "preverificationNotePlaceholder": "p. ej. Haz una captura de tu KC de Theatre of Blood antes de tu primera raid del evento."
+      "preverificationNotePlaceholder": "p. ej. Haz una captura de tu KC de Theatre of Blood antes de tu primera raid del evento.",
+      "categories": "Categorías"
     },
     "feedback": {
       "created": "Tarjeta creada.",
       "revised": "Nueva revisión publicada.",
       "imported": "Catálogo listo: {{imported}} importadas y {{existing}} ya existentes.",
       "retired": "{{name}} retirada.",
-      "linked": "{{drops}} drops vinculados en {{cards}} cartas. {{unlinked}} drops no se encontraron en la OSRS Wiki y siguen como Solo manual."
+      "linked": "{{drops}} drops vinculados en {{cards}} cartas. {{unlinked}} drops no se encontraron en la OSRS Wiki y siguen como Solo manual.",
+      "categorized_one": "{{count}} carta del workbook recibió sus categorías.",
+      "categorized_other": "{{count}} cartas del workbook recibieron sus categorías."
     },
     "errors": {
       "wiki": "No se pudo resolver la imagen de Wiki. Revisa el artículo o conserva la alternativa.",
@@ -627,7 +630,10 @@
       "active": "Activas ({{count}})",
       "retired": "Retiradas ({{count}})",
       "all": "Todas ({{count}})",
-      "allDifficulties": "Todas"
+      "allDifficulties": "Todas",
+      "category": "Categoría",
+      "allCategories": "Todas las categorías",
+      "noCategory": "Sin categoría"
     },
     "table": {
       "card": "Carta",
@@ -686,7 +692,17 @@
     },
     "unlinked_one": "{{count}} drop no automático",
     "unlinked_other": "{{count}} drops no automáticos",
-    "linkItems": "Vincular drops a ítems de OSRS"
+    "linkItems": "Vincular drops a ítems de OSRS",
+    "category": {
+      "solo_bosses": "Jefes en solitario",
+      "slayer_bosses": "Jefes de Slayer",
+      "wilderness_bosses": "Jefes del Wilderness",
+      "raids": "Raids",
+      "skilling_bosses": "Jefes de skilling",
+      "skilling": "Skilling",
+      "minigames": "Minijuegos",
+      "other": "Otros"
+    }
   },
   "boards": {
     "title": "Armar tablero",

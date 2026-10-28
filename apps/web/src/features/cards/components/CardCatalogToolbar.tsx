@@ -1,7 +1,13 @@
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { useTranslation } from 'react-i18next'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
-import { STATUS_FILTERS, type DifficultyFilter, type StatusFilter } from '../hooks/useCatalogView'
+import {
+  STATUS_FILTERS,
+  type CategoryFilter,
+  type DifficultyFilter,
+  type StatusFilter,
+} from '../hooks/useCatalogView'
+import { CARD_CATEGORIES } from '../types'
 
 interface CardCatalogToolbarProps {
   query: string
@@ -9,6 +15,8 @@ interface CardCatalogToolbarProps {
   status: StatusFilter
   onStatusChange: (value: StatusFilter) => void
   difficulty: DifficultyFilter
+  category: CategoryFilter
+  onCategoryChange: (category: CategoryFilter) => void
   onDifficultyChange: (value: DifficultyFilter) => void
   counts: Record<StatusFilter, number>
   resultCount: number
@@ -25,6 +33,8 @@ export function CardCatalogToolbar({
   onStatusChange,
   difficulty,
   onDifficultyChange,
+  category,
+  onCategoryChange,
   counts,
   resultCount,
   mobile,
@@ -74,9 +84,40 @@ export function CardCatalogToolbar({
           label: value === 'all' ? t('cards.filter.allDifficulties') : t(`tile.tier.${value}`),
         }))}
       />
+      <CategorySelect value={category} onChange={onCategoryChange} />
       <span role="status" className="text-[13px] text-rs-muted">
         {t('cards.results', { count: resultCount })}
       </span>
     </div>
+  )
+}
+
+/** Card category filter (feature 040), shared by the catalog and the board builder. */
+export function CategorySelect({
+  value,
+  onChange,
+}: {
+  value: CategoryFilter
+  onChange: (value: CategoryFilter) => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <label className="flex items-center gap-2 text-[13px]">
+      <span className="sr-only">{t('cards.filter.category')}</span>
+      <select
+        aria-label={t('cards.filter.category')}
+        value={value}
+        onChange={(change) => onChange(change.target.value as CategoryFilter)}
+        className="min-h-[34px] rounded-[3px] border border-rs-border bg-rs-surface px-2.5 text-[13px] text-rs-text"
+      >
+        <option value="all">{t('cards.filter.allCategories')}</option>
+        {CARD_CATEGORIES.map((category) => (
+          <option key={category} value={category}>
+            {t(`cards.category.${category}`)}
+          </option>
+        ))}
+        <option value="none">{t('cards.filter.noCategory')}</option>
+      </select>
+    </label>
   )
 }

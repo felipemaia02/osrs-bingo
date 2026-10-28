@@ -136,6 +136,7 @@ class CardRepository:
                 ),
                 "fallback_image_accepted": card["fallback_image_accepted"],
                 "rule_note": card["rule_note"],
+                "categories": card.get("categories", []),
                 "revision": 1,
                 "provenance": {
                     "source": "workbook",

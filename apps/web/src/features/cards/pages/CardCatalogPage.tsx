@@ -59,12 +59,18 @@ export function CardCatalogPage() {
     setFeedback(null)
     try {
       const result = await linkItems.mutateAsync()
+      const categorized = result.categorized_cards ?? 0
       setFeedback(
-        t('cards.feedback.linked', {
-          cards: result.linked_cards,
-          drops: result.linked_drops,
-          unlinked: result.unlinked_drops,
-        }),
+        [
+          t('cards.feedback.linked', {
+            cards: result.linked_cards,
+            drops: result.linked_drops,
+            unlinked: result.unlinked_drops,
+          }),
+          categorized ? t('cards.feedback.categorized', { count: categorized }) : '',
+        ]
+          .filter(Boolean)
+          .join(' '),
       )
     } catch {
       setFeedback(t('common.apiError'))
@@ -165,6 +171,8 @@ export function CardCatalogPage() {
               onStatusChange={view.setStatus}
               difficulty={view.difficulty}
               onDifficultyChange={view.setDifficulty}
+              category={view.category}
+              onCategoryChange={view.setCategory}
               counts={view.counts}
               resultCount={view.visible.length}
               mobile={!isDesktop}

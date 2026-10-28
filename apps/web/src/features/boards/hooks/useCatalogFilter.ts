@@ -1,3 +1,4 @@
+import { matchesCategory, type CategoryFilter } from '../../cards/hooks/useCatalogView'
 import { normalizeSearch } from '../../../lib/text/search'
 import type { CardDifficulty } from '../../cards/types'
 import { hasCard, type Draft } from '../draft'
@@ -19,10 +20,17 @@ export function matchesCatalogSearch(card: BuilderCard, query: string): boolean 
 export function filterCatalog(
   cards: BuilderCard[],
   draft: Draft,
-  { mode, difficulty, query }: { mode: CatalogMode; difficulty: DifficultyFilter; query: string },
+  {
+    mode,
+    difficulty,
+    query,
+    category = 'all',
+  }: { mode: CatalogMode; difficulty: DifficultyFilter; query: string; category?: CategoryFilter },
 ) {
   const visible = (card: BuilderCard) =>
-    (difficulty === 'all' || card.difficulty === difficulty) && matchesCatalogSearch(card, query)
+    (difficulty === 'all' || card.difficulty === difficulty) &&
+    matchesCategory(card.categories, category) &&
+    matchesCatalogSearch(card, query)
   const active = cards.filter((card) => !card.retired)
   const available = active.filter((card) => !hasCard(draft, card.cardId))
   const onBoard = active.filter((card) => hasCard(draft, card.cardId))

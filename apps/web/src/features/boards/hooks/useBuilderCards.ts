@@ -1,5 +1,11 @@
 import { useMemo } from 'react'
-import type { AcceptedDrop, CardDifficulty, CardKind, CardSummary } from '../../cards/types'
+import type {
+  AcceptedDrop,
+  CardCategory,
+  CardDifficulty,
+  CardKind,
+  CardSummary,
+} from '../../cards/types'
 import { cardIdOf, cardKey } from '../draft'
 import type { EventBoard } from '../types'
 
@@ -14,6 +20,8 @@ export interface BuilderCard {
   points: number
   requirement: number
   drops: AcceptedDrop[]
+  /** Feature 040: for the builder's category filter. */
+  categories: CardCategory[]
   imageUrl: string | null
   /** Administrator's reason for an administrator revision; null for workbook imports. */
   changeReason: string | null
@@ -32,6 +40,7 @@ function fromCatalog(card: CardSummary): BuilderCard {
     points: revision.tile_score,
     requirement: revision.completion_requirement,
     drops: revision.drops,
+    categories: revision.categories ?? [],
     imageUrl: revision.wiki_image?.image_url ?? null,
     changeReason: revision.provenance.source === 'admin' ? revision.change_reason : null,
     retired: card.status === 'retired',
@@ -61,6 +70,7 @@ export function useBuilderCards(board: EventBoard | null | undefined, catalog: C
         points: card.tile_score,
         requirement: card.completion_requirement,
         drops: card.drops,
+        categories: card.categories ?? byKey.get(key)?.categories ?? [],
         imageUrl: card.wiki_image?.image_url ?? null,
         changeReason: byKey.get(key)?.changeReason ?? null,
         retired: retiredIds.has(card.card_id),

@@ -33,6 +33,11 @@ function RetiredBadge({ card }: { card: CardSummary }) {
       {card.status === 'retired' && (
         <Badge tone="danger-outline">{t('cards.status.retired')}</Badge>
       )}
+      {card.revision.categories?.map((category) => (
+        <Badge key={category} tone="neutral">
+          {t(`cards.category.${category}`)}
+        </Badge>
+      ))}
       {unlinkedDrops(card) > 0 && card.status !== 'retired' && (
         <Badge tone="gold">⚠ {t('cards.unlinked', { count: unlinkedDrops(card) })}</Badge>
       )}

@@ -167,9 +167,14 @@ describe('board builder v2', () => {
         { ...CARD.revision.drops[0], key: 'tail', name: "Hydra's Tail", progress_weight: 2 },
         { ...CARD.revision.drops[0], key: 'leather', name: "Hydra's Leather", progress_weight: 2 },
       ],
+      categories: ['slayer_bosses'],
     },
   })
-  const BARROWS = card('66d000000000000000000012', 'Barrows', 'Low')
+  const BARROWS = card('66d000000000000000000012', 'Barrows', 'Low', {
+    revision: { categories: ['minigames'] } as Partial<
+      CardSummary['revision']
+    > as CardSummary['revision'],
+  })
   const RETIRED = card('66d000000000000000000013', 'Kalphite Queen', 'Mid', { status: 'retired' })
 
   function boardWith(placed: Array<[number, CardSummary]>, size = 6) {
@@ -433,6 +438,11 @@ describe('board builder v2', () => {
     expect(rules).toHaveTextContent("Hydra's Claw+3")
 
     await user.clear(within(catalog).getByRole('searchbox'))
+    // Feature 040: category filter.
+    await user.selectOptions(within(catalog).getByLabelText('Category'), 'minigames')
+    expect(within(catalog).getByText('Barrows')).toBeInTheDocument()
+    expect(within(catalog).queryByText('Alchemical Hydra')).toBeNull()
+    await user.selectOptions(within(catalog).getByLabelText('Category'), 'all')
     await user.click(within(catalog).getByRole('button', { name: 'On board (1)' }))
     expect(within(catalog).getByText('Vorkath')).toBeInTheDocument()
     expect(within(catalog).queryByText('Barrows')).toBeNull()
@@ -708,8 +718,13 @@ const NESTS = [
   },
 ]
 
-async function openEditor(drops = CARD.revision.drops) {
-  vi.mocked(fetchCards).mockResolvedValue([{ ...CARD, revision: { ...CARD.revision, drops } }])
+async function openEditor(
+  drops = CARD.revision.drops,
+  extra: Partial<CardSummary['revision']> = {},
+) {
+  vi.mocked(fetchCards).mockResolvedValue([
+    { ...CARD, revision: { ...CARD.revision, drops, ...extra } },
+  ])
   vi.mocked(createCardRevision).mockResolvedValue({
     ...CARD,
     revisions: [CARD.revision],
@@ -853,6 +868,16 @@ it('flags cards with drops that are not linked and links them from the catalog',
       "Linked 1 drops on 1 cards. 0 drops weren't found on the OSRS Wiki and stay Manual only.",
     ),
   ).toBeInTheDocument()
+})
+
+it('filters the catalog by category and saves the categories of a card (040)', async () => {
+  const { user, dialog } = await openEditor([CARD.revision.drops[0]], {
+    categories: ['solo_bosses'],
+  })
+  expect(within(dialog).getByRole('checkbox', { name: 'Solo bosses' })).toBeChecked()
+  await user.click(within(dialog).getByRole('checkbox', { name: 'Raids' }))
+  const payload = await save(user, dialog)
+  expect(payload.categories).toEqual(['solo_bosses', 'raids'])
 })
 
 it('resolves a Wiki image in the editor and sends it with the revision', async () => {

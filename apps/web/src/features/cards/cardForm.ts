@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios'
 import type {
   AcceptedDrop,
+  CardCategory,
   CardDifficulty,
   CardKind,
   CardRevisionPayload,
@@ -37,6 +38,7 @@ export interface CardForm {
   wikiImage: WikiImage | null
   ruleNote: string
   requiresPreverification: boolean
+  categories: CardCategory[]
   changeReason: string
 }
 
@@ -77,6 +79,7 @@ export function emptyForm(): CardForm {
     wikiImage: null,
     ruleNote: '',
     requiresPreverification: false,
+    categories: [],
     changeReason: '',
   }
 }
@@ -150,6 +153,7 @@ export function cardToForm(card: CardSummary): CardForm {
     wikiImage: revision.wiki_image,
     ruleNote: revision.rule_note ?? '',
     requiresPreverification: revision.requires_preverification ?? false,
+    categories: revision.categories ?? [],
     changeReason: '',
   }
 }
@@ -197,6 +201,7 @@ export function toRevisionPayload(form: CardForm): CardRevisionPayload | null {
     fallback_image_accepted: !form.wikiImage,
     rule_note: form.ruleNote || null,
     requires_preverification: form.requiresPreverification,
+    categories: form.categories,
     change_reason: form.changeReason,
   }
 }

@@ -82,7 +82,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-24T15:26:03.225485Z"
-      }
+      },
+      "categories": ["other"]
     },
     {
       "slug": "hueycoatl",
@@ -176,7 +177,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "grotesque-guardians",
@@ -318,7 +320,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["slayer_bosses"]
     },
     {
       "slug": "tormented-demons",
@@ -380,7 +383,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["slayer_bosses"]
     },
     {
       "slug": "cerberus",
@@ -506,7 +510,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["slayer_bosses"]
     },
     {
       "slug": "chambers-of-xeric",
@@ -744,7 +749,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["raids"]
     },
     {
       "slug": "medium-boots",
@@ -854,7 +860,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["other"]
     },
     {
       "slug": "yama",
@@ -932,7 +939,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "tempoross",
@@ -1074,7 +1082,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["minigames", "skilling_bosses"]
     },
     {
       "slug": "theatre-of-blood",
@@ -1248,7 +1257,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["raids"]
     },
     {
       "slug": "mortimer",
@@ -1662,7 +1672,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-24T15:26:04.302684Z"
-      }
+      },
+      "categories": ["minigames"]
     },
     {
       "slug": "demonic-gorillas",
@@ -1788,7 +1799,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["other"]
     },
     {
       "slug": "god-wars-dungeon",
@@ -2042,7 +2054,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "vorkath",
@@ -2168,7 +2181,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "tombs-of-amascut",
@@ -2294,7 +2308,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["raids"]
     },
     {
       "slug": "guardians-of-the-rift",
@@ -2420,7 +2435,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["minigames", "skilling"]
     },
     {
       "slug": "phantom-muspah",
@@ -2482,7 +2498,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "royal-titans",
@@ -2592,7 +2609,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "wintertodt",
@@ -2670,7 +2688,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["minigames", "skilling_bosses"]
     },
     {
       "slug": "araxxor",
@@ -2780,7 +2799,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["slayer_bosses"]
     },
     {
       "slug": "zulrah",
@@ -2922,7 +2942,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "armoured-zombies",
@@ -2984,7 +3005,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["other"]
     },
     {
       "slug": "doom-of-mokhaiotl",
@@ -3078,7 +3100,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "abyssal-sire",
@@ -3124,7 +3147,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["slayer_bosses"]
     },
     {
       "slug": "alchemical-hydra",
@@ -3250,7 +3274,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["slayer_bosses"]
     },
     {
       "slug": "zalcano",
@@ -3344,7 +3369,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["skilling_bosses"]
     },
     {
       "slug": "scurrius",
@@ -3406,7 +3432,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "gauntlet",
@@ -3500,7 +3527,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "skilling-tools",
@@ -3578,7 +3606,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["skilling"]
     },
     {
       "slug": "maggot-king",
@@ -3656,7 +3685,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-24T15:26:05.218431Z"
-      }
+      },
+      "categories": ["other"]
     },
     {
       "slug": "thieving",
@@ -3750,7 +3780,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["skilling"]
     },
     {
       "slug": "barrows",
@@ -3876,7 +3907,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["minigames"]
     },
     {
       "slug": "dt2-bosses",
@@ -4146,7 +4178,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "wilderness-trio",
@@ -4304,7 +4337,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["wilderness_bosses"]
     },
     {
       "slug": "dagannoth-kings",
@@ -4414,7 +4448,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     },
     {
       "slug": "moons-of-peril",
@@ -4492,7 +4527,8 @@
         "license_name": null,
         "license_url": null,
         "resolved_at": "2026-10-03T19:00:00Z"
-      }
+      },
+      "categories": ["solo_bosses"]
     }
   ],
   "bonus_entries": [

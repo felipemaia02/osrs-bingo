@@ -17,7 +17,13 @@ import {
 } from '../cardForm'
 import { DropListEditor } from './DropListEditor'
 import { useCardMutations } from '../hooks/useCards'
-import type { CardCreatePayload, CardDifficulty, CardKind, CardSummary } from '../types'
+import {
+  CARD_CATEGORIES,
+  type CardCreatePayload,
+  type CardDifficulty,
+  type CardKind,
+  type CardSummary,
+} from '../types'
 
 const FIELD = `${FIELD_CLASS} font-normal`
 const TEXTAREA = `${FIELD} resize-y py-2`
@@ -175,6 +181,41 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               className={TEXTAREA}
             />
           </Field>
+          <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0 md:col-span-2">
+            <legend className="mb-1 p-0 text-[13px] font-semibold">
+              {t('cards.form.categories')}
+            </legend>
+            <span className="flex flex-wrap gap-1.5">
+              {CARD_CATEGORIES.map((category) => {
+                const checked = form.categories.includes(category)
+                return (
+                  <label
+                    key={category}
+                    className={`inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-2xl border px-2.5 text-[13px] ${
+                      checked
+                        ? 'border-rs-gold bg-rs-raised text-rs-gold-bright'
+                        : 'border-rs-border bg-rs-inset'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() =>
+                        update(
+                          'categories',
+                          checked
+                            ? form.categories.filter((item) => item !== category)
+                            : [...form.categories, category],
+                        )
+                      }
+                      className="accent-rs-gold"
+                    />
+                    {t(`cards.category.${category}`)}
+                  </label>
+                )
+              })}
+            </span>
+          </fieldset>
           <DropListEditor
             rows={form.drops}
             onChange={(drops) => update('drops', drops)}

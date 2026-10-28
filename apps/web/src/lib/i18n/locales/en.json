@@ -583,14 +583,17 @@
       "requiresPreverification": "Requires pre-verification",
       "requiresPreverificationHint": "Players send a starting screenshot for this card before their drops can be accepted. Describe below what it must show.",
       "preverificationNote": "Pre-verification instructions",
-      "preverificationNotePlaceholder": "e.g. Screenshot your Theatre of Blood KC before your first raid of the event."
+      "preverificationNotePlaceholder": "e.g. Screenshot your Theatre of Blood KC before your first raid of the event.",
+      "categories": "Categories"
     },
     "feedback": {
       "created": "Card created.",
       "revised": "New card revision published.",
       "imported": "Workbook catalog ready: {{imported}} imported and {{existing}} already present.",
       "retired": "{{name}} retired.",
-      "linked": "Linked {{drops}} drops on {{cards}} cards. {{unlinked}} drops weren't found on the OSRS Wiki and stay Manual only."
+      "linked": "Linked {{drops}} drops on {{cards}} cards. {{unlinked}} drops weren't found on the OSRS Wiki and stay Manual only.",
+      "categorized_one": "{{count}} workbook card got its categories.",
+      "categorized_other": "{{count}} workbook cards got their categories."
     },
     "errors": {
       "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
@@ -627,7 +630,10 @@
       "active": "Active ({{count}})",
       "retired": "Retired ({{count}})",
       "all": "All ({{count}})",
-      "allDifficulties": "All"
+      "allDifficulties": "All",
+      "category": "Category",
+      "allCategories": "All categories",
+      "noCategory": "No category"
     },
     "table": {
       "card": "Card",
@@ -686,7 +692,17 @@
     },
     "unlinked_one": "{{count}} drop not auto-tracked",
     "unlinked_other": "{{count}} drops not auto-tracked",
-    "linkItems": "Link drops to OSRS items"
+    "linkItems": "Link drops to OSRS items",
+    "category": {
+      "solo_bosses": "Solo bosses",
+      "slayer_bosses": "Slayer bosses",
+      "wilderness_bosses": "Wilderness bosses",
+      "raids": "Raids",
+      "skilling_bosses": "Skilling bosses",
+      "skilling": "Skilling",
+      "minigames": "Minigames",
+      "other": "Other"
+    }
   },
   "boards": {
     "title": "Build board",

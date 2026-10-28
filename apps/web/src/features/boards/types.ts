@@ -1,5 +1,6 @@
 import type {
   AcceptedDrop,
+  CardCategory,
   CardDifficulty,
   CardKind,
   CardProvenance,
@@ -22,6 +23,7 @@ export interface BoardCardSnapshot {
   rule_note: string | null
   provenance: CardProvenance
   requires_preverification?: boolean
+  categories?: CardCategory[]
 }
 
 /** A live fix of a square during the event (feature 036). */
