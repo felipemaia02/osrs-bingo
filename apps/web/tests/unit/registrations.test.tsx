@@ -482,6 +482,31 @@ describe('teams v2 selection and columns', () => {
     expect(await screen.findByText('2 removed.')).toBeInTheDocument()
   })
 
+  it('assigns several unassigned players to one team at once (038)', async () => {
+    setPlayers([pending(1, { status: 'approved' }), pending(2, { status: 'approved' })])
+    vi.mocked(api.assignSelectedPlayers).mockResolvedValue({ changed: 2, skipped: 0 })
+    const user = await openAdministration()
+    await user.click(await screen.findByRole('tab', { name: /Unassigned/ }))
+
+    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 1' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Select Player 2' }))
+    await user.click(screen.getByRole('button', { name: 'Assign to team…' }))
+    const dialog = screen.getByRole('dialog', { name: 'Assign 2 players to a team' })
+    expect(dialog).toHaveTextContent('Player 1 and Player 2')
+    const confirm = within(dialog).getByRole('button', { name: 'Assign 2 players' })
+    expect(confirm).toBeDisabled()
+    await user.click(within(dialog).getByRole('radio', { name: /Crabs/ }))
+    await user.click(confirm)
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    expect(vi.mocked(api.assignSelectedPlayers).mock.calls[0][0]).toEqual({
+      eventId: EVENT.id,
+      playerIds: ['p1', 'p2'],
+      teamId: TEAM.id,
+    })
+    expect(await screen.findByText('2 assigned.')).toBeInTheDocument()
+  })
+
   it('clears the selection when switching tabs and offers only removal outside Pending', async () => {
     setPlayers([pending(1), pending(2, { status: 'approved' })])
     const user = await openAdministration()

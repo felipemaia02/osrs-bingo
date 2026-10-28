@@ -15,6 +15,7 @@ import { useSession } from '../../auth/hooks/useSession'
 import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
+import { BulkAssignModal } from '../components/BulkAssignModal'
 import { BulkBar } from '../components/BulkBar'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 import { PlayerAssignment } from '../components/RosterDialogs'
@@ -142,6 +143,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [removing, setRemoving] = useState<Player | null>(null)
   const [removingSelected, setRemovingSelected] = useState(false)
+  const [assigningSelected, setAssigningSelected] = useState(false)
   const [confirmAll, setConfirmAll] = useState(false)
   const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
@@ -236,6 +238,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const dialogOpen = Boolean(
     removing ||
     removingSelected ||
+    assigningSelected ||
     confirmAll ||
     assigning ||
     creatingTeam ||
@@ -445,6 +448,14 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
                         () => undefined,
                       )
                     }
+                    onAssign={
+                      tab === 'unassigned' || (tab === 'assigned' && !live)
+                        ? () => {
+                            actions.clearFeedback()
+                            setAssigningSelected(true)
+                          }
+                        : undefined
+                    }
                     onRemove={() => {
                       actions.clearFeedback()
                       setRemovingSelected(true)
@@ -511,6 +522,20 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             )
           }
           onClose={() => setRemoving(null)}
+        />
+      )}
+      {assigningSelected && (
+        <BulkAssignModal
+          players={items.filter((player) => selected.has(player.id))}
+          teams={teams.data ?? []}
+          balance={balance.data?.teams ?? []}
+          busy={actions.saving}
+          onConfirm={async (teamId) => {
+            const done = await actions.assignSelected([...selected], teamId)
+            if (done) setSelected(new Set())
+            return done
+          }}
+          onClose={() => setAssigningSelected(false)}
         />
       )}
       {removingSelected && (

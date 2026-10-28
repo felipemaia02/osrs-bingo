@@ -117,6 +117,18 @@ class PlayerService:
         changed = await self._players.approve_selected(event_id, player_ids)
         return SelectionResult(changed=changed, skipped=len(player_ids) - changed)
 
+    async def assign_selected(
+        self, event_id: str, player_ids: builtin_list[str], team_id: str
+    ) -> SelectionResult:
+        """Feature 038: one team for several players; players who changed meanwhile are
+        skipped, players already in that team are left as they are."""
+        live = await self._require_open_event(event_id)
+        await self._require_team(event_id, team_id)
+        changed, already = await self._players.assign_selected(
+            event_id, player_ids, team_id, only_without_team=live
+        )
+        return SelectionResult(changed=changed, skipped=len(player_ids) - changed - already)
+
     async def remove_selected(
         self, event_id: str, player_ids: builtin_list[str]
     ) -> SelectionResult:

@@ -20,7 +20,8 @@ export function useRosterActions(eventId: string) {
     mutations.approveAllPlayers.isPending ||
     mutations.removePlayer.isPending ||
     mutations.approveSelectedPlayers.isPending ||
-    mutations.removeSelectedPlayers.isPending
+    mutations.removeSelectedPlayers.isPending ||
+    mutations.assignSelectedPlayers.isPending
 
   async function run(action: () => Promise<string>): Promise<boolean> {
     setFeedback(null)
@@ -67,6 +68,13 @@ export function useRosterActions(eventId: string) {
         selectionMessage(
           'teams.feedback.selectedApproved',
           await mutations.approveSelectedPlayers.mutateAsync({ eventId, playerIds }),
+        ),
+      ),
+    assignSelected: (playerIds: string[], teamId: string) =>
+      run(async () =>
+        selectionMessage(
+          'teams.feedback.selectedAssigned',
+          await mutations.assignSelectedPlayers.mutateAsync({ eventId, playerIds, teamId }),
         ),
       ),
     removeSelected: (playerIds: string[]) =>

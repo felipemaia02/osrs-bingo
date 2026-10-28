@@ -184,6 +184,12 @@ class PlayerSelection(BaseModel):
         return value
 
 
+class TeamAssignmentSelection(PlayerSelection):
+    """Several approved players assigned to one team at once (feature 038)."""
+
+    team_id: str = Field(pattern=OBJECT_ID_PATTERN)
+
+
 class SelectionResult(BaseModel):
     changed: int
     skipped: int

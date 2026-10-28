@@ -472,3 +472,28 @@ async def test_events_without_a_buy_in_hide_the_buy_in_status(
 
     events.get.return_value = {"status": EventStatus.DRAFT, "buy_in": "5M gp"}
     assert (await service.own_registration(EVENT_ID, USER_ID)).buy_in_status == "pending"  # type: ignore[union-attr]
+
+
+async def test_several_players_are_assigned_to_one_team(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    """038: changed players count; those already in the team aren't counted as skipped."""
+    service, players, teams, events = repositories
+    teams.get.return_value = {"_id": ObjectId(TEAM_ID)}
+    players.assign_selected.return_value = (2, 1)
+    ids = [str(ObjectId()) for _ in range(4)]
+
+    result = await service.assign_selected(EVENT_ID, ids, TEAM_ID)
+
+    assert (result.changed, result.skipped) == (2, 1)
+    players.assign_selected.assert_awaited_once_with(
+        EVENT_ID, ids, TEAM_ID, only_without_team=False
+    )
+
+    events.get.return_value = {"status": EventStatus.ACTIVE}
+    await service.assign_selected(EVENT_ID, ids, TEAM_ID)
+    assert players.assign_selected.await_args.kwargs == {"only_without_team": True}
+
+    teams.get.return_value = None
+    with pytest.raises(NotFoundError, match="Team"):
+        await service.assign_selected(EVENT_ID, ids, TEAM_ID)

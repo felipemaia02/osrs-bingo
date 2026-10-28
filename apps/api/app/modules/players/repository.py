@@ -350,6 +350,43 @@ class PlayerRepository:
             {"status": RegistrationStatus.APPROVED},
         )
 
+    async def assign_selected(
+        self,
+        event_id: str,
+        player_ids: builtin_list[str],
+        team_id: str,
+        only_without_team: bool = False,
+    ) -> tuple[int, int]:
+        """Assigns approved players to a team; returns (changed, already in that team)."""
+        team_object_id = self._object_id(team_id)
+        object_ids = [oid for oid in map(self._object_id, player_ids) if oid is not None]
+        event_object_id = self._object_id(event_id)
+        if event_object_id is None or team_object_id is None or not object_ids:
+            return 0, 0
+        scope = {"_id": {"$in": object_ids}, "event_id": event_object_id}
+        already = await self._collection.count_documents(
+            {**scope, "status": RegistrationStatus.APPROVED, "team_id": team_object_id}
+        )
+        now = datetime.now(UTC)
+        result = await self._collection.update_many(
+            {
+                **scope,
+                "status": RegistrationStatus.APPROVED,
+                "team_id": None if only_without_team else {"$ne": team_object_id},
+            },
+            [
+                {
+                    "$set": {
+                        "role": _clear_captain(team_object_id),
+                        "team_id": team_object_id,
+                        "team_assigned_at": now,
+                        "updated_at": now,
+                    }
+                }
+            ],
+        )
+        return int(result.modified_count), int(already)
+
     async def remove_selected(
         self, event_id: str, player_ids: builtin_list[str], only_without_team: bool = False
     ) -> int:

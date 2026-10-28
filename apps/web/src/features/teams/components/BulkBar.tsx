@@ -1,3 +1,4 @@
+import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'
 import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined'
 import PersonRemoveOutlinedIcon from '@mui/icons-material/PersonRemoveOutlined'
 import { useTranslation } from 'react-i18next'
@@ -8,12 +9,22 @@ interface BulkBarProps {
   canApprove: boolean
   busy: boolean
   onApprove: () => void
+  /** Feature 038: assign every selected player to one team. */
+  onAssign?: () => void
   onRemove: () => void
   onClear: () => void
 }
 
 /** Actions for the rows selected on the current page (teams-a-desktop bulk bar). */
-export function BulkBar({ count, canApprove, busy, onApprove, onRemove, onClear }: BulkBarProps) {
+export function BulkBar({
+  count,
+  canApprove,
+  busy,
+  onApprove,
+  onAssign,
+  onRemove,
+  onClear,
+}: BulkBarProps) {
   const { t } = useTranslation()
   return (
     <div
@@ -26,6 +37,12 @@ export function BulkBar({ count, canApprove, busy, onApprove, onRemove, onClear 
         <Button size="sm" onClick={onApprove} disabled={busy}>
           <CheckOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
           {t('teams.bulk.approve')}
+        </Button>
+      )}
+      {onAssign && (
+        <Button size="sm" onClick={onAssign} disabled={busy}>
+          <GroupAddOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
+          {t('teams.bulk.assign')}
         </Button>
       )}
       <Button size="sm" variant="danger" onClick={onRemove} disabled={busy}>

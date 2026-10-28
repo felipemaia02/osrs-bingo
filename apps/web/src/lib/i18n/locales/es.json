@@ -299,7 +299,9 @@
       "selectedRemoved_other": "{{count}} eliminados.",
       "skipped_one": "{{count}} omitido porque ya había cambiado.",
       "skipped_other": "{{count}} omitidos porque ya habían cambiado.",
-      "teamUpdated": "Equipo actualizado."
+      "teamUpdated": "Equipo actualizado.",
+      "selectedAssigned_one": "{{count}} asignado.",
+      "selectedAssigned_other": "{{count}} asignados."
     },
     "errors": {
       "duplicatePlayer": "Tú o este nombre de OSRS ya tenéis una inscripción en este evento.",
@@ -381,7 +383,13 @@
       "select": "Seleccionar {{name}}",
       "removeTitle": "¿Eliminar inscripciones seleccionadas?",
       "removeConfirmation_one": "¿Eliminar {{count}} inscripción seleccionada? También se quitará su equipo. La solicitud se conserva y el jugador ve su estado como Eliminado.",
-      "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado."
+      "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado.",
+      "assign": "Asignar a un equipo…",
+      "assignTitle_one": "Asignar {{count}} jugador a un equipo",
+      "assignTitle_other": "Asignar {{count}} jugadores a un equipo",
+      "assignConfirm_one": "Asignar {{count}} jugador",
+      "assignConfirm_other": "Asignar {{count}} jugadores",
+      "captainsLoseRole": "{{names}} dejará(n) de ser capitán (cambia(n) de equipo)."
     },
     "balance": {
       "title": "Equilibrio de equipos",

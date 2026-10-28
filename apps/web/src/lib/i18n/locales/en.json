@@ -299,7 +299,9 @@
       "selectedRemoved_other": "{{count}} removed.",
       "skipped_one": "{{count}} skipped because it had already changed.",
       "skipped_other": "{{count}} skipped because they had already changed.",
-      "teamUpdated": "Team updated."
+      "teamUpdated": "Team updated.",
+      "selectedAssigned_one": "{{count}} assigned.",
+      "selectedAssigned_other": "{{count}} assigned."
     },
     "errors": {
       "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
@@ -381,7 +383,13 @@
       "select": "Select {{name}}",
       "removeTitle": "Remove selected registrations?",
       "removeConfirmation_one": "Remove {{count}} selected registration? Its team assignment will also be cleared. The request is kept and the player sees their status as Removed.",
-      "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed."
+      "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed.",
+      "assign": "Assign to team…",
+      "assignTitle_one": "Assign {{count}} player to a team",
+      "assignTitle_other": "Assign {{count}} players to a team",
+      "assignConfirm_one": "Assign {{count}} player",
+      "assignConfirm_other": "Assign {{count}} players",
+      "captainsLoseRole": "{{names}} will stop being captain (they move to another team)."
     },
     "balance": {
       "title": "Team balance",

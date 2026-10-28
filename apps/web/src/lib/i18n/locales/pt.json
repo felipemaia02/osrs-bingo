@@ -299,7 +299,9 @@
       "selectedRemoved_other": "{{count}} removidos.",
       "skipped_one": "{{count}} ignorado porque já tinha mudado.",
       "skipped_other": "{{count}} ignorados porque já tinham mudado.",
-      "teamUpdated": "Time atualizado."
+      "teamUpdated": "Time atualizado.",
+      "selectedAssigned_one": "{{count}} colocado no time.",
+      "selectedAssigned_other": "{{count}} colocados no time."
     },
     "errors": {
       "duplicatePlayer": "Você ou este nome do OSRS já possui uma inscrição neste evento.",
@@ -381,7 +383,13 @@
       "select": "Selecionar {{name}}",
       "removeTitle": "Remover inscrições selecionadas?",
       "removeConfirmation_one": "Remover {{count}} inscrição selecionada? O time também será desfeito. O pedido é mantido e o jogador vê o status Removido.",
-      "removeConfirmation_other": "Remover {{count}} inscrições selecionadas? Os times também serão desfeitos. Os pedidos são mantidos e os jogadores veem o status Removido."
+      "removeConfirmation_other": "Remover {{count}} inscrições selecionadas? Os times também serão desfeitos. Os pedidos são mantidos e os jogadores veem o status Removido.",
+      "assign": "Colocar no time…",
+      "assignTitle_one": "Colocar {{count}} jogador em um time",
+      "assignTitle_other": "Colocar {{count}} jogadores em um time",
+      "assignConfirm_one": "Colocar {{count}} jogador",
+      "assignConfirm_other": "Colocar {{count}} jogadores",
+      "captainsLoseRole": "{{names}} deixa(m) de ser capitão (muda(m) de time)."
     },
     "balance": {
       "title": "Equilíbrio dos times",
