@@ -1,6 +1,7 @@
 import HourglassDisabledOutlinedIcon from '@mui/icons-material/HourglassDisabledOutlined'
 import HourglassTopOutlinedIcon from '@mui/icons-material/HourglassTopOutlined'
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useEventCountdown, type EventCountdown } from '../../events/hooks/useEventCountdown'
 import type { BingoEvent } from '../../events/types'
@@ -16,8 +17,8 @@ function useRemainingText(countdown: EventCountdown): string {
   return t('board.context.endReached')
 }
 
-/** Desktop page header: event identity, schedule, countdown and the viewer's own team. */
-export function EventHeader({ event }: { event: BingoEvent }) {
+/** Desktop page header: event identity, schedule, countdown, the viewer's own team and an optional action. */
+export function EventHeader({ event, action }: { event: BingoEvent; action?: ReactNode }) {
   const { t, i18n } = useTranslation()
   const remaining = useRemainingText(useEventCountdown(event))
   const team = useOwnTeamStatus(event.id)
@@ -50,19 +51,22 @@ export function EventHeader({ event }: { event: BingoEvent }) {
           </span>
         </div>
       </div>
-      {team.kind !== 'hidden' && (
-        <div className="flex items-center gap-2.5 rounded border border-rs-border bg-rs-surface px-3.5 py-2.5">
-          {team.kind === 'team' && <TeamEmblem team={team.team} size="lg" />}
-          <div className="flex flex-col">
-            <span className="text-xs text-rs-muted">{t('board.yourTeam')}</span>
-            {team.kind === 'team' ? (
-              <strong>{team.team.name}</strong>
-            ) : (
-              <TeamStatusValue status={team} size="lg" />
-            )}
+      <div className="flex items-start gap-3">
+        {action}
+        {team.kind !== 'hidden' && (
+          <div className="flex items-center gap-2.5 rounded border border-rs-border bg-rs-surface px-3.5 py-2.5">
+            {team.kind === 'team' && <TeamEmblem team={team.team} size="lg" />}
+            <div className="flex flex-col">
+              <span className="text-xs text-rs-muted">{t('board.yourTeam')}</span>
+              {team.kind === 'team' ? (
+                <strong>{team.team.name}</strong>
+              ) : (
+                <TeamStatusValue status={team} size="lg" />
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
