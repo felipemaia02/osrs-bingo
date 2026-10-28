@@ -48,3 +48,6 @@ Thumbs.db
 .coverage
 .coverage.*
 coverage.xml
+
+# Knowledge graph (graphify) – generated locally, see README
+graphify-out/

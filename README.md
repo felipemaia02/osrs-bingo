@@ -130,6 +130,36 @@ This is a domain reference, not an implementation spec.
 
 ---
 
+## Codebase knowledge graph (graphify)
+
+Use [graphify](https://github.com/safishamsi/graphify) to explore the codebase as a knowledge graph before working on a feature: it maps code, docs, mockups and specs into one graph with communities, key nodes and cross-file connections.
+
+```bash
+uv tool install graphifyy                    # or: pip install graphifyy
+```
+
+From the repo root, in Claude Code:
+
+```bash
+/graphify .                                  # build the graph (first time)
+/graphify . --update                         # re-extract only changed files
+/graphify query "How is a drop scored?"      # ask questions against the graph
+/graphify path "PlayerService" "ScoringService"
+/graphify explain "AppException"
+```
+
+Outputs go to `graphify-out/` (git-ignored, rebuild locally):
+
+| File | Purpose |
+|---|---|
+| `graph.html` | Interactive graph, open in a browser |
+| `GRAPH_REPORT.md` | Key nodes, communities, surprising connections, suggested questions |
+| `graph.json` | Raw graph data |
+
+Code is extracted without an LLM. Docs, mockups and images use LLM extraction, so a full build costs tokens; prefer `--update` after the first run.
+
+---
+
 ## ADRs
 
 Architectural decisions recorded in `docs/adr/`.
