@@ -11,6 +11,7 @@ import {
 } from '../../src/features/profiles/api/profileApi'
 import { ProfilePage } from '../../src/features/profiles/pages/ProfilePage'
 import type { LinkedAccount, Profile } from '../../src/features/profiles/types'
+import { zoneLabel } from '../../src/features/profiles/timezones'
 import { renderApp } from '../render'
 
 const USER = { id: 'user-1', discord_id: '336288077507198977', username: 'felps_', is_admin: false }
@@ -250,7 +251,7 @@ describe('My profile', () => {
     expect(within(main).getByText('21,340')).toBeInTheDocument()
   })
 
-  it('saves the time zone and activity', async () => {
+  it('finds a time zone by country or UTC offset and saves it (043)', async () => {
     vi.mocked(fetchProfile).mockResolvedValue(profile([MAIN], { timezone: 'Europe/London' }))
     vi.mocked(savePreferences).mockResolvedValue(
       profile([MAIN], { timezone: 'America/Sao_Paulo', activity: 'one_to_three_h' }),
@@ -259,14 +260,17 @@ describe('My profile', () => {
     renderApp(<ProfilePage />, '/profile')
 
     const save = await screen.findByRole('button', { name: 'Save preferences' })
-    const zone = screen.getByLabelText('Time zone')
-    expect(zone).toHaveValue('Europe/London')
+    expect(screen.getByText(zoneLabel('Europe/London'))).toBeInTheDocument()
     expect(save).toBeDisabled()
-    expect(
-      within(zone).getByRole('option', { name: /^Sao Paulo \(UTC−03:00\)$/ }),
-    ).toBeInTheDocument()
 
-    await user.selectOptions(zone, 'America/Sao_Paulo')
+    const search = screen.getByRole('combobox', { name: 'Time zone' })
+    await user.type(search, '-3')
+    expect(await screen.findByRole('option', { name: 'Sao Paulo (UTC−03:00)' })).toBeInTheDocument()
+    await user.clear(search)
+    await user.type(search, 'brasil')
+    await user.click(await screen.findByRole('option', { name: 'Sao Paulo (UTC−03:00)' }))
+    expect(screen.getByText('Sao Paulo (UTC−03:00)')).toBeInTheDocument()
+
     await user.click(screen.getByRole('radio', { name: '1 to 3 h per day' }))
     await user.click(save)
 
@@ -277,12 +281,26 @@ describe('My profile', () => {
     })
   })
 
+  it('offers common zones first and the full list on demand (043)', async () => {
+    vi.mocked(fetchProfile).mockResolvedValue(profile([MAIN], { timezone: 'Europe/London' }))
+    const user = userEvent.setup()
+    renderApp(<ProfilePage />, '/profile')
+
+    await user.click(await screen.findByRole('combobox', { name: 'Time zone' }))
+    const list = screen.getByRole('listbox', { name: 'Time zones' })
+    expect(within(list).getByText('Common time zones')).toBeInTheDocument()
+    const common = within(list).getAllByRole('option').length
+    expect(common).toBeLessThan(40)
+    await user.click(within(list).getByRole('button', { name: 'Show all time zones' }))
+    expect(within(list).getAllByRole('option').length).toBeGreaterThan(common)
+  })
+
   it("suggests the browser's time zone when none is saved", async () => {
     vi.mocked(fetchProfile).mockResolvedValue(profile([MAIN]))
     renderApp(<ProfilePage />, '/profile')
 
-    const zone = await screen.findByLabelText('Time zone')
-    expect(zone).toHaveValue(Intl.DateTimeFormat().resolvedOptions().timeZone)
+    const browser = Intl.DateTimeFormat().resolvedOptions().timeZone
+    expect(await screen.findByText(zoneLabel(browser))).toBeInTheDocument()
     expect(screen.getByText('Detected from your browser. Save to keep it.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save preferences' })).toBeEnabled()
   })

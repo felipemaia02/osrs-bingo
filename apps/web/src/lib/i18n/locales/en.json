@@ -1203,6 +1203,17 @@
       "unavailable": "WikiSync is unavailable right now. Try \"Update from WOM\" later.",
       "noDataShort": "No quest/diary data (WikiSync)",
       "source": "From the WikiSync plugin (OSRS Wiki), as of the last login with it."
+    },
+    "timezone": {
+      "detected": "Detected: {{zone}}",
+      "useDetected": "Use detected",
+      "search": "Search city, country or UTC offset (e.g. -3)",
+      "results": "Time zones",
+      "common": "Common time zones",
+      "all": "All time zones",
+      "showAll": "Show all time zones",
+      "none": "No time zone found. Try a city, a country or an offset like +1.",
+      "hint": "Only used to show where players are when admins balance teams."
     }
   },
   "join": {

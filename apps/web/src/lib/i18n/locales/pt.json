@@ -1201,6 +1201,17 @@
       "unavailable": "O WikiSync está indisponível agora. Tente \"Atualizar do WOM\" mais tarde.",
       "noDataShort": "Sem dados de quests/diários (WikiSync)",
       "source": "Do plugin WikiSync (OSRS Wiki), conforme o último login com ele."
+    },
+    "timezone": {
+      "detected": "Detectado: {{zone}}",
+      "useDetected": "Usar o detectado",
+      "search": "Buscar cidade, país ou fuso UTC (ex.: -3)",
+      "results": "Fusos horários",
+      "common": "Fusos mais comuns",
+      "all": "Todos os fusos",
+      "showAll": "Ver todos os fusos",
+      "none": "Nenhum fuso encontrado. Tente uma cidade, um país ou um fuso como +1.",
+      "hint": "Usado só para mostrar onde os jogadores estão quando os admins balanceiam os times."
     }
   },
   "join": {
