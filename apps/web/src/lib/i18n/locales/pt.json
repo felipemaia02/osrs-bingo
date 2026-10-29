@@ -1218,6 +1218,14 @@
       "counted": "Boss KC (que conta)",
       "raids": "Raids KC",
       "top": "Bosses com mais KC"
+    },
+    "setup": {
+      "title": "Configure seu perfil",
+      "both": "Vincule seu RSN e escolha seu fuso horário para os admins balancearem os times.",
+      "rsn": "Vincule seu RSN para os admins verem seus stats ao balancear os times.",
+      "timezone": "Escolha seu fuso horário para os admins balancearem os times por região.",
+      "action": "Ir para meu perfil",
+      "dismiss": "Ocultar este aviso"
     }
   },
   "join": {

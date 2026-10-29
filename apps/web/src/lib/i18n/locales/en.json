@@ -1220,6 +1220,14 @@
       "counted": "Boss KC (counted)",
       "raids": "Raids KC",
       "top": "Top bosses"
+    },
+    "setup": {
+      "title": "Set up your profile",
+      "both": "Link your RSN and choose your time zone so admins can balance teams.",
+      "rsn": "Link your RSN so admins can see your stats when balancing teams.",
+      "timezone": "Choose your time zone so admins can balance teams by region.",
+      "action": "Go to my profile",
+      "dismiss": "Hide this notice"
     }
   },
   "join": {
