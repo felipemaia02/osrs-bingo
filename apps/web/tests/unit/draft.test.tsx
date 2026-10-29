@@ -64,6 +64,11 @@ const MAIN = {
       hard: index < 8,
       elite: false,
     })),
+    key_quests: [
+      { code: 'WGS', name: 'While Guthix Sleeps', done: true },
+      { code: 'DT2', name: 'Desert Treasure II - The Fallen Empire', done: true },
+      { code: 'BMR', name: 'The Blood Moon Rises', done: false },
+    ],
   },
   ehp: 1402.6,
   ehb: 700.2,
@@ -145,7 +150,8 @@ describe('Draft preview', () => {
     // Slayer sits with the combat levels (often a bingo requirement).
     expect(within(skills).getByTitle('Slayer').nextElementSibling).toHaveTextContent('96')
     expect(iris).toHaveTextContent('QP 300')
-    expect(iris).toHaveTextContent('Hard diaries 8/12')
+    expect(iris).toHaveTextContent('Key quests 2/3')
+    expect(iris).not.toHaveTextContent('diaries')
 
     await user.click(within(iris).getByRole('button', { name: 'Show details of Ironman Iris' }))
     const dialog = screen.getByRole('dialog', { name: 'Ironman Iris' })
@@ -155,8 +161,11 @@ describe('Draft preview', () => {
     expect(within(main).getByText('Plays the bingo')).toBeInTheDocument()
     expect(within(main).getByText('Strength')).toBeInTheDocument()
     expect(within(main).getByTitle('Slayer').nextElementSibling).toHaveTextContent('96')
-    const quests = within(main).getByRole('region', { name: 'Quests & diaries' })
-    expect(within(quests).getByText('Quests').nextSibling).toHaveTextContent('170/184')
+    const quests = within(main).getByRole('region', { name: 'Quests' })
+    expect(within(quests).getByText('Quests', { selector: 'dt' }).nextSibling).toHaveTextContent(
+      '170/184',
+    )
+    expect(within(quests).getByTitle('The Blood Moon Rises: not complete')).toBeInTheDocument()
     const alt = within(dialog).getByRole('article', { name: 'Iris Alt' })
     expect(within(alt).getByText(/Not loaded yet/)).toBeInTheDocument()
     expect(within(alt).getByText('1,500')).toBeInTheDocument()

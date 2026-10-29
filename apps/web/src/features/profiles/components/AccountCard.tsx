@@ -12,9 +12,9 @@ import { ThemedMenu, ThemedMenuItem } from '../../../components/ui/ThemedMenu'
 import { useSubmissionTime } from '../../submissions/hooks/useSubmissionTime'
 import { useStatFormat } from '../hooks/useStatFormat'
 import type { AccountAction, LinkedAccount } from '../types'
-import { AccountBosses, AccountSkills } from './AccountExtras'
+import { AccountBosses } from './AccountExtras'
 import { CombatLevels } from './CombatLevels'
-import { QuestsAndDiaries } from './QuestsAndDiaries'
+import { Quests } from './Quests'
 
 interface AccountCardProps {
   account: LinkedAccount
@@ -120,9 +120,8 @@ export function AccountCard({ account, removable, busy, error, onAction }: Accou
           {account.combat && (
             <CombatLevels combat={account.combat} slayer={account.skills?.slayer} />
           )}
-          <AccountSkills account={account} />
           <AccountBosses account={account} />
-          {hasStats && <QuestsAndDiaries data={account.wikisync} />}
+          {hasStats && <Quests data={account.wikisync} />}
           <span className="text-[13px] text-rs-muted">
             {account.wom_updated_at &&
               `${t('profile.account.updated', { ago: time.ago(account.wom_updated_at) })} · `}

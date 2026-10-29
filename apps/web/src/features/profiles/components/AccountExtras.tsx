@@ -2,7 +2,6 @@ import { useTranslation } from 'react-i18next'
 import { BossKcBreakdownButton } from '../../balance/components/BossKcBreakdown'
 import { bossLabel, useBossKcSettings } from '../../balance/hooks'
 import { useStatFormat } from '../hooks/useStatFormat'
-import { SKILLS } from '../skills'
 import type { LinkedAccount } from '../types'
 
 const TOP_BOSSES = 5
@@ -62,33 +61,5 @@ export function AccountBosses({ account }: { account: LinkedAccount }) {
         </ul>
       )}
     </section>
-  )
-}
-
-/** Every skill level from Wise Old Man (feature 032 data), collapsed by default. */
-export function AccountSkills({ account }: { account: LinkedAccount }) {
-  const { t } = useTranslation()
-  const format = useStatFormat()
-  if (!account.skills) return null
-  const skills = [...SKILLS].sort((a, b) => t(`skills.${a}`).localeCompare(t(`skills.${b}`)))
-  return (
-    <details className="rounded-[3px] border border-rs-border/40 bg-rs-inset px-2.5 py-1.5">
-      <summary className="min-h-8 cursor-pointer text-[13px] font-semibold text-rs-gold-bright">
-        {t('profile.skills.all', { count: skills.length })}
-      </summary>
-      <dl className="m-0 grid grid-cols-2 gap-x-4 gap-y-0.5 pb-1.5 pt-1 text-[13px] sm:grid-cols-3 md:grid-cols-4">
-        {skills.map((skill) => (
-          <div
-            key={skill}
-            className="flex items-center justify-between gap-2 border-b border-rs-border/30 py-0.5"
-          >
-            <dt className="truncate text-rs-muted">{t(`skills.${skill}`)}</dt>
-            <dd className="m-0 font-semibold tabular-nums">
-              {format.whole(account.skills?.[skill] ?? null)}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </details>
   )
 }

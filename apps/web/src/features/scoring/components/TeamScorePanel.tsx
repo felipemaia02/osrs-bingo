@@ -48,15 +48,11 @@ export function TeamScorePanel({
     >
       <div className="flex items-center gap-3">
         <TeamEmblem team={{ name: score.team_name, color: score.team_color }} size="lg" />
-        <div className="flex flex-col">
-          <span className="text-xs text-rs-muted">{t('score.official')}</span>
-          <span className="flex items-baseline gap-2">
-            <strong className="text-sm">{score.team_name}</strong>
-            <strong className="font-display text-[26px] leading-none text-rs-gold-bright">
-              {score.total}
-            </strong>
-          </span>
-        </div>
+        <strong className="text-base">{score.team_name}</strong>
+        <strong className="font-display text-[26px] leading-none text-rs-gold-bright">
+          <span className="sr-only">{t('score.total')} </span>
+          {score.total}
+        </strong>
       </div>
       <dl
         className={`m-0 grid gap-x-6 gap-y-1 text-[13px] ${compact ? 'grid-cols-[1fr_auto]' : 'flex-1 grid-cols-[repeat(4,auto_auto)] justify-start'}`}

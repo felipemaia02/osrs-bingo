@@ -66,6 +66,24 @@ def test_quest_points_count_only_real_quests_from_the_wiki_table() -> None:
     assert without_table is not None and without_table.quest_points is None
 
 
+def test_key_quests_are_flagged_and_missing_before_they_were_stored() -> None:
+    body = {"quests": {"Dragon Slayer II": 2, "Secrets of the North": 1}}
+
+    result = summary(stored(parse_player(body), {}, NOW))
+
+    assert result is not None and result.key_quests is not None
+    assert [(quest.code, quest.done) for quest in result.key_quests] == [
+        ("WGS", False),
+        ("SotE", False),
+        ("DT2", False),
+        ("DS2", True),
+        ("BMR", False),
+        ("SotN", False),
+    ]
+    old = summary({"status": "found", "quest_points": 10})
+    assert old is not None and old.key_quests is None
+
+
 @pytest.mark.parametrize(
     ("response", "expected"),
     [

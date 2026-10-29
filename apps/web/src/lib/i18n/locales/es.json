@@ -1035,7 +1035,7 @@
     "tileComplete": "Completa +{{points}}",
     "tileProgress": "{{value}} / {{requirement}}",
     "panel": "Puntuación de tu equipo",
-    "official": "Puntuación oficial del equipo",
+    "total": "Puntuación",
     "completedTiles": "Casillas completas ({{count}} de {{total}})",
     "rows": "Filas",
     "columns": "Columnas",
@@ -1186,21 +1186,21 @@
       "slayer": "Slay"
     },
     "wikisync": {
-      "title": "Quests y diarios",
+      "title": "Quests",
       "questPoints": "Quest points",
       "quests": "Quests",
-      "hardDiaries": "Diarios Hard",
       "qp": "QP",
-      "regions": "Diarios de logros por región",
-      "elite": "Elite",
-      "hardDone": "{{region}}: diario Hard completo",
-      "eliteDone": "{{region}}: diario Elite completo",
-      "hardMissing": "{{region}}: diario Hard incompleto",
-      "notLoaded": "Aún no cargado. Pulsa \"Actualizar desde WOM\" para cargar quests y diarios.",
+      "notLoaded": "Aún no cargado. Pulsa \"Actualizar desde WOM\" para cargar las quests.",
       "notFound": "Sin datos de WikiSync. Instala el plugin WikiSync en RuneLite, entra al juego una vez y pulsa \"Actualizar desde WOM\".",
       "unavailable": "WikiSync no está disponible ahora. Prueba \"Actualizar desde WOM\" más tarde.",
-      "noDataShort": "Sin datos de quests/diarios (WikiSync)",
-      "source": "Del plugin WikiSync (OSRS Wiki), según el último inicio de sesión con él."
+      "noDataShort": "Sin datos de quests (WikiSync)",
+      "source": "Del plugin WikiSync (OSRS Wiki), según el último inicio de sesión con él.",
+      "keyQuests": "Quests clave",
+      "questDone": "{{quest}}: completa",
+      "questMissing": "{{quest}}: incompleta",
+      "done": "completa",
+      "missing": "incompleta",
+      "keyQuestsNotLoaded": "Quests clave aún no cargadas. Pulsa \"Actualizar desde WOM\" para cargarlas."
     },
     "timezone": {
       "detected": "Detectado: {{zone}}",
@@ -1218,9 +1218,6 @@
       "counted": "Boss KC (que cuenta)",
       "raids": "Raids KC",
       "top": "Jefes con más KC"
-    },
-    "skills": {
-      "all": "Todas las habilidades ({{count}})"
     }
   },
   "join": {

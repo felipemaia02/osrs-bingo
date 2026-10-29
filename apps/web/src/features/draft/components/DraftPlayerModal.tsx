@@ -3,7 +3,7 @@ import { BossKcBreakdownButton } from '../../balance/components/BossKcBreakdown'
 import { Badge } from '../../../components/ui/Badge'
 import { FormModal } from '../../../components/ui/FormModal'
 import { CombatLevels } from '../../profiles/components/CombatLevels'
-import { QuestsAndDiaries } from '../../profiles/components/QuestsAndDiaries'
+import { Quests } from '../../profiles/components/Quests'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { zoneLabel } from '../../profiles/timezones'
 import { useRequestedFormat } from '../../teams/hooks/useRequestedFormat'
@@ -114,7 +114,7 @@ function AccountDetail({ account, playing }: { account: AccountSnapshot; playing
         ))}
       </dl>
       {account.combat && <CombatLevels combat={account.combat} slayer={account.skills?.slayer} />}
-      <QuestsAndDiaries data={account.wikisync} />
+      <Quests data={account.wikisync} />
     </article>
   )
 }

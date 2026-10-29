@@ -11,7 +11,12 @@ from urllib.parse import quote
 import httpx
 
 from app.modules.items.names import normalize_name
-from app.modules.profiles.schemas import DiaryRegion, WikiSyncResponse, WikiSyncStatus
+from app.modules.profiles.schemas import (
+    DiaryRegion,
+    KeyQuest,
+    WikiSyncResponse,
+    WikiSyncStatus,
+)
 
 WIKISYNC_URL = "https://sync.runescape.wiki/runelite/player/{rsn}/STANDARD"
 USER_AGENT = "OSRSBingo/0.1 (team balance: quests and diaries)"
@@ -19,6 +24,15 @@ TIMEOUT_SECONDS = 10
 NO_DATA_CODE = "NO_USER_DATA"
 QUEST_COMPLETE = 2
 TIERS = ("easy", "medium", "hard", "elite")
+# Quests that unlock bingo content, shown to admins balancing teams (feature 045): code -> name.
+KEY_QUESTS = {
+    "WGS": "While Guthix Sleeps",
+    "SotE": "Song of the Elves",
+    "DT2": "Desert Treasure II - The Fallen Empire",
+    "DS2": "Dragon Slayer II",
+    "BMR": "The Blood Moon Rises",
+    "SotN": "Secrets of the North",
+}
 
 
 class WikiSyncUnavailableError(Exception):
@@ -90,6 +104,7 @@ def stored(data: WikiSyncData, quest_points: dict[str, int], now: datetime) -> d
     """What the account keeps. With the wiki quest table, quest points are summed now and only
     real quests are counted (WikiSync also lists miniquests and quest parts)."""
     completed = [normalize_name(name) for name in data.completed_quests]
+    done_names = set(completed)
     if quest_points:
         done = [name for name in completed if name in quest_points]
         counts = (len(done), len(quest_points))
@@ -102,6 +117,9 @@ def stored(data: WikiSyncData, quest_points: dict[str, int], now: datetime) -> d
         "quests_completed": counts[0],
         "quests_total": counts[1],
         "diaries": data.diaries,
+        "key_quests": {
+            code: normalize_name(name) in done_names for code, name in KEY_QUESTS.items()
+        },
         "checked_at": now,
     }
 
@@ -120,5 +138,15 @@ def summary(document: dict[str, Any] | None) -> WikiSyncResponse | None:
         quests_total=document.get("quests_total"),
         hard_diaries=sum(region.hard for region in diaries) if diaries else None,
         diaries=diaries,
+        key_quests=_key_quests(document.get("key_quests")),
         checked_at=document.get("checked_at"),
     )
+
+
+def _key_quests(done: dict[str, bool] | None) -> list[KeyQuest] | None:
+    if done is None:
+        return None
+    return [
+        KeyQuest(code=code, name=name, done=bool(done.get(code)))
+        for code, name in KEY_QUESTS.items()
+    ]
