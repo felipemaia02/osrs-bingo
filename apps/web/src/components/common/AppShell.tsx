@@ -9,6 +9,7 @@ import { isNetworkError } from '../../lib/api'
 import { LanguageMenuButton, LanguageSwitcher } from './LanguageSwitcher'
 import { MaintenanceScreen, OfflineScreen } from './status/StatusScreens'
 import { useSiteStatus } from '../../features/maintenance/siteStatus'
+import { ProfileSetupNotice } from '../../features/profiles/components/ProfileSetupNotice'
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined'
 import { MobileBottomBar } from './shell/MobileBottomBar'
 import { ShellSidebar } from './shell/ShellSidebar'
@@ -84,6 +85,7 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
                   {t('status.maintenance.adminBanner')}
                 </p>
               )}
+              <ProfileSetupNotice />
               {children}
             </>
           )}
