@@ -152,6 +152,7 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
       <EventHeader
         event={event}
         action={<BoardSubmitButton eventId={event.id} positions={state.positions} />}
+        hideTeam={Boolean(state.score)}
       />
       {state.score ? (
         <TeamScorePanel score={state.score} />

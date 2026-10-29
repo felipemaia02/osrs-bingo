@@ -168,7 +168,10 @@ describe('team progress on the board', () => {
     renderApp(<HomePage />, '/')
 
     const panel = await screen.findByRole('region', { name: "Your team's score" })
-    expect(panel).toHaveTextContent('Saradomin55')
+    // Team name and the number only; the header leaves the team to this panel (045).
+    expect(panel).toHaveTextContent('SaradominScore 55')
+    expect(panel).not.toHaveTextContent('Official')
+    expect(screen.queryByText('Your team')).toBeNull()
     expect(panel).toHaveTextContent('Completed tiles (3 of 9)30')
     expect(panel).toHaveTextContent('Rows · 1 × 2525')
     expect(screen.queryByText(/Progress unavailable/)).toBeNull()

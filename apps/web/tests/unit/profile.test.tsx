@@ -77,6 +77,10 @@ const MAIN = account({
       { region: 'Ardougne', easy: true, medium: true, hard: false, elite: false },
       { region: 'Karamja', easy: true, medium: true, hard: true, elite: true },
     ],
+    key_quests: [
+      { code: 'DT2', name: 'Desert Treasure II - The Fallen Empire', done: true },
+      { code: 'SotN', name: 'Secrets of the North', done: false },
+    ],
   },
 })
 const ALT = account({
@@ -134,12 +138,20 @@ describe('My profile', () => {
       'https://wiseoldman.net/players/felps',
     )
 
-    const quests = within(main).getByRole('region', { name: 'Quests & diaries' })
+    // Key quests with a check mark; no achievement diaries (045).
+    const quests = within(main).getByRole('region', { name: 'Quests' })
     expect(within(quests).getByText('Quest points').nextSibling).toHaveTextContent('343')
-    expect(within(quests).getByText('Quests').nextSibling).toHaveTextContent('184/184')
-    expect(within(quests).getByText('Hard diaries').nextSibling).toHaveTextContent('1/2')
-    expect(within(quests).getByTitle('Karamja: Elite diary complete')).toBeInTheDocument()
-    expect(within(quests).getByTitle('Ardougne: Hard diary not complete')).toBeInTheDocument()
+    expect(within(quests).getByText('Quests', { selector: 'dt' }).nextSibling).toHaveTextContent(
+      '184/184',
+    )
+    const keyQuests = within(quests).getByRole('list', { name: 'Key quests' })
+    expect(
+      within(keyQuests).getByTitle('Desert Treasure II - The Fallen Empire: complete'),
+    ).toHaveTextContent('DT2 complete')
+    expect(within(keyQuests).getByTitle('Secrets of the North: not complete')).toHaveTextContent(
+      'SotN not complete',
+    )
+    expect(within(quests).queryByText(/diar/i)).toBeNull()
 
     const alt = screen.getByRole('article', { name: 'Alt account felps iron' })
     expect(
@@ -260,7 +272,6 @@ describe('My profile', () => {
         }),
       ]),
     )
-    const user = userEvent.setup()
     renderApp(<ProfilePage />, '/profile')
 
     const main = await screen.findByRole('article', { name: 'Main account felps' })
@@ -272,9 +283,9 @@ describe('My profile', () => {
     const top = within(bosses).getByRole('list', { name: 'Top bosses' })
     expect(within(top).getAllByRole('listitem')[0]).toHaveTextContent('Brutus 3,000')
 
-    await user.click(within(main).getByText('All skills (24)'))
-    expect(within(main).getByText('Agility').nextSibling).toHaveTextContent('87')
-    expect(within(main).getByText('Woodcutting').nextSibling).toHaveTextContent('—')
+    // Only combat skills and Slayer are shown (045).
+    expect(within(main).queryByText('Agility')).toBeNull()
+    expect(within(main).queryByText('Woodcutting')).toBeNull()
   })
 
   it('finds a time zone by country or UTC offset and saves it (043)', async () => {

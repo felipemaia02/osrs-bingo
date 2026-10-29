@@ -81,6 +81,13 @@ export interface DiaryRegion {
   elite: boolean
 }
 
+/** A quest that unlocks bingo content (feature 045). */
+export interface KeyQuest {
+  code: string
+  name: string
+  done: boolean
+}
+
 /** Quests and achievement diaries from the WikiSync plugin (feature 034). */
 export interface WikiSync {
   status: 'found' | 'not_found' | 'unavailable'
@@ -89,5 +96,7 @@ export interface WikiSync {
   quests_total?: number | null
   hard_diaries?: number | null
   diaries: DiaryRegion[]
+  /** Null for data read before feature 045, until the account is updated again. */
+  key_quests?: KeyQuest[] | null
   checked_at?: string | null
 }

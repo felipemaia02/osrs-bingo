@@ -17,8 +17,19 @@ function useRemainingText(countdown: EventCountdown): string {
   return t('board.context.endReached')
 }
 
-/** Desktop page header: event identity, schedule, countdown, the viewer's own team and an optional action. */
-export function EventHeader({ event, action }: { event: BingoEvent; action?: ReactNode }) {
+/**
+ * Desktop page header: event identity, schedule, countdown, an optional action and the viewer's
+ * own team, which `hideTeam` leaves out when the team score panel below already names it.
+ */
+export function EventHeader({
+  event,
+  action,
+  hideTeam = false,
+}: {
+  event: BingoEvent
+  action?: ReactNode
+  hideTeam?: boolean
+}) {
   const { t, i18n } = useTranslation()
   const remaining = useRemainingText(useEventCountdown(event))
   const team = useOwnTeamStatus(event.id)
@@ -53,7 +64,7 @@ export function EventHeader({ event, action }: { event: BingoEvent; action?: Rea
       </div>
       <div className="flex items-start gap-3">
         {action}
-        {team.kind !== 'hidden' && (
+        {!hideTeam && team.kind !== 'hidden' && (
           <div className="flex items-center gap-2.5 rounded border border-rs-border bg-rs-surface px-3.5 py-2.5">
             {team.kind === 'team' && <TeamEmblem team={team.team} size="lg" />}
             <div className="flex flex-col">

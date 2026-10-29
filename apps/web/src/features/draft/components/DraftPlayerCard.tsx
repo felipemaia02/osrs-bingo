@@ -4,7 +4,7 @@ import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
 import { CombatLevels } from '../../profiles/components/CombatLevels'
-import { QuestsAndDiariesLine } from '../../profiles/components/QuestsAndDiaries'
+import { QuestsLine } from '../../profiles/components/Quests'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { zoneLabel } from '../../profiles/timezones'
 import type { Skill } from '../../profiles/skills'
@@ -119,7 +119,7 @@ export function DraftPlayerCard({
               compact
             />
           )}
-          <QuestsAndDiariesLine data={player.account.wikisync} />
+          <QuestsLine data={player.account.wikisync} />
         </>
       )}
       <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-rs-muted">

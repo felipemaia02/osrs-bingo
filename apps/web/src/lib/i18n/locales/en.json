@@ -1035,7 +1035,7 @@
     "tileComplete": "Complete +{{points}}",
     "tileProgress": "{{value}} / {{requirement}}",
     "panel": "Your team's score",
-    "official": "Official team score",
+    "total": "Score",
     "completedTiles": "Completed tiles ({{count}} of {{total}})",
     "rows": "Rows",
     "columns": "Columns",
@@ -1188,21 +1188,21 @@
       "slayer": "Slay"
     },
     "wikisync": {
-      "title": "Quests & diaries",
+      "title": "Quests",
       "questPoints": "Quest points",
       "quests": "Quests",
-      "hardDiaries": "Hard diaries",
       "qp": "QP",
-      "regions": "Achievement diaries by region",
-      "elite": "Elite",
-      "hardDone": "{{region}}: Hard diary complete",
-      "eliteDone": "{{region}}: Elite diary complete",
-      "hardMissing": "{{region}}: Hard diary not complete",
-      "notLoaded": "Not loaded yet. Click \"Update from WOM\" to load quests and diaries.",
+      "notLoaded": "Not loaded yet. Click \"Update from WOM\" to load quests.",
       "notFound": "No WikiSync data. Install the WikiSync plugin in RuneLite, log in once, then click \"Update from WOM\".",
       "unavailable": "WikiSync is unavailable right now. Try \"Update from WOM\" later.",
-      "noDataShort": "No quest/diary data (WikiSync)",
-      "source": "From the WikiSync plugin (OSRS Wiki), as of the last login with it."
+      "noDataShort": "No quest data (WikiSync)",
+      "source": "From the WikiSync plugin (OSRS Wiki), as of the last login with it.",
+      "keyQuests": "Key quests",
+      "questDone": "{{quest}}: complete",
+      "questMissing": "{{quest}}: not complete",
+      "done": "complete",
+      "missing": "not complete",
+      "keyQuestsNotLoaded": "Key quests not loaded yet. Click \"Update from WOM\" to load them."
     },
     "timezone": {
       "detected": "Detected: {{zone}}",
@@ -1220,9 +1220,6 @@
       "counted": "Boss KC (counted)",
       "raids": "Raids KC",
       "top": "Top bosses"
-    },
-    "skills": {
-      "all": "All skills ({{count}})"
     }
   },
   "join": {

@@ -1035,7 +1035,7 @@
     "tileComplete": "Completo +{{points}}",
     "tileProgress": "{{value}} / {{requirement}}",
     "panel": "Placar do seu time",
-    "official": "Placar oficial do time",
+    "total": "Pontuação",
     "completedTiles": "Tiles completos ({{count}} de {{total}})",
     "rows": "Linhas",
     "columns": "Colunas",
@@ -1186,21 +1186,21 @@
       "slayer": "Slay"
     },
     "wikisync": {
-      "title": "Quests e diários",
+      "title": "Quests",
       "questPoints": "Quest points",
       "quests": "Quests",
-      "hardDiaries": "Diários Hard",
       "qp": "QP",
-      "regions": "Diários de conquistas por região",
-      "elite": "Elite",
-      "hardDone": "{{region}}: diário Hard completo",
-      "eliteDone": "{{region}}: diário Elite completo",
-      "hardMissing": "{{region}}: diário Hard incompleto",
-      "notLoaded": "Ainda não carregado. Clique em \"Atualizar do WOM\" para carregar quests e diários.",
+      "notLoaded": "Ainda não carregado. Clique em \"Atualizar do WOM\" para carregar as quests.",
       "notFound": "Sem dados do WikiSync. Instale o plugin WikiSync no RuneLite, entre no jogo uma vez e clique em \"Atualizar do WOM\".",
       "unavailable": "O WikiSync está indisponível agora. Tente \"Atualizar do WOM\" mais tarde.",
-      "noDataShort": "Sem dados de quests/diários (WikiSync)",
-      "source": "Do plugin WikiSync (OSRS Wiki), conforme o último login com ele."
+      "noDataShort": "Sem dados de quests (WikiSync)",
+      "source": "Do plugin WikiSync (OSRS Wiki), conforme o último login com ele.",
+      "keyQuests": "Quests-chave",
+      "questDone": "{{quest}}: completa",
+      "questMissing": "{{quest}}: incompleta",
+      "done": "completa",
+      "missing": "incompleta",
+      "keyQuestsNotLoaded": "Quests-chave ainda não carregadas. Clique em \"Atualizar do WOM\" para carregá-las."
     },
     "timezone": {
       "detected": "Detectado: {{zone}}",
@@ -1218,9 +1218,6 @@
       "counted": "Boss KC (que conta)",
       "raids": "Raids KC",
       "top": "Bosses com mais KC"
-    },
-    "skills": {
-      "all": "Todas as habilidades ({{count}})"
     }
   },
   "join": {

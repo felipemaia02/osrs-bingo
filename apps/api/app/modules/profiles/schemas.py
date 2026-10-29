@@ -76,6 +76,14 @@ class DiaryRegion(BaseModel):
     elite: bool
 
 
+class KeyQuest(BaseModel):
+    """A quest that unlocks bingo content (feature 045), e.g. DT2 for the DT2 bosses."""
+
+    code: str
+    name: str
+    done: bool
+
+
 class WikiSyncResponse(BaseModel):
     """Quests and achievement diaries from the WikiSync plugin (feature 034)."""
 
@@ -85,6 +93,8 @@ class WikiSyncResponse(BaseModel):
     quests_total: int | None = None
     hard_diaries: int | None = None
     diaries: list[DiaryRegion] = Field(default_factory=list)
+    # None for data read before feature 045, until the account is updated again.
+    key_quests: list[KeyQuest] | None = None
     checked_at: datetime | None = None
 
 
