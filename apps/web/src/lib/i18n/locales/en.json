@@ -569,7 +569,6 @@
     "form": {
       "createTitle": "Create catalog card",
       "reviseTitle": "Publish a new card revision",
-      "slug": "Stable key",
       "name": "Name",
       "kind": "Card type",
       "difficulty": "Difficulty",
@@ -599,7 +598,7 @@
       "wiki": "The Wiki image could not be resolved. Check the article title or keep the fallback.",
       "drops": "Give every drop a name and a progress above 0, without repeating names.",
       "changed": "This card changed while you were editing. Reload and try again.",
-      "slug": "This stable card key is already in use.",
+      "slug": "A card with this name already exists. Pick another name.",
       "importConflict": "The workbook import found conflicting keys: {{slugs}}.",
       "artwork": "The artwork couldn't be uploaded. Use a PNG, JPEG or WebP image up to 5 MB."
     },

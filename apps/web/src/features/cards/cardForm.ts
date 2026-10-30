@@ -27,7 +27,6 @@ export interface DropRow {
 }
 
 export interface CardForm {
-  slug: string
   name: string
   description: string
   kind: CardKind
@@ -70,7 +69,6 @@ export function newDropRow(changes: Partial<DropRow> = {}): DropRow {
 
 export function emptyForm(): CardForm {
   return {
-    slug: '',
     name: '',
     description: '',
     kind: 'boss',
@@ -99,13 +97,22 @@ export function normalizeName(name: string): string {
     .join(' ')
 }
 
-function dropKey(name: string): string {
+/** Lowercase, dash-separated key from a name: "Tombs of Amascut" → "tombs-of-amascut". */
+function toKey(name: string): string {
   return name
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
+}
+
+/**
+ * The card's permanent key, made from its name so admins never type it. Names without letters
+ * or digits get a unique fallback; a name already used by another card is refused by the API.
+ */
+export function cardSlug(name: string): string {
+  return toKey(name) || `card-${Date.now().toString(36)}`
 }
 
 export const isLinked = (row: DropRow) => row.itemIds.length > 0
@@ -134,7 +141,6 @@ export function dropsNeeded(requirement: string, weight: string): number | null 
 export function cardToForm(card: CardSummary): CardForm {
   const revision = card.revision
   return {
-    slug: card.slug,
     name: revision.name,
     description: revision.description ?? '',
     kind: revision.kind,
@@ -170,7 +176,7 @@ export function toAcceptedDrops(rows: DropRow[]): AcceptedDrop[] {
     .map((row) => {
       const name = row.name.trim().split(/\s+/).join(' ')
       return {
-        key: row.key ?? dropKey(name),
+        key: row.key ?? toKey(name),
         name,
         progress_weight: Number(row.weight),
         aliases: row.aliases,

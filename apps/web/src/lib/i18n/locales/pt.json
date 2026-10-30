@@ -569,7 +569,6 @@
     "form": {
       "createTitle": "Criar card do catálogo",
       "reviseTitle": "Publicar nova revisão do card",
-      "slug": "Chave permanente",
       "name": "Nome",
       "kind": "Tipo do card",
       "difficulty": "Dificuldade",
@@ -599,7 +598,7 @@
       "wiki": "Não foi possível resolver a imagem da Wiki. Confira o artigo ou mantenha a imagem alternativa.",
       "drops": "Dê um nome e um progresso acima de 0 para cada drop, sem repetir nomes.",
       "changed": "Este card mudou durante a edição. Recarregue e tente novamente.",
-      "slug": "Esta chave permanente já está em uso.",
+      "slug": "Já existe um card com este nome. Escolha outro nome.",
       "importConflict": "A importação encontrou chaves conflitantes: {{slugs}}.",
       "artwork": "Não foi possível enviar a arte. Use uma imagem PNG, JPEG ou WebP de até 5 MB."
     },

@@ -622,7 +622,8 @@ it('opens creation in a modal and restores focus on Escape without saving', asyn
   const trigger = await screen.findByRole('button', { name: 'New card' })
   await user.click(trigger)
   const dialog = screen.getByRole('dialog', { name: 'Create catalog card' })
-  expect(within(dialog).getByLabelText('Stable key')).toBeInTheDocument()
+  // The card key comes from the name; admins don't type it.
+  expect(within(dialog).queryByLabelText('Stable key')).toBeNull()
   expect(within(dialog).getByLabelText('Name')).toBeInTheDocument()
   await user.keyboard('{Escape}')
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
@@ -1066,4 +1067,11 @@ it('publishes the pre-verification flag from the card editor', async () => {
   const payload = vi.mocked(createCardRevision).mock.calls[0][0].payload
   expect(payload.requires_preverification).toBe(true)
   expect(payload.rule_note).toBe('Screenshot your Vorkath KC before the event.')
+})
+
+it('makes the card key from its name', async () => {
+  const { cardSlug } = await import('../../src/features/cards/cardForm')
+  expect(cardSlug('Tombs of Amascut: Expert')).toBe('tombs-of-amascut-expert')
+  expect(cardSlug('Kalphite Queen')).toBe('kalphite-queen')
+  expect(cardSlug('???')).toMatch(/^card-[a-z0-9]+$/)
 })

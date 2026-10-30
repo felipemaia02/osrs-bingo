@@ -14,6 +14,7 @@ import {
   emptyForm,
   toRevisionPayload,
   type CardForm,
+  cardSlug,
 } from '../cardForm'
 import { cardImageUrl } from '../artwork'
 import { ArtworkField } from './ArtworkField'
@@ -99,7 +100,11 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
           expectedRevision: card.current_revision,
           payload: revision,
         })
-      else await mutations.create.mutateAsync({ ...revision, slug: form.slug } as CardCreatePayload)
+      else
+        await mutations.create.mutateAsync({
+          ...revision,
+          slug: cardSlug(form.name),
+        } as CardCreatePayload)
       onSaved(card ? 'cards.feedback.revised' : 'cards.feedback.created')
     } catch (error) {
       setErrorKey(cardErrorKey(error))
@@ -122,17 +127,6 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
       )}
       <form onSubmit={(event) => void submit(event)}>
         <fieldset disabled={pending} className="m-0 grid min-w-0 gap-4 border-0 p-0 md:grid-cols-2">
-          {!card && (
-            <Field label={t('cards.form.slug')}>
-              <input
-                required
-                pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-                value={form.slug}
-                onChange={(event) => update('slug', event.target.value)}
-                className={FIELD}
-              />
-            </Field>
-          )}
           <Field label={t('cards.form.name')}>
             <input
               required
