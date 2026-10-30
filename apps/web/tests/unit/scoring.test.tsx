@@ -171,6 +171,8 @@ describe('team progress on the board', () => {
     // Team name and the number only; the header leaves the team to this panel (045).
     expect(panel).toHaveTextContent('SaradominScore 55')
     expect(panel).not.toHaveTextContent('Official')
+    // The name isn't repeated by an initials emblem.
+    expect(within(panel).queryByText('SA')).toBeNull()
     expect(screen.queryByText('Your team')).toBeNull()
     expect(panel).toHaveTextContent('Completed tiles (3 of 9)30')
     expect(panel).toHaveTextContent('Rows · 1 × 2525')

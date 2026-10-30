@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { TeamEmblem } from '../../teams/components/TeamEmblem'
 import type { TeamScore } from '../types'
 
 /** Official score of the viewer's own team (future-board, without special bonuses). */
@@ -47,8 +46,15 @@ export function TeamScorePanel({
       }`}
     >
       <div className="flex items-center gap-3">
-        <TeamEmblem team={{ name: score.team_name, color: score.team_color }} size="lg" />
-        <strong className="text-base">{score.team_name}</strong>
+        {/* One chip in the team colour: an emblem beside the name repeated it (045). */}
+        <strong
+          className={`inline-flex min-h-[34px] max-w-[16rem] items-center truncate rounded-[3px] px-2.5 text-base text-rs-text ${
+            score.team_color ? '' : 'bg-rs-raised'
+          }`}
+          style={score.team_color ? { backgroundColor: score.team_color } : undefined}
+        >
+          {score.team_name}
+        </strong>
         <strong className="font-display text-[26px] leading-none text-rs-gold-bright">
           <span className="sr-only">{t('score.total')} </span>
           {score.total}
