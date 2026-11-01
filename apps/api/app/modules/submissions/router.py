@@ -9,6 +9,7 @@ from app.core.storage import ScreenshotStorage
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import MAX_BOARD_POSITIONS
+from app.modules.bots.dependencies import BotCallerDependency
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.submissions.repository import SubmissionRepository
@@ -59,6 +60,7 @@ async def submit(
     event_id: str,
     user: UserDependency,
     service: SubmissionServiceDependency,
+    bot: BotCallerDependency,
     kind: Annotated[SubmissionKind, Form()],
     position: Annotated[int, Form(ge=1, le=MAX_BOARD_POSITIONS)],
     screenshot: Annotated[UploadFile, File()],
@@ -66,7 +68,8 @@ async def submit(
     note: Annotated[str | None, Form(max_length=NOTE_MAX_LENGTH)] = None,
 ) -> SubmissionResponse:
     data = await screenshot.read(settings.max_screenshot_bytes + 1)
-    return await service.submit(event_id, user, kind, position, drop_key, note, data)
+    bot_key_name = bot.key.name if bot else None
+    return await service.submit(event_id, user, kind, position, drop_key, note, data, bot_key_name)
 
 
 @player_router.get("/events/{event_id}/submissions/me", response_model=OwnSubmissionsResponse)

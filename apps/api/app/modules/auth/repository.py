@@ -47,6 +47,10 @@ class AuthRepository:
         user = await self._users.find_one({"_id": session["user_id"]})
         return dict(user) if user else None
 
+    async def user_by_discord_id(self, discord_id: str) -> dict[str, Any] | None:
+        user = await self._users.find_one({"discord_id": discord_id})
+        return dict(user) if user else None
+
     async def delete_session(self, token_hash: str) -> None:
         await self._sessions.delete_one({"_id": token_hash})
 

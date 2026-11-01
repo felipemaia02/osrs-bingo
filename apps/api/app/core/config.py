@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     max_request_body_bytes: int = Field(default=65536, ge=1024)
     auth_requests_per_minute: int = Field(default=20, ge=1)
     mutation_requests_per_minute: int = Field(default=120, ge=1)
+    bot_requests_per_minute: int = Field(default=120, ge=1)
     discord_client_id: str = ""
     discord_client_secret: SecretStr = SecretStr("")
     discord_redirect_uri: str = "http://localhost:8000/auth/discord/callback"

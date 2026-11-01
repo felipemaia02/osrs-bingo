@@ -43,6 +43,8 @@ class SubmissionDocument(TypedDict):
     source: NotRequired[str]
     droptracker_drop_id: NotRequired[int]
     screenshot_url: NotRequired[str | None]
+    # Sent through a Discord bot (feature 048): the bot key's name.
+    bot_key_name: NotRequired[str]
     # An accepted submission undone by an admin (feature 035).
     reverted_at: NotRequired[datetime]
     reverted_by: NotRequired[str]

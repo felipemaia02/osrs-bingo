@@ -26,6 +26,8 @@ async def maintenance_gate(request: Request) -> None:
     The session is only looked up while maintenance is on."""
     if not settings.maintenance_mode or request.url.path in OPEN_PATHS:
         return
+    if "authorization" in request.headers:
+        raise AppException(SERVICE_UNAVAILABLE, MAINTENANCE_DETAIL)
     auth = await get_auth_service(request)
     try:
         user = await auth.current_user(request.cookies.get(SESSION_COOKIE))

@@ -52,6 +52,39 @@ For deployment, use HTTPS and host the frontend and API on the same site (for ex
 - Approval, assignment, and removal use conditional writes so stale operations cannot revive a removed registration. Bulk approval returns the count changed; newly arriving requests may require another review.
 - Event lifecycle guards remain service-level checks. This revision does not introduce transactions against concurrent event activation.
 
+## Bot access (feature 048)
+
+A bot (the clan's Discord bot) authenticates with its own key instead of a session cookie.
+
+- Header: `Authorization: Bearer <key>`. Any request with an `Authorization` header is a bot
+  request: the cookie is ignored and the origin check is skipped (a header can't be sent by
+  another site).
+- Keys are random (256 bits), stored as SHA-256 hashes in `bot_keys`, with scopes and
+  `last_used_at` / `revoked_at`. Manage them with
+  `python -m app.scripts.bot_keys create <name> --scope <scope>…`, `list`, `revoke <name>`.
+  The key is printed once, on creation.
+- `bots/gate.py` (`ROUTE_SCOPES`) is the only allowlist. Routes outside it, including every
+  admin route, answer `403` to a key:
+
+  | Scope | Route | `X-Acting-User` |
+  |---|---|---|
+  | `events:read` | `GET /events` | — |
+  | `boards:read` | `GET /events/{id}/board` | — |
+  | `teams:read` | `GET /events/{id}/teams` | — |
+  | `score:read` | `GET /events/{id}/score/me` | required |
+  | `submissions:write` | `POST /events/{id}/submissions` | required |
+
+- `X-Acting-User` is the player's Discord ID. The API acts as that user (never as an admin) and
+  applies the normal rules; a user who never logged in gets `404`. The bot must check, from
+  Discord's interaction data, that the command really came from that user.
+- Limits: `BOT_REQUESTS_PER_MINUTE` per key; bot submissions also count toward the player's
+  mutation limit. Maintenance mode refuses bot requests.
+- Bot submissions store `source: "bot"` and `bot_key_name`. The request log adds `bot_key` and
+  `acting_discord_id`; the key itself is never logged.
+- The bot calls `https://<site>/api`. The API service must keep no public domain: it trusts
+  forwarded client IPs from any address, which is only safe while just the web proxy reaches it.
+- `/docs`, `/redoc` and `/openapi.json` are served only when `APP_ENV=development`.
+
 ## Validation
 
 Automated tests exercise the provider exchange with a mocked Discord response, OAuth/session contracts, role/Origin restrictions, conditional persistence operations, and frontend participant/administrator flows. They do not substitute for a real Discord login or a live MongoDB concurrency run.

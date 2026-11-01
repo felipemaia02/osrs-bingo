@@ -58,6 +58,8 @@ class IndexManager:
             },
         ),
         ("users", [("discord_id", 1)], {"name": "users_discord_unique", "unique": True}),
+        ("bot_keys", [("key_hash", 1)], {"name": "bot_keys_hash_unique", "unique": True}),
+        ("bot_keys", [("name", 1)], {"name": "bot_keys_name_unique", "unique": True}),
         ("auth_states", [("expires_at", 1)], {"name": "auth_states_ttl", "expireAfterSeconds": 0}),
         ("sessions", [("expires_at", 1)], {"name": "sessions_ttl", "expireAfterSeconds": 0}),
         (

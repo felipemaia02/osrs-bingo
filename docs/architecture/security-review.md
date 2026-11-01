@@ -15,6 +15,7 @@ This is a source-code and automated-test review of the current application, not 
 | Domain boundaries | Same-event team checks, draft-only guards, duplicate indexes, and conditional pending/approved/removed writes are implemented. |
 | Data minimization | Discord identify is requested. Email, guild membership, and server roles are not requested. Response schemas do not expose session hashes/provider tokens. |
 | Logs | Application logs avoid request bodies/query strings; Uvicorn's OAuth callback filter removes code/state query parameters. Reverse-proxy logs need their own configuration. |
+| Bot keys (048) | Bearer keys stored as hashes, scoped to a fixed route allowlist (`bots/gate.py`), revocable, rate limited per key; acting users never get admin rights. |
 | Logout | Backend session revocation and frontend private-cache clearing are implemented. |
 
 ## Gaps and limits

@@ -35,7 +35,7 @@ export interface Submission {
   rejection_reason: RejectionReason | null
   rejection_note: string | null
   /** "droptracker" for drops pulled automatically from DropTracker (feature 030). */
-  source?: 'manual' | 'droptracker'
+  source?: 'manual' | 'droptracker' | 'bot'
   /** DropTracker drops can arrive without an image. */
   has_screenshot?: boolean
   /** Set when an admin reverted this accepted submission (feature 035). */
@@ -78,7 +78,7 @@ export interface TileHistoryItem {
   drop_name: string | null
   progress_weight: number | null
   status: SubmissionStatus
-  source: 'manual' | 'droptracker'
+  source: 'manual' | 'droptracker' | 'bot'
   submitted_at: string
   has_screenshot: boolean
   same_item: boolean

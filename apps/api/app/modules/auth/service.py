@@ -109,6 +109,13 @@ class AuthService:
             raise AppException(401, "Authentication required")
         return self._to_user(user, await self._repository.is_administrator(user["discord_id"]))
 
+    async def acting_user(self, discord_id: str) -> CurrentUser:
+        """The player a bot acts for (feature 048). Never an admin through a bot."""
+        user = await self._repository.user_by_discord_id(discord_id)
+        if user is None:
+            raise AppException(404, "Log in on the site first")
+        return self._to_user(user, is_admin=False)
+
     async def logout(self, token: str | None) -> None:
         if token:
             await self._repository.delete_session(token_hash(token))

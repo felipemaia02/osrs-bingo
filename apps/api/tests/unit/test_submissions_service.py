@@ -344,3 +344,21 @@ async def test_items_removed_from_a_fixed_card_cannot_be_accepted(deps: dict[str
     with pytest.raises(AppException, match="no longer on this card"):
         await deps["service"].accept(str(document["_id"]), ADMIN)
     deps["submissions"].review.assert_not_awaited()
+
+
+async def test_bot_submissions_record_their_source_and_key(deps: dict[str, Any]) -> None:
+    result = await deps["service"].submit(
+        str(EVENT_ID), USER, SubmissionKind.DROP, 1, "skeletal-visage", None, PNG, "clan-bot"
+    )
+
+    document = deps["submissions"].insert.await_args.args[0]
+    assert (document["source"], document["bot_key_name"]) == ("bot", "clan-bot")
+    assert result.source == "bot"
+
+
+async def test_site_submissions_keep_the_manual_source(deps: dict[str, Any]) -> None:
+    result = await submit(deps)
+
+    document = deps["submissions"].insert.await_args.args[0]
+    assert "source" not in document and "bot_key_name" not in document
+    assert result.source == "manual"

@@ -7,6 +7,7 @@ from app.core.exceptions import AppException
 from app.modules.auth.repository import AuthRepository
 from app.modules.auth.schemas import CurrentUser
 from app.modules.auth.service import AuthService, DiscordClient
+from app.modules.bots.dependencies import BotCallerDependency
 from app.modules.security.dependencies import RequestLimiterDependency
 
 SESSION_COOKIE = "osrs_session"
@@ -33,9 +34,16 @@ async def require_user(
     request: Request,
     service: AuthServiceDependency,
     limiter: RequestLimiterDependency,
+    bot: BotCallerDependency,
 ) -> CurrentUser:
-    user = await service.current_user(request.cookies.get(SESSION_COOKIE))
-    await require_trusted_origin(request)
+    if bot is None:
+        user = await service.current_user(request.cookies.get(SESSION_COOKIE))
+        await require_trusted_origin(request)
+    else:
+        # A bot key in a header can't be sent by another site: no origin check (feature 048).
+        if bot.acting_discord_id is None:
+            raise AppException(403, "Bot key not allowed on this route")
+        user = await service.acting_user(bot.acting_discord_id)
     if request.method not in {"GET", "HEAD", "OPTIONS"}:
         await limiter.check("mutation", user.id, settings.mutation_requests_per_minute)
     return user

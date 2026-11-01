@@ -45,6 +45,7 @@ class SubmissionReject(BaseModel):
 class SubmissionSource(StrEnum):
     MANUAL = "manual"
     DROPTRACKER = "droptracker"
+    BOT = "bot"
 
 
 class SubmissionResponse(BaseModel):

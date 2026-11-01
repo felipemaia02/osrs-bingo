@@ -23,6 +23,8 @@ from app.modules.balance.router import router as balance_router
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.router import admin_router as admin_boards_router
 from app.modules.boards.router import public_router as public_boards_router
+from app.modules.bots.dependencies import current_bot
+from app.modules.bots.gate import bot_gate
 from app.modules.droptracker.bingo import DropTrackerBingo
 from app.modules.droptracker.client import DropTrackerClient
 from app.modules.droptracker.poller import DropTrackerPoller
@@ -150,12 +152,32 @@ async def request_logging(
         path=request.url.path,
         status=response.status_code,
         duration_ms=duration_ms,
+        **bot_log_fields(request),
     )
     return response
 
 
+def bot_log_fields(request: Request) -> dict[str, str]:
+    """Audit trail for bot requests (feature 048): the key's name, never the key."""
+    bot = current_bot(request)
+    if bot is None:
+        return {}
+    fields = {"bot_key": bot.key.name}
+    if bot.acting_discord_id is not None:
+        fields["acting_discord_id"] = bot.acting_discord_id
+    return fields
+
+
+def docs_url(path: str) -> str | None:
+    """API docs are only served in development (feature 048)."""
+    return path if settings.app_env == "development" else None
+
+
 app = FastAPI(
-    dependencies=[Depends(maintenance_gate)],
+    dependencies=[Depends(maintenance_gate), Depends(bot_gate)],
+    docs_url=docs_url("/docs"),
+    redoc_url=docs_url("/redoc"),
+    openapi_url=docs_url("/openapi.json"),
     title="OSRS Bingo API",
     version="0.1.0",
     description="Platform for managing OSRS Bingo events",

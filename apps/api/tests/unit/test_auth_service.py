@@ -163,3 +163,29 @@ def test_oauth_callback_access_log_redacts_query() -> None:
     assert "secret-code" not in record.getMessage()
     assert "secret-state" not in record.getMessage()
     assert "/auth/discord/callback" in record.getMessage()
+
+
+async def test_bot_acting_user_is_never_an_admin() -> None:
+    service, repository, _ = auth_service()
+    repository.user_by_discord_id.return_value = {
+        "_id": ObjectId(),
+        "discord_id": "456",
+        "username": "Crab",
+    }
+    repository.is_administrator.return_value = True
+
+    user = await service.acting_user("456")
+
+    assert user.discord_id == "456" and not user.is_admin
+    repository.user_by_discord_id.assert_awaited_once_with("456")
+
+
+async def test_bot_acting_user_must_have_logged_in_before() -> None:
+    service, repository, _ = auth_service()
+    repository.user_by_discord_id.return_value = None
+
+    with pytest.raises(AppException) as error:
+        await service.acting_user("999")
+
+    assert (error.value.status_code, error.value.detail) == (404, "Log in on the site first")
+    repository.upsert_user.assert_not_awaited()

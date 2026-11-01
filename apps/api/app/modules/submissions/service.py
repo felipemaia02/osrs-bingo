@@ -88,6 +88,7 @@ class SubmissionService:
         drop_key: str | None,
         note: str | None,
         screenshot: bytes,
+        bot_key_name: str | None = None,
     ) -> SubmissionResponse:
         event = await self._require_event(event_id)
         if event["status"] != EventStatus.ACTIVE:
@@ -147,6 +148,9 @@ class SubmissionService:
             "screenshot_sha256": hashlib.sha256(screenshot).hexdigest(),
             "submitted_at": datetime.now(UTC),
         }
+        if bot_key_name is not None:
+            document["source"] = SubmissionSource.BOT
+            document["bot_key_name"] = bot_key_name
         if kind == SubmissionKind.PREVERIFICATION:
             document["preverification_note"] = card.get("rule_note")
             document["preverification_gate"] = preverification_gate(
