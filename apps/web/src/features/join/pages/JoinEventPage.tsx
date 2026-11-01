@@ -1,4 +1,4 @@
-import { canJoin } from '../../events/rules'
+import { blocksJoining, canJoin } from '../../events/rules'
 import { useState, type ReactNode } from 'react'
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import { Trans, useTranslation } from 'react-i18next'
@@ -58,7 +58,8 @@ export function JoinEventPage() {
     content = <p role="alert">{t('common.apiError')}</p>
   else if (!event) content = <Blocked text={t('join.blocked.notFound')} />
   else if (!canJoin(event)) content = <Blocked text={t('join.blocked.closed')} />
-  else if (registration.data) content = <Blocked text={t('join.blocked.registered')} />
+  else if (blocksJoining(registration.data))
+    content = <Blocked text={t('join.blocked.registered')} />
   else content = <JoinFlow event={event} profile={profile.data} />
 
   return (

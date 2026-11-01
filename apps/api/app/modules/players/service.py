@@ -62,7 +62,8 @@ class PlayerService:
         late = event["status"] == EventStatus.ACTIVE
         if not (event["status"] == EventStatus.DRAFT or (late and event.get("late_join"))):
             raise ConflictError(JOIN_CLOSED)
-        if await self._players.get_for_user(event_id, user_id) is not None:
+        existing = await self._players.get_for_user(event_id, user_id)
+        if existing is not None and existing.get("status") != RegistrationStatus.REMOVED:
             raise ConflictError("Already registered in this event")
         registration = NewRegistration(
             display_name=await self._account_rsn(user_id, payload.account_id),
@@ -71,7 +72,11 @@ class PlayerService:
             teammate_ids=await self._teammates(user_id, payload.teammate_ids),
             joined_late=late,
         )
-        document = await self._players.create(event_id, registration, user_id)
+        document = (
+            await self._players.rejoin(event_id, str(existing["_id"]), registration, user_id)
+            if existing is not None
+            else await self._players.create(event_id, registration, user_id)
+        )
         if document is None:
             raise ConflictError("Registration already exists in this event")
         return to_player_response(document)

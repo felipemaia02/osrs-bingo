@@ -83,23 +83,35 @@ export function EventRegistration({ event }: { event: BingoEvent }) {
             {t(`registration.status.${own.status}`)}
           </p>
         )}
+        {own.status === 'removed' && canJoin(event) && (
+          <div className="mt-3">
+            <JoinLink event={event} />
+          </div>
+        )}
       </Section>
     )
   }
   if (!canJoin(event)) return null
   return (
     <Section>
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
-        <Link
-          to={`/events/${event.id}/join`}
-          aria-label={t('registration.joinFor', { name: event.name })}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[3px] border border-rs-gold bg-rs-gold px-3.5 text-sm font-semibold text-rs-canvas hover:bg-rs-gold-bright md:min-h-10"
-        >
-          <HowToRegOutlinedIcon fontSize="small" aria-hidden="true" />
-          {t('registration.join')}
-        </Link>
-        <p className="m-0 text-xs text-rs-muted">{t('registration.approvalHint')}</p>
-      </div>
+      <JoinLink event={event} />
     </Section>
+  )
+}
+
+function JoinLink({ event }: { event: BingoEvent }) {
+  const { t } = useTranslation()
+  return (
+    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
+      <Link
+        to={`/events/${event.id}/join`}
+        aria-label={t('registration.joinFor', { name: event.name })}
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[3px] border border-rs-gold bg-rs-gold px-3.5 text-sm font-semibold text-rs-canvas hover:bg-rs-gold-bright md:min-h-10"
+      >
+        <HowToRegOutlinedIcon fontSize="small" aria-hidden="true" />
+        {t('registration.join')}
+      </Link>
+      <p className="m-0 text-xs text-rs-muted">{t('registration.approvalHint')}</p>
+    </div>
   )
 }

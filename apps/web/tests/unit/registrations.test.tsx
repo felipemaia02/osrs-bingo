@@ -148,6 +148,21 @@ it('shows the account and buy-in status of a joined registration', async () => {
   expect(screen.getByText('Buy-in not paid yet')).toBeInTheDocument()
 })
 
+it('lets a removed player join an open event again (047)', async () => {
+  const closed = { ...EVENT, id: 'closed', name: 'Old Bingo', status: 'finished' as const }
+  vi.mocked(fetchEvents).mockResolvedValue([EVENT, closed])
+  vi.mocked(api.fetchOwnRegistration).mockResolvedValue({ ...PLAYER, status: 'removed' })
+  renderApp(<PlayerEventsPage />, '/events')
+
+  expect(await screen.findByRole('link', { name: 'Join Summer Bingo' })).toHaveAttribute(
+    'href',
+    `/events/${EVENT.id}/join`,
+  )
+  expect(await screen.findByRole('link', { name: /Summer Bingo.*Join event/ })).toBeInTheDocument()
+  expect(screen.getAllByText('Registration removed by an administrator')).toHaveLength(2)
+  expect(screen.queryByRole('link', { name: 'Join Old Bingo' })).toBeNull()
+})
+
 it('requires login and prevents participant administration', async () => {
   vi.mocked(fetchSession).mockResolvedValue(null)
   renderApp(<TeamsPage />, '/teams')

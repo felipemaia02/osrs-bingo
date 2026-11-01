@@ -187,6 +187,55 @@ async def test_duplicate_user_or_name_returns_conflict(
         await service.create(EVENT_ID, join(), USER_ID)
 
 
+async def test_removed_player_can_join_again_with_another_account(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, _ = repositories
+    players.get_for_user.return_value = registration(RegistrationStatus.REMOVED)
+    players.rejoin.return_value = registration()
+
+    result = await service.create(EVENT_ID, join(), USER_ID)
+
+    assert result.status == RegistrationStatus.PENDING
+    players.create.assert_not_awaited()
+    event_id, player_id, fresh, user_id = players.rejoin.await_args.args
+    assert (event_id, player_id, user_id) == (EVENT_ID, PLAYER_ID, USER_ID)
+    assert fresh.account_id == MAIN_ID and fresh.display_name == "Thunder Crab"
+
+
+@pytest.mark.parametrize("current", [RegistrationStatus.PENDING, RegistrationStatus.APPROVED])
+async def test_active_registration_still_blocks_a_new_request(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+    current: RegistrationStatus,
+) -> None:
+    service, players, _, _ = repositories
+    players.get_for_user.return_value = registration(current)
+    with pytest.raises(ConflictError, match="Already registered"):
+        await service.create(EVENT_ID, join(), USER_ID)
+    players.rejoin.assert_not_awaited()
+
+
+async def test_lost_rejoin_race_returns_conflict(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, _ = repositories
+    players.get_for_user.return_value = registration(RegistrationStatus.REMOVED)
+    players.rejoin.return_value = None
+    with pytest.raises(ConflictError, match="Registration already exists"):
+        await service.create(EVENT_ID, join(), USER_ID)
+
+
+async def test_removed_player_cannot_join_a_closed_event(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, events = repositories
+    events.get.return_value = {"status": EventStatus.ACTIVE, "late_join": False}
+    players.get_for_user.return_value = registration(RegistrationStatus.REMOVED)
+    with pytest.raises(ConflictError):
+        await service.create(EVENT_ID, join(), USER_ID)
+    players.rejoin.assert_not_awaited()
+
+
 async def test_assignment_rejects_team_from_another_event(
     repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
 ) -> None:

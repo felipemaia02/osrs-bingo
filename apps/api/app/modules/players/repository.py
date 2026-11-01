@@ -109,12 +109,53 @@ class PlayerRepository:
         user_object_id = self._object_id(user_id)
         if event_object_id is None or user_object_id is None:
             return None
+        document = self._new_document(ObjectId(), event_object_id, user_object_id, registration)
+        try:
+            await self._collection.insert_one(document)
+        except DuplicateKeyError:
+            return None
+        return document
+
+    async def rejoin(
+        self, event_id: str, player_id: str, registration: NewRegistration, user_id: str
+    ) -> PlayerDocument | None:
+        """Turns a removed registration into a fresh pending one (feature 047).
+
+        The document is replaced, not inserted, because a user has one per event."""
+        event_object_id, player_object_id = self._object_id(event_id), self._object_id(player_id)
+        user_object_id = self._object_id(user_id)
+        if event_object_id is None or player_object_id is None or user_object_id is None:
+            return None
+        document = self._new_document(
+            player_object_id, event_object_id, user_object_id, registration
+        )
+        try:
+            result = await self._collection.replace_one(
+                {
+                    "_id": player_object_id,
+                    "event_id": event_object_id,
+                    "user_id": user_object_id,
+                    "status": RegistrationStatus.REMOVED,
+                },
+                document,
+            )
+        except DuplicateKeyError:
+            return None
+        return document if result.modified_count else None
+
+    def _new_document(
+        self,
+        player_id: ObjectId,
+        event_id: ObjectId,
+        user_id: ObjectId,
+        registration: NewRegistration,
+    ) -> PlayerDocument:
         now = datetime.now(UTC)
-        document: PlayerDocument = {
-            "_id": ObjectId(),
-            "event_id": event_object_id,
+        return {
+            "_id": player_id,
+            "event_id": event_id,
             "team_id": None,
-            "user_id": user_object_id,
+            "user_id": user_id,
             "status": RegistrationStatus.PENDING,
             "display_name": registration.display_name,
             "normalized_display_name": self._normalize(registration.display_name),
@@ -127,11 +168,6 @@ class PlayerRepository:
             "created_at": now,
             "updated_at": now,
         }
-        try:
-            await self._collection.insert_one(document)
-        except DuplicateKeyError:
-            return None
-        return document
 
     async def get(self, event_id: str, player_id: str) -> PlayerDocument | None:
         event_object_id = self._object_id(event_id)

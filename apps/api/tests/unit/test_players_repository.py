@@ -41,6 +41,40 @@ async def test_concurrent_duplicate_registration_is_reported() -> None:
     assert result is None
 
 
+async def test_rejoin_replaces_only_a_removed_registration_with_a_fresh_one() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    collection.replace_one = AsyncMock(return_value=MagicMock(modified_count=1))
+    event_id, player_id, user_id = (str(ObjectId()) for _ in range(3))
+
+    result = await PlayerRepository(database).rejoin(event_id, player_id, REGISTRATION, user_id)
+
+    query, document = collection.replace_one.call_args.args
+    assert query == {
+        "_id": ObjectId(player_id),
+        "event_id": ObjectId(event_id),
+        "user_id": ObjectId(user_id),
+        "status": RegistrationStatus.REMOVED,
+    }
+    assert result == document
+    assert document["_id"] == ObjectId(player_id)
+    assert document["status"] == RegistrationStatus.PENDING and document["team_id"] is None
+    assert document["buy_in"]["status"] == "pending" and document["buy_in"]["admin_id"] is None
+    assert "role" not in document and "team_assigned_at" not in document
+
+
+async def test_rejoin_reports_a_lost_race_or_taken_name() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    repository = PlayerRepository(database)
+    ids = [str(ObjectId()) for _ in range(3)]
+
+    collection.replace_one = AsyncMock(return_value=MagicMock(modified_count=0))
+    assert await repository.rejoin(ids[0], ids[1], REGISTRATION, ids[2]) is None
+    collection.replace_one = AsyncMock(side_effect=DuplicateKeyError("name"))
+    assert await repository.rejoin(ids[0], ids[1], REGISTRATION, ids[2]) is None
+
+
 async def test_unassignment_updates_existing_registration_without_deleting_it() -> None:
     database = MagicMock()
     collection = database.__getitem__.return_value

@@ -1,4 +1,4 @@
-import { canJoin } from '../rules'
+import { blocksJoining, canJoin } from '../rules'
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -13,7 +13,7 @@ function useEventTarget(event: BingoEvent): { to: string; labelKey: string } | n
   const joinable = canJoin(event)
   const registration = useOwnRegistration(event.id, joinable ? session.data?.id : undefined)
   if (event.status === 'active') return { to: '/', labelKey: 'events.openBoard' }
-  if (joinable && !registration.isLoading && !registration.data)
+  if (joinable && !registration.isLoading && !blocksJoining(registration.data))
     return { to: `/events/${event.id}/join`, labelKey: 'registration.join' }
   return null
 }

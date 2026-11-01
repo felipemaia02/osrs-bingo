@@ -155,6 +155,21 @@ describe('Join event', () => {
     })
   })
 
+  it('blocks a second request but lets a removed player join again (047)', async () => {
+    const own = { id: 'p1', event_id: EVENT.id, display_name: 'Holy Hal', team_id: null }
+    vi.mocked(teamsApi.fetchOwnRegistration).mockResolvedValue({ ...own, status: 'pending' })
+    const { unmount } = renderJoin()
+    expect(
+      await screen.findByText("You've already requested to join this event."),
+    ).toBeInTheDocument()
+    unmount()
+
+    vi.mocked(teamsApi.fetchOwnRegistration).mockResolvedValue({ ...own, status: 'removed' })
+    renderJoin()
+    expect(await screen.findByRole('heading', { name: /1 · / })).toBeInTheDocument()
+    expect(screen.queryByText("You've already requested to join this event.")).toBeNull()
+  })
+
   it('leaves the buy-in out of events that have none', async () => {
     vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, buy_in: null }])
     renderJoin()
