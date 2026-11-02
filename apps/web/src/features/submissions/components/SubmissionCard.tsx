@@ -1,15 +1,18 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSubmissionTime } from '../hooks/useSubmissionTime'
 import { useSubmissionTitle } from '../hooks/useSubmissionTitle'
 import type { Submission } from '../types'
 import { SourceBadge, SubmissionStatusBadge } from './SubmissionParts'
 import { screenshotUrl } from '../api/submissionsApi'
+import { ScreenshotViewer } from './ScreenshotViewer'
 
 /** One of the player's own submissions (future-my-submissions card). */
 export function SubmissionCard({ submission }: { submission: Submission }) {
   const { t } = useTranslation()
   const title = useSubmissionTitle()
   const { when } = useSubmissionTime()
+  const [viewing, setViewing] = useState(false)
   const isPreverification = submission.kind === 'preverification'
   const meta = [
     t(isPreverification ? 'submissions.kind.preverification' : 'submissions.kind.drop'),
@@ -59,14 +62,20 @@ export function SubmissionCard({ submission }: { submission: Submission }) {
       )}
       {submission.note && <span className="text-xs text-rs-muted">“{submission.note}”</span>}
       {submission.has_screenshot !== false && (
-        <a
-          href={screenshotUrl(submission.id)}
-          target="_blank"
-          rel="noreferrer"
+        <button
+          type="button"
+          onClick={() => setViewing(true)}
           className="self-start text-xs text-rs-gold-bright hover:text-rs-gold-hover"
         >
           {t('submissions.viewScreenshot')}
-        </a>
+        </button>
+      )}
+      {viewing && (
+        <ScreenshotViewer
+          url={screenshotUrl(submission.id)}
+          title={title(submission)}
+          onClose={() => setViewing(false)}
+        />
       )}
     </article>
   )

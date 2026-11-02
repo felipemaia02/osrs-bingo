@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next'
 interface FormModalProps {
   title: string
   busy: boolean
-  size?: 'sm' | 'lg'
+  size?: 'sm' | 'lg' | 'xl'
   onClose: () => void
   children: ReactNode
 }
 
-const SIZE_CLASS = { sm: 'max-w-md', lg: 'max-w-3xl' } as const
+const SIZE_CLASS = { sm: 'max-w-md', lg: 'max-w-3xl', xl: 'max-w-6xl' } as const
 
 export function FormModal({ title, busy, size = 'lg', onClose, children }: FormModalProps) {
   const { t } = useTranslation()

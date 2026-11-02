@@ -968,7 +968,8 @@
       "droptracker": "DropTracker"
     },
     "noDropTrackerImage": "Sin captura de DropTracker",
-    "reverted": "Revertido por un admin después de ser aceptado."
+    "reverted": "Revertido por un admin después de ser aceptado.",
+    "openOriginal": "Abrir original en una pestaña nueva"
   },
   "review": {
     "title": "Revisión de drops",
@@ -980,7 +981,7 @@
     "position": "{{index}} de {{total}}",
     "previous": "Anterior",
     "next": "Siguiente",
-    "openOriginal": "Haz clic en la imagen para abrir la original.",
+    "openOriginal": "Haz clic en la imagen para ampliarla.",
     "player": "Jugador",
     "card": "Carta",
     "item": "Objeto",

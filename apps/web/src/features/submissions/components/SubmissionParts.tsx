@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { LoadingImage } from '../../../components/ui/LoadingImage'
 import { Badge, type BadgeTone } from '../../../components/ui/Badge'
 import { screenshotUrl } from '../api/submissionsApi'
+import { useSubmissionTitle } from '../hooks/useSubmissionTitle'
+import { ScreenshotViewer } from './ScreenshotViewer'
 import type { Submission, SubmissionStatus } from '../types'
 
 const STATUS_TONE: Record<SubmissionStatus, BadgeTone> = {
@@ -49,14 +51,19 @@ export function Screenshot({
   submission,
   className,
   compact = false,
+  title,
 }: {
   submission: Submission
   className: string
   /** Small thumbnails (tile history): icon only, the text goes to the tooltip. */
   compact?: boolean
+  /** Viewer title; defaults to the submission's item and card. */
+  title?: string
 }) {
   const { t } = useTranslation()
+  const submissionTitle = useSubmissionTitle()
   const [failed, setFailed] = useState(false)
+  const [viewing, setViewing] = useState(false)
   const url = screenshotUrl(submission.id)
   if (submission.has_screenshot === false)
     return (
@@ -73,33 +80,41 @@ export function Screenshot({
       </span>
     )
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noreferrer"
-      aria-label={t('submissions.openScreenshot')}
-      className={`flex items-center justify-center overflow-hidden rounded-[3px] border border-rs-border bg-rs-inset ${className}`}
-    >
-      {failed ? (
-        <span
-          title={compact ? t('submissions.screenshotUnavailable') : undefined}
-          className="flex flex-col items-center gap-1 text-xs text-rs-muted"
-        >
-          <ImageOutlinedIcon aria-hidden="true" />
-          {compact ? (
-            <span className="sr-only">{t('submissions.screenshotUnavailable')}</span>
-          ) : (
-            t('submissions.screenshotUnavailable')
-          )}
-        </span>
-      ) : (
-        <LoadingImage
-          src={url}
-          alt={t('submissions.screenshotAlt')}
-          onFail={() => setFailed(true)}
-          className="max-h-full max-w-full object-contain"
+    <>
+      <button
+        type="button"
+        onClick={() => setViewing(true)}
+        aria-label={t('submissions.openScreenshot')}
+        className={`flex cursor-zoom-in items-center justify-center overflow-hidden rounded-[3px] border border-rs-border bg-rs-inset hover:border-rs-border-strong ${className}`}
+      >
+        {failed ? (
+          <span
+            title={compact ? t('submissions.screenshotUnavailable') : undefined}
+            className="flex flex-col items-center gap-1 text-xs text-rs-muted"
+          >
+            <ImageOutlinedIcon aria-hidden="true" />
+            {compact ? (
+              <span className="sr-only">{t('submissions.screenshotUnavailable')}</span>
+            ) : (
+              t('submissions.screenshotUnavailable')
+            )}
+          </span>
+        ) : (
+          <LoadingImage
+            src={url}
+            alt={t('submissions.screenshotAlt')}
+            onFail={() => setFailed(true)}
+            className="max-h-full max-w-full object-contain"
+          />
+        )}
+      </button>
+      {viewing && (
+        <ScreenshotViewer
+          url={url}
+          title={title ?? submissionTitle(submission)}
+          onClose={() => setViewing(false)}
         />
       )}
-    </a>
+    </>
   )
 }

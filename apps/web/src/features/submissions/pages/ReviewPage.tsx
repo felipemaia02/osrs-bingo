@@ -96,6 +96,8 @@ export function ReviewPage() {
       const target = event.target as HTMLElement | null
       if (event.ctrlKey || event.metaKey || event.altKey) return
       if (target && (TYPING_TAGS.has(target.tagName) || target.isContentEditable)) return
+      // A modal (screenshot viewer, confirmations) owns the keyboard (056).
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return
       const key = event.key.toLowerCase()
       if (key === 'j') select(index + 1)
       else if (key === 'k') select(index - 1)

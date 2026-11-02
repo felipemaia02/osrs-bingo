@@ -398,6 +398,37 @@ describe('Drop review', () => {
     expect(within(detail).getByRole('button', { name: /Accept/ })).toBeDisabled()
   })
 
+  it('opens the screenshot in a modal and pauses the shortcuts (056)', async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [reviewItem({ id: 'plain-1' })],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    const user = userEvent.setup()
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    const thumbnail = within(detail).getByRole('button', { name: 'Open the screenshot' })
+    expect(thumbnail.tagName).toBe('BUTTON')
+    await user.click(thumbnail)
+
+    const viewer = screen.getByRole('dialog')
+    expect(within(viewer).getByRole('img', { name: 'Submission screenshot' })).toHaveAttribute(
+      'src',
+      expect.stringContaining('plain-1'),
+    )
+    expect(
+      within(viewer).getByRole('link', { name: 'Open original in a new tab' }),
+    ).toHaveAttribute('target', '_blank')
+    await user.keyboard('a')
+    expect(acceptSubmission).not.toHaveBeenCalled()
+
+    await user.click(within(viewer).getByRole('button', { name: 'Close' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
   it("doesn't let admins review their own submission (054)", async () => {
     vi.mocked(fetchReviewQueue).mockResolvedValue({
       items: [reviewItem({ id: 'own-1', own_submission: true })],

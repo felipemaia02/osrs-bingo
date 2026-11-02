@@ -58,6 +58,7 @@ export function TileHistoryPanel({ item }: { item: ReviewItem }) {
                 submission={{ ...item, id: entry.id, has_screenshot: entry.has_screenshot }}
                 className="size-12 shrink-0"
                 compact
+                title={`${entry.drop_name ?? item.card_name} · ${entry.player_name}`}
               />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate">

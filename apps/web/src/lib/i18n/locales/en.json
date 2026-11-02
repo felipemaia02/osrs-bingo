@@ -968,7 +968,8 @@
       "droptracker": "DropTracker"
     },
     "noDropTrackerImage": "No screenshot from DropTracker",
-    "reverted": "Reverted by an admin after being accepted."
+    "reverted": "Reverted by an admin after being accepted.",
+    "openOriginal": "Open original in a new tab"
   },
   "review": {
     "title": "Drop review",
@@ -980,7 +981,7 @@
     "position": "{{index}} of {{total}}",
     "previous": "Previous",
     "next": "Next",
-    "openOriginal": "Click the image to open the original.",
+    "openOriginal": "Click the image to enlarge it.",
     "player": "Player",
     "card": "Card",
     "item": "Item",
