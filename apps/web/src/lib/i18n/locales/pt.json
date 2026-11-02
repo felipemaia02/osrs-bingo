@@ -1006,7 +1006,6 @@
     "empty": "Nada para revisar. 🎉",
     "backToQueue": "Voltar para a fila",
     "instructions": "Instruções",
-    "ownTeam": "Você joga neste time — outro admin revisa este envio.",
     "history": {
       "title": "Já neste card para {{team}}",
       "progress": "Progresso {{progress}} / {{requirement}}",
@@ -1030,7 +1029,8 @@
     "search": "Buscar jogador ou item",
     "latestFirst": "Mais recentes primeiro",
     "emptyAccepted": "Nenhum envio aceito encontrado.",
-    "dropRemoved": "Este item não está mais neste card (corrigido durante o evento). Só pode ser rejeitado."
+    "dropRemoved": "Este item não está mais neste card (corrigido durante o evento). Só pode ser rejeitado.",
+    "ownSubmission": "Este envio é seu — outro admin faz a revisão."
   },
   "score": {
     "tileComplete": "Completo +{{points}}",

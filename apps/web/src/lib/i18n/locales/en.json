@@ -1006,7 +1006,6 @@
     "empty": "Nothing to review. 🎉",
     "backToQueue": "Back to the queue",
     "instructions": "Instructions",
-    "ownTeam": "You play on this team — another admin reviews it.",
     "history": {
       "title": "Already on this tile for {{team}}",
       "progress": "Progress {{progress}} / {{requirement}}",
@@ -1030,7 +1029,8 @@
     "search": "Search player or item",
     "latestFirst": "Latest first",
     "emptyAccepted": "No accepted submissions match.",
-    "dropRemoved": "This item is no longer on this card (fixed during the event). It can only be rejected."
+    "dropRemoved": "This item is no longer on this card (fixed during the event). It can only be rejected.",
+    "ownSubmission": "This is your own submission — another admin reviews it."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",

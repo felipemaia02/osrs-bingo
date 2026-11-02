@@ -209,9 +209,9 @@ export function ReviewDetail({
               {t('review.waitingPreverification')}
             </p>
           )}
-          {item.own_team ? (
+          {item.own_submission ? (
             <p className="m-0 rounded-[3px] border border-rs-info bg-rs-info-bg px-3 py-2 text-[13px] text-rs-info-banner-text">
-              {t('review.ownTeam')}
+              {t('review.ownSubmission')}
             </p>
           ) : (
             <>
@@ -258,7 +258,7 @@ export function ReviewDetail({
             </>
           )}
           <div className="mt-1 flex flex-wrap gap-2">
-            {!item.own_team && reverting && (
+            {!item.own_submission && reverting && (
               <Button
                 variant="danger"
                 disabled={busy || !rejectReady}
@@ -271,7 +271,7 @@ export function ReviewDetail({
                 {t('review.revert.action')}
               </Button>
             )}
-            {!item.own_team && !reverting && (
+            {!item.own_submission && !reverting && (
               <>
                 <Button variant="success" onClick={onAccept} disabled={busy || waiting || removed}>
                   <CheckOutlinedIcon fontSize="small" aria-hidden="true" />

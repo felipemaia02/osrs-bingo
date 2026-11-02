@@ -172,13 +172,16 @@ async def test_revert_needs_an_accepted_submission_of_an_active_event(
     deps["submissions"].revert.assert_not_awaited()
 
 
-async def test_admins_never_revert_their_own_team(deps: dict[str, Any]) -> None:  # noqa: F811
-    deps["submissions"].get.return_value = drop(0, status="accepted")
-    deps["players"].get_for_user.side_effect = None
-    deps["players"].get_for_user.return_value = player()
+async def test_admins_never_revert_their_own_submission(deps: dict[str, Any]) -> None:  # noqa: F811
+    """054: only the admin's own submission is off limits, not the whole team."""
+    deps["submissions"].get.return_value = {
+        **drop(0, status="accepted"),
+        "user_id": ObjectId(ADMIN.id),
+    }
 
     with pytest.raises(AppException) as refused:
         await deps["service"].revert(
             "id", SubmissionReject(reason=RejectionReason.DUPLICATE), ADMIN
         )
     assert refused.value.status_code == 403
+    deps["submissions"].revert.assert_not_awaited()

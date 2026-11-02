@@ -63,8 +63,8 @@ export interface ReviewItem extends Submission {
   requires_preverification: boolean
   preverification_status: SubmissionStatus | null
   within_event: boolean
-  /** The reviewing admin plays on this team: another admin reviews it (feature 026). */
-  own_team?: boolean
+  /** The reviewing admin sent this submission: another admin reviews it (feature 054). */
+  own_submission?: boolean
   /** The card was fixed during the event and no longer has this item (feature 036). */
   drop_removed?: boolean
   /** IDs of pending/accepted submissions that look like the same drop (feature 035). */

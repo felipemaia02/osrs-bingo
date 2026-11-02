@@ -32,6 +32,7 @@ USER = CurrentUser(id=str(ObjectId()), discord_id="1", username="Holy Hal", is_a
 ADMIN = CurrentUser(id=str(ObjectId()), discord_id="2", username="felps_", is_admin=True)
 PLAYER_ID = ObjectId()
 TEAM_ID = ObjectId()
+REASON = RejectionReason.ITEM_MISMATCH
 PNG = PNG_SIGNATURE + b"\x00" * 64
 
 VORKATH_DROPS = [
@@ -308,11 +309,15 @@ async def test_unwritable_local_storage_reports_storage_unavailable(tmp_path: Pa
     assert error.value.status_code == 503
 
 
-async def test_admins_never_review_their_own_team(deps: dict[str, Any]) -> None:
+async def test_admins_review_their_team_but_never_their_own_submission(
+    deps: dict[str, Any],
+) -> None:
+    """054 revises 026: teammates' submissions are fine, only the admin's own are refused."""
     pending = {
         "_id": ObjectId(),
         "event_id": EVENT_ID,
         "player_id": PLAYER_ID,
+        "user_id": ObjectId(ADMIN.id),
         "team_id": TEAM_ID,
         "position": 1,
         "kind": "drop",
@@ -321,15 +326,20 @@ async def test_admins_never_review_their_own_team(deps: dict[str, Any]) -> None:
         "requires_preverification": False,
     }
     deps["submissions"].get.return_value = pending
-    deps["players"].get_for_user.side_effect = None
-    deps["players"].get_for_user.return_value = player()  # the admin plays on TEAM_ID
 
-    with pytest.raises(AppException) as refused:
-        await deps["service"].accept(str(pending["_id"]), ADMIN)
-    assert refused.value.status_code == 403 and "another admin" in refused.value.detail
+    reject = SubmissionReject(reason=REASON)
+    calls = [
+        deps["service"].accept(str(pending["_id"]), ADMIN),
+        deps["service"].reject(str(pending["_id"]), reject, ADMIN),
+    ]
+    for call in calls:
+        with pytest.raises(AppException) as refused:
+            await call
+        assert refused.value.status_code == 403 and "your own submission" in refused.value.detail
     deps["submissions"].review.assert_not_awaited()
 
-    deps["players"].get_for_user.return_value = player(team=ObjectId())  # another team
+    # A teammate's submission (same team as the admin) is reviewed normally.
+    deps["submissions"].get.return_value = {**pending, "user_id": ObjectId()}
     deps["submissions"].review.return_value = {**pending, "status": "accepted"}
     with contextlib.suppress(Exception):
         await deps["service"].accept(str(pending["_id"]), ADMIN)

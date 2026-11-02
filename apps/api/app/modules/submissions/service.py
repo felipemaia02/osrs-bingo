@@ -50,7 +50,7 @@ PREVERIFICATION_NOT_NEEDED = "This card doesn't require pre-verification"
 PREVERIFICATION_EXISTS = "A pre-verification for this card is already pending or accepted"
 PREVERIFICATION_NOT_ACCEPTED = "Accept this player's pre-verification for the card first"
 ALREADY_REVIEWED = "Submission already reviewed"
-OWN_TEAM_REVIEW = "You play on this team — another admin reviews it"
+OWN_SUBMISSION_REVIEW = "This is your own submission — another admin reviews it"
 REVIEW_CLOSED = "Submissions can only be reviewed for active or finished events"
 NOT_ACCEPTED = "Only accepted submissions can be reverted"
 DROP_REMOVED = "This item is no longer on this card"
@@ -174,7 +174,6 @@ class SubmissionService:
         self, event_id: str, query: ReviewQueueQuery, admin: CurrentUser
     ) -> ReviewQueueResponse:
         event = await self._require_event(event_id)
-        own_team = await self._reviewer_team(event_id, admin)
         documents, total = await self._submissions.page(
             event["_id"],
             query.status,
@@ -240,7 +239,7 @@ class SubmissionService:
                     requires_preverification=document["requires_preverification"],
                     preverification_status=SubmissionStatus(gate) if gate else None,
                     within_event=self._within_event(event, document["submitted_at"]),
-                    own_team=own_team is not None and document["team_id"] == own_team,
+                    own_submission=self._is_own(document, admin),
                     possible_duplicates=duplicates.get(document["_id"], []),
                 )
             )
@@ -314,9 +313,7 @@ class SubmissionService:
         event = await self._events.get(str(document["event_id"]))
         if event is None or event["status"] != EventStatus.ACTIVE:
             raise AppException(409, REVERT_CLOSED)
-        own_team = await self._reviewer_team(str(document["event_id"]), admin)
-        if own_team is not None and own_team == document["team_id"]:
-            raise AppException(403, OWN_TEAM_REVIEW)
+        self._require_not_own(document, admin)
         updated = await self._submissions.revert(
             document["_id"], admin.id, admin.username, payload.reason, payload.note
         )
@@ -396,12 +393,15 @@ class SubmissionService:
             ]
         }
 
-    async def _reviewer_team(self, event_id: str, admin: CurrentUser) -> ObjectId | None:
-        """The team an admin plays on in this event, if any (feature 026)."""
-        registration = await self._players.get_for_user(event_id, admin.id)
-        if registration is None or registration.get("status") != RegistrationStatus.APPROVED:
-            return None
-        return registration.get("team_id")
+    @staticmethod
+    def _is_own(document: SubmissionDocument, admin: CurrentUser) -> bool:
+        """The reviewing admin sent this submission (feature 054)."""
+        return str(document.get("user_id")) == admin.id
+
+    def _require_not_own(self, document: SubmissionDocument, admin: CurrentUser) -> None:
+        # Nobody judges their own submission; teammates' ones are fine (054 revises 026).
+        if self._is_own(document, admin):
+            raise AppException(403, OWN_SUBMISSION_REVIEW)
 
     async def _require_reviewable(
         self, submission_id: str, admin: CurrentUser
@@ -414,10 +414,7 @@ class SubmissionService:
         event = await self._events.get(str(document["event_id"]))
         if event is None or event["status"] not in REVIEWABLE_EVENT_STATUSES:
             raise AppException(409, REVIEW_CLOSED)
-        own_team = await self._reviewer_team(str(document["event_id"]), admin)
-        if own_team is not None and own_team == document["team_id"]:
-            # Admins who play never judge their own team (conflict of interest).
-            raise AppException(403, OWN_TEAM_REVIEW)
+        self._require_not_own(document, admin)
         return document
 
     async def _require_event(self, event_id: str) -> EventDocument:

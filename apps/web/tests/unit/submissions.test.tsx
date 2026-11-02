@@ -398,9 +398,9 @@ describe('Drop review', () => {
     expect(within(detail).getByRole('button', { name: /Accept/ })).toBeDisabled()
   })
 
-  it("doesn't let admins review their own team", async () => {
+  it("doesn't let admins review their own submission (054)", async () => {
     vi.mocked(fetchReviewQueue).mockResolvedValue({
-      items: [reviewItem({ id: 'own-1', own_team: true })],
+      items: [reviewItem({ id: 'own-1', own_submission: true })],
       total: 1,
       offset: 0,
       limit: 50,
@@ -411,7 +411,7 @@ describe('Drop review', () => {
 
     const detail = await screen.findByRole('region', { name: 'Selected submission' })
     expect(
-      within(detail).getByText('You play on this team — another admin reviews it.'),
+      within(detail).getByText('This is your own submission — another admin reviews it.'),
     ).toBeInTheDocument()
     expect(within(detail).queryByRole('button', { name: /Accept/ })).toBeNull()
     expect(within(detail).queryByRole('button', { name: /Reject/ })).toBeNull()
