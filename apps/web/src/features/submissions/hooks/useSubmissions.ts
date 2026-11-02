@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   acceptSubmission,
+  attachScreenshot,
   createSubmission,
   fetchOwnSubmissions,
   fetchReviewQueue,
@@ -25,6 +26,14 @@ export function useSubmit() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: createSubmission,
+    onSuccess: () => client.invalidateQueries({ queryKey: SUBMISSIONS_KEY }),
+  })
+}
+
+export function useAttachScreenshot() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: attachScreenshot,
     onSuccess: () => client.invalidateQueries({ queryKey: SUBMISSIONS_KEY }),
   })
 }

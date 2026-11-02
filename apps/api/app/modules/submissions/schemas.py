@@ -73,6 +73,8 @@ class SubmissionResponse(BaseModel):
     rejection_note: str | None
     source: SubmissionSource = SubmissionSource.MANUAL
     has_screenshot: bool = True
+    # A DropTracker drop whose screenshot the player sent afterwards (057).
+    screenshot_from_player: bool = False
     # Set when an admin reverted an accepted submission (feature 035).
     reverted_at: datetime | None = None
 

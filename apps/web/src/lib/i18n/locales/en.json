@@ -942,7 +942,8 @@
     },
     "feedback": {
       "sent": "Sent. An administrator will review it.",
-      "preverificationSent": "Pre-verification sent. You can now send this card's drops."
+      "preverificationSent": "Pre-verification sent. You can now send this card's drops.",
+      "screenshotSent": "Screenshot sent. It's now with the drop for review."
     },
     "errors": {
       "notActive": "Submissions are only open while the event is active.",
@@ -962,14 +963,20 @@
       "cardRequired": "Choose a card.",
       "screenshotRequired": "Attach a screenshot.",
       "notAccepted": "Only accepted submissions can be reverted.",
-      "revertClosed": "Accepted submissions can only be reverted while the event is active."
+      "revertClosed": "Accepted submissions can only be reverted while the event is active.",
+      "screenshotExists": "This drop already has a screenshot."
     },
     "source": {
       "droptracker": "DropTracker"
     },
     "noDropTrackerImage": "No screenshot from DropTracker",
     "reverted": "Reverted by an admin after being accepted.",
-    "openOriginal": "Open original in a new tab"
+    "openOriginal": "Open original in a new tab",
+    "missingScreenshot": {
+      "warning": "DropTracker didn't take a screenshot of this drop. Send one so an admin can check it faster.",
+      "send": "Send screenshot",
+      "modalHint": "Choose a screenshot that shows this drop."
+    }
   },
   "review": {
     "title": "Drop review",
@@ -1042,7 +1049,8 @@
     "latestFirst": "Latest first",
     "emptyAccepted": "No accepted submissions match.",
     "dropRemoved": "This item is no longer on this card (fixed during the event). It can only be rejected.",
-    "ownSubmission": "This is your own submission — another admin reviews it."
+    "ownSubmission": "This is your own submission — another admin reviews it.",
+    "screenshotFromPlayer": "Screenshot sent by the player."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",

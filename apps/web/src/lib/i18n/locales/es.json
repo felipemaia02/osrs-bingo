@@ -942,7 +942,8 @@
     },
     "feedback": {
       "sent": "Enviado. Un administrador lo revisará.",
-      "preverificationSent": "Preverificación enviada. Ya puedes enviar los drops de esta carta."
+      "preverificationSent": "Preverificación enviada. Ya puedes enviar los drops de esta carta.",
+      "screenshotSent": "Captura enviada. Ya está con el drop para la revisión."
     },
     "errors": {
       "notActive": "Los envíos solo están abiertos con el evento activo.",
@@ -962,14 +963,20 @@
       "cardRequired": "Elige una carta.",
       "screenshotRequired": "Adjunta una captura.",
       "notAccepted": "Solo los envíos aceptados se pueden revertir.",
-      "revertClosed": "Los envíos aceptados solo se pueden revertir mientras el evento está activo."
+      "revertClosed": "Los envíos aceptados solo se pueden revertir mientras el evento está activo.",
+      "screenshotExists": "Este drop ya tiene captura."
     },
     "source": {
       "droptracker": "DropTracker"
     },
     "noDropTrackerImage": "Sin captura de DropTracker",
     "reverted": "Revertido por un admin después de ser aceptado.",
-    "openOriginal": "Abrir original en una pestaña nueva"
+    "openOriginal": "Abrir original en una pestaña nueva",
+    "missingScreenshot": {
+      "warning": "DropTracker no tomó captura de este drop. Envía una para que un admin lo revise más rápido.",
+      "send": "Enviar captura",
+      "modalHint": "Elige una captura que muestre este drop."
+    }
   },
   "review": {
     "title": "Revisión de drops",
@@ -1042,7 +1049,8 @@
     "latestFirst": "Más recientes primero",
     "emptyAccepted": "Ningún envío aceptado coincide.",
     "dropRemoved": "Este ítem ya no está en esta carta (corregida durante el evento). Solo se puede rechazar.",
-    "ownSubmission": "Este envío es tuyo — otro admin lo revisa."
+    "ownSubmission": "Este envío es tuyo — otro admin lo revisa.",
+    "screenshotFromPlayer": "Captura enviada por el jugador."
   },
   "score": {
     "tileComplete": "Completa +{{points}}",

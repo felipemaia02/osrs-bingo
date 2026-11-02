@@ -108,7 +108,9 @@ export function ReviewDetail({
       <div className="flex flex-col gap-4 p-4 lg:flex-row">
         <figure className="m-0 flex w-full shrink-0 flex-col gap-1.5 lg:w-[300px] 2xl:w-[380px]">
           <Screenshot submission={item} className="h-60 w-full" />
-          <figcaption className="text-xs text-rs-muted">{t('review.openOriginal')}</figcaption>
+          <figcaption className="text-xs text-rs-muted">
+            {t(item.screenshot_from_player ? 'review.screenshotFromPlayer' : 'review.openOriginal')}
+          </figcaption>
         </figure>
         <div className="flex min-w-0 flex-1 flex-col gap-3.5">
           <dl className="m-0 grid grid-cols-[96px_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-[13px]">

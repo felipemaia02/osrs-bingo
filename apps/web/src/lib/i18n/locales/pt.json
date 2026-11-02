@@ -942,7 +942,8 @@
     },
     "feedback": {
       "sent": "Enviado. Um administrador vai revisar.",
-      "preverificationSent": "Pré-verificação enviada. Agora você pode enviar os drops deste card."
+      "preverificationSent": "Pré-verificação enviada. Agora você pode enviar os drops deste card.",
+      "screenshotSent": "Screenshot enviada. Ela já está junto do drop para a revisão."
     },
     "errors": {
       "notActive": "As submissões só ficam abertas com o evento ativo.",
@@ -962,14 +963,20 @@
       "cardRequired": "Escolha um card.",
       "screenshotRequired": "Anexe um screenshot.",
       "notAccepted": "Só envios aceitos podem ser revertidos.",
-      "revertClosed": "Envios aceitos só podem ser revertidos enquanto o evento está ativo."
+      "revertClosed": "Envios aceitos só podem ser revertidos enquanto o evento está ativo.",
+      "screenshotExists": "Este drop já tem screenshot."
     },
     "source": {
       "droptracker": "DropTracker"
     },
     "noDropTrackerImage": "Sem screenshot do DropTracker",
     "reverted": "Revertido por um admin depois de aceito.",
-    "openOriginal": "Abrir original em nova aba"
+    "openOriginal": "Abrir original em nova aba",
+    "missingScreenshot": {
+      "warning": "O DropTracker não tirou screenshot deste drop. Envie uma para um admin conferir mais rápido.",
+      "send": "Enviar screenshot",
+      "modalHint": "Escolha uma screenshot que mostre este drop."
+    }
   },
   "review": {
     "title": "Revisão de drops",
@@ -1042,7 +1049,8 @@
     "latestFirst": "Mais recentes primeiro",
     "emptyAccepted": "Nenhum envio aceito encontrado.",
     "dropRemoved": "Este item não está mais neste card (corrigido durante o evento). Só pode ser rejeitado.",
-    "ownSubmission": "Este envio é seu — outro admin faz a revisão."
+    "ownSubmission": "Este envio é seu — outro admin faz a revisão.",
+    "screenshotFromPlayer": "Screenshot enviada pelo jogador."
   },
   "score": {
     "tileComplete": "Completo +{{points}}",

@@ -1,5 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
 import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
@@ -8,6 +9,7 @@ import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
 import {
   acceptSubmission,
+  attachScreenshot,
   createSubmission,
   fetchOwnSubmissions,
   fetchReviewQueue,
@@ -244,6 +246,49 @@ describe('My submissions', () => {
     expect(screen.getByText(/duplicate \(already sent\)/)).toBeInTheDocument()
   })
 
+  it('asks for the screenshot DropTracker missed and sends it (057)', async () => {
+    const missing = submission({ id: 'auto-1', source: 'droptracker', has_screenshot: false })
+    vi.mocked(fetchOwnSubmissions).mockResolvedValue({
+      items: [
+        missing,
+        submission({ id: 'auto-2', source: 'droptracker', has_screenshot: true }),
+        submission({
+          id: 'auto-3',
+          source: 'droptracker',
+          has_screenshot: false,
+          status: 'accepted',
+        }),
+      ],
+      counts: { all: 3, pending: 2, accepted: 1, rejected: 0 },
+    })
+    vi.mocked(attachScreenshot).mockRejectedValueOnce(
+      new AxiosError('Conflict', '409', undefined, undefined, {
+        status: 409,
+        data: { detail: 'Submission already reviewed' },
+      } as never),
+    )
+    const user = userEvent.setup()
+    renderApp(<MySubmissionsPage />, '/submissions')
+
+    const warnings = await screen.findAllByText(/DropTracker didn't take a screenshot/)
+    expect(warnings).toHaveLength(1)
+    await user.click(screen.getByRole('button', { name: 'Send screenshot' }))
+    const dialog = screen.getByRole('dialog', { name: 'Vorkath Unique · Vorkath' })
+    const file = new File([new Uint8Array([137, 80, 78, 71])], 'drop.png', { type: 'image/png' })
+    await user.upload(within(dialog).getByLabelText('Choose a screenshot'), file)
+    await user.click(within(dialog).getByRole('button', { name: 'Send screenshot' }))
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent(/already reviewed/i)
+
+    vi.mocked(attachScreenshot).mockResolvedValue({ ...missing, has_screenshot: true })
+    await user.click(within(dialog).getByRole('button', { name: 'Send screenshot' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(vi.mocked(attachScreenshot).mock.calls[1][0]).toEqual({
+      submissionId: 'auto-1',
+      screenshot: file,
+    })
+    expect(screen.getByText(/Screenshot sent/)).toBeInTheDocument()
+  })
+
   it('explains why a player without a team cannot submit', async () => {
     vi.mocked(teamsApi.fetchOwnRegistration).mockResolvedValue({
       id: 'player-1',
@@ -381,6 +426,20 @@ describe('Drop review', () => {
     expect(screen.getByRole('list', { name: 'Pending submissions' })).toHaveTextContent(
       'DropTracker',
     )
+  })
+
+  it('says when the screenshot of a DropTracker drop came from the player (057)', async () => {
+    vi.mocked(fetchReviewQueue).mockResolvedValue({
+      items: [reviewItem({ id: 'auto-1', source: 'droptracker', screenshot_from_player: true })],
+      total: 1,
+      offset: 0,
+      limit: 50,
+      counts: { pending: 1, pending_preverification: 0, pending_drop: 1 },
+    })
+    renderApp(<ReviewPage />, '/admin/review')
+
+    const detail = await screen.findByRole('region', { name: 'Selected submission' })
+    expect(within(detail).getByText('Screenshot sent by the player.')).toBeInTheDocument()
   })
 
   it('blocks accepting an item no longer on a card fixed during the event (036)', async () => {

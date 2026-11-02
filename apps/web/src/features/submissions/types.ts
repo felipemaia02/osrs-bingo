@@ -38,6 +38,8 @@ export interface Submission {
   source?: 'manual' | 'droptracker' | 'bot'
   /** DropTracker drops can arrive without an image. */
   has_screenshot?: boolean
+  /** A DropTracker drop whose screenshot the player sent afterwards (feature 057). */
+  screenshot_from_player?: boolean
   /** Set when an admin reverted this accepted submission (feature 035). */
   reverted_at?: string | null
 }

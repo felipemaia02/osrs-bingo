@@ -1,18 +1,37 @@
 import { useState } from 'react'
+import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined'
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
 import { useTranslation } from 'react-i18next'
+import { Button } from '../../../components/ui/Button'
 import { useSubmissionTime } from '../hooks/useSubmissionTime'
 import { useSubmissionTitle } from '../hooks/useSubmissionTitle'
 import type { Submission } from '../types'
 import { SourceBadge, SubmissionStatusBadge } from './SubmissionParts'
 import { screenshotUrl } from '../api/submissionsApi'
+import { AttachScreenshotModal } from './AttachScreenshotModal'
 import { ScreenshotViewer } from './ScreenshotViewer'
 
+/** A pending DropTracker drop that came without a screenshot: the player can send one (057). */
+function missesScreenshot(submission: Submission): boolean {
+  return (
+    submission.source === 'droptracker' &&
+    submission.status === 'pending' &&
+    submission.has_screenshot === false
+  )
+}
+
+interface SubmissionCardProps {
+  submission: Submission
+  onScreenshotSent?: () => void
+}
+
 /** One of the player's own submissions (future-my-submissions card). */
-export function SubmissionCard({ submission }: { submission: Submission }) {
+export function SubmissionCard({ submission, onScreenshotSent }: SubmissionCardProps) {
   const { t } = useTranslation()
   const title = useSubmissionTitle()
   const { when } = useSubmissionTime()
   const [viewing, setViewing] = useState(false)
+  const [attaching, setAttaching] = useState(false)
   const isPreverification = submission.kind === 'preverification'
   const meta = [
     t(isPreverification ? 'submissions.kind.preverification' : 'submissions.kind.drop'),
@@ -61,6 +80,22 @@ export function SubmissionCard({ submission }: { submission: Submission }) {
         </span>
       )}
       {submission.note && <span className="text-xs text-rs-muted">“{submission.note}”</span>}
+      {missesScreenshot(submission) && (
+        <div className="flex flex-col gap-2 rounded-[3px] border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-[13px] sm:flex-row sm:items-center">
+          <span className="flex flex-1 gap-2">
+            <WarningAmberOutlinedIcon
+              fontSize="small"
+              className="shrink-0 text-rs-gold-bright"
+              aria-hidden="true"
+            />
+            {t('submissions.missingScreenshot.warning')}
+          </span>
+          <Button size="sm" className="shrink-0 self-start" onClick={() => setAttaching(true)}>
+            <AddPhotoAlternateOutlinedIcon fontSize="small" aria-hidden="true" />
+            {t('submissions.missingScreenshot.send')}
+          </Button>
+        </div>
+      )}
       {submission.has_screenshot !== false && (
         <button
           type="button"
@@ -69,6 +104,16 @@ export function SubmissionCard({ submission }: { submission: Submission }) {
         >
           {t('submissions.viewScreenshot')}
         </button>
+      )}
+      {attaching && (
+        <AttachScreenshotModal
+          submission={submission}
+          onSent={() => {
+            setAttaching(false)
+            onScreenshotSent?.()
+          }}
+          onClose={() => setAttaching(false)}
+        />
       )}
       {viewing && (
         <ScreenshotViewer

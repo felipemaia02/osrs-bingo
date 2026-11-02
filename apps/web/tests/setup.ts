@@ -86,6 +86,7 @@ vi.mock('../src/features/submissions/api/submissionsApi', () => ({
     counts: { all: 0, pending: 0, accepted: 0, rejected: 0 },
   }),
   createSubmission: vi.fn(),
+  attachScreenshot: vi.fn(),
   screenshotUrl: (id: string) => `http://localhost:8000/submissions/${id}/screenshot`,
   fetchReviewQueue: vi.fn().mockResolvedValue({
     items: [],

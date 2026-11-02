@@ -55,6 +55,9 @@ REVIEW_CLOSED = "Submissions can only be reviewed for active or finished events"
 NOT_ACCEPTED = "Only accepted submissions can be reverted"
 DROP_REMOVED = "This item is no longer on this card"
 REVERT_CLOSED = "Accepted submissions can only be reverted while the event is active"
+SCREENSHOT_NOT_NEEDED = "This submission already has a screenshot"
+# Leading hex digits of the file hash in its storage key: one key per file (057).
+SCREENSHOT_KEY_DIGEST_LENGTH = 16
 
 REVIEWABLE_EVENT_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
 OPEN_PREVERIFICATION = {SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED}
@@ -352,8 +355,11 @@ class SubmissionService:
         document = await self._submissions.get(submission_id)
         if document is None or (not user.is_admin and str(document["user_id"]) != user.id):
             raise NotFoundError("Submission")
-        if document.get("source") == SubmissionSource.DROPTRACKER:
-            # DropTracker hosts the image; some drops arrive without one.
+        # DropTracker hosts the image unless the player sent one (057); some have neither.
+        if (
+            document.get("source") == SubmissionSource.DROPTRACKER
+            and not document["screenshot_key"]
+        ):
             if not document.get("screenshot_url"):
                 raise NotFoundError("Screenshot")
             return document["screenshot_url"], None, document["screenshot_type"]
@@ -362,6 +368,43 @@ class SubmissionService:
             return url, None, document["screenshot_type"]
         data = await self._storage.read(document["screenshot_key"])
         return None, data, document["screenshot_type"]
+
+    async def attach_screenshot(
+        self, submission_id: str, user: CurrentUser, screenshot: bytes
+    ) -> SubmissionResponse:
+        """The player's own screenshot for a pending DropTracker drop that has none (057)."""
+        document = await self._submissions.get(submission_id)
+        if document is None or str(document["user_id"]) != user.id:
+            raise NotFoundError("Submission")
+        event = await self._require_event(str(document["event_id"]))
+        if event["status"] != EventStatus.ACTIVE:
+            raise AppException(409, EVENT_NOT_ACTIVE)
+        if document["status"] != SubmissionStatus.PENDING:
+            raise AppException(409, ALREADY_REVIEWED)
+        if not self._missing_screenshot(document):
+            raise AppException(409, SCREENSHOT_NOT_NEEDED)
+        content_type = validate_screenshot(screenshot, self._settings.max_screenshot_bytes)
+        digest = hashlib.sha256(screenshot).hexdigest()
+        key = (
+            f"events/{document['event_id']}/submissions/"
+            f"{submission_id}-{digest[:SCREENSHOT_KEY_DIGEST_LENGTH]}.{EXTENSIONS[content_type]}"
+        )
+        await self._storage.put(key, screenshot, content_type)
+        updated = await self._submissions.attach_screenshot(
+            document["_id"], key, content_type, digest
+        )
+        if updated is None:
+            # Reviewed, or another upload won, while this one was being stored.
+            raise AppException(409, ALREADY_REVIEWED)
+        return self._response(updated)
+
+    @staticmethod
+    def _missing_screenshot(document: SubmissionDocument) -> bool:
+        return (
+            document.get("source") == SubmissionSource.DROPTRACKER
+            and not document["screenshot_key"]
+            and not document.get("screenshot_url")
+        )
 
     async def _decide(
         self,
@@ -486,5 +529,7 @@ class SubmissionService:
             rejection_note=document.get("rejection_note"),
             source=SubmissionSource(document.get("source", SubmissionSource.MANUAL)),
             has_screenshot=bool(document.get("screenshot_key") or document.get("screenshot_url")),
+            screenshot_from_player=document.get("source") == SubmissionSource.DROPTRACKER
+            and bool(document["screenshot_key"]),
             reverted_at=document.get("reverted_at"),
         )

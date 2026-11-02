@@ -20,6 +20,7 @@ const ERROR_KEYS: Record<string, string> = {
   'Screenshot is too large': 'submissions.errors.imageSize',
   'Request body too large': 'submissions.errors.imageSize',
   'Screenshot storage is unavailable': 'submissions.errors.storage',
+  'This submission already has a screenshot': 'submissions.errors.screenshotExists',
   'Only accepted submissions can be reverted': 'submissions.errors.notAccepted',
   'Accepted submissions can only be reverted while the event is active':
     'submissions.errors.revertClosed',

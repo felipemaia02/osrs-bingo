@@ -8,7 +8,11 @@ from pymongo import ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
 from app.modules.submissions.models import SubmissionDocument
-from app.modules.submissions.schemas import SubmissionKind, SubmissionStatus
+from app.modules.submissions.schemas import (
+    SubmissionKind,
+    SubmissionSource,
+    SubmissionStatus,
+)
 
 OWN_SUBMISSIONS_LIMIT = 500
 
@@ -202,6 +206,32 @@ class SubmissionRepository:
             await self._collection.find_one_and_update(
                 {"_id": submission_id, "status": SubmissionStatus.PENDING},
                 update,
+                return_document=ReturnDocument.AFTER,
+            ),
+        )
+
+    async def attach_screenshot(
+        self, submission_id: ObjectId, key: str, content_type: str, sha256: str
+    ) -> SubmissionDocument | None:
+        """Adds a player's screenshot to a pending DropTracker drop that has none (057).
+        None when it was reviewed or got a screenshot in the meantime."""
+        return cast(
+            SubmissionDocument | None,
+            await self._collection.find_one_and_update(
+                {
+                    "_id": submission_id,
+                    "status": SubmissionStatus.PENDING,
+                    "source": SubmissionSource.DROPTRACKER,
+                    "screenshot_key": "",
+                    "screenshot_url": {"$in": [None, ""]},
+                },
+                {
+                    "$set": {
+                        "screenshot_key": key,
+                        "screenshot_type": content_type,
+                        "screenshot_sha256": sha256,
+                    }
+                },
                 return_document=ReturnDocument.AFTER,
             ),
         )

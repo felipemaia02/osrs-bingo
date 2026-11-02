@@ -121,7 +121,11 @@ export function MySubmissionsPage() {
             ) : visible.length ? (
               <div className="flex flex-col gap-3">
                 {visible.map((submission) => (
-                  <SubmissionCard key={submission.id} submission={submission} />
+                  <SubmissionCard
+                    key={submission.id}
+                    submission={submission}
+                    onScreenshotSent={() => setFeedback(t('submissions.feedback.screenshotSent'))}
+                  />
                 ))}
               </div>
             ) : (

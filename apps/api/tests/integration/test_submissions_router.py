@@ -119,3 +119,19 @@ async def test_review_routes_are_admin_only(
     assert (await client.get(f"/admin/events/{EVENT_ID}/submissions")).status_code == 403
     assert (await client.post("/admin/submissions/x/accept", headers=ORIGIN)).status_code == 403
     services[1].accept.assert_not_awaited()
+
+
+async def test_screenshot_can_be_added_with_a_screenshot_sized_upload(
+    client: AsyncClient, services: tuple[AsyncMock, AsyncMock]
+) -> None:
+    services[1].attach_screenshot.return_value = response()
+    image = b"\x89PNG\r\n\x1a\n" + b"\x00" * 200_000
+    result = await client.post(
+        "/submissions/abc/screenshot",
+        files={"screenshot": ("proof.png", image, "image/png")},
+        headers=ORIGIN,
+    )
+
+    assert result.status_code == 200
+    assert services[1].attach_screenshot.await_args.args[0] == "abc"
+    assert services[1].attach_screenshot.await_args.args[2] == image

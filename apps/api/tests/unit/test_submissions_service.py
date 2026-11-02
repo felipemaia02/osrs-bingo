@@ -372,3 +372,102 @@ async def test_site_submissions_keep_the_manual_source(deps: dict[str, Any]) -> 
     document = deps["submissions"].insert.await_args.args[0]
     assert "source" not in document and "bot_key_name" not in document
     assert result.source == "manual"
+
+
+def droptracker_drop(**changes: Any) -> dict[str, Any]:
+    """A pending automatic drop with no DropTracker image (feature 057)."""
+    return {
+        **pending(requires=False),
+        "row": 1,
+        "column": 2,
+        "card_id": "vorkath",
+        "card_revision": 1,
+        "card_name": "Vorkath",
+        "drop_name": "Skeletal Visage",
+        "progress_weight": 1.0,
+        "quantity": 1,
+        "note": "Automatic · Vorkath · x1",
+        "submitted_at": NOW,
+        "source": "droptracker",
+        "droptracker_drop_id": 1,
+        "screenshot_key": "",
+        "screenshot_url": None,
+        **changes,
+    }
+
+
+async def test_player_adds_a_screenshot_to_their_droptracker_drop(deps: dict[str, Any]) -> None:
+    document = droptracker_drop()
+    deps["submissions"].get.return_value = document
+    deps["submissions"].attach_screenshot.side_effect = lambda _id, key, kind, digest: {
+        **document,
+        "screenshot_key": key,
+        "screenshot_type": kind,
+        "screenshot_sha256": digest,
+    }
+
+    result = await deps["service"].attach_screenshot(str(document["_id"]), USER, PNG)
+
+    _, key, kind, digest = deps["submissions"].attach_screenshot.await_args.args
+    assert key.startswith(f"events/{EVENT_ID}/submissions/{document['_id']}-")
+    assert kind == "image/png"
+    assert [path.read_bytes() for path in stored_files(deps)] == [PNG]
+    assert len(digest) == 64
+    assert result.has_screenshot and result.screenshot_from_player
+    assert result.status == SubmissionStatus.PENDING and result.submitted_at == NOW
+
+
+@pytest.mark.parametrize(
+    ("changes", "user", "error"),
+    [
+        ({}, ADMIN, NotFoundError),  # not the owner, even for admins
+        ({"status": "accepted"}, USER, AppException),
+        ({"screenshot_url": "https://droptracker.example/a.png"}, USER, AppException),
+        ({"screenshot_key": "events/x/submissions/y.png"}, USER, AppException),
+        ({"source": "manual"}, USER, AppException),
+    ],
+)
+async def test_screenshots_are_only_added_to_own_pending_drops_without_one(
+    deps: dict[str, Any], changes: dict[str, Any], user: CurrentUser, error: type[Exception]
+) -> None:
+    deps["submissions"].get.return_value = droptracker_drop(**changes)
+
+    with pytest.raises(error) as raised:
+        await deps["service"].attach_screenshot("id", user, PNG)
+
+    assert raised.value.status_code == (404 if error is NotFoundError else 409)
+    deps["submissions"].attach_screenshot.assert_not_awaited()
+    assert not stored_files(deps)
+
+
+async def test_adding_a_screenshot_needs_an_active_event_and_a_valid_image(
+    deps: dict[str, Any],
+) -> None:
+    deps["submissions"].get.return_value = droptracker_drop()
+    with pytest.raises(AppException):
+        await deps["service"].attach_screenshot("id", USER, b"not an image")
+    deps["events"].get.return_value = event("finished")
+    with pytest.raises(AppException) as raised:
+        await deps["service"].attach_screenshot("id", USER, PNG)
+    assert raised.value.status_code == 409
+    deps["submissions"].attach_screenshot.assert_not_awaited()
+
+
+async def test_screenshot_reviewed_meanwhile_is_refused(deps: dict[str, Any]) -> None:
+    deps["submissions"].get.return_value = droptracker_drop()
+    deps["submissions"].attach_screenshot.return_value = None
+
+    with pytest.raises(AppException) as raised:
+        await deps["service"].attach_screenshot("id", USER, PNG)
+
+    assert raised.value.status_code == 409
+
+
+async def test_droptracker_drop_serves_the_screenshot_the_player_sent(
+    deps: dict[str, Any],
+) -> None:
+    document = droptracker_drop(screenshot_key="events/x/submissions/z.png")
+    await deps["service"]._storage.put(document["screenshot_key"], PNG, "image/png")
+    deps["submissions"].get.return_value = document
+
+    assert await deps["service"].screenshot("id", USER) == (None, PNG, "image/png")

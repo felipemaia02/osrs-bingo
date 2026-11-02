@@ -1,6 +1,5 @@
 import { cardImageUrl } from '../../cards/artwork'
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined'
+import { useState, type FormEvent } from 'react'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined'
@@ -16,9 +15,9 @@ import { submissionErrorKey } from '../errors'
 import { useSubmit } from '../hooks/useSubmissions'
 import { canSendDrops } from '../preverification'
 import type { SubmissionStatus } from '../types'
+import { screenshotFileError } from '../screenshotFile'
+import { ScreenshotPicker } from './ScreenshotPicker'
 
-const MAX_SCREENSHOT_BYTES = 5 * 1024 * 1024
-const ACCEPTED_TYPES = ['image/png', 'image/jpeg', 'image/webp']
 const NOTE_MAX_LENGTH = 280
 
 const GATE_TONE: Record<SubmissionStatus | 'required', BadgeTone> = {
@@ -52,8 +51,6 @@ export function SubmitModal({
   const [file, setFile] = useState<File | null>(null)
   const [note, setNote] = useState('')
   const [errorKey, setErrorKey] = useState<string | null>(null)
-  const preview = useMemo(() => (file ? URL.createObjectURL(file) : null), [file])
-  useEffect(() => () => (preview ? URL.revokeObjectURL(preview) : undefined), [preview])
 
   const slot = positions.find((item) => item.position === position) ?? null
   const requires = Boolean(slot?.card.requires_preverification)
@@ -70,11 +67,9 @@ export function SubmitModal({
   }
 
   function pickFile(next: File | null) {
-    setErrorKey(null)
-    if (next && !ACCEPTED_TYPES.includes(next.type))
-      return setErrorKey('submissions.errors.imageType')
-    if (next && next.size > MAX_SCREENSHOT_BYTES) return setErrorKey('submissions.errors.imageSize')
-    setFile(next)
+    const problem = next && screenshotFileError(next)
+    setErrorKey(problem)
+    if (!problem) setFile(next)
   }
 
   async function send(event: FormEvent) {
@@ -232,27 +227,7 @@ export function SubmitModal({
           </fieldset>
         )}
 
-        <div className="flex flex-col gap-1.5">
-          <span className="text-[13px] font-semibold">{t('submissions.form.screenshot')}</span>
-          <label className="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-[3px] border border-dashed border-rs-border-strong bg-rs-inset px-3 py-2 text-sm">
-            <AddPhotoAlternateOutlinedIcon fontSize="small" aria-hidden="true" />
-            {file ? file.name : t('submissions.form.chooseScreenshot')}
-            <input
-              type="file"
-              accept={ACCEPTED_TYPES.join(',')}
-              onChange={(change) => pickFile(change.target.files?.[0] ?? null)}
-              className="sr-only"
-            />
-          </label>
-          <span className="text-xs text-rs-muted">{t('submissions.form.screenshotHint')}</span>
-          {preview && (
-            <img
-              src={preview}
-              alt={t('submissions.form.preview')}
-              className="max-h-48 w-full rounded-[3px] border border-rs-border bg-rs-inset object-contain"
-            />
-          )}
-        </div>
+        <ScreenshotPicker file={file} onPick={pickFile} />
 
         <label className="flex flex-col gap-1 text-[13px] font-semibold">
           {t('submissions.form.note')}

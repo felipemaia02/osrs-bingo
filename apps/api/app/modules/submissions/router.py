@@ -27,7 +27,9 @@ from app.modules.submissions.service import SubmissionService
 from app.modules.teams.repository import TeamRepository
 
 # Matched by RequestSafetyMiddleware to allow screenshot-sized bodies on this route only.
-UPLOAD_PATH_PATTERN = re.compile(r"/events/[^/]+/submissions|/admin/cards/artwork")
+UPLOAD_PATH_PATTERN = re.compile(
+    r"/events/[^/]+/submissions|/submissions/[^/]+/screenshot|/admin/cards/artwork"
+)
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
 
 player_router = APIRouter(tags=["submissions"])
@@ -91,6 +93,17 @@ async def screenshot(
         media_type=content_type,
         headers={"Cache-Control": "private, no-store"},
     )
+
+
+@player_router.post("/submissions/{submission_id}/screenshot", response_model=SubmissionResponse)
+async def attach_screenshot(
+    submission_id: str,
+    user: UserDependency,
+    service: SubmissionServiceDependency,
+    screenshot: Annotated[UploadFile, File()],
+) -> SubmissionResponse:
+    data = await screenshot.read(settings.max_screenshot_bytes + 1)
+    return await service.attach_screenshot(submission_id, user, data)
 
 
 @admin_router.get("/events/{event_id}/submissions", response_model=ReviewQueueResponse)

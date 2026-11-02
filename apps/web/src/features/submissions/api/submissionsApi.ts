@@ -35,6 +35,23 @@ export async function createSubmission({
   ).data
 }
 
+/** The player's screenshot for a DropTracker drop that arrived without one (feature 057). */
+export async function attachScreenshot({
+  submissionId,
+  screenshot,
+}: {
+  submissionId: string
+  screenshot: File
+}): Promise<Submission> {
+  const form = new FormData()
+  form.append('screenshot', screenshot)
+  return (
+    await apiClient.post<Submission>(`/submissions/${submissionId}/screenshot`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  ).data
+}
+
 export function screenshotUrl(submissionId: string): string {
   return `${apiClient.defaults.baseURL}/submissions/${submissionId}/screenshot`
 }
