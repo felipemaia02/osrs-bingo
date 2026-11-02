@@ -5,6 +5,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import { useTranslation } from 'react-i18next'
+import { LoadingImage } from '../../../components/ui/LoadingImage'
 import { Badge, type BadgeTone } from '../../../components/ui/Badge'
 import { screenshotUrl } from '../api/submissionsApi'
 import type { Submission, SubmissionStatus } from '../types'
@@ -92,10 +93,10 @@ export function Screenshot({
           )}
         </span>
       ) : (
-        <img
+        <LoadingImage
           src={url}
           alt={t('submissions.screenshotAlt')}
-          onError={() => setFailed(true)}
+          onFail={() => setFailed(true)}
           className="max-h-full max-w-full object-contain"
         />
       )}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
 import { initialsOf } from '../../lib/text/initials'
+import { LoadingImage } from './LoadingImage'
 
 interface CardImageProps {
   name: string
@@ -19,11 +20,11 @@ export function CardImage({ name, imageUrl, className, large = false }: CardImag
       className={`flex items-center justify-center overflow-hidden rounded-[3px] bg-rs-inset ${className}`}
     >
       {imageUrl && !failed ? (
-        <img
+        <LoadingImage
           src={imageUrl}
           alt=""
-          loading="lazy"
-          onError={() => setFailed(true)}
+          lazy
+          onFail={() => setFailed(true)}
           className="max-h-full max-w-full object-contain"
         />
       ) : (
