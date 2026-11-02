@@ -6,6 +6,9 @@ import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
+/** Twelve marks around the clock face. */
+const CLOCK_STEP_DEGREES = 30
+
 interface DateTimeFieldProps {
   label: string
   value: Dayjs | null
@@ -190,7 +193,8 @@ function MaterialTimeDialog({
         <div className="relative mx-auto mt-5 size-64 rounded-full bg-rs-raised/60">
           <div className="absolute inset-8 rounded-full bg-rs-raised/70" />
           {clockValues.map((item, index) => {
-            const angle = index * 30 - 90
+            // translateY(-r) points up, so 0° is the 12 o'clock position.
+            const angle = (part === 'hour' ? item % 12 : index) * CLOCK_STEP_DEGREES
             const selected = selectedClockValue === item
             const allowed =
               part === 'hour'
@@ -215,7 +219,8 @@ function MaterialTimeDialog({
           <div
             className="absolute left-1/2 top-1/2 h-1/2 w-0.5 origin-top -translate-x-1/2 bg-rs-gold"
             style={{
-              transform: `translateX(-50%) rotate(${(selectedClockValue / (part === 'hour' ? 12 : 60)) * 360}deg)`,
+              // The hand hangs down from the centre; +180° makes 0 point at 12 o'clock.
+              transform: `translateX(-50%) rotate(${180 + (selectedClockValue / (part === 'hour' ? 12 : 60)) * 360}deg)`,
             }}
           />
           <div className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rs-gold" />
