@@ -132,22 +132,27 @@ async def test_draft_preview_lists_captains_and_players_without_a_team() -> None
     players.captains.return_value = [
         {"team_id": sara, "display_name": "felps_", "ehb_total": 1229.1},
     ]
-    players.page.return_value = (
-        [
-            {
-                "_id": ObjectId(),
-                "event_id": ObjectId(),
-                "team_id": None,
-                "status": "approved",
-                "display_name": "Ironman Iris",
-                "normalized_display_name": "ironman iris",
-                "ehb_total": 845.2,
-                "created_at": now,
-                "updated_at": now,
-            }
-        ],
-        1,
-    )
+
+    def registration(name: str, team: ObjectId | None) -> dict[str, object]:
+        return {
+            "_id": ObjectId(),
+            "event_id": ObjectId(),
+            "team_id": team,
+            "status": "approved",
+            "display_name": name,
+            "normalized_display_name": name.lower(),
+            "ehb_total": 845.2,
+            "created_at": now,
+            "updated_at": now,
+        }
+
+    async def page(*_: object, assigned: bool, **__: object) -> tuple[list[object], int]:
+        rows = (
+            [registration("Sara Sam", sara)] if assigned else [registration("Ironman Iris", None)]
+        )
+        return rows, len(rows)
+
+    players.page.side_effect = page
     events = AsyncMock(spec=EventRepository)
     events.get.return_value = draft_event()
     service = TeamService(teams, players, events, SimpleNamespace(team_emblems_enabled=False))
@@ -159,5 +164,10 @@ async def test_draft_preview_lists_captains_and_players_without_a_team() -> None
         ("Guthix", None, None),
     ]
     assert [p.display_name for p in preview.players] == ["Ironman Iris"]
-    query = players.page.await_args.kwargs
-    assert query["status"] == "approved" and query["assigned"] is False
+    # Feature 049: players already on a team feed the pinned rosters.
+    assert [(m.display_name, m.team_id) for m in preview.members] == [("Sara Sam", str(sara))]
+    queries = [call.kwargs for call in players.page.await_args_list]
+    assert {(q["status"], q["assigned"]) for q in queries} == {
+        ("approved", False),
+        ("approved", True),
+    }

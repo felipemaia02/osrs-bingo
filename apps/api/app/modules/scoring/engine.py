@@ -144,6 +144,15 @@ def score_team(
     )
 
 
+def drop_points(tile: Tile | None, weight: Decimal, quantity: int) -> Fraction:
+    """One accepted drop's share of its tile's points: weight * quantity / requirement * score.
+    Zero when the square is gone or has no requirement."""
+    if tile is None or tile.requirement <= 0:
+        return Fraction(0)
+    share = Fraction(weight) * quantity / Fraction(tile.requirement)
+    return share * Fraction(tile.score)
+
+
 def contributions(tiles: Sequence[Tile], drops: Iterable[AcceptedDrop]) -> dict[str, Fraction]:
     """Exact fractions: summing per-drop shares (1/3 + 1/3 + 1/3) must give exactly 1."""
     by_position = {tile.position: tile for tile in tiles}
@@ -152,15 +161,16 @@ def contributions(tiles: Sequence[Tile], drops: Iterable[AcceptedDrop]) -> dict[
         tile = by_position.get(drop.position)
         if tile is None or tile.requirement <= 0:
             continue
-        share = Fraction(drop.weight) * drop.quantity / Fraction(tile.requirement)
-        totals[drop.player_id] += share * Fraction(tile.score)
+        totals[drop.player_id] += drop_points(tile, drop.weight, drop.quantity)
     return dict(totals)
 
 
-def competition_positions(totals: Sequence[tuple[str, Decimal]]) -> dict[str, tuple[int, bool]]:
+def competition_positions(
+    totals: Sequence[tuple[str, Decimal | Fraction]],
+) -> dict[str, tuple[int, bool]]:
     """Standard competition ranking: ties share a position, the next one is skipped."""
     ordered = sorted(totals, key=lambda item: item[1], reverse=True)
-    counts: dict[Decimal, int] = defaultdict(int)
+    counts: dict[Decimal | Fraction, int] = defaultdict(int)
     for _, total in ordered:
         counts[total] += 1
     positions: dict[str, tuple[int, bool]] = {}

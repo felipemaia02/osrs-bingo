@@ -7,7 +7,9 @@
     "team": "Equipo",
     "play": "Jugar",
     "mySubmissions": "Mis envíos",
-    "profile": "Mi perfil"
+    "profile": "Mi perfil",
+    "myTeam": "Mi equipo",
+    "home": "Inicio"
   },
   "board": {
     "noActiveEvent": "No hay un evento activo para mostrar.",
@@ -1331,13 +1333,11 @@
   "draft": {
     "eyebrow": "Administración · {{event}} · Borrador",
     "title": "Vista previa del draft",
-    "description": "Solo admins. Comparte tu pantalla con los capitanes durante la elección — los jugadores nunca abren esta página. Los equipos los sigue guardando un admin.",
+    "description": "Solo para admins. Comparte la pantalla con los capitanes durante la elección — los jugadores nunca abren esta página. Arrastra un jugador a un equipo o usa el selector de equipo de la tarjeta.",
     "presentation": "Modo presentación",
     "exitPresentation": "Salir de la presentación",
     "noDraft": "No hay ningún evento en borrador para mostrar.",
-    "captains": "Capitanes",
     "noCaptain": "Aún sin capitán",
-    "captainLine": "{{team}} · Σ EHB {{ehb}}",
     "region": "Región",
     "activity": "Actividad",
     "sortBy": "Ordenar por",
@@ -1367,7 +1367,6 @@
     "noPreference": "Sin preferencia",
     "buyInPending": "Buy-in pendiente",
     "sigma": "Σ = main + alts encontradas en Wise Old Man.",
-    "details": "Ver detalles de {{name}}",
     "totalLevel": "Total",
     "combatLevel": "Combate",
     "modal": {
@@ -1384,7 +1383,23 @@
     "noSkillData_one": "{{count}} jugador aún no tiene datos de habilidades — debe pulsar “Actualizar desde WOM” en Mi perfil.",
     "noSkillData_other": "{{count}} jugadores aún no tienen datos de habilidades — deben pulsar “Actualizar desde WOM” en Mi perfil.",
     "skillLevel": "{{skill}} {{level}}",
-    "raidsKc": "Raids Σ"
+    "raidsKc": "Raids Σ",
+    "pick": {
+      "moveTo": "Equipo de {{name}}",
+      "choose": "Equipo…",
+      "noTeam": "Sin equipo",
+      "allDetails": "Todos los detalles",
+      "available": "Jugadores disponibles",
+      "rosters": "Equipos",
+      "rostersSummary_one": "{{count}} equipo",
+      "rostersSummary_other": "{{count}} equipos",
+      "totals_one": "{{count}} jugador · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "totals_other": "{{count}} jugadores · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "dropHere": "Suelta un jugador aquí",
+      "empty": "Aún no hay jugadores",
+      "noTeams": "Crea los equipos en la página Equipos primero.",
+      "failed": "La elección no se guardó: {{reason}}"
+    }
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1475,6 +1490,86 @@
       "search": "Buscar jefe",
       "save": "Guardar ajustes",
       "saved": "Ajustes de boss KC guardados; totales actualizados."
+    }
+  },
+  "footer": {
+    "label": "Pie de página",
+    "links": "Clan y créditos",
+    "logoAlt": "Logo del clan AstralStar",
+    "credit": "OSRS Bingo · AstralStar",
+    "disclaimer": "Sin afiliación con Jagex. Old School RuneScape es una marca registrada de Jagex Ltd.",
+    "clanSite": "Sitio de AstralStar",
+    "clanDiscord": "Discord del clan",
+    "osrsWiki": "Imágenes de la OSRS Wiki",
+    "wiseOldMan": "Estadísticas de Wise Old Man"
+  },
+  "teamHome": {
+    "title": "Mi equipo",
+    "description": "La puntuación de tu equipo, quién está puntuando y los últimos drops.",
+    "login": "Inicia sesión para ver tu equipo.",
+    "notStarted": "Tu equipo se mostrará cuando empiece el evento.",
+    "removed": "Tu inscripción fue retirada de este evento.",
+    "noTeam": "Todavía no tienes equipo. Revisa tu inscripción en",
+    "leaderboard": "Clasificación del equipo",
+    "leaderboardHint": "Puntos que cada miembro sumó al equipo con sus drops aceptados.",
+    "place": "Puesto",
+    "drops": "Drops",
+    "points": "Puntos",
+    "recentDrops": "Drops recientes",
+    "dropLine": "{{player}} · {{card}} · {{when}}",
+    "dropPoints": "+{{points}} pts",
+    "noDrops": "Aún no hay drops.",
+    "sheet": "Lista del equipo ({{count}})",
+    "rsn": "RSN",
+    "discord": "Discord",
+    "timezone": "Zona horaria",
+    "activity": "Actividad"
+  },
+  "homePage": {
+    "eyebrow": "OSRS Bingo · AstralStar",
+    "welcome": "Bienvenido a OSRS Bingo",
+    "welcomeBack": "Bienvenido de nuevo, {{name}}",
+    "tagline": "El bingo del clan AstralStar: consigue drops con tu equipo, completa el tablero y suma puntos.",
+    "event": {
+      "title": "Evento actual",
+      "endsIn": "Termina en {{time}}",
+      "openBoard": "Abrir tablero",
+      "none": "No hay ningún evento en curso. Mira lo que viene en"
+    },
+    "team": {
+      "title": "Mi equipo",
+      "tiles": "Casillas hechas",
+      "myPlace": "Mi puesto",
+      "myPoints": "Mis puntos",
+      "myDrops": "Mis drops",
+      "open": "Abrir Mi equipo"
+    },
+    "shortcuts": {
+      "title": "Próximos pasos",
+      "pending_one": "{{count}} envío esperando revisión",
+      "pending_other": "{{count}} envíos esperando revisión",
+      "rejected_one": "{{count}} envío rechazado",
+      "rejected_other": "{{count}} envíos rechazados",
+      "submit": "Enviar un drop"
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "profile": {
+        "title": "Configura tu perfil",
+        "text": "Inicia sesión con Discord y vincula tu RSN y zona horaria en Mi perfil."
+      },
+      "join": {
+        "title": "Inscríbete en el evento",
+        "text": "Elige la cuenta con la que jugarás y acepta las reglas en Eventos."
+      },
+      "teams": {
+        "title": "Se eligen los equipos",
+        "text": "Los admins aprueban a los jugadores y los capitanes eligen los equipos."
+      },
+      "drops": {
+        "title": "Consigue drops, suma puntos",
+        "text": "Envía los drops con captura. Casillas, filas y columnas completas dan puntos a tu equipo."
+      }
     }
   }
 }

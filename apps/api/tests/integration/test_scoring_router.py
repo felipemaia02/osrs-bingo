@@ -50,3 +50,31 @@ async def test_team_score_requires_login(
     response = await client.get(f"/events/{EVENT_ID}/score/me")
     assert response.status_code == 401
     services[1].own_team.assert_not_awaited()
+
+
+async def test_team_page_requires_login(
+    client: AsyncClient, services: tuple[AsyncMock, AsyncMock]
+) -> None:
+    services[0].current_user.side_effect = AppException(401, "Authentication required")
+    response = await client.get(f"/events/{EVENT_ID}/team/me")
+    assert response.status_code == 401
+    services[1].own_team_home.assert_not_awaited()
+
+
+async def test_team_page_takes_the_team_from_the_caller(
+    client: AsyncClient, services: tuple[AsyncMock, AsyncMock]
+) -> None:
+    services[1].own_team_home.return_value = {
+        "event_id": EVENT_ID,
+        "team_id": "66d000000000000000000003",
+        "team_name": "Saradomin",
+        "team_color": None,
+        "emblem_url": None,
+        "members": [],
+        "recent_drops": [],
+    }
+    response = await client.get(f"/events/{EVENT_ID}/team/me")
+    assert response.status_code == 200
+    assert response.json()["team_name"] == "Saradomin"
+    event_id, user = services[1].own_team_home.await_args.args
+    assert event_id == EVENT_ID and user.username == "Hal"

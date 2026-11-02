@@ -64,7 +64,7 @@ export function ActiveEventStatus({ variant }: { variant: Variant }) {
     )
   }
   return (
-    <Link to="/" aria-label={t('shell.event.label', { name: event.name })} className={className}>
+    <Link to="/board" aria-label={t('shell.event.label', { name: event.name })} className={className}>
       {icon}
       <EventDetails event={event} variant={variant} />
     </Link>

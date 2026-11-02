@@ -39,7 +39,7 @@ function BottomItem({ entry }: { entry: NavEntry }) {
   )
 }
 
-/** Mobile bottom bar: Board, Events, My submissions and Admin for administrators. */
+/** Mobile bottom bar: Board, Events, My team, My submissions and Admin for administrators. */
 export function MobileBottomBar({ isAdmin }: { isAdmin: boolean }) {
   const { t } = useTranslation()
   const play = PLAY_ENTRIES.filter((entry) => !entry.desktopOnly)
@@ -48,7 +48,7 @@ export function MobileBottomBar({ isAdmin }: { isAdmin: boolean }) {
     <nav
       aria-label={t('navigation.mobile')}
       className={`fixed inset-x-0 bottom-0 z-30 grid h-[68px] border-t border-rs-border bg-rs-inset md:hidden ${
-        isAdmin ? 'grid-cols-4' : 'grid-cols-3'
+        isAdmin ? 'grid-cols-5' : 'grid-cols-4'
       }`}
     >
       {entries.map((entry) => (

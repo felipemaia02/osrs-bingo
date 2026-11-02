@@ -12,7 +12,7 @@ function useEventTarget(event: BingoEvent): { to: string; labelKey: string } | n
   const session = useSession()
   const joinable = canJoin(event)
   const registration = useOwnRegistration(event.id, joinable ? session.data?.id : undefined)
-  if (event.status === 'active') return { to: '/', labelKey: 'events.openBoard' }
+  if (event.status === 'active') return { to: '/board', labelKey: 'events.openBoard' }
   if (joinable && !registration.isLoading && !blocksJoining(registration.data))
     return { to: `/events/${event.id}/join`, labelKey: 'registration.join' }
   return null

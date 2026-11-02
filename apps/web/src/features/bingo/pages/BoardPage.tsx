@@ -51,7 +51,7 @@ interface BoardState {
 }
 
 /** Layout v2 board (docs/design/mockups/board-a-desktop and board-b-mobile). */
-export function HomePage() {
+export function BoardPage() {
   const { t } = useTranslation()
   const isDesktop = useIsDesktop()
   const events = useEvents('active')

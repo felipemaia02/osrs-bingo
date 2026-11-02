@@ -7,7 +7,9 @@
     "team": "Equipe",
     "play": "Jogar",
     "mySubmissions": "Meus envios",
-    "profile": "Meu perfil"
+    "profile": "Meu perfil",
+    "myTeam": "Meu time",
+    "home": "Início"
   },
   "board": {
     "noActiveEvent": "Não há um evento ativo para exibir.",
@@ -1331,13 +1333,11 @@
   "draft": {
     "eyebrow": "Administração · {{event}} · Rascunho",
     "title": "Prévia do draft",
-    "description": "Só para admins. Compartilhe a tela com os capitães durante a escolha — os jogadores nunca abrem esta página. Os times continuam sendo salvos por um admin.",
+    "description": "Só para admins. Compartilhe a tela com os capitães durante a escolha — os jogadores nunca abrem esta página. Arraste um jogador para um time ou use o seletor de time no card.",
     "presentation": "Modo apresentação",
     "exitPresentation": "Sair da apresentação",
     "noDraft": "Não há evento em rascunho para mostrar.",
-    "captains": "Capitães",
     "noCaptain": "Ainda sem capitão",
-    "captainLine": "{{team}} · Σ EHB {{ehb}}",
     "region": "Região",
     "activity": "Atividade",
     "sortBy": "Ordenar por",
@@ -1367,7 +1367,6 @@
     "noPreference": "Sem preferência",
     "buyInPending": "Buy-in pendente",
     "sigma": "Σ = main + alts encontradas no Wise Old Man.",
-    "details": "Ver detalhes de {{name}}",
     "totalLevel": "Total",
     "combatLevel": "Combate",
     "modal": {
@@ -1384,7 +1383,23 @@
     "noSkillData_one": "{{count}} jogador ainda não tem dados de habilidades — precisa clicar em “Atualizar do WOM” em Meu perfil.",
     "noSkillData_other": "{{count}} jogadores ainda não têm dados de habilidades — precisam clicar em “Atualizar do WOM” em Meu perfil.",
     "skillLevel": "{{skill}} {{level}}",
-    "raidsKc": "Raids Σ"
+    "raidsKc": "Raids Σ",
+    "pick": {
+      "moveTo": "Time de {{name}}",
+      "choose": "Time…",
+      "noTeam": "Sem time",
+      "allDetails": "Todos os detalhes",
+      "available": "Jogadores disponíveis",
+      "rosters": "Times",
+      "rostersSummary_one": "{{count}} time",
+      "rostersSummary_other": "{{count}} times",
+      "totals_one": "{{count}} jogador · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "totals_other": "{{count}} jogadores · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "dropHere": "Solte um jogador aqui",
+      "empty": "Nenhum jogador ainda",
+      "noTeams": "Crie os times na página Times primeiro.",
+      "failed": "A escolha não foi salva: {{reason}}"
+    }
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1475,6 +1490,86 @@
       "search": "Buscar boss",
       "save": "Salvar ajustes",
       "saved": "Ajustes de boss KC salvos; totais atualizados."
+    }
+  },
+  "footer": {
+    "label": "Rodapé do site",
+    "links": "Clã e créditos",
+    "logoAlt": "Logo do clã AstralStar",
+    "credit": "OSRS Bingo · AstralStar",
+    "disclaimer": "Sem afiliação com a Jagex. Old School RuneScape é uma marca registrada da Jagex Ltd.",
+    "clanSite": "Site do AstralStar",
+    "clanDiscord": "Discord do clã",
+    "osrsWiki": "Imagens da OSRS Wiki",
+    "wiseOldMan": "Estatísticas do Wise Old Man"
+  },
+  "teamHome": {
+    "title": "Meu time",
+    "description": "A pontuação do seu time, quem está pontuando e os últimos drops.",
+    "login": "Entre para ver o seu time.",
+    "notStarted": "Seu time será mostrado quando o evento começar.",
+    "removed": "Sua inscrição foi removida deste evento.",
+    "noTeam": "Você ainda não tem um time. Veja sua inscrição em",
+    "leaderboard": "Ranking do time",
+    "leaderboardHint": "Pontos que cada membro fez para o time com os drops aceitos.",
+    "place": "Posição",
+    "drops": "Drops",
+    "points": "Pontos",
+    "recentDrops": "Drops recentes",
+    "dropLine": "{{player}} · {{card}} · {{when}}",
+    "dropPoints": "+{{points}} pts",
+    "noDrops": "Nenhum drop ainda.",
+    "sheet": "Lista do time ({{count}})",
+    "rsn": "RSN",
+    "discord": "Discord",
+    "timezone": "Fuso horário",
+    "activity": "Atividade"
+  },
+  "homePage": {
+    "eyebrow": "OSRS Bingo · AstralStar",
+    "welcome": "Bem-vindo ao OSRS Bingo",
+    "welcomeBack": "Bem-vindo de volta, {{name}}",
+    "tagline": "O bingo do clã AstralStar: pegue drops com seu time, complete o board e faça pontos.",
+    "event": {
+      "title": "Evento atual",
+      "endsIn": "Termina em {{time}}",
+      "openBoard": "Abrir board",
+      "none": "Nenhum evento acontecendo agora. Veja o que vem por aí em"
+    },
+    "team": {
+      "title": "Meu time",
+      "tiles": "Tiles feitos",
+      "myPlace": "Minha posição",
+      "myPoints": "Meus pontos",
+      "myDrops": "Meus drops",
+      "open": "Abrir Meu time"
+    },
+    "shortcuts": {
+      "title": "Próximos passos",
+      "pending_one": "{{count}} envio aguardando revisão",
+      "pending_other": "{{count}} envios aguardando revisão",
+      "rejected_one": "{{count}} envio recusado",
+      "rejected_other": "{{count}} envios recusados",
+      "submit": "Enviar um drop"
+    },
+    "how": {
+      "title": "Como funciona",
+      "profile": {
+        "title": "Monte seu perfil",
+        "text": "Entre com o Discord e vincule seu RSN e fuso horário em Meu perfil."
+      },
+      "join": {
+        "title": "Inscreva-se no evento",
+        "text": "Escolha a conta com que vai jogar e aceite as regras em Eventos."
+      },
+      "teams": {
+        "title": "Os times são escolhidos",
+        "text": "Os admins aprovam os jogadores e os capitães escolhem os times."
+      },
+      "drops": {
+        "title": "Pegue drops, faça pontos",
+        "text": "Envie os drops com print. Tiles, linhas e colunas completas dão pontos ao seu time."
+      }
     }
   }
 }

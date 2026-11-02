@@ -90,10 +90,12 @@ class DraftCaptain(BaseModel):
 
 
 class DraftPreviewResponse(BaseModel):
-    """Captains per team and approved players still without a team (feature 024)."""
+    """Captains per team and approved players still without a team (feature 024), plus the
+    approved players already on a team for the pinned rosters (feature 049)."""
 
     captains: list[DraftCaptain]
     players: list[RosterEntry]
+    members: list[RosterEntry] = Field(default_factory=list)
 
 
 class TeamBalanceResponse(BaseModel):

@@ -12,9 +12,13 @@ import type { BingoEvent } from '../../events/types'
 import { REGIONS } from '../../profiles/timezones'
 import { ACTIVITIES } from '../../profiles/types'
 import { useDraftPreview } from '../../teams/hooks/useTeams'
-import { CaptainStrip } from '../components/CaptainStrip'
 import { DraftPlayerCard } from '../components/DraftPlayerCard'
 import { DraftPlayerModal } from '../components/DraftPlayerModal'
+import { TeamPicker } from '../components/TeamPicker'
+import { TeamRosters } from '../components/TeamRosters'
+import { useDraftAssign } from '../hooks/useDraftAssign'
+import { acceptsPlayer, draggedPlayer, teamRosters } from '../rosters'
+import { teamErrorKey } from '../../teams/errors'
 import { MAX_SKILL_LEVEL, MIN_SKILL_LEVEL, SKILLS, type Skill } from '../../profiles/skills'
 import {
   DEFAULT_FILTER,
@@ -92,7 +96,7 @@ export function DraftPreviewPage() {
   ) : !event ? (
     <InfoBanner>{t('draft.noDraft')}</InfoBanner>
   ) : (
-    <DraftBoard key={event.id} eventId={event.id} large={presentation} />
+    <DraftBoard key={event.id} eventId={event.id} large={presentation} canDrag={isDesktop} />
   )
 
   const content = (
@@ -116,12 +120,25 @@ export function DraftPreviewPage() {
   return <AppShell desktopPadding="md:px-8 md:pt-6">{content}</AppShell>
 }
 
-function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
+function DraftBoard({
+  eventId,
+  large,
+  canDrag,
+}: {
+  eventId: string
+  large: boolean
+  /** Drag-and-drop on desktop only; the team dropdown works everywhere (049). */
+  canDrag: boolean
+}) {
   const { t } = useTranslation()
   const preview = useDraftPreview(eventId)
+  const assign = useDraftAssign(eventId)
   const [filter, setFilter] = useState<DraftFilter>(DEFAULT_FILTER)
   const [openId, setOpenId] = useState<string | null>(null)
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [overAvailable, setOverAvailable] = useState(false)
   const players = useMemo(() => preview.data?.players ?? [], [preview.data])
+  const rosters = useMemo(() => (preview.data ? teamRosters(preview.data) : []), [preview.data])
   const shown = useMemo(() => visiblePlayers(players, filter), [players, filter])
   const missingSkills = useMemo(() => withoutSkillData(players, filter), [players, filter])
   const skill = filter.skill === 'any' ? null : filter.skill
@@ -132,6 +149,14 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
   )
   // Read from the latest data so a refresh while it's open shows current values.
   const opened = players.find((player) => player.id === openId) ?? null
+  const pick = (playerId: string, teamId: string | null) => {
+    if (assign.isPending) return
+    const current = [...players, ...(preview.data?.members ?? [])].find(
+      (player) => player.id === playerId,
+    )
+    if (!current || current.team_id === teamId) return
+    assign.mutate({ playerId, teamId })
+  }
 
   if (preview.isLoading)
     return (
@@ -164,9 +189,27 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
     </label>
   )
 
-  return (
-    <>
-      <CaptainStrip captains={preview.data.captains} />
+  const teams = preview.data.captains
+  const available = (
+    <section
+      aria-label={t('draft.pick.available')}
+      onDragOver={(drag) => {
+        if (!canDrag || !acceptsPlayer(drag)) return
+        drag.preventDefault()
+        setOverAvailable(true)
+      }}
+      onDragLeave={() => setOverAvailable(false)}
+      onDrop={(drag) => {
+        setOverAvailable(false)
+        const playerId = draggedPlayer(drag)
+        if (!playerId) return
+        drag.preventDefault()
+        pick(playerId, null)
+      }}
+      className={`flex min-w-0 flex-col gap-3 rounded ${
+        overAvailable ? 'outline outline-2 outline-offset-4 outline-rs-gold-bright' : ''
+      }`}
+    >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         {select(
           t('draft.region'),
@@ -229,19 +272,78 @@ function DraftBoard({ eventId, large }: { eventId: string; large: boolean }) {
       {!players.length ? (
         <InfoBanner>{t('draft.everyoneAssigned')}</InfoBanner>
       ) : (
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid items-start gap-3 md:grid-cols-2 2xl:grid-cols-3">
           {shown.map((player) => (
             <DraftPlayerCard
               key={player.id}
               player={player}
               large={large}
               skill={skill}
+              expanded={expandedId === player.id}
+              onToggle={() => setExpandedId(expandedId === player.id ? null : player.id)}
               onOpen={() => setOpenId(player.id)}
+              draggable={canDrag && teams.length > 0}
+              picker={
+                <TeamPicker
+                  name={player.display_name}
+                  teamId={null}
+                  teams={teams}
+                  disabled={assign.isPending}
+                  onPick={(teamId) => pick(player.id, teamId)}
+                />
+              }
             />
           ))}
         </div>
       )}
       <p className="m-0 text-xs text-rs-muted">{t('draft.sigma')}</p>
+    </section>
+  )
+
+  return (
+    <>
+      {assign.isError && (
+        <p
+          role="alert"
+          className="m-0 rounded border border-rs-danger bg-rs-danger-bg px-3 py-2 text-sm"
+        >
+          {t('draft.pick.failed', { reason: t(teamErrorKey(assign.error)) })}
+        </p>
+      )}
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,340px)] lg:items-start">
+        <aside
+          aria-label={t('draft.pick.rosters')}
+          className={`lg:sticky lg:order-2 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto ${
+            large ? 'lg:top-4' : 'lg:top-20'
+          }`}
+        >
+          {canDrag ? (
+            <TeamRosters
+              rosters={rosters}
+              teams={teams}
+              canDrag={canDrag}
+              busy={assign.isPending}
+              onPick={pick}
+            />
+          ) : (
+            <details className="rounded border border-rs-border/70 bg-rs-inset" open>
+              <summary className="cursor-pointer px-3 py-2.5 font-semibold text-rs-gold-bright">
+                {t('draft.pick.rostersSummary', { count: rosters.length })}
+              </summary>
+              <div className="p-3 pt-0">
+                <TeamRosters
+                  rosters={rosters}
+                  teams={teams}
+                  canDrag={false}
+                  busy={assign.isPending}
+                  onPick={pick}
+                />
+              </div>
+            </details>
+          )}
+        </aside>
+        {available}
+      </div>
       {opened && <DraftPlayerModal player={opened} onClose={() => setOpenId(null)} />}
     </>
   )

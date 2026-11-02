@@ -169,3 +169,105 @@ async def test_live_card_fixes_rescore_accepted_drops_with_the_new_weights(
     ranking = await deps["service"].ranking(str(EVENT_ID))
     zamorak = next(team for team in ranking.teams if team.team_name == "Zamorak")
     assert zamorak.total == 0  # its two "unique" drops on tile 1 no longer count
+
+
+# --- Team home (feature 050) ---
+
+ACCEPTED_AT = datetime(2026, 11, 1, 12, tzinfo=UTC)
+
+
+def roster_row(key: ObjectId, name: str, role: str | None = None) -> dict[str, Any]:
+    now = datetime.now(UTC)
+    return {
+        "_id": key,
+        "event_id": EVENT_ID,
+        "user_id": ObjectId(),
+        "display_name": name,
+        "status": "approved",
+        "team_id": SA,
+        "role": role,
+        "discord_username": name.lower(),
+        "timezone": "Europe/London",
+        "activity": "one_to_three_h",
+        "created_at": now,
+        "updated_at": now,
+    }
+
+
+def recent(player: ObjectId, position: int, weight: float, reviewed: datetime) -> dict[str, Any]:
+    return {
+        "_id": ObjectId(),
+        "player_id": player,
+        "position": position,
+        "card_name": f"Card {position}",
+        "drop_key": "rare" if weight == 2 else "unique",
+        "drop_name": "Rare" if weight == 2 else "Unique",
+        "quantity": 1,
+        "reviewed_at": reviewed,
+        "submitted_at": reviewed,
+    }
+
+
+@pytest.fixture
+def team_home(deps: dict[str, Any]) -> dict[str, Any]:
+    sam = ObjectId()
+    deps["players"].page.return_value = (
+        [roster_row(HAL, "Holy Hal", "captain"), roster_row(sam, "Sam"), roster_row(PETE, "Pete")],
+        3,
+    )
+    submissions = deps["service"]._submissions
+    # Hal: 3 rare drops on tiles 1-3 (10 points each). Pete moved to Saradomin later: his
+    # two Zamorak drops don't count here. Sam: nothing.
+    submissions.recent_accepted_drops.return_value = [
+        recent(HAL, 3, 2, ACCEPTED_AT),
+        recent(GONE, 5, 1, ACCEPTED_AT),
+    ]
+    return {**deps, "sam": sam}
+
+
+async def test_team_home_ranks_only_own_team_members_by_points(team_home: dict[str, Any]) -> None:
+    result = await team_home["service"].own_team_home(str(EVENT_ID), USER)
+
+    assert (result.team_name, result.team_color) == ("Saradomin", "#2F5592")
+    rows = [(m.display_name, m.position, m.tied, m.points, m.drop_count) for m in result.members]
+    # Hal 30 points; Pete's Zamorak drops stay with Zamorak, so he ties with Sam on 0.
+    assert rows == [("Holy Hal", 1, False, 30, 3), ("Pete", 2, True, 0, 0), ("Sam", 2, True, 0, 0)]
+    assert result.members[0].role == "captain"
+    assert result.members[0].timezone == "Europe/London"
+    page = team_home["players"].page.await_args
+    assert page.kwargs["team_id"] == str(SA)
+    assert page.kwargs["status"] == "approved"
+
+
+async def test_team_home_recent_drops_show_player_and_points(team_home: dict[str, Any]) -> None:
+    result = await team_home["service"].own_team_home(str(EVENT_ID), USER)
+
+    first, second = result.recent_drops
+    assert (first.player_name, first.card_name, first.drop_name, first.points) == (
+        "Holy Hal",
+        "Card 3",
+        "Rare",
+        10,
+    )
+    assert first.accepted_at == ACCEPTED_AT
+    # A player no longer on the team is still named.
+    assert (second.player_name, second.points) == ("Gone Gary", 5)
+    call = team_home["service"]._submissions.recent_accepted_drops.await_args
+    assert call.args[1] == SA and call.args[2] == 10
+
+
+async def test_team_home_waits_for_the_event_to_start(team_home: dict[str, Any]) -> None:
+    team_home["events"].get.return_value = {
+        **team_home["events"].get.return_value,
+        "status": "draft",
+    }
+    with pytest.raises(AppException, match="once the event is active") as error:
+        await team_home["service"].own_team_home(str(EVENT_ID), USER)
+    assert error.value.status_code == 404
+
+
+async def test_team_home_needs_a_team(team_home: dict[str, Any]) -> None:
+    team_home["players"].get_for_user.return_value = player(HAL, None, "Holy Hal")
+    with pytest.raises(AppException) as error:
+        await team_home["service"].own_team_home(str(EVENT_ID), USER)
+    assert error.value.status_code == 403

@@ -54,10 +54,12 @@ describe('App shell v2', () => {
 
     const sidebar = screen.getByRole('navigation', { name: 'Primary navigation' })
     await waitFor(() => expect(within(sidebar).getByText('Play')).toBeInTheDocument())
-    expect(within(sidebar).getByRole('link', { name: 'Board' })).toHaveAttribute(
+    // "/" is Home (052); the board lives on /board.
+    expect(within(sidebar).getByRole('link', { name: 'Home' })).toHaveAttribute(
       'aria-current',
       'page',
     )
+    expect(within(sidebar).getByRole('link', { name: 'Board' })).toHaveAttribute('href', '/board')
     expect(within(sidebar).getByRole('link', { name: 'Events' })).toHaveAttribute('href', '/events')
     expect(within(sidebar).getByRole('link', { name: 'My profile' })).toHaveAttribute(
       'href',
@@ -77,6 +79,22 @@ describe('App shell v2', () => {
     expect(within(bottomBar).getByRole('link', { name: 'My submissions' })).toHaveAttribute(
       'href',
       '/submissions',
+    )
+  })
+
+  it('ends every page with the AstralStar footer and external links (051)', async () => {
+    renderApp(<AppShell>Board content</AppShell>)
+
+    const footer = screen.getByRole('contentinfo', { name: 'Site footer' })
+    expect(within(footer).getByRole('img', { name: 'AstralStar clan logo' })).toBeInTheDocument()
+    expect(within(footer).getByText(/Not affiliated with Jagex/)).toBeInTheDocument()
+    const discord = within(footer).getByRole('link', { name: 'Clan Discord' })
+    expect(discord).toHaveAttribute('href', 'https://discord.gg/kBabY3QW6h')
+    expect(discord).toHaveAttribute('target', '_blank')
+    expect(discord).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(within(footer).getByRole('link', { name: 'AstralStar website' })).toHaveAttribute(
+      'href',
+      'https://astralstar.cc/',
     )
   })
 

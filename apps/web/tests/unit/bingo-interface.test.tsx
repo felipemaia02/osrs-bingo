@@ -8,7 +8,7 @@ import type { BoardCardSnapshot, EventBoard } from '../../src/features/boards/ty
 import { boardToTiles, isFiltering, matchTile } from '../../src/features/bingo/boardTiles'
 import { initialsOf as tileInitials } from '../../src/lib/text/initials'
 import { shortNameOf } from '../../src/lib/text/shortName'
-import { HomePage } from '../../src/features/bingo/pages/HomePage'
+import { BoardPage } from '../../src/features/bingo/pages/BoardPage'
 import type { AcceptedDrop } from '../../src/features/cards/types'
 import { fetchEvents, fetchMyEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
@@ -117,7 +117,7 @@ const SEARCH = 'Where does my drop count?'
 
 /** Opens the board; players outside the event first see "My events" and browse it (026). */
 async function renderBoard() {
-  const rendered = renderApp(<HomePage />)
+  const rendered = renderApp(<BoardPage />, '/board')
   const browse = await waitFor(
     () =>
       screen.queryByRole('button', { name: 'Browse board' }) ??
@@ -168,7 +168,7 @@ describe('first screen (feature 026)', () => {
     const draft = { ...EVENT, id: 'winter', name: 'Winter Bingo', status: 'draft' as const }
     vi.mocked(fetchMyEvents).mockResolvedValue([draft])
     vi.mocked(fetchOwnRegistration).mockResolvedValue(null)
-    renderApp(<HomePage />)
+    renderApp(<BoardPage />, '/board')
 
     expect(await screen.findByRole('heading', { name: 'My events', level: 1 })).toBeInTheDocument()
     expect(await screen.findByText('Winter Bingo')).toBeInTheDocument()
@@ -187,7 +187,7 @@ describe('first screen (feature 026)', () => {
       display_name: 'Zezima',
       status: 'pending',
     })
-    renderApp(<HomePage />)
+    renderApp(<BoardPage />, '/board')
 
     expect(await screen.findByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: 'My events' })).toBeNull()
@@ -535,7 +535,7 @@ describe('Board v2', () => {
 
   it('keeps the unavailable-board state', async () => {
     vi.mocked(fetchPublicBoard).mockResolvedValue(null)
-    renderApp(<HomePage />)
+    renderApp(<BoardPage />, '/board')
     fireEvent.click(await screen.findByRole('button', { name: 'Browse board' }))
     expect(
       await screen.findByText('The active event board is not available yet.'),

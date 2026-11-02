@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
+from fractions import Fraction
 from typing import Any
 
 from bson import ObjectId
@@ -14,6 +15,7 @@ from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.models import PlayerDocument
 from app.modules.players.repository import PlayerRepository
+from app.modules.players.roster import to_roster_entry
 from app.modules.players.schemas import RegistrationStatus
 from app.modules.scoring.engine import (
     AcceptedDrop,
@@ -23,6 +25,7 @@ from app.modules.scoring.engine import (
     competition_positions,
     contributions,
     decimal,
+    drop_points,
     score_team,
 )
 from app.modules.scoring.schemas import (
@@ -30,6 +33,9 @@ from app.modules.scoring.schemas import (
     PlayerContribution,
     RankingResponse,
     RankingTeam,
+    TeamDrop,
+    TeamHomeResponse,
+    TeamMember,
     TeamScoreResponse,
     TileProgressResponse,
 )
@@ -40,6 +46,10 @@ from app.modules.teams.repository import TeamRepository
 CONTRIBUTION_DECIMALS = 4
 SCORE_NOT_AVAILABLE = "Team scores are available once the event is active"
 NOT_ON_A_TEAM = "Only approved players with a team have a team score"
+TEAM_PAGE_NOT_AVAILABLE = "Team pages are available once the event is active"
+NOT_ON_A_TEAM_PAGE = "Only approved players with a team have a team page"
+RECENT_DROPS_LIMIT = 10
+TEAM_MEMBERS_LIMIT = 500
 VISIBLE_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
 
 
@@ -50,6 +60,8 @@ class ScoringInputs:
     size: int
     drops: list[AcceptedDrop]
     bonuses: LineBonuses
+    # (position, drop key) -> weight of the card now on that square (036).
+    weights: dict[tuple[int, str], Decimal]
 
     @property
     def grid_count(self) -> int:
@@ -77,15 +89,110 @@ class ScoringService:
         inputs = await self._inputs(event_id)
         if inputs.event["status"] not in VISIBLE_STATUSES:
             raise AppException(404, SCORE_NOT_AVAILABLE)
+        team = await self._own_team(event_id, user, NOT_ON_A_TEAM)
+        score = score_team(
+            str(team["_id"]), inputs.tiles, inputs.size, inputs.drops, inputs.bonuses
+        )
+        return self._team_response(inputs, team, score)
+
+    async def own_team_home(self, event_id: str, user: CurrentUser) -> TeamHomeResponse:
+        """The viewer's own team: members ranked by their points in it and the newest
+        accepted drops (feature 050). The team always comes from the caller's registration."""
+        inputs = await self._inputs(event_id)
+        if inputs.event["status"] not in VISIBLE_STATUSES:
+            raise AppException(404, TEAM_PAGE_NOT_AVAILABLE)
+        team = await self._own_team(event_id, user, NOT_ON_A_TEAM_PAGE)
+        team_key = str(team["_id"])
+        # Only drops this team earned: a player who moved keeps them with the old team (EC-002).
+        team_drops = [drop for drop in inputs.drops if drop.team_id == team_key]
+        points = contributions(inputs.tiles, team_drops)
+        drop_counts: dict[str, int] = {}
+        for drop in team_drops:
+            drop_counts[drop.player_id] = drop_counts.get(drop.player_id, 0) + 1
+        documents, _ = await self._players.page(
+            event_id,
+            status=RegistrationStatus.APPROVED,
+            assigned=None,
+            search="",
+            team_id=team_key,
+            offset=0,
+            limit=TEAM_MEMBERS_LIMIT,
+        )
+        roster = [to_roster_entry(document) for document in documents]
+        positions = competition_positions(
+            [(entry.id, points.get(entry.id, Fraction(0))) for entry in roster]
+        )
+        members = sorted(
+            (
+                TeamMember(
+                    player_id=entry.id,
+                    display_name=entry.display_name,
+                    discord_username=entry.discord_username,
+                    role=entry.role,
+                    timezone=entry.timezone,
+                    activity=entry.activity,
+                    position=positions[entry.id][0],
+                    tied=positions[entry.id][1],
+                    points=round(float(points.get(entry.id, 0)), CONTRIBUTION_DECIMALS),
+                    drop_count=drop_counts.get(entry.id, 0),
+                )
+                for entry in roster
+            ),
+            key=lambda member: (member.position, member.display_name.casefold()),
+        )
+        names = {member.player_id: member.display_name for member in members}
+        return TeamHomeResponse(
+            event_id=event_id,
+            team_id=team_key,
+            team_name=team["name"],
+            team_color=team.get("color"),
+            emblem_url=team.get("emblem_url"),
+            members=members,
+            recent_drops=await self._recent_drops(inputs, team["_id"], names),
+        )
+
+    async def _own_team(self, event_id: str, user: CurrentUser, refusal: str) -> TeamDocument:
         player = await self._players.get_for_user(event_id, user.id)
         team_id = player.get("team_id") if player else None
         if player is None or player.get("status") != RegistrationStatus.APPROVED or not team_id:
-            raise AppException(403, NOT_ON_A_TEAM)
+            raise AppException(403, refusal)
         team = await self._teams.get(event_id, str(team_id))
         if team is None:
-            raise AppException(403, NOT_ON_A_TEAM)
-        score = score_team(str(team_id), inputs.tiles, inputs.size, inputs.drops, inputs.bonuses)
-        return self._team_response(inputs, team, score)
+            raise AppException(403, refusal)
+        return team
+
+    async def _recent_drops(
+        self, inputs: ScoringInputs, team_id: ObjectId, names: dict[str, str]
+    ) -> list[TeamDrop]:
+        documents = await self._submissions.recent_accepted_drops(
+            inputs.event["_id"], team_id, RECENT_DROPS_LIMIT
+        )
+        # Drops by players no longer on the team still show who got them.
+        missing = [doc["player_id"] for doc in documents if str(doc["player_id"]) not in names]
+        if missing:
+            extra = await self._players.get_many(missing)
+            names = {**names, **{str(key): value["display_name"] for key, value in extra.items()}}
+        tiles = {tile.position: tile for tile in inputs.tiles}
+        rows = []
+        for document in documents:
+            weight = inputs.weights.get((document["position"], document.get("drop_key") or ""))
+            gained = (
+                drop_points(tiles.get(document["position"]), weight, document["quantity"])
+                if weight is not None
+                else Fraction(0)
+            )
+            rows.append(
+                TeamDrop(
+                    submission_id=str(document["_id"]),
+                    player_name=names.get(str(document["player_id"]), "—"),
+                    card_name=document["card_name"],
+                    drop_name=document.get("drop_name"),
+                    quantity=document["quantity"],
+                    points=round(float(gained), CONTRIBUTION_DECIMALS),
+                    accepted_at=document.get("reviewed_at") or document["submitted_at"],
+                )
+            )
+        return rows
 
     async def tile_progress(
         self, event_id: str, team_id: str, position: int
@@ -211,6 +318,7 @@ class ScoringService:
             tiles=tiles,
             size=int(board.get("size", DEFAULT_BOARD_SIZE)) if board else DEFAULT_BOARD_SIZE,
             drops=drops,
+            weights=weights,
             bonuses=LineBonuses(
                 row=board.get("row_bonus") if board else None,
                 column=board.get("column_bonus") if board else None,

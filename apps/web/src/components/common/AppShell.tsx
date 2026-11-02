@@ -13,6 +13,7 @@ import { ProfileSetupNotice } from '../../features/profiles/components/ProfileSe
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined'
 import { MobileBottomBar } from './shell/MobileBottomBar'
 import { ShellSidebar } from './shell/ShellSidebar'
+import { SiteFooter } from './shell/SiteFooter'
 import { Wordmark } from './shell/Wordmark'
 
 interface AppShellProps {
@@ -34,7 +35,7 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
   const pendingReviews = usePendingReviews(isAdmin)
 
   return (
-    <div className="min-h-screen bg-rs-canvas text-rs-text">
+    <div className="flex min-h-screen flex-col bg-rs-canvas text-rs-text">
       <header className="sticky top-0 z-30 border-b border-rs-border bg-rs-inset">
         <div className="hidden h-16 items-center gap-4 px-6 md:flex">
           <Wordmark />
@@ -56,7 +57,8 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
         <ActiveEventStatus variant="bar" />
       </div>
 
-      <div className="md:flex">
+      {/* Grows to the bottom of the screen so the footer sits there on short pages (051). */}
+      <div className="flex flex-1 flex-col md:flex-row">
         <ShellSidebar
           isAdmin={isAdmin}
           pendingRegistrations={registrations?.pending ?? null}
@@ -64,31 +66,34 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
         />
         <main
           aria-label={t('shell.main')}
-          className={`min-w-0 flex-1 px-4 pb-[90px] pt-4 md:pb-8 ${desktopPadding}`}
+          className={`flex min-w-0 flex-1 flex-col px-4 pb-[90px] pt-4 md:pb-8 ${desktopPadding}`}
         >
-          {/* Nothing works without the server: say so once instead of every section failing. */}
-          {session.isError && isNetworkError(session.error) ? (
-            <OfflineScreen onRetry={() => void session.refetch()} />
-          ) : maintenance && !isAdmin ? (
-            <MaintenanceScreen
-              message={siteStatus.data?.message ?? null}
-              onRetry={() => void siteStatus.refetch()}
-            />
-          ) : (
-            <>
-              {maintenance && (
-                <p
-                  role="status"
-                  className="mb-4 flex items-center gap-2 rounded border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-sm text-rs-gold-bright"
-                >
-                  <ConstructionOutlinedIcon fontSize="small" aria-hidden="true" />
-                  {t('status.maintenance.adminBanner')}
-                </p>
-              )}
-              <ProfileSetupNotice />
-              {children}
-            </>
-          )}
+          <div className="flex-1">
+            {/* Nothing works without the server: say so once instead of every section failing. */}
+            {session.isError && isNetworkError(session.error) ? (
+              <OfflineScreen onRetry={() => void session.refetch()} />
+            ) : maintenance && !isAdmin ? (
+              <MaintenanceScreen
+                message={siteStatus.data?.message ?? null}
+                onRetry={() => void siteStatus.refetch()}
+              />
+            ) : (
+              <>
+                {maintenance && (
+                  <p
+                    role="status"
+                    className="mb-4 flex items-center gap-2 rounded border border-rs-border-strong bg-rs-warning-bg px-3 py-2 text-sm text-rs-gold-bright"
+                  >
+                    <ConstructionOutlinedIcon fontSize="small" aria-hidden="true" />
+                    {t('status.maintenance.adminBanner')}
+                  </p>
+                )}
+                <ProfileSetupNotice />
+                {children}
+              </>
+            )}
+          </div>
+          <SiteFooter />
         </main>
       </div>
 

@@ -152,4 +152,6 @@ export interface DraftCaptain {
 export interface DraftPreview {
   captains: DraftCaptain[]
   players: Player[]
+  /** Approved players already on a team, for the pinned rosters (feature 049). */
+  members: Player[]
 }

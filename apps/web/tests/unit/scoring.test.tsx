@@ -5,7 +5,7 @@ import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
 import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
 import type { BoardCardSnapshot, EventBoard } from '../../src/features/boards/types'
-import { HomePage } from '../../src/features/bingo/pages/HomePage'
+import { BoardPage } from '../../src/features/bingo/pages/BoardPage'
 import {
   activateEvent,
   fetchEvents,
@@ -165,7 +165,7 @@ describe('team progress on the board', () => {
   it('shows the own team score and per-tile progress', async () => {
     vi.mocked(fetchOwnTeamScore).mockResolvedValue(SCORE)
     const user = userEvent.setup()
-    renderApp(<HomePage />, '/')
+    renderApp(<BoardPage />, '/board')
 
     const panel = await screen.findByRole('region', { name: "Your team's score" })
     // Team name and the number only; the header leaves the team to this panel (045).
@@ -191,7 +191,7 @@ describe('team progress on the board', () => {
   })
 
   it('keeps the notice for players without a team', async () => {
-    renderApp(<HomePage />, '/')
+    renderApp(<BoardPage />, '/board')
 
     expect((await screen.findAllByText(/Progress unavailable/)).length).toBeGreaterThan(0)
     expect(screen.queryByRole('region', { name: "Your team's score" })).toBeNull()
@@ -201,7 +201,7 @@ describe('team progress on the board', () => {
 describe('board help', () => {
   it('explains this board line bonuses and shows the written rules', async () => {
     const user = userEvent.setup()
-    renderApp(<HomePage />, '/')
+    renderApp(<BoardPage />, '/board')
 
     await user.click(await screen.findByRole('button', { name: 'How tiles are completed' }))
     const dialog = screen.getByRole('dialog', { name: 'How tiles are completed' })
@@ -229,7 +229,7 @@ describe('bonus row on the board', () => {
       completed_bonus: 1,
       bonus_count: 1,
     })
-    renderApp(<HomePage />, '/')
+    renderApp(<BoardPage />, '/board')
 
     const bonusRow = await screen.findByRole('group', { name: 'Bonus cards' })
     expect(

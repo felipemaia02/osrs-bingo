@@ -158,6 +158,12 @@ class IndexManager:
             [("event_id", 1), ("player_id", 1), ("position", 1)],
             {"name": "submissions_player_tile"},
         ),
+        # Team page (feature 050): a team's newest accepted drops.
+        (
+            "submissions",
+            [("event_id", 1), ("team_id", 1), ("status", 1), ("reviewed_at", -1)],
+            {"name": "submissions_team_recent"},
+        ),
         (
             "submissions",
             [("event_id", 1), ("screenshot_sha256", 1)],

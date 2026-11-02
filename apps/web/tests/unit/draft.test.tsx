@@ -1,10 +1,10 @@
-import { act, screen, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import i18n from '../../src/lib/i18n'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
 import { DraftPreviewPage } from '../../src/features/draft/pages/DraftPreviewPage'
-import { fetchDraftPreview } from '../../src/features/teams/api/teamsApi'
+import { fetchDraftPreview, updatePlayer } from '../../src/features/teams/api/teamsApi'
 import type { Player } from '../../src/features/teams/types'
 import { renderApp } from '../render'
 
@@ -87,6 +87,13 @@ const ALT = {
 }
 const HAL = { ...MAIN, id: 'acc-hal', rsn: 'Holy Hal', skills: { slayer: 93 } }
 
+const CAPTAIN = player('felps_', {
+  team_id: 't1',
+  role: 'captain',
+  ehb_total: 1229.1,
+  boss_kc_total: 20000,
+})
+
 const PLAYERS = [
   player('Ironman Iris', {
     account: MAIN,
@@ -117,32 +124,45 @@ const PLAYERS = [
   player('Old Nick', { account_id: null, buy_in_status: null, alt_count: null }),
 ]
 
+const TEAMS = [
+  {
+    team_id: 't1',
+    team_name: 'Saradomin',
+    color: '#2F5592',
+    captain: 'felps_',
+    captain_ehb: 1229.1,
+  },
+  { team_id: 't2', team_name: 'Guthix', color: null, captain: null, captain_ehb: null },
+]
+
 beforeEach(async () => {
   vi.clearAllMocks()
   vi.unstubAllGlobals()
   await i18n.changeLanguage('en')
   vi.mocked(fetchEvents).mockResolvedValue([DRAFT])
   vi.mocked(fetchDraftPreview).mockResolvedValue({
-    captains: [
-      {
-        team_id: 't1',
-        team_name: 'Saradomin',
-        color: '#2F5592',
-        captain: 'felps_',
-        captain_ehb: 1229.1,
-      },
-      { team_id: 't2', team_name: 'Guthix', color: null, captain: null, captain_ehb: null },
-    ],
+    captains: TEAMS,
     players: PLAYERS,
+    members: [CAPTAIN],
   })
 })
+
+async function expand(name: string) {
+  const card = await screen.findByRole('article', { name })
+  await userEvent.click(within(card).getByRole('button', { name }))
+  return card
+}
 
 describe('Draft preview', () => {
   it('shows total and combat levels on the card and every account in the details', async () => {
     const user = userEvent.setup()
     renderApp(<DraftPreviewPage />, '/admin/draft')
 
-    const iris = await screen.findByRole('article', { name: 'Ironman Iris' })
+    const iris = await expand('Ironman Iris')
+    expect(within(iris).getByRole('button', { name: 'Ironman Iris' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
     expect(within(iris).getByText('2,277')).toBeInTheDocument()
     expect(within(iris).getByText('126')).toBeInTheDocument()
     const skills = within(iris).getByLabelText('Combat levels')
@@ -153,7 +173,7 @@ describe('Draft preview', () => {
     expect(iris).toHaveTextContent('Key quests 2/3')
     expect(iris).not.toHaveTextContent('diaries')
 
-    await user.click(within(iris).getByRole('button', { name: 'Show details of Ironman Iris' }))
+    await user.click(within(iris).getByRole('button', { name: 'All details' }))
     const dialog = screen.getByRole('dialog', { name: 'Ironman Iris' })
     expect(within(dialog).getByText('iris.btw')).toBeInTheDocument()
     expect(within(dialog).getByText('Druid Duda')).toBeInTheDocument()
@@ -172,21 +192,30 @@ describe('Draft preview', () => {
     expect(within(alt).queryByText('Plays the bingo')).toBeNull()
   })
 
-  it('shows captains and the players still without a team', async () => {
+  it('shows compact cards that expand, and the team rosters with captains', async () => {
     renderApp(<DraftPreviewPage />, '/admin/draft')
 
     expect(
       await screen.findByText('Administration · Winter Bingo 2026 · Draft'),
     ).toBeInTheDocument()
-    const captains = await screen.findByRole('list', { name: 'Captains' })
-    expect(within(captains).getByText('felps_')).toBeInTheDocument()
-    expect(within(captains).getByText('Saradomin · EHB Σ 1,229.1')).toBeInTheDocument()
-    expect(within(captains).getByText('No captain yet')).toBeInTheDocument()
+    const rosters = await screen.findByRole('complementary', { name: 'Team rosters' })
+    const sara = within(rosters).getByRole('listitem', { name: 'Saradomin' })
+    expect(within(sara).getByText('felps_')).toBeInTheDocument()
+    expect(within(sara).getByText('Captain')).toBeInTheDocument()
+    expect(sara).toHaveTextContent('1 player · EHB Σ 1,229.1 · Boss KC Σ 20,000')
+    // Captains are moved on the Teams page (BR-003).
+    expect(within(sara).queryByRole('combobox')).toBeNull()
+    expect(within(rosters).getByRole('listitem', { name: 'Guthix' })).toHaveTextContent(
+      'No captain yet',
+    )
 
     const iris = screen.getByRole('article', { name: 'Ironman Iris' })
     expect(within(iris).getByText('Paid')).toBeInTheDocument()
     expect(within(iris).getByText('845.2')).toBeInTheDocument()
     expect(within(iris).getByText('17,950')).toBeInTheDocument()
+    // Compact: no time zone or wishes until expanded (FR-001).
+    expect(within(iris).queryByText(/New York \(UTC/)).toBeNull()
+    await expand('Ironman Iris')
     expect(within(iris).getByText(/New York \(UTC/)).toBeInTheDocument()
     expect(within(iris).getByText('1 alt')).toBeInTheDocument()
     expect(within(iris).getByText('Druid Duda')).toBeInTheDocument()
@@ -196,13 +225,118 @@ describe('Draft preview', () => {
     expect(
       within(screen.getByRole('article', { name: 'Varrock Vic' })).getByText('Buy-in pending'),
     ).toBeInTheDocument()
-    expect(
-      within(screen.getByRole('article', { name: 'Old Nick' })).getAllByText('—'),
-    ).toHaveLength(4) // EHB, boss KC, raids KC (039) and time zone
+    // Only one card open at a time.
+    const nick = await expand('Old Nick')
+    expect(within(iris).queryByText('1 alt')).toBeNull()
+    expect(within(nick).getAllByText('—')).toHaveLength(6) // EHB, KC twice, raids, zone
     expect(screen.getByText('4 players available · captains not listed')).toBeInTheDocument()
 
     const names = screen.getAllByRole('article').map((card) => card.getAttribute('aria-label'))
     expect(names).toEqual(['Ironman Iris', 'Holy Hal', 'Varrock Vic', 'Old Nick'])
+  })
+
+  it('assigns a player with the team dropdown and moves them into the roster', async () => {
+    const user = userEvent.setup()
+    const vic2 = player('Varrock Vic', { team_id: 't2', ehb_total: 402 })
+    vi.mocked(updatePlayer).mockImplementation(async () => {
+      // The server now has Vic on Guthix: the refresh after the save reads that.
+      vi.mocked(fetchDraftPreview).mockResolvedValue({
+        captains: TEAMS,
+        players: PLAYERS.filter((item) => item.id !== vic2.id),
+        members: [CAPTAIN, vic2],
+      })
+      return vic2
+    })
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    const vic = await screen.findByRole('article', { name: 'Varrock Vic' })
+    await user.selectOptions(within(vic).getByLabelText('Team for Varrock Vic'), 't2')
+
+    expect(updatePlayer).toHaveBeenCalledWith({
+      eventId: DRAFT.id,
+      playerId: 'Varrock Vic',
+      payload: { team_id: 't2' },
+    })
+    await waitFor(() => expect(screen.queryByRole('article', { name: 'Varrock Vic' })).toBeNull())
+    const guthix = screen.getByRole('listitem', { name: 'Guthix' })
+    expect(within(guthix).getByText('Varrock Vic')).toBeInTheDocument()
+    expect(guthix).toHaveTextContent('1 player · EHB Σ 402')
+    expect(screen.getByText('3 players available · captains not listed')).toBeInTheDocument()
+  })
+
+  it('assigns a player dropped on a team (desktop drag-and-drop)', async () => {
+    vi.mocked(updatePlayer).mockResolvedValue(player('Holy Hal', { team_id: 't1' }))
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    const hal = await screen.findByRole('article', { name: 'Holy Hal' })
+    expect(hal).toHaveAttribute('draggable', 'true')
+    const data = new Map<string, string>()
+    const dataTransfer = {
+      get types() {
+        return [...data.keys()]
+      },
+      setData: (type: string, value: string) => data.set(type, value),
+      getData: (type: string) => data.get(type) ?? '',
+    }
+    fireEvent.dragStart(hal, { dataTransfer })
+    const sara = screen.getByRole('listitem', { name: 'Saradomin' })
+    fireEvent.dragOver(sara, { dataTransfer })
+    fireEvent.drop(sara, { dataTransfer })
+
+    await waitFor(() =>
+      expect(updatePlayer).toHaveBeenCalledWith({
+        eventId: DRAFT.id,
+        playerId: 'Holy Hal',
+        payload: { team_id: 't1' },
+      }),
+    )
+  })
+
+  it('takes a member back to the available list with "No team"', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetchDraftPreview).mockResolvedValue({
+      captains: [
+        { team_id: 't2', team_name: 'Guthix', color: null, captain: null, captain_ehb: null },
+      ],
+      players: [],
+      members: [player('Varrock Vic', { team_id: 't2' })],
+    })
+    vi.mocked(updatePlayer).mockImplementation(async () => {
+      vi.mocked(fetchDraftPreview).mockResolvedValue({
+        captains: [
+          { team_id: 't2', team_name: 'Guthix', color: null, captain: null, captain_ehb: null },
+        ],
+        players: [player('Varrock Vic', {})],
+        members: [],
+      })
+      return player('Varrock Vic', {})
+    })
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    const guthix = await screen.findByRole('listitem', { name: 'Guthix' })
+    await user.selectOptions(within(guthix).getByLabelText('Team for Varrock Vic'), '')
+
+    expect(updatePlayer).toHaveBeenCalledWith({
+      eventId: DRAFT.id,
+      playerId: 'Varrock Vic',
+      payload: { team_id: null },
+    })
+    expect(await screen.findByRole('article', { name: 'Varrock Vic' })).toBeInTheDocument()
+  })
+
+  it('puts the player back and explains when the pick fails', async () => {
+    const user = userEvent.setup()
+    vi.mocked(updatePlayer).mockRejectedValue(new Error('offline'))
+    renderApp(<DraftPreviewPage />, '/admin/draft')
+
+    const vic = await screen.findByRole('article', { name: 'Varrock Vic' })
+    await user.selectOptions(within(vic).getByLabelText('Team for Varrock Vic'), 't1')
+
+    expect(await screen.findByRole('alert')).toHaveTextContent("The pick wasn't saved")
+    expect(screen.getByRole('article', { name: 'Varrock Vic' })).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('listitem', { name: 'Saradomin' })).queryByText('Varrock Vic'),
+    ).toBeNull()
   })
 
   it('filters by region and activity and sorts by boss KC', async () => {
@@ -268,7 +402,7 @@ describe('Draft preview', () => {
   })
 
   it('explains when there is no draft or everyone has a team', async () => {
-    vi.mocked(fetchDraftPreview).mockResolvedValue({ captains: [], players: [] })
+    vi.mocked(fetchDraftPreview).mockResolvedValue({ captains: [], players: [], members: [] })
     const { unmount } = renderApp(<DraftPreviewPage />, '/admin/draft')
     expect(await screen.findByText('Every approved player has a team.')).toBeInTheDocument()
     unmount()

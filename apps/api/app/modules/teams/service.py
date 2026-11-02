@@ -1,8 +1,11 @@
+from collections.abc import Sequence
+
 from app.core.config import Settings
 from app.core.exceptions import ConflictError, DomainValidationError, NotFoundError
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
+from app.modules.players.models import RosterDocument
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.roster import for_event, to_roster_entry
 from app.modules.players.schemas import RegistrationStatus
@@ -95,15 +98,8 @@ class TeamService:
         event = await self._require_event(event_id)
         teams = await self._teams.list(event_id)
         captains = {row["team_id"]: row for row in await self._players.captains(event_id)}
-        players, _ = await self._players.page(
-            event_id,
-            status=RegistrationStatus.APPROVED,
-            assigned=False,
-            search="",
-            team_id=None,
-            offset=0,
-            limit=DRAFT_PREVIEW_LIMIT,
-        )
+        players = await self._approved(event_id, assigned=False)
+        members = await self._approved(event_id, assigned=True)
         return DraftPreviewResponse(
             captains=[
                 DraftCaptain(
@@ -118,7 +114,20 @@ class TeamService:
                 for captain in [captains.get(team["_id"])]
             ],
             players=[for_event(to_roster_entry(player), event) for player in players],
+            members=[for_event(to_roster_entry(member), event) for member in members],
         )
+
+    async def _approved(self, event_id: str, *, assigned: bool) -> Sequence[RosterDocument]:
+        documents, _ = await self._players.page(
+            event_id,
+            status=RegistrationStatus.APPROVED,
+            assigned=assigned,
+            search="",
+            team_id=None,
+            offset=0,
+            limit=DRAFT_PREVIEW_LIMIT,
+        )
+        return documents
 
     async def update(self, event_id: str, team_id: str, payload: TeamUpdate) -> TeamResponse:
         await self._require_draft_event(event_id)

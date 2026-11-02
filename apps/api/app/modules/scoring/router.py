@@ -6,7 +6,7 @@ from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
-from app.modules.scoring.schemas import RankingResponse, TeamScoreResponse
+from app.modules.scoring.schemas import RankingResponse, TeamHomeResponse, TeamScoreResponse
 from app.modules.scoring.service import ScoringService
 from app.modules.submissions.repository import SubmissionRepository
 from app.modules.teams.repository import TeamRepository
@@ -34,6 +34,13 @@ async def own_team_score(
     event_id: str, user: UserDependency, service: ScoringServiceDependency
 ) -> TeamScoreResponse:
     return await service.own_team(event_id, user)
+
+
+@player_router.get("/events/{event_id}/team/me", response_model=TeamHomeResponse)
+async def own_team_home(
+    event_id: str, user: UserDependency, service: ScoringServiceDependency
+) -> TeamHomeResponse:
+    return await service.own_team_home(event_id, user)
 
 
 @admin_router.get("/events/{event_id}/ranking", response_model=RankingResponse)

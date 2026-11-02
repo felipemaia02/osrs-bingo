@@ -7,7 +7,9 @@
     "team": "Team",
     "play": "Play",
     "mySubmissions": "My submissions",
-    "profile": "My profile"
+    "profile": "My profile",
+    "myTeam": "My team",
+    "home": "Home"
   },
   "board": {
     "noActiveEvent": "There is no active event to display.",
@@ -1333,13 +1335,11 @@
   "draft": {
     "eyebrow": "Administration · {{event}} · Draft",
     "title": "Draft preview",
-    "description": "Admins only. Share your screen with the captains during the pick session — players never open this page. Teams are still saved by an admin.",
+    "description": "Admins only. Share your screen with the captains during the pick session — players never open this page. Drag a player onto a team or use the team dropdown on the card.",
     "presentation": "Presentation mode",
     "exitPresentation": "Exit presentation",
     "noDraft": "There's no draft event to preview.",
-    "captains": "Captains",
     "noCaptain": "No captain yet",
-    "captainLine": "{{team}} · EHB Σ {{ehb}}",
     "region": "Region",
     "activity": "Activity",
     "sortBy": "Sort by",
@@ -1369,7 +1369,6 @@
     "noPreference": "No preference",
     "buyInPending": "Buy-in pending",
     "sigma": "Σ = main + alts found on Wise Old Man.",
-    "details": "Show details of {{name}}",
     "totalLevel": "Total",
     "combatLevel": "Combat",
     "modal": {
@@ -1386,7 +1385,23 @@
     "noSkillData_one": "{{count}} player has no skill data yet — they need to “Update from WOM” on My profile.",
     "noSkillData_other": "{{count}} players have no skill data yet — they need to “Update from WOM” on My profile.",
     "skillLevel": "{{skill}} {{level}}",
-    "raidsKc": "Raids Σ"
+    "raidsKc": "Raids Σ",
+    "pick": {
+      "moveTo": "Team for {{name}}",
+      "choose": "Team…",
+      "noTeam": "No team",
+      "allDetails": "All details",
+      "available": "Available players",
+      "rosters": "Team rosters",
+      "rostersSummary_one": "{{count}} team roster",
+      "rostersSummary_other": "{{count}} team rosters",
+      "totals_one": "{{count}} player · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "totals_other": "{{count}} players · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
+      "dropHere": "Drop a player here",
+      "empty": "No players yet",
+      "noTeams": "Create teams on the Teams page first.",
+      "failed": "The pick wasn't saved: {{reason}}"
+    }
   },
   "home": {
     "eyebrow": "OSRS Bingo",
@@ -1477,6 +1492,86 @@
       "search": "Search boss",
       "save": "Save settings",
       "saved": "Boss KC settings saved; totals updated."
+    }
+  },
+  "footer": {
+    "label": "Site footer",
+    "links": "Clan and credits",
+    "logoAlt": "AstralStar clan logo",
+    "credit": "OSRS Bingo · AstralStar",
+    "disclaimer": "Not affiliated with Jagex. Old School RuneScape is a trademark of Jagex Ltd.",
+    "clanSite": "AstralStar website",
+    "clanDiscord": "Clan Discord",
+    "osrsWiki": "Images from the OSRS Wiki",
+    "wiseOldMan": "Stats from Wise Old Man"
+  },
+  "teamHome": {
+    "title": "My team",
+    "description": "Your team's score, who's scoring and the latest drops.",
+    "login": "Log in to see your team.",
+    "notStarted": "Your team will be shown when the event starts.",
+    "removed": "Your registration was removed from this event.",
+    "noTeam": "You don't have a team yet. Check your registration on",
+    "leaderboard": "Team leaderboard",
+    "leaderboardHint": "Points each member earned for the team from their accepted drops.",
+    "place": "Place",
+    "drops": "Drops",
+    "points": "Points",
+    "recentDrops": "Recent drops",
+    "dropLine": "{{player}} · {{card}} · {{when}}",
+    "dropPoints": "+{{points}} pts",
+    "noDrops": "No drops yet.",
+    "sheet": "Team sheet ({{count}})",
+    "rsn": "RSN",
+    "discord": "Discord",
+    "timezone": "Time zone",
+    "activity": "Activity"
+  },
+  "homePage": {
+    "eyebrow": "OSRS Bingo · AstralStar",
+    "welcome": "Welcome to OSRS Bingo",
+    "welcomeBack": "Welcome back, {{name}}",
+    "tagline": "The AstralStar clan bingo: get drops with your team, fill the board and score points.",
+    "event": {
+      "title": "Current event",
+      "endsIn": "Ends in {{time}}",
+      "openBoard": "Open board",
+      "none": "No event is running right now. See what's coming on"
+    },
+    "team": {
+      "title": "My team",
+      "tiles": "Tiles done",
+      "myPlace": "My place",
+      "myPoints": "My points",
+      "myDrops": "My drops",
+      "open": "Open My team"
+    },
+    "shortcuts": {
+      "title": "Next steps",
+      "pending_one": "{{count}} submission waiting for review",
+      "pending_other": "{{count}} submissions waiting for review",
+      "rejected_one": "{{count}} submission rejected",
+      "rejected_other": "{{count}} submissions rejected",
+      "submit": "Submit a drop"
+    },
+    "how": {
+      "title": "How it works",
+      "profile": {
+        "title": "Set up your profile",
+        "text": "Log in with Discord and link your RSN and time zone on My profile."
+      },
+      "join": {
+        "title": "Join the event",
+        "text": "Pick the account you'll play with and accept the rules on Events."
+      },
+      "teams": {
+        "title": "Teams are drafted",
+        "text": "Admins approve players and the captains pick the teams."
+      },
+      "drops": {
+        "title": "Get drops, score points",
+        "text": "Submit drops with a screenshot. Tiles, full rows and columns give your team points."
+      }
     }
   }
 }

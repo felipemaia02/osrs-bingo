@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { HomePage } from '../../features/bingo/pages/HomePage'
+import { BoardPage } from '../../features/bingo/pages/BoardPage'
+import { HomePage } from '../../features/home/pages/HomePage'
 import { AdminEventsPage } from '../../features/events/pages/AdminEventsPage'
 import { PlayerEventsPage } from '../../features/events/pages/PlayerEventsPage'
 import { LoginPage } from '../../features/auth/pages/LoginPage'
@@ -17,16 +18,19 @@ import { DraftPreviewPage } from '../../features/draft/pages/DraftPreviewPage'
 import { JoinEventPage } from '../../features/join/pages/JoinEventPage'
 import { ProfilePage } from '../../features/profiles/pages/ProfilePage'
 import { ReviewPage } from '../../features/submissions/pages/ReviewPage'
+import { TeamHomePage } from '../../features/team/pages/TeamHomePage'
 
 export function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
+      <Route path="/board" element={<BoardPage />} />
       <Route path="/events" element={<PlayerEventsPage />} />
       <Route path="/events/:eventId/join" element={<JoinEventPage />} />
       <Route path="/submissions" element={<MySubmissionsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/team" element={<TeamHomePage />} />
       <Route path="/teams" element={<Navigate to="/admin/teams" replace />} />
       <Route path="/admin" element={<AdminRoute />}>
         <Route index element={<AdminHomePage />} />

@@ -73,7 +73,11 @@ async def test_admin_updates_participation_and_reads_balance(
     admins = await client.get("/admin/administrators")
     preview = await client.get(f"/events/{EVENT_ID}/teams/draft-preview")
 
-    assert preview.status_code == 200 and preview.json() == {"captains": [], "players": []}
+    assert preview.status_code == 200 and preview.json() == {
+        "captains": [],
+        "players": [],
+        "members": [],
+    }
     assert updated.status_code == 200
     assert players.update_participation.await_args.args[2].role == "captain"
     assert balance.status_code == 200 and balance.json() == {"average_ehb": 0, "teams": []}

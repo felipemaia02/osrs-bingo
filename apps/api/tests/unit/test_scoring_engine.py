@@ -8,6 +8,7 @@ from app.modules.scoring.engine import (
     competition_positions,
     contributions,
     decimal,
+    drop_points,
     score_team,
 )
 
@@ -135,3 +136,10 @@ def test_bonus_cards_score_on_their_own_and_never_complete_lines() -> None:
     assert (score.completed_tiles, score.tile_points) == (3, 30)
     assert (score.completed_bonus, score.bonus_points) == (3, 60)
     assert score.total == 30 + 25 + 60
+
+
+def test_drop_points_is_the_contribution_share() -> None:
+    tile = Tile(position=1, row=1, column=1, score=Decimal(10), requirement=Decimal(3))
+    assert drop_points(tile, Decimal(1), 1) == Fraction(10, 3)
+    assert drop_points(tile, Decimal(2), 3) == Fraction(20)
+    assert drop_points(None, Decimal(1), 1) == 0

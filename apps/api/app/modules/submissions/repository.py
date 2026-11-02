@@ -226,6 +226,34 @@ class SubmissionRepository:
         )
         return cast(list[SubmissionDocument], await cursor.to_list(length=None))
 
+    async def recent_accepted_drops(
+        self, event_id: ObjectId, team_id: ObjectId, limit: int
+    ) -> list[SubmissionDocument]:
+        """A team's newest accepted drops, for its team page (feature 050)."""
+        cursor = (
+            self._collection.find(
+                {
+                    "event_id": event_id,
+                    "team_id": team_id,
+                    "kind": SubmissionKind.DROP,
+                    "status": SubmissionStatus.ACCEPTED,
+                },
+                {
+                    "player_id": 1,
+                    "position": 1,
+                    "card_name": 1,
+                    "drop_key": 1,
+                    "drop_name": 1,
+                    "quantity": 1,
+                    "reviewed_at": 1,
+                    "submitted_at": 1,
+                },
+            )
+            .sort([("reviewed_at", -1), ("_id", -1)])
+            .limit(limit)
+        )
+        return cast(list[SubmissionDocument], await cursor.to_list(length=None))
+
     @staticmethod
     def _object_id(value: str) -> ObjectId | None:
         try:

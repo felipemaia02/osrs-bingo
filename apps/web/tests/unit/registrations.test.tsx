@@ -126,7 +126,7 @@ it('makes event cards lead to the board or the join page', async () => {
   renderApp(<PlayerEventsPage />, '/events')
 
   const board = await screen.findByRole('link', { name: /Cyber Event.*Open board/ })
-  expect(board).toHaveAttribute('href', '/')
+  expect(board).toHaveAttribute('href', '/board')
   expect(await screen.findByRole('link', { name: /Summer Bingo.*Join event/ })).toHaveAttribute(
     'href',
     `/events/${EVENT.id}/join`,

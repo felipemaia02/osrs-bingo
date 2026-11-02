@@ -15,7 +15,7 @@ import {
   rejectSubmission,
   revertSubmission,
 } from '../../src/features/submissions/api/submissionsApi'
-import { HomePage } from '../../src/features/bingo/pages/HomePage'
+import { BoardPage } from '../../src/features/bingo/pages/BoardPage'
 import { MySubmissionsPage } from '../../src/features/submissions/pages/MySubmissionsPage'
 import { ReviewPage } from '../../src/features/submissions/pages/ReviewPage'
 import type { ReviewItem, Submission } from '../../src/features/submissions/types'
@@ -263,7 +263,7 @@ describe('Submit from the board (044)', () => {
   it('sends a drop from the board page', async () => {
     vi.mocked(createSubmission).mockResolvedValue(submission({}))
     const user = userEvent.setup()
-    renderApp(<HomePage />, '/')
+    renderApp(<BoardPage />, '/board')
 
     await user.click(await screen.findByRole('button', { name: 'Submit with screenshot' }))
     const dialog = screen.getByRole('dialog', { name: 'Submit with screenshot' })
@@ -285,7 +285,7 @@ describe('Submit from the board (044)', () => {
       team_id: null,
       status: 'approved',
     })
-    renderApp(<HomePage />, '/')
+    renderApp(<BoardPage />, '/board')
 
     expect(await screen.findByRole('heading', { name: 'Autumn Bingo 2026' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Submit with screenshot' })).toBeNull()

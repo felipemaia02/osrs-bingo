@@ -6,12 +6,16 @@ import CalendarMonth from '@mui/icons-material/CalendarMonth'
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined'
 import CoPresent from '@mui/icons-material/CoPresent'
 import CoPresentOutlined from '@mui/icons-material/CoPresentOutlined'
+import Diversity3 from '@mui/icons-material/Diversity3'
+import Diversity3Outlined from '@mui/icons-material/Diversity3Outlined'
 import EventNote from '@mui/icons-material/EventNote'
 import FactCheck from '@mui/icons-material/FactCheck'
 import FactCheckOutlined from '@mui/icons-material/FactCheckOutlined'
 import EventNoteOutlined from '@mui/icons-material/EventNoteOutlined'
 import GridView from '@mui/icons-material/GridView'
 import GridViewOutlined from '@mui/icons-material/GridViewOutlined'
+import Home from '@mui/icons-material/Home'
+import HomeOutlined from '@mui/icons-material/HomeOutlined'
 import Groups from '@mui/icons-material/Groups'
 import GroupsOutlined from '@mui/icons-material/GroupsOutlined'
 import Leaderboard from '@mui/icons-material/Leaderboard'
@@ -43,9 +47,19 @@ export interface NavEntry {
 
 export const PLAY_ENTRIES: NavEntry[] = [
   {
+    key: 'home',
+    labelKey: 'navigation.home',
+    to: '/',
+    icon: HomeOutlined,
+    activeIcon: Home,
+    exact: true,
+    // Mobile reaches Home from the wordmark (feature 052).
+    desktopOnly: true,
+  },
+  {
     key: 'board',
     labelKey: 'navigation.board',
-    to: '/',
+    to: '/board',
     icon: GridViewOutlined,
     activeIcon: GridView,
     exact: true,
@@ -56,6 +70,14 @@ export const PLAY_ENTRIES: NavEntry[] = [
     to: '/events',
     icon: CalendarMonthOutlined,
     activeIcon: CalendarMonth,
+    exact: true,
+  },
+  {
+    key: 'team',
+    labelKey: 'navigation.myTeam',
+    to: '/team',
+    icon: Diversity3Outlined,
+    activeIcon: Diversity3,
     exact: true,
   },
   {
