@@ -496,12 +496,23 @@
     "role": "Rol en la aplicación",
     "adminRole": "Administrador",
     "playerRole": "Jugador",
-    "grant": "Conceder acceso de administrador",
+    "grant": {
+      "title": "¿Hacer administrador a {{name}}?",
+      "discord": "Discord",
+      "powers": "Los administradores pueden:",
+      "power": {
+        "players": "aprobar jugadores y definir equipos",
+        "review": "revisar y revertir drops",
+        "content": "editar eventos, tableros y tarjetas",
+        "admins": "dar o quitar acceso de admin"
+      },
+      "typeName": "Escribe {{name}} para confirmar",
+      "confirm": "Hacer admin"
+    },
     "revoke": "Quitar acceso de administrador",
     "grantTo": "Conceder acceso a {{name}}",
     "revokeFrom": "Quitar acceso a {{name}}",
     "confirmTitle": "¿Cambiar acceso de administrador?",
-    "grantMessage": "¿Conceder a {{name}} acceso de administrador a todos los eventos y ajustes?",
     "revokeMessage": "¿Quitar el acceso de administrador de {{name}}? Sus inscripciones no cambiarán.",
     "confirm": "Confirmar cambio",
     "updated": "Acceso de administrador actualizado.",
@@ -515,7 +526,6 @@
       "userNotFound": "No se encontró este usuario.",
       "rateLimit": "Demasiadas solicitudes. Espera un momento e inténtalo de nuevo."
     },
-    "discordIdentity": "Discord ID: {{id}}",
     "overviewStatus": {
       "active": "{{count}} activo",
       "draft": "{{count}} borrador",
@@ -532,21 +542,22 @@
     "you": "Tú",
     "grantShort": "Dar acceso",
     "revokeShort": "Quitar acceso",
-    "searchPlaceholder": "Buscar por nombre de usuario",
+    "searchPlaceholder": "Buscar por nombre de Discord o RSN",
     "adminCount_one": "{{count}} administrador",
     "adminCount_other": "{{count}} administradores",
     "showing": "Mostrando {{from}}–{{to}} de {{total}}",
     "table": {
       "user": "Usuario",
-      "discord": "ID de Discord",
-      "action": "Acción"
+      "action": "Acción",
+      "rsn": "RSN"
     },
     "directoryCount_one": "{{count}} usuario registrado",
     "directoryCount_other": "{{count}} usuarios registrados",
     "review": "Revisión de drops",
     "reviewDescription": "Acepta o rechaza los envíos de los jugadores con la captura.",
     "draft": "Vista previa del draft",
-    "draftDescription": "Jugadores disponibles para la elección de los capitanes."
+    "draftDescription": "Jugadores disponibles para la elección de los capitanes.",
+    "rsnLine": "RSN: {{rsn}}"
   },
   "cards": {
     "title": "Catálogo de tarjetas",

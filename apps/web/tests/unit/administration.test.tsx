@@ -20,7 +20,7 @@ const USER = { id: 'admin', discord_id: '111', username: 'Administrator', is_adm
 beforeEach(async () => {
   vi.clearAllMocks()
   vi.mocked(fetchUsers).mockResolvedValue({
-    items: [{ ...USER, id: 'target', username: 'Player', is_admin: false }],
+    items: [{ ...USER, id: 'target', username: 'Player', is_admin: false, rsn: 'Zezima' }],
     total: 1,
     offset: 0,
     limit: 25,
@@ -119,10 +119,19 @@ it('manages global administrators without event selection and confirms a grant',
   renderApp(<AppRouter />, '/admin/administrators')
   await user.click(await screen.findByRole('button', { name: 'Grant access to Player' }))
   expect(screen.queryByLabelText('Event')).not.toBeInTheDocument()
+  // 055: the grant needs the Discord name typed in.
+  const dialog = screen.getByRole('dialog', { name: 'Make Player an administrator?' })
+  expect(dialog).toHaveTextContent('RSNZezima')
+  expect(dialog).toHaveTextContent('review and revert drops')
+  const makeAdmin = within(dialog).getByRole('button', { name: 'Make admin' })
+  expect(makeAdmin).toBeDisabled()
+  const input = within(dialog).getByLabelText('Type Player to confirm')
+  await user.type(input, 'Playe')
+  expect(makeAdmin).toBeDisabled()
   expect(changeRole).not.toHaveBeenCalled()
-  await user.click(
-    within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm change' }),
-  )
+  await user.type(input, 'r ')
+  expect(makeAdmin).toBeEnabled()
+  await user.click(makeAdmin)
   expect(await screen.findByText('Administrator access updated.')).toBeInTheDocument()
   expect(vi.mocked(changeRole).mock.calls[0][0]).toEqual({ userId: 'target', isAdmin: true })
   expect(
@@ -149,6 +158,10 @@ it('shows the last-administrator conflict without changing the role', async () =
   expect(await screen.findByText('1 registered user · 1 administrator')).toBeInTheDocument()
   expect(screen.getByText('You')).toBeInTheDocument()
   expect(screen.getByText('Showing 1–1 of 1')).toBeInTheDocument()
+  // 055: RSN column instead of the Discord ID.
+  expect(screen.getByRole('columnheader', { name: 'RSN' })).toBeInTheDocument()
+  expect(screen.queryByText('Discord ID')).toBeNull()
+  expect(screen.queryByText('111')).toBeNull()
   await user.click(screen.getByRole('button', { name: 'Remove access from Administrator' }))
   const dialog = screen.getByRole('dialog', { name: 'Change administrator access?' })
   await user.click(within(dialog).getByRole('button', { name: 'Confirm change' }))

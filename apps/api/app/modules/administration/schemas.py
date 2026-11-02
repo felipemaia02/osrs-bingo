@@ -6,6 +6,8 @@ class DirectoryUser(BaseModel):
     discord_id: str
     username: str
     is_admin: bool
+    # Main RSN from the player's profile, to recognize them (feature 055).
+    rsn: str | None = None
 
 
 class UserDirectory(BaseModel):

@@ -496,12 +496,23 @@
     "role": "Papel na aplicação",
     "adminRole": "Administrador",
     "playerRole": "Jogador",
-    "grant": "Conceder acesso de administrador",
+    "grant": {
+      "title": "Tornar {{name}} administrador?",
+      "discord": "Discord",
+      "powers": "Administradores podem:",
+      "power": {
+        "players": "aprovar jogadores e definir times",
+        "review": "revisar e desfazer drops",
+        "content": "editar eventos, boards e cards",
+        "admins": "dar ou remover acesso de admin"
+      },
+      "typeName": "Digite {{name}} para confirmar",
+      "confirm": "Tornar admin"
+    },
     "revoke": "Remover acesso de administrador",
     "grantTo": "Conceder acesso a {{name}}",
     "revokeFrom": "Remover acesso de {{name}}",
     "confirmTitle": "Alterar acesso de administrador?",
-    "grantMessage": "Conceder a {{name}} acesso de administrador a todos os eventos e configurações da aplicação?",
     "revokeMessage": "Remover o acesso de administrador de {{name}}? Isso não altera suas inscrições nos eventos.",
     "confirm": "Confirmar alteração",
     "updated": "Acesso de administrador atualizado.",
@@ -515,7 +526,6 @@
       "userNotFound": "Este usuário não foi encontrado.",
       "rateLimit": "Muitas requisições. Aguarde um momento e tente novamente."
     },
-    "discordIdentity": "Discord ID: {{id}}",
     "overviewStatus": {
       "active": "{{count}} ativo",
       "draft": "{{count}} rascunho",
@@ -532,21 +542,22 @@
     "you": "Você",
     "grantShort": "Conceder acesso",
     "revokeShort": "Remover acesso",
-    "searchPlaceholder": "Buscar por nome de usuário",
+    "searchPlaceholder": "Buscar por nome do Discord ou RSN",
     "adminCount_one": "{{count}} administrador",
     "adminCount_other": "{{count}} administradores",
     "showing": "Mostrando {{from}}–{{to}} de {{total}}",
     "table": {
       "user": "Usuário",
-      "discord": "ID do Discord",
-      "action": "Ação"
+      "action": "Ação",
+      "rsn": "RSN"
     },
     "directoryCount_one": "{{count}} usuário registrado",
     "directoryCount_other": "{{count}} usuários registrados",
     "review": "Revisão de drops",
     "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot.",
     "draft": "Prévia do draft",
-    "draftDescription": "Jogadores disponíveis para a escolha dos capitães."
+    "draftDescription": "Jogadores disponíveis para a escolha dos capitães.",
+    "rsnLine": "RSN: {{rsn}}"
   },
   "cards": {
     "title": "Catálogo de cards",

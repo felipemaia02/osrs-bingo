@@ -496,12 +496,23 @@
     "role": "Application role",
     "adminRole": "Administrator",
     "playerRole": "Player",
-    "grant": "Grant administrator access",
+    "grant": {
+      "title": "Make {{name}} an administrator?",
+      "discord": "Discord",
+      "powers": "Administrators can:",
+      "power": {
+        "players": "approve players and set teams",
+        "review": "review and revert drops",
+        "content": "edit events, boards and cards",
+        "admins": "give or remove admin access"
+      },
+      "typeName": "Type {{name}} to confirm",
+      "confirm": "Make admin"
+    },
     "revoke": "Remove administrator access",
     "grantTo": "Grant access to {{name}}",
     "revokeFrom": "Remove access from {{name}}",
     "confirmTitle": "Change administrator access?",
-    "grantMessage": "Give {{name}} administrator access to all events and application settings?",
     "revokeMessage": "Remove administrator access from {{name}}? This does not change their event registrations.",
     "confirm": "Confirm change",
     "updated": "Administrator access updated.",
@@ -515,7 +526,6 @@
       "userNotFound": "This user was not found.",
       "rateLimit": "Too many requests. Wait a moment and try again."
     },
-    "discordIdentity": "Discord ID: {{id}}",
     "overviewStatus": {
       "active": "{{count}} active",
       "draft": "{{count}} draft",
@@ -532,21 +542,22 @@
     "you": "You",
     "grantShort": "Grant access",
     "revokeShort": "Remove access",
-    "searchPlaceholder": "Search by username",
+    "searchPlaceholder": "Search by Discord name or RSN",
     "adminCount_one": "{{count}} administrator",
     "adminCount_other": "{{count}} administrators",
     "showing": "Showing {{from}}–{{to}} of {{total}}",
     "table": {
       "user": "User",
-      "discord": "Discord ID",
-      "action": "Action"
+      "action": "Action",
+      "rsn": "RSN"
     },
     "directoryCount_one": "{{count}} registered user",
     "directoryCount_other": "{{count}} registered users",
     "review": "Drop review",
     "reviewDescription": "Accept or reject players' submissions with the screenshot.",
     "draft": "Draft preview",
-    "draftDescription": "Available players for the captains' pick session."
+    "draftDescription": "Available players for the captains' pick session.",
+    "rsnLine": "RSN: {{rsn}}"
   },
   "cards": {
     "title": "Card catalog",

@@ -13,6 +13,7 @@ class AdministrationRepository:
     def __init__(self, database: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
         self._roles = database["administration"]
         self._users = database["users"]
+        self._profiles = database["player_profiles"]
 
     async def initialize(self, discord_ids: list[str]) -> None:
         if discord_ids:
@@ -60,9 +61,31 @@ class AdministrationRepository:
     async def directory(
         self, search: str, offset: int, limit: int
     ) -> tuple[list[dict[str, Any]], int]:
-        query = {"username": {"$regex": re.escape(search), "$options": "i"}} if search else {}
+        """Users by Discord name; a search matches the name or any linked RSN (055)."""
+        query: dict[str, Any] = {}
+        if search:
+            pattern = {"$regex": re.escape(search), "$options": "i"}
+            by_rsn = [
+                profile["_id"]
+                async for profile in self._profiles.find({"accounts.rsn": pattern}, {"_id": 1})
+            ]
+            query = {"$or": [{"username": pattern}, {"_id": {"$in": by_rsn}}]}
         total = await self._users.count_documents(query)
         cursor = (
             self._users.find(query).sort([("username", 1), ("_id", 1)]).skip(offset).limit(limit)
         )
         return [dict(user) async for user in cursor], total
+
+    async def main_rsns(self, user_ids: list[ObjectId]) -> dict[ObjectId, str]:
+        """Each user's main RSN (else their first linked account); profiles share the user id."""
+        cursor = self._profiles.find(
+            {"_id": {"$in": user_ids}}, {"accounts.rsn": 1, "accounts.is_main": 1}
+        )
+        names: dict[ObjectId, str] = {}
+        async for profile in cursor:
+            accounts = profile.get("accounts") or []
+            main = next((item for item in accounts if item.get("is_main")), None)
+            chosen = main or (accounts[0] if accounts else None)
+            if chosen:
+                names[profile["_id"]] = str(chosen["rsn"])
+        return names

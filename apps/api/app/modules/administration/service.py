@@ -18,8 +18,9 @@ class AdministrationService:
         if roles is None:
             raise AppException(503, "Administration is not initialized")
         users, total = await self._repository.directory(search, offset, limit)
+        rsns = await self._repository.main_rsns([user["_id"] for user in users])
         return UserDirectory(
-            items=[self._user(user, roles["admin_ids"]) for user in users],
+            items=[self._user(user, roles["admin_ids"], rsns.get(user["_id"])) for user in users],
             total=total,
             offset=offset,
             limit=limit,
@@ -68,10 +69,11 @@ class AdministrationService:
         raise ConflictError("Administrator roles changed; try again")
 
     @staticmethod
-    def _user(user: dict[str, Any], admin_ids: list[str]) -> DirectoryUser:
+    def _user(user: dict[str, Any], admin_ids: list[str], rsn: str | None = None) -> DirectoryUser:
         return DirectoryUser(
             id=str(user["_id"]),
             discord_id=user["discord_id"],
             username=user["username"],
             is_admin=user["discord_id"] in admin_ids,
+            rsn=rsn,
         )

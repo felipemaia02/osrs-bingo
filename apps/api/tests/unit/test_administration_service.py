@@ -94,23 +94,50 @@ async def test_role_update_and_audit_share_atomic_revision_write() -> None:
     assert update["$push"] == {"audit": {"action": "revoke_admin"}}
 
 
-async def test_directory_search_treats_regex_input_as_literal_and_bounds_results() -> None:
+def directory_database(rsn_owner: ObjectId | None = None) -> tuple[MagicMock, MagicMock]:
+    users, profiles = MagicMock(), MagicMock()
     database = MagicMock()
-    collection = database.__getitem__.return_value
-    collection.count_documents = AsyncMock(return_value=1)
-    cursor = collection.find.return_value.sort.return_value.skip.return_value.limit.return_value
+    database.__getitem__.side_effect = lambda name: profiles if name == "player_profiles" else users
+    users.count_documents = AsyncMock(return_value=1)
+    cursor = users.find.return_value.sort.return_value.skip.return_value.limit.return_value
     cursor.__aiter__.return_value = [{"username": "Crab.*"}]
+    profiles.find.return_value.__aiter__.return_value = [{"_id": rsn_owner}] if rsn_owner else []
+    return database, users
 
-    users, total = await AdministrationRepository(database).directory("Crab.*", 25, 25)
 
-    query = {"username": {"$regex": r"Crab\.\*", "$options": "i"}}
-    collection.count_documents.assert_awaited_once_with(query)
-    collection.find.assert_called_once_with(query)
-    collection.find.return_value.sort.return_value.skip.assert_called_once_with(25)
-    collection.find.return_value.sort.return_value.skip.return_value.limit.assert_called_once_with(
-        25
-    )
-    assert users == [{"username": "Crab.*"}] and total == 1
+async def test_directory_search_treats_regex_input_as_literal_and_bounds_results() -> None:
+    owner = ObjectId()
+    database, users = directory_database(owner)
+
+    found, total = await AdministrationRepository(database).directory("Crab.*", 25, 25)
+
+    pattern = {"$regex": r"Crab\.\*", "$options": "i"}
+    # 055: the search also matches users whose profile has a matching RSN.
+    query = {"$or": [{"username": pattern}, {"_id": {"$in": [owner]}}]}
+    users.count_documents.assert_awaited_once_with(query)
+    users.find.assert_called_once_with(query)
+    users.find.return_value.sort.return_value.skip.assert_called_once_with(25)
+    users.find.return_value.sort.return_value.skip.return_value.limit.assert_called_once_with(25)
+    assert found == [{"username": "Crab.*"}] and total == 1
+
+
+async def test_main_rsn_prefers_the_main_account() -> None:
+    main_first, alt_only, empty = ObjectId(), ObjectId(), ObjectId()
+    profiles = MagicMock()
+    profiles.find.return_value.__aiter__.return_value = [
+        {
+            "_id": main_first,
+            "accounts": [{"rsn": "Alt", "is_main": False}, {"rsn": "Zezima", "is_main": True}],
+        },
+        {"_id": alt_only, "accounts": [{"rsn": "Only Alt", "is_main": False}]},
+        {"_id": empty, "accounts": []},
+    ]
+    database = MagicMock()
+    database.__getitem__.return_value = profiles
+
+    names = await AdministrationRepository(database).main_rsns([main_first, alt_only, empty])
+
+    assert names == {main_first: "Zezima", alt_only: "Only Alt"}
 
 
 async def test_directory_reports_the_number_of_administrators() -> None:
@@ -120,9 +147,11 @@ async def test_directory_reports_the_number_of_administrators() -> None:
         [{"_id": ObjectId(TARGET_ID), "discord_id": "222", "username": "Player"}],
         1,
     )
+    repository.main_rsns.return_value = {ObjectId(TARGET_ID): "Zezima"}
 
     result = await service.directory("", 0, 1)
 
     assert result.admin_count == 2
     assert result.total == 1
     assert result.items[0].is_admin is False
+    assert result.items[0].rsn == "Zezima"

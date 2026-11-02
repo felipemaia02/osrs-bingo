@@ -7,8 +7,9 @@ import { AppShell } from '../../../components/common/AppShell'
 import { Button } from '../../../components/ui/Button'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
-import type { CurrentUser } from '../../auth/api/authApi'
+import type { DirectoryUser } from '../api/administrationApi'
 import { useSession } from '../../auth/hooks/useSession'
+import { GrantAdminDialog } from '../components/GrantAdminDialog'
 import { UserDirectoryCards, UserDirectoryTable } from '../components/UserDirectoryList'
 import { DIRECTORY_PAGE_SIZE, useChangeRole, useUserDirectory } from '../hooks/useAdministration'
 import { roleErrorKey } from '../roleErrors'
@@ -21,7 +22,7 @@ export function AdministratorsPage() {
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [offset, setOffset] = useState(0)
-  const [target, setTarget] = useState<CurrentUser | null>(null)
+  const [target, setTarget] = useState<DirectoryUser | null>(null)
   const [roleError, setRoleError] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<string | null>(null)
   const users = useUserDirectory(search, offset)
@@ -34,7 +35,7 @@ export function AdministratorsPage() {
     setOffset(0)
   }
 
-  function openRoleChange(user: CurrentUser) {
+  function openRoleChange(user: DirectoryUser) {
     setFeedback(null)
     setRoleError(null)
     setTarget(user)
@@ -155,14 +156,21 @@ export function AdministratorsPage() {
           </>
         ) : null}
       </div>
-      {target && (
+      {target && !target.is_admin && (
+        <GrantAdminDialog
+          user={target}
+          busy={mutation.isPending}
+          error={roleError}
+          onConfirm={() => void confirmRoleChange()}
+          onClose={() => setTarget(null)}
+        />
+      )}
+      {target?.is_admin && (
         <ConfirmDialog
           title={t('admin.confirmTitle')}
-          message={t(target.is_admin ? 'admin.revokeMessage' : 'admin.grantMessage', {
-            name: target.username,
-          })}
+          message={t('admin.revokeMessage', { name: target.username })}
           confirmLabel={t('admin.confirm')}
-          danger={target.is_admin}
+          danger
           busy={mutation.isPending}
           error={roleError}
           onConfirm={() => void confirmRoleChange()}

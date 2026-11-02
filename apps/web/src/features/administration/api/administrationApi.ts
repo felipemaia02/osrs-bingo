@@ -1,8 +1,13 @@
 import { apiClient } from '../../../lib/api'
 import type { CurrentUser } from '../../auth/api/authApi'
 
+/** A directory row: the user plus their main RSN from the profile (feature 055). */
+export interface DirectoryUser extends CurrentUser {
+  rsn?: string | null
+}
+
 export interface UserDirectory {
-  items: CurrentUser[]
+  items: DirectoryUser[]
   total: number
   offset: number
   limit: number

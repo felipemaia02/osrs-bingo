@@ -2,20 +2,20 @@ import { useTranslation } from 'react-i18next'
 import { Avatar } from '../../../components/ui/Avatar'
 import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
-import type { CurrentUser } from '../../auth/api/authApi'
+import type { DirectoryUser } from '../api/administrationApi'
 
 interface UserListProps {
-  users: CurrentUser[]
+  users: DirectoryUser[]
   currentUserId: string | undefined
   busy: boolean
-  onChangeRole: (user: CurrentUser) => void
+  onChangeRole: (user: DirectoryUser) => void
 }
 
 const CELL = 'border-b border-rs-border/45 px-3 py-2.5 align-middle'
 const HEAD =
   'whitespace-nowrap border-b border-rs-border bg-rs-inset px-3 py-2.5 text-left text-xs font-semibold text-rs-muted'
 
-function UserName({ user, isYou }: { user: CurrentUser; isYou: boolean }) {
+function UserName({ user, isYou }: { user: DirectoryUser; isYou: boolean }) {
   const { t } = useTranslation()
   return (
     <span className="flex min-w-0 items-center gap-2.5">
@@ -26,7 +26,7 @@ function UserName({ user, isYou }: { user: CurrentUser; isYou: boolean }) {
   )
 }
 
-function RoleBadge({ user }: { user: CurrentUser }) {
+function RoleBadge({ user }: { user: DirectoryUser }) {
   const { t } = useTranslation()
   return (
     <Badge tone={user.is_admin ? 'gold' : 'neutral'}>
@@ -41,10 +41,10 @@ function RoleAction({
   mobile,
   onChangeRole,
 }: {
-  user: CurrentUser
+  user: DirectoryUser
   busy: boolean
   mobile: boolean
-  onChangeRole: (user: CurrentUser) => void
+  onChangeRole: (user: DirectoryUser) => void
 }) {
   const { t } = useTranslation()
   return (
@@ -71,7 +71,7 @@ export function UserDirectoryTable({ users, currentUserId, busy, onChangeRole }:
       <thead>
         <tr>
           <th className={HEAD}>{t('admin.table.user')}</th>
-          <th className={HEAD}>{t('admin.table.discord')}</th>
+          <th className={HEAD}>{t('admin.table.rsn')}</th>
           <th className={HEAD}>{t('admin.role')}</th>
           <th className={`${HEAD} text-right`}>{t('admin.table.action')}</th>
         </tr>
@@ -82,7 +82,7 @@ export function UserDirectoryTable({ users, currentUserId, busy, onChangeRole }:
             <td className={CELL}>
               <UserName user={user} isYou={user.id === currentUserId} />
             </td>
-            <td className={`${CELL} break-all text-[13px] text-rs-muted`}>{user.discord_id}</td>
+            <td className={`${CELL} text-[13px]`}>{user.rsn ?? '—'}</td>
             <td className={CELL}>
               <RoleBadge user={user} />
             </td>
@@ -110,8 +110,8 @@ export function UserDirectoryCards({ users, currentUserId, busy, onChangeRole }:
             <UserName user={user} isYou={user.id === currentUserId} />
             <RoleBadge user={user} />
           </div>
-          <span className="break-all text-xs text-rs-muted">
-            {t('admin.discordIdentity', { id: user.discord_id })}
+          <span className="text-xs text-rs-muted">
+            {t('admin.rsnLine', { rsn: user.rsn ?? '—' })}
           </span>
           <RoleAction user={user} busy={busy} mobile onChangeRole={onChangeRole} />
         </li>
