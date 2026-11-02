@@ -113,6 +113,7 @@ vi.mock('../src/features/scoring/api/scoringApi', () => ({
   // Default: the viewer isn't on a team, so the board shows no progress.
   fetchOwnTeamScore: vi.fn().mockRejectedValue(new Error('Not on a team')),
   fetchRanking: vi.fn(),
+  fetchTeamScore: vi.fn(),
 }))
 
 vi.mock('../src/features/profiles/api/profileApi', () => ({

@@ -1100,7 +1100,13 @@
     "noPlayers": "No players on this team.",
     "noTeams": "This event has no teams yet.",
     "bonus": "Bonus",
-    "bonusShort": "bonus {{points}}"
+    "bonusShort": "bonus {{points}}",
+    "board": {
+      "title": "{{team}} board",
+      "open": "View board",
+      "openFor": "View {{team}} board",
+      "column": "Board"
+    }
   },
   "profile": {
     "eyebrow": "Account",

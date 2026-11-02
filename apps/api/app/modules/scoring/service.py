@@ -95,6 +95,15 @@ class ScoringService:
         )
         return self._team_response(inputs, team, score)
 
+    async def team_score(self, event_id: str, team_id: str) -> TeamScoreResponse:
+        """Any team's board progress, for admins (feature 058)."""
+        inputs = await self._inputs(event_id)
+        team = await self._teams.get(event_id, team_id)
+        if team is None:
+            raise NotFoundError("Team")
+        score = score_team(team_id, inputs.tiles, inputs.size, inputs.drops, inputs.bonuses)
+        return self._team_response(inputs, team, score)
+
     async def own_team_home(self, event_id: str, user: CurrentUser) -> TeamHomeResponse:
         """The viewer's own team: members ranked by their points in it and the newest
         accepted drops (feature 050). The team always comes from the caller's registration."""

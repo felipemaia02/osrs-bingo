@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchOwnTeamScore, fetchRanking } from '../api/scoringApi'
+import { fetchOwnTeamScore, fetchRanking, fetchTeamScore } from '../api/scoringApi'
 
 const SCORING_KEY = ['scoring'] as const
 
@@ -12,6 +12,13 @@ export function useOwnTeamScore(eventId: string | null, enabled: boolean, refres
     enabled: enabled && Boolean(eventId),
     refetchInterval: refreshMs,
     retry: false,
+  })
+}
+
+export function useTeamScore(eventId: string, teamId: string) {
+  return useQuery({
+    queryKey: [...SCORING_KEY, 'team', eventId, teamId],
+    queryFn: () => fetchTeamScore(eventId, teamId),
   })
 }
 

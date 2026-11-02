@@ -1098,7 +1098,13 @@
     "noPlayers": "Nenhum jogador neste time.",
     "noTeams": "Este evento ainda não tem times.",
     "bonus": "Bônus",
-    "bonusShort": "bônus {{points}}"
+    "bonusShort": "bônus {{points}}",
+    "board": {
+      "title": "Board do {{team}}",
+      "open": "Ver board",
+      "openFor": "Ver board do {{team}}",
+      "column": "Board"
+    }
   },
   "profile": {
     "eyebrow": "Conta",

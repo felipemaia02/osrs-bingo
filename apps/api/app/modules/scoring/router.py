@@ -43,6 +43,13 @@ async def own_team_home(
     return await service.own_team_home(event_id, user)
 
 
+@admin_router.get("/events/{event_id}/teams/{team_id}/score", response_model=TeamScoreResponse)
+async def team_score(
+    event_id: str, team_id: str, admin: AdminDependency, service: ScoringServiceDependency
+) -> TeamScoreResponse:
+    return await service.team_score(event_id, team_id)
+
+
 @admin_router.get("/events/{event_id}/ranking", response_model=RankingResponse)
 async def ranking(
     event_id: str, admin: AdminDependency, service: ScoringServiceDependency

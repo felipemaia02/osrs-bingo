@@ -78,3 +78,11 @@ async def test_team_page_takes_the_team_from_the_caller(
     assert response.json()["team_name"] == "Saradomin"
     event_id, user = services[1].own_team_home.await_args.args
     assert event_id == EVENT_ID and user.username == "Hal"
+
+
+async def test_team_board_is_admin_only(
+    client: AsyncClient, services: tuple[AsyncMock, AsyncMock]
+) -> None:
+    response = await client.get(f"/admin/events/{EVENT_ID}/teams/66d000000000000000000003/score")
+    assert response.status_code == 403
+    services[1].team_score.assert_not_awaited()

@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 from bson import ObjectId
 
-from app.core.exceptions import AppException
+from app.core.exceptions import AppException, NotFoundError
 from app.modules.auth.schemas import CurrentUser
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
@@ -271,3 +271,23 @@ async def test_team_home_needs_a_team(team_home: dict[str, Any]) -> None:
     with pytest.raises(AppException) as error:
         await team_home["service"].own_team_home(str(EVENT_ID), USER)
     assert error.value.status_code == 403
+
+
+async def test_admin_sees_any_team_board_matching_the_ranking(deps: dict[str, Any]) -> None:
+    """058: the team board in the ranking shows the same numbers as its ranking row."""
+    zamorak = {"_id": ZA, "name": "Zamorak", "color": None}
+    deps["service"]._teams.get.return_value = zamorak
+
+    score = await deps["service"].team_score(str(EVENT_ID), str(ZA))
+    ranking = await deps["service"].ranking(str(EVENT_ID))
+
+    row = next(team for team in ranking.teams if team.team_name == "Zamorak")
+    assert score.team_name == "Zamorak"
+    assert (score.completed_tiles, score.total) == (row.completed_tiles, row.total) == (1, 10)
+    assert [tile.complete for tile in score.tiles][:2] == [True, False]
+
+
+async def test_team_board_of_another_event_is_not_found(deps: dict[str, Any]) -> None:
+    deps["service"]._teams.get.return_value = None
+    with pytest.raises(NotFoundError):
+        await deps["service"].team_score(str(EVENT_ID), str(ObjectId()))

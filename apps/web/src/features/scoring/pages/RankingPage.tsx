@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
+import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { Badge } from '../../../components/ui/Badge'
+import { Button } from '../../../components/ui/Button'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { useEvents } from '../../events/hooks/useEvents'
 import { TeamEmblem } from '../../teams/components/TeamEmblem'
+import { TeamBoardModal } from '../components/TeamBoardModal'
 import { useRanking } from '../hooks/useScoring'
 import type { Ranking, RankingTeam } from '../types'
 
@@ -41,7 +44,27 @@ function TeamName({ team }: { team: RankingTeam }) {
   )
 }
 
-function TeamTable({ ranking }: { ranking: Ranking }) {
+interface TeamListProps {
+  ranking: Ranking
+  /** Opens the team's board (feature 058). */
+  onOpenBoard: (teamId: string) => void
+}
+
+function BoardButton({ team, onOpenBoard }: { team: RankingTeam; onOpenBoard: () => void }) {
+  const { t } = useTranslation()
+  return (
+    <Button
+      size="sm"
+      onClick={onOpenBoard}
+      aria-label={t('ranking.board.openFor', { team: team.team_name })}
+    >
+      <GridViewOutlinedIcon fontSize="small" aria-hidden="true" />
+      {t('ranking.board.open')}
+    </Button>
+  )
+}
+
+function TeamTable({ ranking, onOpenBoard }: TeamListProps) {
   const { t } = useTranslation()
   const place = usePlace()
   return (
@@ -57,11 +80,16 @@ function TeamTable({ ranking }: { ranking: Ranking }) {
             <th className={`${HEAD} text-right`}>{t('ranking.bonus')}</th>
           )}
           <th className={`${HEAD} text-right`}>{t('ranking.total')}</th>
+          <th className={HEAD}>{t('ranking.board.column')}</th>
         </tr>
       </thead>
       <tbody>
         {ranking.teams.map((team) => (
-          <tr key={team.team_id}>
+          <tr
+            key={team.team_id}
+            onClick={() => onOpenBoard(team.team_id)}
+            className="cursor-pointer hover:bg-rs-raised"
+          >
             <td className={`${CELL} whitespace-nowrap font-semibold`}>
               {team.tied ? <Badge tone="gold">{place(team)}</Badge> : place(team)}
             </td>
@@ -93,6 +121,9 @@ function TeamTable({ ranking }: { ranking: Ranking }) {
             <td className={`${CELL} text-right font-display text-xl font-bold text-rs-gold-bright`}>
               {team.total}
             </td>
+            <td className={CELL}>
+              <BoardButton team={team} onOpenBoard={() => onOpenBoard(team.team_id)} />
+            </td>
           </tr>
         ))}
       </tbody>
@@ -100,7 +131,7 @@ function TeamTable({ ranking }: { ranking: Ranking }) {
   )
 }
 
-function TeamCards({ ranking }: { ranking: Ranking }) {
+function TeamCards({ ranking, onOpenBoard }: TeamListProps) {
   const { t } = useTranslation()
   const place = usePlace()
   return (
@@ -127,6 +158,9 @@ function TeamCards({ ranking }: { ranking: Ranking }) {
             })}
             {ranking.bonus_count > 0 &&
               ` · ${t('ranking.bonusShort', { points: team.bonus_points })}`}
+          </span>
+          <span className="self-start">
+            <BoardButton team={team} onOpenBoard={() => onOpenBoard(team.team_id)} />
           </span>
         </li>
       ))}
@@ -194,6 +228,7 @@ export function RankingPage() {
   const isDesktop = useIsDesktop()
   const events = useEvents()
   const [chosen, setChosen] = useState<string | null>(null)
+  const [boardTeamId, setBoardTeamId] = useState<string | null>(null)
   const eventId =
     chosen ??
     events.data?.find((event) => event.status === 'active')?.id ??
@@ -233,7 +268,10 @@ export function RankingPage() {
               <span className="sr-only">{t('ranking.event')}</span>
               <select
                 value={eventId ?? ''}
-                onChange={(change) => setChosen(change.target.value)}
+                onChange={(change) => {
+                  setChosen(change.target.value)
+                  setBoardTeamId(null)
+                }}
                 className="min-h-11 w-full appearance-none rounded-[3px] border border-rs-border bg-rs-inset pl-3 pr-9 text-base text-rs-text md:min-h-10 md:text-sm"
               >
                 {events.data.map((event) => (
@@ -282,10 +320,10 @@ export function RankingPage() {
                   </p>
                 ) : isDesktop ? (
                   <div className="overflow-hidden rounded border border-rs-border bg-rs-surface">
-                    <TeamTable ranking={ranking.data} />
+                    <TeamTable ranking={ranking.data} onOpenBoard={setBoardTeamId} />
                   </div>
                 ) : (
-                  <TeamCards ranking={ranking.data} />
+                  <TeamCards ranking={ranking.data} onOpenBoard={setBoardTeamId} />
                 )}
                 <span className="flex items-center gap-1.5 text-xs text-rs-muted">
                   <InfoOutlinedIcon sx={{ fontSize: 15 }} aria-hidden="true" />
@@ -297,6 +335,14 @@ export function RankingPage() {
           </>
         )}
       </div>
+      {boardTeamId && ranking.data && (
+        <TeamBoardModal
+          eventId={ranking.data.event_id}
+          teams={ranking.data.teams}
+          initialTeamId={boardTeamId}
+          onClose={() => setBoardTeamId(null)}
+        />
+      )}
     </AppShell>
   )
 }

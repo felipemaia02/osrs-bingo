@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
-import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
+import { fetchAdminBoard, fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
 import type { BoardCardSnapshot, EventBoard } from '../../src/features/boards/types'
 import { BoardPage } from '../../src/features/bingo/pages/BoardPage'
 import {
@@ -13,7 +13,11 @@ import {
 } from '../../src/features/events/api/eventsApi'
 import { AdminEventsPage } from '../../src/features/events/pages/AdminEventsPage'
 import type { BingoEvent } from '../../src/features/events/types'
-import { fetchOwnTeamScore, fetchRanking } from '../../src/features/scoring/api/scoringApi'
+import {
+  fetchOwnTeamScore,
+  fetchRanking,
+  fetchTeamScore,
+} from '../../src/features/scoring/api/scoringApi'
 import { RankingPage } from '../../src/features/scoring/pages/RankingPage'
 import type { Ranking, TeamScore } from '../../src/features/scoring/types'
 import { fetchOwnRegistration } from '../../src/features/teams/api/teamsApi'
@@ -358,6 +362,43 @@ describe('private ranking', () => {
     expect(contribution).toHaveTextContent('felps_3.25')
     await user.click(within(contribution).getByRole('button', { name: 'Zamorak' }))
     expect(contribution).toHaveTextContent('Chaos Caio0.00')
+  })
+
+  it("opens a team's board from its row and switches teams (058)", async () => {
+    vi.mocked(fetchSession).mockResolvedValue({
+      id: 'a',
+      discord_id: '2',
+      username: 'felps_',
+      is_admin: true,
+    })
+    vi.mocked(fetchRanking).mockResolvedValue(RANKING)
+    vi.mocked(fetchAdminBoard).mockResolvedValue(BOARD)
+    vi.mocked(fetchTeamScore).mockImplementation(async (_event, teamId) =>
+      teamId === 'za'
+        ? { ...SCORE, team_id: 'za', team_name: 'Zamorak', total: 10, tiles: [] }
+        : SCORE,
+    )
+    const user = userEvent.setup()
+    renderApp(<RankingPage />, '/admin/ranking')
+
+    const [table] = await screen.findAllByRole('table')
+    await user.click(within(table).getByText('Saradomin'))
+    const dialog = await screen.findByRole('dialog', { name: 'Saradomin board' })
+    expect(fetchTeamScore).toHaveBeenCalledWith(EVENT.id, 'sa')
+    expect(await within(dialog).findByText('Completed tiles (3 of 9)')).toBeInTheDocument()
+    const grid = within(dialog).getByRole('region', { name: '3 by 3 board' })
+    await user.click(within(grid).getByRole('button', { name: /^Hydra,/ }))
+    expect(within(dialog).getByRole('complementary', { name: 'Tile detail' })).toHaveTextContent(
+      'Team progress: 6 of 8',
+    )
+
+    await user.click(within(dialog).getByRole('button', { name: 'Zamorak' }))
+    expect(await screen.findByRole('dialog', { name: 'Zamorak board' })).toBeInTheDocument()
+    expect(fetchTeamScore).toHaveBeenLastCalledWith(EVENT.id, 'za')
+    await user.keyboard('{Escape}')
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await user.click(within(table).getByRole('button', { name: 'View Guthix board' }))
+    expect(await screen.findByRole('dialog', { name: 'Guthix board' })).toBeInTheDocument()
   })
 })
 
