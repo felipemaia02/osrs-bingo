@@ -10,6 +10,7 @@ import { NotFoundPage } from '../../components/common/status/StatusScreens'
 import { AdminRoute } from '../../features/administration/components/AdminRoute'
 import { AdministratorsPage } from '../../features/administration/pages/AdministratorsPage'
 import { AdminHomePage } from '../../features/administration/pages/AdminHomePage'
+import { AuditLogPage } from '../../features/audit/pages/AuditLogPage'
 import { RankingPage } from '../../features/scoring/pages/RankingPage'
 import { BoardBuilderPage } from '../../features/boards/pages/BoardBuilderPage'
 import { CardCatalogPage } from '../../features/cards/pages/CardCatalogPage'
@@ -42,6 +43,7 @@ export function AppRouter() {
         <Route path="boards" element={<BoardBuilderPage />} />
         <Route path="administrators" element={<AdministratorsPage />} />
         <Route path="ranking" element={<RankingPage />} />
+        <Route path="audit" element={<AuditLogPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />

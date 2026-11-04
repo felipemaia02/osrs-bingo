@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse, Response
 
 from app.core.config import settings
 from app.core.storage import ScreenshotStorage
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.items.router import ItemServiceDependency
 from app.modules.tiles.artwork import artwork_file, store_artwork
@@ -54,6 +55,7 @@ async def list_cards(
 
 
 @router.post("", response_model=CardDetail, status_code=status.HTTP_201_CREATED)
+@audited("card.created")
 async def create_card(
     payload: CardCreate, admin: AdminDependency, service: CardServiceDependency
 ) -> CardDetail:
@@ -61,6 +63,7 @@ async def create_card(
 
 
 @router.post("/import-workbook", response_model=WorkbookImportResponse)
+@audited("card.workbook_imported")
 async def import_workbook(
     admin: AdminDependency, service: CardServiceDependency
 ) -> WorkbookImportResponse:
@@ -68,6 +71,7 @@ async def import_workbook(
 
 
 @router.post("/link-items", response_model=LinkItemsResponse)
+@audited("card.items_linked")
 async def link_items(
     admin: AdminDependency, service: CardServiceDependency, items: ItemServiceDependency
 ) -> LinkItemsResponse:
@@ -91,6 +95,7 @@ async def get_card(
 
 
 @router.post("/{card_id}/revisions", response_model=CardDetail)
+@audited("card.revised", resource_id="card_id")
 async def add_card_revision(
     card_id: str,
     payload: CardRevisionCreate,
@@ -101,6 +106,7 @@ async def add_card_revision(
 
 
 @router.post("/{card_id}/retire", response_model=CardDetail)
+@audited("card.retired", resource_id="card_id")
 async def retire_card(
     card_id: str,
     payload: CardRetire,
@@ -111,6 +117,7 @@ async def retire_card(
 
 
 @router.post("/artwork", response_model=CardArtworkUpload, status_code=status.HTTP_201_CREATED)
+@audited("card.artwork_uploaded")
 async def upload_artwork(
     request: Request, admin: AdminDependency, image: Annotated[UploadFile, File()]
 ) -> CardArtworkUpload:

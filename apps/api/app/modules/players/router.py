@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.modules.administration.repository import AdministrationRepository
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
@@ -40,6 +41,7 @@ PlayerServiceDependency = Annotated[PlayerService, Depends(get_player_service)]
 
 
 @router.post("", response_model=PlayerResponse, status_code=status.HTTP_201_CREATED)
+@audited("registration.requested")
 async def create_player(
     event_id: str, payload: JoinRequest, user: UserDependency, service: PlayerServiceDependency
 ) -> PlayerResponse:
@@ -64,6 +66,7 @@ async def list_players(
 
 
 @router.post("/approve-all", response_model=ApprovalResponse)
+@audited("registration.approved_all")
 async def approve_all(
     event_id: str, admin: AdminDependency, service: PlayerServiceDependency
 ) -> ApprovalResponse:
@@ -71,6 +74,7 @@ async def approve_all(
 
 
 @router.post("/approve-selected", response_model=SelectionResult)
+@audited("registration.approved_selected")
 async def approve_selected(
     event_id: str,
     payload: PlayerSelection,
@@ -81,6 +85,7 @@ async def approve_selected(
 
 
 @router.post("/assign-selected", response_model=SelectionResult)
+@audited("registration.assigned_selected")
 async def assign_selected(
     event_id: str,
     payload: TeamAssignmentSelection,
@@ -92,6 +97,7 @@ async def assign_selected(
 
 
 @router.post("/remove-selected", response_model=SelectionResult)
+@audited("registration.removed_selected")
 async def remove_selected(
     event_id: str,
     payload: PlayerSelection,
@@ -102,6 +108,7 @@ async def remove_selected(
 
 
 @router.post("/{player_id}/approve", response_model=PlayerResponse)
+@audited("registration.approved", resource_id="player_id")
 async def approve_player(
     event_id: str, player_id: str, admin: AdminDependency, service: PlayerServiceDependency
 ) -> PlayerResponse:
@@ -109,6 +116,7 @@ async def approve_player(
 
 
 @router.patch("/{player_id}", response_model=PlayerResponse)
+@audited("registration.team_set", resource_id="player_id")
 async def update_player(
     event_id: str,
     player_id: str,
@@ -120,6 +128,7 @@ async def update_player(
 
 
 @router.patch("/{player_id}/participation", response_model=PlayerResponse)
+@audited("registration.participation_set", resource_id="player_id")
 async def update_participation(
     event_id: str,
     player_id: str,
@@ -131,6 +140,7 @@ async def update_participation(
 
 
 @router.delete("/{player_id}", response_model=PlayerResponse)
+@audited("registration.removed", resource_id="player_id")
 async def remove_player(
     event_id: str, player_id: str, admin: AdminDependency, service: PlayerServiceDependency
 ) -> PlayerResponse:

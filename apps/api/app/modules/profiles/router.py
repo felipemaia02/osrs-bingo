@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request
 
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import UserDependency
 from app.modules.balance.repository import BossKcSettingsRepository
 from app.modules.items.quests import QuestPointService
@@ -40,6 +41,7 @@ async def get_profile(user: UserDependency, service: ProfileServiceDependency) -
 
 
 @router.patch("/me/preferences", response_model=ProfileResponse)
+@audited("profile.preferences_updated")
 async def set_preferences(
     payload: Preferences, user: UserDependency, service: ProfileServiceDependency
 ) -> ProfileResponse:
@@ -47,6 +49,7 @@ async def set_preferences(
 
 
 @router.post("/me/accounts", response_model=ProfileResponse, status_code=201)
+@audited("profile.account_added")
 async def add_account(
     payload: AccountAdd, user: UserDependency, service: ProfileServiceDependency
 ) -> ProfileResponse:
@@ -54,6 +57,7 @@ async def add_account(
 
 
 @router.delete("/me/accounts/{account_id}", response_model=ProfileResponse)
+@audited("profile.account_removed", resource_id="account_id")
 async def remove_account(
     account_id: str, user: UserDependency, service: ProfileServiceDependency
 ) -> ProfileResponse:
@@ -61,6 +65,7 @@ async def remove_account(
 
 
 @router.post("/me/accounts/{account_id}/main", response_model=ProfileResponse)
+@audited("profile.main_changed", resource_id="account_id")
 async def make_main(
     account_id: str, user: UserDependency, service: ProfileServiceDependency
 ) -> ProfileResponse:

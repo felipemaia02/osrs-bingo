@@ -557,7 +557,9 @@
     "reviewDescription": "Accept or reject players' submissions with the screenshot.",
     "draft": "Draft preview",
     "draftDescription": "Available players for the captains' pick session.",
-    "rsnLine": "RSN: {{rsn}}"
+    "rsnLine": "RSN: {{rsn}}",
+    "audit": "Audit log",
+    "auditDescription": "Who changed what, and when."
   },
   "cards": {
     "title": "Card catalog",
@@ -1599,5 +1601,111 @@
         "text": "Submit drops with a screenshot. Tiles, full rows and columns give your team points."
       }
     }
+  },
+  "audit": {
+    "description": "Every change made in the app: who did it, when, and what was sent.",
+    "retention": "Entries are kept for 1 year (tile activity: 30 days).",
+    "none": "Nothing has been recorded yet.",
+    "noMatches": "No entries match these filters.",
+    "loadError": "The audit log couldn't be loaded. Try again.",
+    "loadMore": "Load more",
+    "empty": "empty",
+    "columns": {
+      "when": "When",
+      "actor": "Who",
+      "action": "Action",
+      "what": "What",
+      "event": "Event"
+    },
+    "actor": {
+      "bot": "Bot",
+      "botFor": "Bot for {{name}}"
+    },
+    "filters": {
+      "event": "Event",
+      "allEvents": "All events",
+      "group": "Type",
+      "allGroups": "All types",
+      "actor": "Who",
+      "actorPlaceholder": "Name",
+      "from": "From",
+      "to": "To",
+      "clear": "Clear filters"
+    },
+    "groups": {
+      "event": "Events",
+      "registration": "Registrations",
+      "team": "Teams",
+      "board": "Boards",
+      "card": "Cards",
+      "submission": "Submissions",
+      "admin": "Administrators",
+      "profile": "Profiles",
+      "activity": "Tile activity",
+      "settings": "Settings"
+    },
+    "actions": {
+      "event": {
+        "created": "Event created",
+        "updated": "Event edited",
+        "rules_updated": "Rules edited",
+        "late_join_set": "Late join changed",
+        "addendum_added": "Clarification added",
+        "activated": "Event activated",
+        "finished": "Event finished"
+      },
+      "registration": {
+        "requested": "Join request",
+        "approved": "Registration approved",
+        "approved_all": "All requests approved",
+        "approved_selected": "Selected requests approved",
+        "assigned_selected": "Selected players assigned",
+        "removed_selected": "Selected players removed",
+        "removed": "Registration removed",
+        "team_set": "Team changed",
+        "participation_set": "Role / buy-in changed"
+      },
+      "team": {
+        "created": "Team created",
+        "updated": "Team edited"
+      },
+      "board": {
+        "saved": "Board saved",
+        "tile_updated": "Live tile updated"
+      },
+      "card": {
+        "created": "Card created",
+        "revised": "Card revised",
+        "retired": "Card retired",
+        "workbook_imported": "Workbook imported",
+        "items_linked": "Drops linked to items",
+        "artwork_uploaded": "Artwork uploaded"
+      },
+      "submission": {
+        "created": "Submission sent",
+        "accepted": "Submission accepted",
+        "rejected": "Submission rejected",
+        "reverted": "Submission reverted",
+        "screenshot_added": "Screenshot added"
+      },
+      "admin": {
+        "role_changed": "Admin access changed"
+      },
+      "profile": {
+        "preferences_updated": "Preferences changed",
+        "account_added": "Account linked",
+        "account_removed": "Account unlinked",
+        "main_changed": "Main account changed"
+      },
+      "activity": {
+        "started": "Started working on a tile",
+        "stopped": "Stopped working on a tile"
+      },
+      "settings": {
+        "boss_kc_updated": "Boss KC settings changed"
+      }
+    },
+    "details_one": "{{count}} field",
+    "details_other": "{{count}} fields"
   }
 }

@@ -13,6 +13,8 @@ import FactCheck from '@mui/icons-material/FactCheck'
 import FactCheckOutlined from '@mui/icons-material/FactCheckOutlined'
 import EventNoteOutlined from '@mui/icons-material/EventNoteOutlined'
 import GridView from '@mui/icons-material/GridView'
+import History from '@mui/icons-material/History'
+import HistoryOutlined from '@mui/icons-material/HistoryOutlined'
 import GridViewOutlined from '@mui/icons-material/GridViewOutlined'
 import Home from '@mui/icons-material/Home'
 import HomeOutlined from '@mui/icons-material/HomeOutlined'
@@ -161,6 +163,13 @@ export const ADMIN_ENTRIES: NavEntry[] = [
     to: '/admin/ranking',
     icon: LeaderboardOutlined,
     activeIcon: Leaderboard,
+  },
+  {
+    key: 'audit',
+    labelKey: 'admin.audit',
+    to: '/admin/audit',
+    icon: HistoryOutlined,
+    activeIcon: History,
   },
 ]
 

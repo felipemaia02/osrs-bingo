@@ -557,7 +557,9 @@
     "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot.",
     "draft": "Prévia do draft",
     "draftDescription": "Jogadores disponíveis para a escolha dos capitães.",
-    "rsnLine": "RSN: {{rsn}}"
+    "rsnLine": "RSN: {{rsn}}",
+    "audit": "Log de auditoria",
+    "auditDescription": "Quem mudou o quê, e quando."
   },
   "cards": {
     "title": "Catálogo de cards",
@@ -1597,5 +1599,111 @@
         "text": "Envie os drops com print. Tiles, linhas e colunas completas dão pontos ao seu time."
       }
     }
+  },
+  "audit": {
+    "description": "Todas as mudanças feitas no app: quem fez, quando e o que foi enviado.",
+    "retention": "Os registros ficam guardados por 1 ano (atividade nos tiles: 30 dias).",
+    "none": "Nada foi registrado ainda.",
+    "noMatches": "Nenhum registro com esses filtros.",
+    "loadError": "Não foi possível carregar o log de auditoria. Tente de novo.",
+    "loadMore": "Carregar mais",
+    "empty": "vazio",
+    "columns": {
+      "when": "Quando",
+      "actor": "Quem",
+      "action": "Ação",
+      "what": "O quê",
+      "event": "Evento"
+    },
+    "actor": {
+      "bot": "Bot",
+      "botFor": "Bot para {{name}}"
+    },
+    "filters": {
+      "event": "Evento",
+      "allEvents": "Todos os eventos",
+      "group": "Tipo",
+      "allGroups": "Todos os tipos",
+      "actor": "Quem",
+      "actorPlaceholder": "Nome",
+      "from": "De",
+      "to": "Até",
+      "clear": "Limpar filtros"
+    },
+    "groups": {
+      "event": "Eventos",
+      "registration": "Inscrições",
+      "team": "Times",
+      "board": "Tabuleiros",
+      "card": "Cards",
+      "submission": "Envios",
+      "admin": "Administradores",
+      "profile": "Perfis",
+      "activity": "Atividade nos tiles",
+      "settings": "Configurações"
+    },
+    "actions": {
+      "event": {
+        "created": "Evento criado",
+        "updated": "Evento editado",
+        "rules_updated": "Regras editadas",
+        "late_join_set": "Entrada tardia alterada",
+        "addendum_added": "Esclarecimento adicionado",
+        "activated": "Evento ativado",
+        "finished": "Evento encerrado"
+      },
+      "registration": {
+        "requested": "Pedido de inscrição",
+        "approved": "Inscrição aprovada",
+        "approved_all": "Todos os pedidos aprovados",
+        "approved_selected": "Pedidos selecionados aprovados",
+        "assigned_selected": "Jogadores selecionados colocados num time",
+        "removed_selected": "Jogadores selecionados removidos",
+        "removed": "Inscrição removida",
+        "team_set": "Time alterado",
+        "participation_set": "Cargo / buy-in alterado"
+      },
+      "team": {
+        "created": "Time criado",
+        "updated": "Time editado"
+      },
+      "board": {
+        "saved": "Tabuleiro salvo",
+        "tile_updated": "Tile ao vivo atualizado"
+      },
+      "card": {
+        "created": "Card criado",
+        "revised": "Card revisado",
+        "retired": "Card aposentado",
+        "workbook_imported": "Planilha importada",
+        "items_linked": "Drops ligados a itens",
+        "artwork_uploaded": "Arte enviada"
+      },
+      "submission": {
+        "created": "Envio feito",
+        "accepted": "Envio aceito",
+        "rejected": "Envio recusado",
+        "reverted": "Envio revertido",
+        "screenshot_added": "Print adicionado"
+      },
+      "admin": {
+        "role_changed": "Acesso de admin alterado"
+      },
+      "profile": {
+        "preferences_updated": "Preferências alteradas",
+        "account_added": "Conta vinculada",
+        "account_removed": "Conta desvinculada",
+        "main_changed": "Conta principal alterada"
+      },
+      "activity": {
+        "started": "Começou a atuar num tile",
+        "stopped": "Parou de atuar num tile"
+      },
+      "settings": {
+        "boss_kc_updated": "Configuração de KC de bosses alterada"
+      }
+    },
+    "details_one": "{{count}} campo",
+    "details_other": "{{count}} campos"
   }
 }

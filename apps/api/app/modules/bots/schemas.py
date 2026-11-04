@@ -10,6 +10,7 @@ class BotScope(StrEnum):
     TEAMS_READ = "teams:read"
     SCORE_READ = "score:read"
     SUBMISSIONS_WRITE = "submissions:write"
+    AUDIT_READ = "audit:read"
 
 
 class BotKey(BaseModel):

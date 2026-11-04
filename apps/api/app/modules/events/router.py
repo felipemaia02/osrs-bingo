@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query, Request, status
 
 from app.core.logging import get_logger, log_event
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency, UserDependency, require_admin
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
@@ -39,6 +40,7 @@ EventServiceDependency = Annotated[EventService, Depends(get_event_service)]
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(require_admin)],
 )
+@audited("event.created")
 async def create_event(payload: EventCreate, service: EventServiceDependency) -> EventResponse:
     log_event(logger, 20, "event_create_requested")
     return await service.create(payload)
@@ -70,6 +72,7 @@ async def get_event(event_id: str, service: EventServiceDependency) -> EventResp
 
 
 @router.patch("/{event_id}", response_model=EventResponse, dependencies=[Depends(require_admin)])
+@audited("event.updated", resource_id="event_id")
 async def update_event(
     event_id: str,
     payload: EventUpdate,
@@ -82,6 +85,7 @@ async def update_event(
 @router.patch(
     "/{event_id}/rules", response_model=EventResponse, dependencies=[Depends(require_admin)]
 )
+@audited("event.rules_updated", resource_id="event_id")
 async def update_rules(
     event_id: str, payload: EventRules, service: EventServiceDependency
 ) -> EventResponse:
@@ -90,6 +94,7 @@ async def update_rules(
 
 
 @router.patch("/{event_id}/late-join", response_model=EventResponse)
+@audited("event.late_join_set", resource_id="event_id")
 async def set_late_join(
     event_id: str,
     payload: LateJoinUpdate,
@@ -101,6 +106,7 @@ async def set_late_join(
 
 
 @router.post("/{event_id}/rules/addenda", response_model=EventResponse)
+@audited("event.addendum_added", resource_id="event_id")
 async def add_rules_addendum(
     event_id: str,
     payload: RulesAddendumCreate,
@@ -112,6 +118,7 @@ async def add_rules_addendum(
 
 
 @router.post("/{event_id}/activate", response_model=EventResponse)
+@audited("event.activated", resource_id="event_id")
 async def activate_event(
     event_id: str, admin: AdminDependency, service: EventServiceDependency
 ) -> EventResponse:
@@ -122,6 +129,7 @@ async def activate_event(
 @router.post(
     "/{event_id}/finish", response_model=EventResponse, dependencies=[Depends(require_admin)]
 )
+@audited("event.finished", resource_id="event_id")
 async def finish_event(event_id: str, service: EventServiceDependency) -> EventResponse:
     log_event(logger, 20, "event_finish_requested", event_id=event_id)
     return await service.finish(event_id)

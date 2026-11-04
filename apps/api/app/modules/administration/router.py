@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.schemas import DirectoryUser, RoleUpdate, UserDirectory
 from app.modules.administration.service import AdministrationService
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency
 
 router = APIRouter(prefix="/admin", tags=["administration"])
@@ -38,6 +39,7 @@ async def administrators(
 
 
 @router.patch("/users/{user_id}/role", response_model=DirectoryUser)
+@audited("admin.role_changed", resource_id="user_id")
 async def change_role(
     user_id: str,
     payload: RoleUpdate,

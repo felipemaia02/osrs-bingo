@@ -12,6 +12,8 @@ from app.modules.security.dependencies import RequestLimiterDependency
 
 SESSION_COOKIE = "osrs_session"
 STATE_COOKIE = "osrs_oauth_state"
+# The authenticated user, kept on the request for the audit log (feature 059).
+CURRENT_USER_STATE = "current_user"
 
 
 async def get_auth_service(request: Request) -> AuthService:
@@ -46,6 +48,7 @@ async def require_user(
         user = await service.acting_user(bot.acting_discord_id)
     if request.method not in {"GET", "HEAD", "OPTIONS"}:
         await limiter.check("mutation", user.id, settings.mutation_requests_per_minute)
+    setattr(request.state, CURRENT_USER_STATE, user)
     return user
 
 

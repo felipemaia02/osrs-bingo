@@ -32,6 +32,7 @@ ROUTE_SCOPES: dict[tuple[str, str], BotRoute] = {
     ("GET", "/events/{event_id}/teams"): BotRoute(BotScope.TEAMS_READ, False),
     ("GET", "/events/{event_id}/score/me"): BotRoute(BotScope.SCORE_READ, True),
     ("POST", "/events/{event_id}/submissions"): BotRoute(BotScope.SUBMISSIONS_WRITE, True),
+    ("GET", "/bot/audit"): BotRoute(BotScope.AUDIT_READ, False),
 }
 
 

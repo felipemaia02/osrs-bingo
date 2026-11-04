@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
 
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.balance.kc import RAIDS
 from app.modules.balance.repository import BossKcSettingsRepository
@@ -31,6 +32,7 @@ async def get_boss_kc_settings(
 
 
 @router.put("", response_model=BossKcSettings)
+@audited("settings.boss_kc_updated")
 async def set_boss_kc_settings(
     payload: BossKcSettingsUpdate, admin: AdminDependency, settings: SettingsDependency
 ) -> BossKcSettings:
