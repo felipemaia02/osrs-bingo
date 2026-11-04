@@ -26,8 +26,8 @@ export interface AcceptedDrop {
   item_ids?: number[]
   /** False when a specific version was picked: only its IDs count. */
   match_by_name?: boolean
-  /** X in "1 / X", set by an admin (feature 060); null when unknown. */
-  drop_rate?: number | null
+  /** As the OSRS Wiki writes it ("1/127", "14/60", "Always"), set by an admin (060). */
+  drop_rate?: string | null
 }
 
 /** Expected kills and hours, computed by the API (feature 060); null = unknown. */

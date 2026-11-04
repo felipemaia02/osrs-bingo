@@ -147,11 +147,7 @@ export function TileDetailContent({
                       {matched ? <strong>{drop.name}</strong> : drop.name}
                     </span>
                     <span className="flex items-baseline gap-2 whitespace-nowrap text-xs">
-                      {drop.drop_rate && (
-                        <span className="text-rs-muted">
-                          {t('estimate.rate', { rate: drop.drop_rate })}
-                        </span>
-                      )}
+                      {drop.drop_rate && <span className="text-rs-muted">{drop.drop_rate}</span>}
                       <span className="font-semibold text-rs-gold-bright">
                         {t('cards.rules.progress', { count: drop.progress_weight })}
                       </span>

@@ -20,7 +20,7 @@ export interface DropRow {
   matchByName: boolean
   iconUrl: string | null
   weight: string
-  /** X of "1 / X"; empty when unknown (feature 060). */
+  /** As the wiki writes it ("1/127"); empty when unknown (feature 060). */
   dropRate: string
   // Kept untouched: the form doesn't edit them, saving must not erase them.
   aliases: string[]
@@ -168,7 +168,7 @@ export function cardToForm(card: CardSummary): CardForm {
         itemIds: drop.item_ids ?? [],
         matchByName: drop.match_by_name ?? true,
         weight: String(drop.progress_weight),
-        dropRate: drop.drop_rate ? String(drop.drop_rate) : '',
+        dropRate: drop.drop_rate ?? '',
         aliases: drop.aliases,
         verificationNote: drop.verification_note,
         countingRestriction: drop.counting_restriction,
@@ -201,7 +201,7 @@ export function toAcceptedDrops(rows: DropRow[]): AcceptedDrop[] {
         counting_restriction: row.countingRestriction,
         item_ids: row.itemIds,
         match_by_name: row.matchByName,
-        drop_rate: positiveOrNull(row.dropRate),
+        drop_rate: row.dropRate.trim() || null,
       }
     })
 }

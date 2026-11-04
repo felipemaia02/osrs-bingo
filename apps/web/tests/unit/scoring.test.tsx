@@ -230,7 +230,7 @@ describe('time estimates on the board (060)', () => {
   it('shows the whole-tile estimate, drop rates and what the team still needs', async () => {
     const hydraCard = {
       ...card('Hydra'),
-      drops: [{ ...card('Hydra').drops[0], drop_rate: 64 }],
+      drops: [{ ...card('Hydra').drops[0], drop_rate: '1/64' }],
       kills_per_hour: 24,
       estimate: { kills: 512, hours: 21.3, drops_without_rate: 0 },
     }

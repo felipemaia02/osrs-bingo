@@ -7,6 +7,7 @@ import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import {
   createCardRevision,
   fetchEhbRates,
+  matchEhbRate,
   previewEstimate,
   fetchCards,
   importWorkbookCatalog,
@@ -1079,35 +1080,70 @@ it('makes the card key from its name', async () => {
   expect(cardSlug('???')).toMatch(/^card-[a-z0-9]+$/)
 })
 
-it('fills kills per hour from a WOM boss, saves drop rates and previews the time (060)', async () => {
-  vi.mocked(fetchEhbRates).mockResolvedValue([
-    {
-      boss: 'vorkath',
-      label: 'Vorkath',
-      ironman_kills_per_hour: 34,
-      suggested_kills_per_hour: 27.2,
-    },
-  ])
+it('finds kills per hour on WOM by the card name and saves wiki-style drop rates (060)', async () => {
+  vi.mocked(matchEhbRate).mockResolvedValue({
+    boss: 'vorkath',
+    label: 'Vorkath',
+    ironman_kills_per_hour: 34,
+    suggested_kills_per_hour: 27.2,
+  })
   vi.mocked(previewEstimate).mockResolvedValue({ kills: 528, hours: 13.2, drops_without_rate: 0 })
   const { user, dialog } = await openEditor()
 
-  await user.selectOptions(
-    within(dialog).getByLabelText('Boss (Wise Old Man EHB)'),
-    'Vorkath — ironman 34/h',
+  await user.type(
+    within(dialog).getByLabelText('Drop rate of Skeletal Visage, as on the wiki'),
+    '1/5,000',
   )
-  expect(within(dialog).getByLabelText('Kills per hour')).toHaveValue(27.2)
-  await user.type(within(dialog).getByLabelText('Drop rate of Skeletal Visage (1 in X)'), '5000')
+  await user.click(within(dialog).getByRole('button', { name: 'Find on WOM' }))
 
+  expect(matchEhbRate).toHaveBeenCalledWith('Vorkath', expect.anything())
+  expect(within(dialog).getByLabelText('Kills per hour')).toHaveValue(27.2)
+  expect(
+    within(dialog).getByText('From Wise Old Man: Vorkath, ironman 34/h → 80% = 27.2/h'),
+  ).toBeInTheDocument()
   expect(await within(dialog).findByText(/≈ 528 kills · ≈ 13.2 h/)).toBeInTheDocument()
   await waitFor(() =>
     expect(previewEstimate).toHaveBeenLastCalledWith(
       expect.objectContaining({
         kills_per_hour: 27.2,
-        drops: [expect.objectContaining({ drop_rate: 5000 })],
+        drops: [expect.objectContaining({ drop_rate: '1/5,000' })],
       }),
     ),
   )
   const payload = await save(user, dialog)
   expect(payload).toMatchObject({ ehb_boss: 'vorkath', kills_per_hour: 27.2 })
-  expect(payload.drops[0].drop_rate).toBe(5000)
+  expect(payload.drops[0].drop_rate).toBe('1/5,000')
+})
+
+it('lets the admin pick a WOM boss or type kills per hour when the name has none (060)', async () => {
+  vi.mocked(matchEhbRate).mockRejectedValue(
+    new AxiosError('Not found', '404', undefined, undefined, {
+      status: 404,
+      data: { detail: 'No Wise Old Man boss has this name' },
+    } as never),
+  )
+  vi.mocked(fetchEhbRates).mockResolvedValue([
+    {
+      boss: 'cerberus',
+      label: 'Cerberus',
+      ironman_kills_per_hour: 54,
+      suggested_kills_per_hour: 43.2,
+    },
+  ])
+  const { user, dialog } = await openEditor()
+
+  await user.click(within(dialog).getByRole('button', { name: 'Find on WOM' }))
+  expect(
+    await within(dialog).findByText(/No Wise Old Man boss is called "Vorkath"/),
+  ).toBeInTheDocument()
+  await user.selectOptions(
+    await within(dialog).findByLabelText('Wise Old Man boss'),
+    'Cerberus — ironman 54/h',
+  )
+  expect(within(dialog).getByLabelText('Kills per hour')).toHaveValue(43.2)
+
+  await user.clear(within(dialog).getByLabelText('Kills per hour'))
+  await user.type(within(dialog).getByLabelText('Kills per hour'), '50')
+  const payload = await save(user, dialog)
+  expect(payload).toMatchObject({ ehb_boss: null, kills_per_hour: 50 })
 })

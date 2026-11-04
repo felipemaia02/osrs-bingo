@@ -15,7 +15,7 @@ from pydantic import (
     model_validator,
 )
 
-from app.modules.scoring.estimates import Estimate, card_estimate
+from app.modules.scoring.estimates import RATE_MAX_LENGTH, Estimate, card_estimate
 
 WIKI_ORIGIN = "https://oldschool.runescape.wiki"
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -71,15 +71,15 @@ class AcceptedDrop(BaseModel):
     item_ids: list[Annotated[int, Field(ge=0)]] = Field(default_factory=list, max_length=200)
     # False when a specific version was picked: only its IDs count, never the shared name.
     match_by_name: bool = True
-    # X in "1 / X", set by an admin because Wiki rates don't fit every activity (feature 060).
-    drop_rate: float | None = Field(default=None, gt=0, le=10_000_000)
+    # As the OSRS Wiki writes it ("1/127", "14/60", "Always"); set by an admin (feature 060).
+    drop_rate: str | None = Field(default=None, max_length=RATE_MAX_LENGTH)
 
     @field_validator("item_ids")
     @classmethod
     def unique_item_ids(cls, item_ids: list[int]) -> list[int]:
         return sorted(set(item_ids))
 
-    @field_validator("name", "verification_note", "counting_restriction")
+    @field_validator("name", "verification_note", "counting_restriction", "drop_rate")
     @classmethod
     def normalize_text(cls, value: str | None) -> str | None:
         if value is None:

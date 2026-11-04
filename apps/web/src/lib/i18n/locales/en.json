@@ -705,8 +705,8 @@
       "checkNone": "No clan drop in the last {{days}} days matched these drops (normal for rare items).",
       "checkMissing": "No match yet: {{names}}. Check the names if these drops are common.",
       "checkUnavailable": "No DropTracker data yet, so the clan drop check is off.",
-      "rate": "Rate 1 /",
-      "rateFor": "Drop rate of {{name}} (1 in X)"
+      "rate": "Rate",
+      "rateFor": "Drop rate of {{name}}, as on the wiki"
     },
     "unlinked_one": "{{count}} drop not auto-tracked",
     "unlinked_other": "{{count}} drops not auto-tracked",
@@ -1714,20 +1714,22 @@
   },
   "estimate": {
     "title": "Time estimate",
-    "boss": "Boss (Wise Old Man EHB)",
     "noBoss": "No boss",
     "bossOption": "{{name}} — ironman {{rate}}/h",
     "killsPerHour": "Kills per hour",
-    "suggestion": "Picking a boss fills 80% of the ironman rate; you can change it.",
     "ratesUnavailable": "Wise Old Man is unavailable; type the kills per hour by hand.",
     "fullTile": "Whole tile:",
     "remaining": "Still needed:",
     "value": "{{kills}} kills · {{hours}} h",
     "withoutRate_one": "({{count}} drop without a rate isn't counted)",
     "withoutRate_other": "({{count}} drops without a rate aren't counted)",
-    "rate": "1/{{rate}}",
     "hoursShort": "≈ {{hours}} h",
-    "disclaimer": "An average, not a guarantee: about half finish faster, and a dry streak can take 2–3× as long. Assumes solo kills."
+    "disclaimer": "An average, not a guarantee: about half finish faster, and a dry streak can take 2–3× as long. Assumes solo kills.",
+    "findOnWom": "Find on WOM",
+    "fromWom": "From Wise Old Man: {{name}}, ironman {{rate}}/h → 80% = {{suggested}}/h",
+    "fromWomBoss": "From Wise Old Man: {{name}}",
+    "notFound": "No Wise Old Man boss is called \"{{name}}\". Pick one below or type the kills per hour.",
+    "pickBoss": "Wise Old Man boss"
   },
   "activity": {
     "title": "Working on this",

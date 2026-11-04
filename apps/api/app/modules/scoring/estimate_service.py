@@ -1,13 +1,23 @@
 """Card time estimates for admins (feature 060): WOM boss rates and a live preview."""
 
+import re
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.core.exceptions import AppException
 from app.modules.profiles.wom import WomClient, WomUnavailableError
-from app.modules.scoring.estimates import Estimate, suggested_kills_per_hour
+from app.modules.scoring.estimates import RATE_MAX_LENGTH, Estimate, suggested_kills_per_hour
 from app.modules.tiles.schemas import revision_estimate
 
 WOM_UNAVAILABLE = "Wise Old Man is unavailable; type the kills per hour by hand"
+NO_WOM_BOSS = "No Wise Old Man boss has this name"
+# WOM names some bosses with an article: Hueycoatl → the_hueycoatl.
+WOM_PREFIX = "the_"
+
+
+def wom_key(name: str) -> str:
+    """ "Phantom Muspah" → "phantom_muspah", like WOM's boss metrics."""
+    return re.sub(r"[^a-z0-9]+", "_", name.casefold()).strip("_")
 
 
 class EhbRate(BaseModel):
@@ -23,7 +33,7 @@ class PreviewDrop(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     progress_weight: float = Field(gt=0, le=100_000)
-    drop_rate: float | None = Field(default=None, gt=0, le=10_000_000)
+    drop_rate: str | None = Field(default=None, max_length=RATE_MAX_LENGTH)
 
 
 class EstimatePreview(BaseModel):
@@ -54,6 +64,15 @@ class EstimateService:
             )
             for boss, rate in sorted(rates)
         ]
+
+    async def match(self, name: str) -> EhbRate:
+        """The WOM boss named like the card ("Find on WOM" button); 404 when none is."""
+        key = wom_key(name)
+        by_boss = {rate.boss: rate for rate in await self.ehb_rates()}
+        found = by_boss.get(key) or by_boss.get(WOM_PREFIX + key)
+        if found is None:
+            raise AppException(404, NO_WOM_BOSS)
+        return found
 
     @staticmethod
     def preview(card: EstimatePreview) -> Estimate:

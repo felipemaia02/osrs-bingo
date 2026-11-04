@@ -247,10 +247,10 @@ function DropRowItem({
         <label className="flex items-center gap-1 whitespace-nowrap text-xs text-rs-muted">
           {t('cards.drops.rate')}
           <input
-            type="number"
-            min="1"
-            step="any"
-            placeholder="—"
+            type="text"
+            inputMode="text"
+            maxLength={40}
+            placeholder="1/128"
             aria-label={t('cards.drops.rateFor', { name: label })}
             value={row.dropRate}
             onChange={(event) => onRate(event.target.value)}

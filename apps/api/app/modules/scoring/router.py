@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
@@ -70,6 +70,16 @@ EstimateServiceDependency = Annotated[EstimateService, Depends(get_estimate_serv
 async def ehb_rates(admin: AdminDependency, service: EstimateServiceDependency) -> list[EhbRate]:
     """WOM ironman EHB kills per hour per boss, with the 80 % suggestion (feature 060)."""
     return await service.ehb_rates()
+
+
+@admin_router.get("/estimates/ehb-rates/match", response_model=EhbRate)
+async def match_ehb_rate(
+    name: Annotated[str, Query(min_length=1, max_length=120)],
+    admin: AdminDependency,
+    service: EstimateServiceDependency,
+) -> EhbRate:
+    """The WOM boss named like the card, for the editor's "Find on WOM" button."""
+    return await service.match(name)
 
 
 @admin_router.post("/estimates/preview", response_model=Estimate)
