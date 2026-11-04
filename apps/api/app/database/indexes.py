@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo.errors import DuplicateKeyError
 
 from app.core.logging import get_logger, log_event
+from app.database.board_card_links import relink_orphaned_board_cards
 
 logger = get_logger(__name__)
 
@@ -226,4 +227,5 @@ class IndexManager:
             {"positions.card.kind": {"$exists": True}},
             {"$unset": {"positions.$[].card.kind": ""}},
         )
+        await relink_orphaned_board_cards(db)
         log_event(logger, 20, "database_indexes_ready")
