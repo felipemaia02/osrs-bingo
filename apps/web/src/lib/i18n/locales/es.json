@@ -557,7 +557,9 @@
     "reviewDescription": "Acepta o rechaza los envíos de los jugadores con la captura.",
     "draft": "Vista previa del draft",
     "draftDescription": "Jugadores disponibles para la elección de los capitanes.",
-    "rsnLine": "RSN: {{rsn}}"
+    "rsnLine": "RSN: {{rsn}}",
+    "audit": "Registro de auditoría",
+    "auditDescription": "Quién cambió qué, y cuándo."
   },
   "cards": {
     "title": "Catálogo de tarjetas",
@@ -1597,5 +1599,111 @@
         "text": "Envía los drops con captura. Casillas, filas y columnas completas dan puntos a tu equipo."
       }
     }
+  },
+  "audit": {
+    "description": "Todos los cambios hechos en la app: quién, cuándo y qué se envió.",
+    "retention": "Los registros se guardan 1 año (actividad en casillas: 30 días).",
+    "none": "Aún no se ha registrado nada.",
+    "noMatches": "Ningún registro coincide con estos filtros.",
+    "loadError": "No se pudo cargar el registro de auditoría. Inténtalo de nuevo.",
+    "loadMore": "Cargar más",
+    "empty": "vacío",
+    "columns": {
+      "when": "Cuándo",
+      "actor": "Quién",
+      "action": "Acción",
+      "what": "Qué",
+      "event": "Evento"
+    },
+    "actor": {
+      "bot": "Bot",
+      "botFor": "Bot para {{name}}"
+    },
+    "filters": {
+      "event": "Evento",
+      "allEvents": "Todos los eventos",
+      "group": "Tipo",
+      "allGroups": "Todos los tipos",
+      "actor": "Quién",
+      "actorPlaceholder": "Nombre",
+      "from": "Desde",
+      "to": "Hasta",
+      "clear": "Limpiar filtros"
+    },
+    "groups": {
+      "event": "Eventos",
+      "registration": "Inscripciones",
+      "team": "Equipos",
+      "board": "Tableros",
+      "card": "Cartas",
+      "submission": "Envíos",
+      "admin": "Administradores",
+      "profile": "Perfiles",
+      "activity": "Actividad en casillas",
+      "settings": "Ajustes"
+    },
+    "actions": {
+      "event": {
+        "created": "Evento creado",
+        "updated": "Evento editado",
+        "rules_updated": "Reglas editadas",
+        "late_join_set": "Entrada tardía cambiada",
+        "addendum_added": "Aclaración añadida",
+        "activated": "Evento activado",
+        "finished": "Evento terminado"
+      },
+      "registration": {
+        "requested": "Solicitud de inscripción",
+        "approved": "Inscripción aprobada",
+        "approved_all": "Todas las solicitudes aprobadas",
+        "approved_selected": "Solicitudes seleccionadas aprobadas",
+        "assigned_selected": "Jugadores seleccionados asignados",
+        "removed_selected": "Jugadores seleccionados eliminados",
+        "removed": "Inscripción eliminada",
+        "team_set": "Equipo cambiado",
+        "participation_set": "Rol / buy-in cambiado"
+      },
+      "team": {
+        "created": "Equipo creado",
+        "updated": "Equipo editado"
+      },
+      "board": {
+        "saved": "Tablero guardado",
+        "tile_updated": "Casilla en vivo actualizada"
+      },
+      "card": {
+        "created": "Carta creada",
+        "revised": "Carta revisada",
+        "retired": "Carta retirada",
+        "workbook_imported": "Hoja importada",
+        "items_linked": "Drops vinculados a objetos",
+        "artwork_uploaded": "Arte subido"
+      },
+      "submission": {
+        "created": "Envío hecho",
+        "accepted": "Envío aceptado",
+        "rejected": "Envío rechazado",
+        "reverted": "Envío revertido",
+        "screenshot_added": "Captura añadida"
+      },
+      "admin": {
+        "role_changed": "Acceso de admin cambiado"
+      },
+      "profile": {
+        "preferences_updated": "Preferencias cambiadas",
+        "account_added": "Cuenta vinculada",
+        "account_removed": "Cuenta desvinculada",
+        "main_changed": "Cuenta principal cambiada"
+      },
+      "activity": {
+        "started": "Empezó a trabajar en una casilla",
+        "stopped": "Dejó de trabajar en una casilla"
+      },
+      "settings": {
+        "boss_kc_updated": "Ajustes de KC de jefes cambiados"
+      }
+    },
+    "details_one": "{{count}} campo",
+    "details_other": "{{count}} campos"
   }
 }

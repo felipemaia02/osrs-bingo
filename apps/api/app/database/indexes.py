@@ -182,6 +182,11 @@ class IndexManager:
                 "partialFilterExpression": {"preverification_gate": {"$exists": True}},
             },
         ),
+        # Audit log (feature 059): newest first, per event or action, removed after expires_at.
+        ("audit_log", [("at", -1), ("_id", -1)], {"name": "audit_log_at"}),
+        ("audit_log", [("event_id", 1), ("at", -1)], {"name": "audit_log_event_at"}),
+        ("audit_log", [("action", 1), ("at", -1)], {"name": "audit_log_action_at"}),
+        ("audit_log", [("expires_at", 1)], {"name": "audit_log_expiry", "expireAfterSeconds": 0}),
     ]
 
     async def ensure_all(self, db: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]

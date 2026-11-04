@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request, status
 
 from app.core.config import settings
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import require_admin
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
@@ -36,6 +37,7 @@ TeamServiceDependency = Annotated[TeamService, Depends(get_team_service)]
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(require_admin)],
 )
+@audited("team.created")
 async def create_team(
     event_id: str, payload: TeamCreate, service: TeamServiceDependency
 ) -> TeamResponse:
@@ -62,6 +64,7 @@ async def list_teams(event_id: str, service: TeamServiceDependency) -> TeamListR
 
 
 @router.patch("/{team_id}", response_model=TeamResponse, dependencies=[Depends(require_admin)])
+@audited("team.updated", resource_id="team_id")
 async def update_team(
     event_id: str, team_id: str, payload: TeamUpdate, service: TeamServiceDependency
 ) -> TeamResponse:

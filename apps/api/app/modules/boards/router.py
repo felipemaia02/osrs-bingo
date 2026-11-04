@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
 
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import BoardPositionUpdate, BoardResponse, BoardSave
@@ -36,6 +37,7 @@ async def admin_board(
 
 
 @admin_router.put("", response_model=BoardResponse)
+@audited("board.saved", resource_id="event_id")
 async def save_board(
     event_id: str,
     payload: BoardSave,
@@ -46,6 +48,7 @@ async def save_board(
 
 
 @admin_router.put("/positions/{position}", response_model=BoardResponse)
+@audited("board.tile_updated", resource_id="position")
 async def update_position(
     event_id: str,
     position: int,

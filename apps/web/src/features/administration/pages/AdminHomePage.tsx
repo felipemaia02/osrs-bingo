@@ -5,6 +5,7 @@ import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined'
 import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined'
 import CoPresentOutlinedIcon from '@mui/icons-material/CoPresentOutlined'
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined'
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined'
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
 import ViewModuleOutlinedIcon from '@mui/icons-material/ViewModuleOutlined'
@@ -181,6 +182,16 @@ function useSections(overview: AdminOverview): Section[] {
       titleKey: 'admin.ranking',
       descriptionKey: 'admin.rankingDescription',
       icon: <LeaderboardOutlinedIcon sx={{ fontSize: 20 }} />,
+      badges: [],
+      mobileDetail: null,
+      mobileBadge: null,
+    },
+    {
+      key: 'audit',
+      to: '/admin/audit',
+      titleKey: 'admin.audit',
+      descriptionKey: 'admin.auditDescription',
+      icon: <HistoryOutlinedIcon sx={{ fontSize: 20 }} />,
       badges: [],
       mobileDetail: null,
       mobileBadge: null,

@@ -6,6 +6,7 @@ from fastapi.responses import RedirectResponse, Response
 
 from app.core.config import settings
 from app.core.storage import ScreenshotStorage
+from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import MAX_BOARD_POSITIONS
@@ -58,6 +59,7 @@ SubmissionServiceDependency = Annotated[SubmissionService, Depends(get_submissio
     response_model=SubmissionResponse,
     status_code=status.HTTP_201_CREATED,
 )
+@audited("submission.created")
 async def submit(
     event_id: str,
     user: UserDependency,
@@ -96,6 +98,7 @@ async def screenshot(
 
 
 @player_router.post("/submissions/{submission_id}/screenshot", response_model=SubmissionResponse)
+@audited("submission.screenshot_added", resource_id="submission_id")
 async def attach_screenshot(
     submission_id: str,
     user: UserDependency,
@@ -117,6 +120,7 @@ async def review_queue(
 
 
 @admin_router.post("/submissions/{submission_id}/accept", response_model=SubmissionResponse)
+@audited("submission.accepted", resource_id="submission_id")
 async def accept(
     submission_id: str, admin: AdminDependency, service: SubmissionServiceDependency
 ) -> SubmissionResponse:
@@ -124,6 +128,7 @@ async def accept(
 
 
 @admin_router.post("/submissions/{submission_id}/reject", response_model=SubmissionResponse)
+@audited("submission.rejected", resource_id="submission_id")
 async def reject(
     submission_id: str,
     payload: SubmissionReject,
@@ -134,6 +139,7 @@ async def reject(
 
 
 @admin_router.post("/submissions/{submission_id}/revert", response_model=SubmissionResponse)
+@audited("submission.reverted", resource_id="submission_id")
 async def revert(
     submission_id: str,
     payload: SubmissionReject,
