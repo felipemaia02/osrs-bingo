@@ -72,6 +72,8 @@ vi.mock('../src/features/cards/api/cardsApi', () => ({
   linkCatalogItems: vi.fn(),
   uploadCardArtwork: vi.fn(),
   fetchEhbRates: vi.fn().mockResolvedValue([]),
+  matchEhbRate: vi.fn(),
+  fetchWikiRates: vi.fn().mockResolvedValue([]),
   previewEstimate: vi.fn().mockResolvedValue({ kills: null, hours: null, drops_without_rate: 0 }),
 }))
 

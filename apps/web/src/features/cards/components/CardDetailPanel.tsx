@@ -30,7 +30,9 @@ export function CardDetailPanel({ card, onClose }: CardDetailPanelProps) {
         <>
           <div className="flex items-center justify-between border-b border-rs-border px-3.5 py-3">
             <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold">
-              {t(`cards.kind.${card.revision.kind}`)}
+              {(card.revision.categories ?? [])
+                .map((category) => t(`cards.category.${category}`))
+                .join(' · ') || t('cards.detail.card')}
             </span>
             <button
               type="button"

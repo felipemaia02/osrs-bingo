@@ -26,7 +26,6 @@ export function boardToTiles(
     row,
     col: column,
     name: card.name,
-    kind: card.kind,
     tier: card.difficulty,
     points: card.tile_score,
     requirement: card.completion_requirement,

@@ -4,7 +4,9 @@ import {
   createCardRevision,
   fetchCards,
   fetchEhbRates,
+  fetchWikiRates,
   importWorkbookCatalog,
+  matchEhbRate,
   linkCatalogItems,
   previewDropMatches,
   previewEstimate,
@@ -64,8 +66,12 @@ export function useDropMatchPreview(drops: DropMatchInput[]) {
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
-export function useEhbRates() {
-  return useQuery({ queryKey: ['ehb-rates'], queryFn: fetchEhbRates, staleTime: DAY_MS })
+export function useEhbRates(enabled: boolean) {
+  return useQuery({ queryKey: ['ehb-rates'], queryFn: fetchEhbRates, staleTime: DAY_MS, enabled })
+}
+
+export function useMatchEhbRate() {
+  return useMutation({ mutationFn: matchEhbRate })
 }
 
 export function useEstimatePreview(input: EstimateInput | null) {
@@ -74,5 +80,11 @@ export function useEstimatePreview(input: EstimateInput | null) {
     queryFn: () => previewEstimate(input as EstimateInput),
     enabled: input !== null,
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useWikiRates() {
+  return useMutation({
+    mutationFn: ({ card, items }: { card: string; items: string[] }) => fetchWikiRates(card, items),
   })
 }

@@ -51,3 +51,27 @@ async def test_failed_index_setup_closes_database_and_does_not_start_application
 
     database_client.disconnect.assert_awaited_once()
     initialize.assert_not_awaited()
+
+
+async def test_startup_clears_removed_roles_and_card_types() -> None:
+    collections: dict[str, MagicMock] = {}
+
+    def collection(name: str) -> MagicMock:
+        if name not in collections:
+            collections[name] = MagicMock(create_index=AsyncMock(), update_many=AsyncMock())
+        return collections[name]
+
+    database = MagicMock()
+    database.__getitem__.side_effect = collection
+
+    await IndexManager().ensure_all(database)
+
+    collections["players"].update_many.assert_any_await(
+        {"role": "instructor"}, {"$set": {"role": None}}
+    )
+    collections["tile_cards"].update_many.assert_awaited_once_with(
+        {"revisions.kind": {"$exists": True}}, {"$unset": {"revisions.$[].kind": ""}}
+    )
+    collections["event_boards"].update_many.assert_awaited_once_with(
+        {"positions.card.kind": {"$exists": True}}, {"$unset": {"positions.$[].card.kind": ""}}
+    )

@@ -1,12 +1,17 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Query, Request
 
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
-from app.modules.scoring.estimate_service import EhbRate, EstimatePreview, EstimateService
+from app.modules.scoring.estimate_service import (
+    EhbRate,
+    EstimatePreview,
+    EstimateService,
+    WikiDropRate,
+)
 from app.modules.scoring.estimates import Estimate
 from app.modules.scoring.schemas import RankingResponse, TeamHomeResponse, TeamScoreResponse
 from app.modules.scoring.service import ScoringService
@@ -70,6 +75,27 @@ EstimateServiceDependency = Annotated[EstimateService, Depends(get_estimate_serv
 async def ehb_rates(admin: AdminDependency, service: EstimateServiceDependency) -> list[EhbRate]:
     """WOM ironman EHB kills per hour per boss, with the 80 % suggestion (feature 060)."""
     return await service.ehb_rates()
+
+
+@admin_router.get("/estimates/ehb-rates/match", response_model=EhbRate)
+async def match_ehb_rate(
+    name: Annotated[str, Query(min_length=1, max_length=120)],
+    admin: AdminDependency,
+    service: EstimateServiceDependency,
+) -> EhbRate:
+    """The WOM boss named like the card, for the editor's "Find on WOM" button."""
+    return await service.match(name)
+
+
+@admin_router.get("/estimates/wiki-rates", response_model=list[WikiDropRate])
+async def wiki_drop_rates(
+    card: Annotated[str, Query(min_length=1, max_length=120)],
+    items: Annotated[list[str], Query(min_length=1, max_length=100)],
+    admin: AdminDependency,
+    service: EstimateServiceDependency,
+) -> list[WikiDropRate]:
+    """Each drop's rate as the OSRS Wiki writes it, for the editor's "Import from wiki"."""
+    return await service.wiki_rates(card, [item.strip() for item in items if item.strip()])
 
 
 @admin_router.post("/estimates/preview", response_model=Estimate)

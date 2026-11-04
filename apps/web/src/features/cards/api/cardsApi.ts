@@ -7,6 +7,7 @@ import type {
   DropMatchInput,
   DropMatchPreview,
   EhbRate,
+  WikiDropRate,
   Estimate,
   ItemSearchResult,
   LinkItemsResult,
@@ -104,8 +105,21 @@ export async function fetchEhbRates(): Promise<EhbRate[]> {
 
 export interface EstimateInput {
   completion_requirement: number
-  drops: { progress_weight: number; drop_rate: number | null }[]
+  drops: { progress_weight: number; drop_rate: string | null }[]
   kills_per_hour: number | null
+}
+
+/** The WOM boss named like the card; 404 when none is (060 rev 1). */
+export async function matchEhbRate(name: string): Promise<EhbRate> {
+  return (await apiClient.get<EhbRate>('/admin/estimates/ehb-rates/match', { params: { name } }))
+    .data
+}
+
+/** Each drop's rate as the OSRS Wiki writes it, for this card (060 rev 2). */
+export async function fetchWikiRates(card: string, items: string[]): Promise<WikiDropRate[]> {
+  const params = new URLSearchParams({ card })
+  items.forEach((item) => params.append('items', item))
+  return (await apiClient.get<WikiDropRate[]>('/admin/estimates/wiki-rates', { params })).data
 }
 
 /** Expected kills and hours for unsaved card values; the formula lives in the API. */

@@ -43,7 +43,6 @@ export function TileDetailContent({
           <div className="flex flex-wrap gap-1.5">
             <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
             <Badge tone="neutral">{t('tile.points', { count: tile.points })}</Badge>
-            <Badge tone="neutral">{t(`cards.kind.${tile.kind}`)}</Badge>
             {tile.bonus && <Badge tone="gold">★ {t('board.bonus.card')}</Badge>}
             {tile.requiresPreverification && (
               <Badge tone={tile.preverification === 'accepted' ? 'success' : 'info'}>
@@ -147,11 +146,7 @@ export function TileDetailContent({
                       {matched ? <strong>{drop.name}</strong> : drop.name}
                     </span>
                     <span className="flex items-baseline gap-2 whitespace-nowrap text-xs">
-                      {drop.drop_rate && (
-                        <span className="text-rs-muted">
-                          {t('estimate.rate', { rate: drop.drop_rate })}
-                        </span>
-                      )}
+                      {drop.drop_rate && <span className="text-rs-muted">{drop.drop_rate}</span>}
                       <span className="font-semibold text-rs-gold-bright">
                         {t('cards.rules.progress', { count: drop.progress_weight })}
                       </span>

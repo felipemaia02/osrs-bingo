@@ -1,6 +1,5 @@
 export type CardStatus = 'active' | 'retired'
 export type CardDifficulty = 'Low' | 'Mid' | 'High'
-export type CardKind = 'boss' | 'boss_group' | 'raid' | 'activity' | 'task'
 
 /** Clan-style groups for browsing (feature 040); never used for scoring. */
 export const CARD_CATEGORIES = [
@@ -26,8 +25,8 @@ export interface AcceptedDrop {
   item_ids?: number[]
   /** False when a specific version was picked: only its IDs count. */
   match_by_name?: boolean
-  /** X in "1 / X", set by an admin (feature 060); null when unknown. */
-  drop_rate?: number | null
+  /** As the OSRS Wiki writes it ("1/127", "14/60", "Always"), set by an admin (060). */
+  drop_rate?: string | null
 }
 
 /** Expected kills and hours, computed by the API (feature 060); null = unknown. */
@@ -35,6 +34,13 @@ export interface Estimate {
   kills: number | null
   hours: number | null
   drops_without_rate: number
+}
+
+/** A drop's rate on the OSRS Wiki for a card: `rate` when one fits, else `sources` to pick. */
+export interface WikiDropRate {
+  name: string
+  rate: string | null
+  sources: { source: string; rarity: string }[]
 }
 
 /** A WOM boss with its ironman EHB rate and the 80 % suggestion. */
@@ -116,7 +122,6 @@ export interface CardRevision {
   revision: number
   name: string
   description: string | null
-  kind: CardKind
   difficulty: CardDifficulty
   tile_score: number
   completion_requirement: number
@@ -156,7 +161,6 @@ export interface CardDetail extends CardSummary {
 export interface CardRevisionPayload {
   name: string
   description: string | null
-  kind: CardKind
   difficulty: CardDifficulty
   tile_score: number
   completion_requirement: number

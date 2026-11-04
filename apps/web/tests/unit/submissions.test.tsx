@@ -43,7 +43,6 @@ function snapshot(name: string, requires: boolean): BoardCardSnapshot {
     card_revision: 2,
     name,
     description: null,
-    kind: 'boss',
     difficulty: 'Mid',
     tile_score: 10,
     completion_requirement: 8,

@@ -575,18 +575,10 @@
       "active": "Activa",
       "retired": "Retirada"
     },
-    "kind": {
-      "boss": "Jefe",
-      "boss_group": "Grupo de jefes",
-      "raid": "Raid",
-      "activity": "Actividad",
-      "task": "Tarea"
-    },
     "form": {
       "createTitle": "Crear tarjeta del catálogo",
       "reviseTitle": "Publicar una nueva revisión",
       "name": "Nombre",
-      "kind": "Tipo de tarjeta",
       "difficulty": "Dificultad",
       "score": "Puntos al completar",
       "requirement": "Requisito de progreso",
@@ -705,8 +697,14 @@
       "checkNone": "Ningún drop del clan en los últimos {{days}} días coincidió con estos drops (normal en ítems raros).",
       "checkMissing": "Aún sin coincidencias: {{names}}. Revisa los nombres si son drops comunes.",
       "checkUnavailable": "Aún no hay datos de DropTracker, así que la comprobación de drops del clan está apagada.",
-      "rate": "Tasa 1 /",
-      "rateFor": "Tasa de drop de {{name}} (1 de X)"
+      "rate": "Tasa",
+      "rateFor": "Tasa de drop de {{name}}, como en la wiki",
+      "wikiImport": "Importar tasas de la wiki",
+      "wikiUnavailable": "La OSRS Wiki no está disponible; escribe las tasas a mano.",
+      "wikiFilled_one": "{{count}} tasa rellenada desde la wiki.",
+      "wikiFilled_other": "{{count}} tasas rellenadas desde la wiki.",
+      "wikiMissing": "No encontrado en la wiki: {{names}}.",
+      "wikiPick": "{{name}} tiene varias fuentes en la wiki:"
     },
     "unlinked_one": "{{count}} drop no automático",
     "unlinked_other": "{{count}} drops no automáticos",
@@ -732,6 +730,9 @@
       "hint": "PNG, JPEG o WebP, hasta 5 MB. Se muestra en lugar de la imagen de la OSRS Wiki. Sube solo arte del clan o que puedan usar.",
       "inUse": "Arte del clan",
       "credit": "Arte de {{artist}}"
+    },
+    "detail": {
+      "card": "Carta"
     }
   },
   "boards": {
@@ -1712,20 +1713,22 @@
   },
   "estimate": {
     "title": "Estimación de tiempo",
-    "boss": "Jefe (EHB de Wise Old Man)",
     "noBoss": "Sin jefe",
     "bossOption": "{{name}} — ironman {{rate}}/h",
     "killsPerHour": "Kills por hora",
-    "suggestion": "Elegir un jefe rellena el 80% de la tasa de ironman; puedes cambiarlo.",
     "ratesUnavailable": "Wise Old Man no está disponible; escribe las kills por hora a mano.",
     "fullTile": "Casilla completa:",
     "remaining": "Aún falta:",
     "value": "{{kills}} kills · {{hours}} h",
     "withoutRate_one": "({{count}} drop sin tasa no se cuenta)",
     "withoutRate_other": "({{count}} drops sin tasa no se cuentan)",
-    "rate": "1/{{rate}}",
     "hoursShort": "≈ {{hours}} h",
-    "disclaimer": "Es una media, no una garantía: cerca de la mitad termina antes y una mala racha puede tardar 2–3× más. Supone kills en solitario."
+    "disclaimer": "Es una media, no una garantía: cerca de la mitad termina antes y una mala racha puede tardar 2–3× más. Supone kills en solitario.",
+    "findOnWom": "Buscar en WOM",
+    "fromWom": "De Wise Old Man: {{name}}, ironman {{rate}}/h → 80% = {{suggested}}/h",
+    "fromWomBoss": "De Wise Old Man: {{name}}",
+    "notFound": "Ningún jefe de Wise Old Man se llama \"{{name}}\". Elige uno abajo o escribe las kills por hora.",
+    "pickBoss": "Jefe de Wise Old Man"
   },
   "activity": {
     "title": "Trabajando en esta casilla",

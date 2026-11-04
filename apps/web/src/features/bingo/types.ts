@@ -1,4 +1,4 @@
-import type { AcceptedDrop, CardKind, Estimate } from '../cards/types'
+import type { AcceptedDrop, Estimate } from '../cards/types'
 
 export type TileTier = 'Low' | 'Mid' | 'High'
 
@@ -36,7 +36,6 @@ export interface Tile {
   row: number
   col: number
   name: string
-  kind: CardKind
   tier: TileTier
   points: number
   requirement: number

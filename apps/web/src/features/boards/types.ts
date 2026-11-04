@@ -4,7 +4,6 @@ import type {
   CardCategory,
   CardDifficulty,
   Estimate,
-  CardKind,
   CardProvenance,
   WikiImage,
 } from '../cards/types'
@@ -15,7 +14,6 @@ export interface BoardCardSnapshot {
   card_revision: number
   name: string
   description: string | null
-  kind: CardKind
   difficulty: CardDifficulty
   tile_score: number
   completion_requirement: number

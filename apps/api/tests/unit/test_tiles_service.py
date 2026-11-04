@@ -20,7 +20,6 @@ def card_payload(**changes: object) -> CardCreate:
     values: dict[str, object] = {
         "slug": "vorkath",
         "name": "Vorkath",
-        "kind": "boss",
         "difficulty": "High",
         "tile_score": 13,
         "completion_requirement": 8,
