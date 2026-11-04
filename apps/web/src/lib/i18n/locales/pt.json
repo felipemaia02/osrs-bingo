@@ -851,7 +851,14 @@
       "reason": "Motivo que os jogadores vão ver",
       "reasonPlaceholder": "ex.: O requisito estava errado: 6, não 8.",
       "confirm": "Atualizar quadrado",
-      "done": "{{name}} atualizado no board ao vivo."
+      "done": "{{name}} atualizado no board ao vivo.",
+      "updateAll": "Atualizar todos ({{count}})",
+      "updateAllTitle_one": "Atualizar {{count}} card no board ao vivo",
+      "updateAllTitle_other": "Atualizar {{count}} cards no board ao vivo",
+      "reasonAllPlaceholder": "ex.: Pesos dos drops revisados após a primeira semana.",
+      "confirmAll": "Atualizar todos",
+      "doneAll_one": "{{count}} card atualizado no board ao vivo.",
+      "doneAll_other": "{{count}} cards atualizados no board ao vivo."
     }
   },
   "brand": {

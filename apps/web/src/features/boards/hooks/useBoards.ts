@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { fetchAdminBoard, fetchPublicBoard, saveBoard, updateBoardPosition } from '../api/boardsApi'
+import {
+  fetchAdminBoard,
+  fetchPublicBoard,
+  saveBoard,
+  updateAllBoardCards,
+  updateBoardPosition,
+} from '../api/boardsApi'
 
 export function useAdminBoard(eventId: string | null) {
   return useQuery({
@@ -24,6 +30,14 @@ export function useSaveBoard() {
     onSuccess: async (board) => {
       await client.invalidateQueries({ queryKey: ['boards', 'admin', board.event_id] })
     },
+  })
+}
+
+export function useUpdateAllBoardCards() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: updateAllBoardCards,
+    onSuccess: () => client.invalidateQueries(),
   })
 }
 

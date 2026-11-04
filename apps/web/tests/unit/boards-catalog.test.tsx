@@ -22,6 +22,7 @@ import {
 import {
   fetchAdminBoard,
   saveBoard,
+  updateAllBoardCards,
   updateBoardPosition,
 } from '../../src/features/boards/api/boardsApi'
 import type { CardSummary } from '../../src/features/cards/types'
@@ -540,6 +541,53 @@ describe('board builder v2', () => {
       reason: 'Typo: 6, not 8',
     })
     expect(await screen.findByText('Vorkath updated on the live board.')).toBeInTheDocument()
+  })
+
+  it('updates every outdated live square at once with one reason (067)', async () => {
+    const second: CardSummary = { ...CARD, id: 'card-2', slug: 'zulrah' }
+    second.revision = { ...CARD.revision, name: 'Zulrah' }
+    const bump = (card: CardSummary): CardSummary => ({
+      ...card,
+      current_revision: 2,
+      revision: { ...card.revision, revision: 2, completion_requirement: 6 },
+    })
+    vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
+    vi.mocked(fetchCards).mockResolvedValue([bump(CARD), bump(second)])
+    vi.mocked(fetchAdminBoard).mockResolvedValue({
+      ...boardWith([
+        [1, CARD],
+        [2, second],
+      ]),
+      status: 'published',
+    })
+    vi.mocked(updateAllBoardCards).mockResolvedValue({
+      ...boardWith([
+        [1, bump(CARD)],
+        [2, bump(second)],
+      ]),
+      status: 'published',
+    })
+    const user = userEvent.setup()
+    renderApp(<AppRouter />, '/admin/boards')
+    await screen.findByRole('option', { name: 'Summer Bingo · Active' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    const fixes = await screen.findByRole('region', { name: 'Card fixes during the event' })
+    await user.click(within(fixes).getByRole('button', { name: 'Update all (2)' }))
+    const dialog = screen.getByRole('dialog', { name: 'Update 2 cards on the live board' })
+    expect(dialog).toHaveTextContent('Vorkath')
+    expect(dialog).toHaveTextContent('Zulrah')
+    const confirm = within(dialog).getByRole('button', { name: 'Update all' })
+    expect(confirm).toBeDisabled()
+    await user.type(within(dialog).getByLabelText('Reason players will see'), 'Weights reviewed')
+    await user.click(confirm)
+
+    await waitFor(() => expect(updateAllBoardCards).toHaveBeenCalledOnce())
+    expect(vi.mocked(updateAllBoardCards).mock.calls[0][0]).toEqual({
+      eventId: EVENT.id,
+      reason: 'Weights reviewed',
+    })
+    expect(await screen.findByText('2 cards updated on the live board.')).toBeInTheDocument()
   })
 
   it('offers catalog setup when no cards exist', async () => {

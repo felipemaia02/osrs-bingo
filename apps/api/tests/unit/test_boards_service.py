@@ -9,7 +9,7 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.auth.schemas import CurrentUser
 from app.modules.boards.models import BoardDocument
 from app.modules.boards.repository import BoardRepository
-from app.modules.boards.schemas import BoardPositionUpdate, BoardSave, BoardStatus
+from app.modules.boards.schemas import BoardCardsUpdate, BoardPositionUpdate, BoardSave, BoardStatus
 from app.modules.boards.service import BoardService, is_publishable_board
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
@@ -435,3 +435,68 @@ async def test_live_fixes_need_an_active_event_and_a_newer_revision(
             EVENT_ID, 1, BoardPositionUpdate(card_revision=card_revision, reason="fix"), ADMIN
         )
     boards.replace_card.assert_not_awaited()
+
+
+def two_square_live_board() -> BoardDocument:
+    board = live_board()
+    other = {**board["positions"][0], "position": 2, "column": 2}
+    other["card"] = {**other["card"], "card_id": "other-card"}
+    board["positions"].append(other)
+    return board
+
+
+async def test_update_all_moves_only_outdated_squares_in_one_write(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    """067: every square whose card has a newer active revision, with one reason."""
+    boards, cards, events = repositories
+    events.get.return_value = event_document(EventStatus.ACTIVE)
+    boards.get_by_event.return_value = two_square_live_board()
+    # Square 1's card has revision 2; square 2's card is still on revision 1.
+    cards.get.side_effect = lambda card_id: (
+        card_with_revision_two() if card_id != "other-card" else card_document()
+    )
+    boards.replace_positions.return_value = live_board(2)
+
+    await BoardService(boards, cards, events).update_all_cards(
+        EVENT_ID, BoardCardsUpdate(reason=" Weights fixed "), ADMIN
+    )
+
+    event_id, revision, positions, updated_by = boards.replace_positions.await_args.args
+    assert (event_id, revision, updated_by) == (EVENT_ID, 1, ADMIN.id)
+    moved, kept = positions
+    assert moved["card"]["card_revision"] == 2 and moved["card"]["completion_requirement"] == 6
+    assert moved["updates"][-1]["reason"] == "Weights fixed"
+    assert moved["updates"][-1]["from_revision"] == 1
+    assert kept["card"]["card_revision"] == 1 and "updates" not in kept
+    boards.replace_card.assert_not_awaited()
+
+
+async def test_update_all_needs_something_newer_and_skips_retired_cards(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    events.get.return_value = event_document(EventStatus.ACTIVE)
+    boards.get_by_event.return_value = live_board()
+    retired = card_with_revision_two()
+    retired["status"] = CardStatus.RETIRED
+    cards.get.return_value = retired
+
+    with pytest.raises(ConflictError, match="already up to date"):
+        await BoardService(boards, cards, events).update_all_cards(
+            EVENT_ID, BoardCardsUpdate(reason="fix"), ADMIN
+        )
+    boards.replace_positions.assert_not_awaited()
+
+
+async def test_update_all_is_only_for_the_active_board(
+    repositories: tuple[AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    boards, cards, events = repositories
+    events.get.return_value = event_document(EventStatus.DRAFT)
+    boards.get_by_event.return_value = live_board()
+
+    with pytest.raises(ConflictError, match="active event"):
+        await BoardService(boards, cards, events).update_all_cards(
+            EVENT_ID, BoardCardsUpdate(reason="fix"), ADMIN
+        )

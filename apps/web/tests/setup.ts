@@ -82,6 +82,7 @@ vi.mock('../src/features/boards/api/boardsApi', () => ({
   fetchPublicBoard: vi.fn().mockResolvedValue(null),
   saveBoard: vi.fn(),
   updateBoardPosition: vi.fn(),
+  updateAllBoardCards: vi.fn(),
 }))
 
 vi.mock('../src/features/submissions/api/submissionsApi', () => ({

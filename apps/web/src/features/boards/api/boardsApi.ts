@@ -49,3 +49,16 @@ export async function updateBoardPosition({
     })
   ).data
 }
+
+/** Every square of the live board to its card's latest revision, one reason (feature 067). */
+export async function updateAllBoardCards({
+  eventId,
+  reason,
+}: {
+  eventId: string
+  reason: string
+}): Promise<EventBoard> {
+  return (
+    await apiClient.post<EventBoard>(`/admin/events/${eventId}/board/update-cards`, { reason })
+  ).data
+}

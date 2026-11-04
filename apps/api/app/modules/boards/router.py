@@ -5,7 +5,12 @@ from fastapi import APIRouter, Depends, Request
 from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency
 from app.modules.boards.repository import BoardRepository
-from app.modules.boards.schemas import BoardPositionUpdate, BoardResponse, BoardSave
+from app.modules.boards.schemas import (
+    BoardCardsUpdate,
+    BoardPositionUpdate,
+    BoardResponse,
+    BoardSave,
+)
 from app.modules.boards.service import BoardService
 from app.modules.events.repository import EventRepository
 from app.modules.tiles.repository import CardRepository
@@ -58,3 +63,15 @@ async def update_position(
 ) -> BoardResponse:
     """Fix a live square with a newer revision of its card (feature 036)."""
     return await service.update_position(event_id, position, payload, admin)
+
+
+@admin_router.post("/update-cards", response_model=BoardResponse)
+@audited("board.cards_updated", resource_id="event_id")
+async def update_all_cards(
+    event_id: str,
+    payload: BoardCardsUpdate,
+    admin: AdminDependency,
+    service: BoardServiceDependency,
+) -> BoardResponse:
+    """Bring every square of the live board to its card's latest revision (feature 067)."""
+    return await service.update_all_cards(event_id, payload, admin)

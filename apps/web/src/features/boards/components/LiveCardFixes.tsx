@@ -5,7 +5,7 @@ import { Button } from '../../../components/ui/Button'
 import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { FormModal } from '../../../components/ui/FormModal'
 import type { CardSummary } from '../../cards/types'
-import { useUpdateBoardPosition } from '../hooks/useBoards'
+import { useUpdateAllBoardCards, useUpdateBoardPosition } from '../hooks/useBoards'
 import type { BoardCardSnapshot, BoardPosition, EventBoard } from '../types'
 import { usePositionLabel } from '../hooks/usePositionLabel'
 
@@ -34,6 +34,7 @@ export function LiveCardFixes({
   const { t, i18n } = useTranslation()
   const label = usePositionLabel(board.size)
   const [open, setOpen] = useState<Pending | null>(null)
+  const [updatingAll, setUpdatingAll] = useState(false)
   const byId = new Map(cards.map((card) => [card.id, card]))
   const available = board.positions.flatMap((position) => {
     const card = byId.get(position.card.card_id)
@@ -56,6 +57,13 @@ export function LiveCardFixes({
         {t('boards.live.title')}
       </h2>
       <p className="m-0 text-xs text-rs-muted">{t('boards.live.hint')}</p>
+      {available.length > 1 && (
+        <span>
+          <Button size="sm" variant="primary" onClick={() => setUpdatingAll(true)}>
+            {t('boards.live.updateAll', { count: available.length })}
+          </Button>
+        </span>
+      )}
       {available.length ? (
         <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
           {available.map(({ position, card }) => (
@@ -98,6 +106,18 @@ export function LiveCardFixes({
             ))}
           </ul>
         </details>
+      )}
+      {updatingAll && (
+        <UpdateAllModal
+          eventId={eventId}
+          pending={available}
+          label={label}
+          onClose={() => setUpdatingAll(false)}
+          onDone={(message) => {
+            setUpdatingAll(false)
+            onDone(message)
+          }}
+        />
       )}
       {open && (
         <UpdateCardModal
@@ -249,6 +269,91 @@ function UpdateCardModal({
           </Button>
           <Button type="submit" variant="primary" disabled={update.isPending || !reason.trim()}>
             {t(update.isPending ? 'common.saving' : 'boards.live.confirm')}
+          </Button>
+        </div>
+      </form>
+    </FormModal>
+  )
+}
+
+/** Feature 067: every outdated square at once, with the reason players will see. */
+function UpdateAllModal({
+  eventId,
+  pending,
+  label,
+  onClose,
+  onDone,
+}: {
+  eventId: string
+  pending: Pending[]
+  label: (position: number) => string
+  onClose: () => void
+  onDone: (message: string) => void
+}) {
+  const { t } = useTranslation()
+  const update = useUpdateAllBoardCards()
+  const [reason, setReason] = useState('')
+  const [error, setError] = useState(false)
+
+  async function submit(event: FormEvent) {
+    event.preventDefault()
+    setError(false)
+    try {
+      await update.mutateAsync({ eventId, reason: reason.trim() })
+      onDone(t('boards.live.doneAll', { count: pending.length }))
+    } catch {
+      setError(true)
+    }
+  }
+
+  return (
+    <FormModal
+      title={t('boards.live.updateAllTitle', { count: pending.length })}
+      busy={update.isPending}
+      onClose={onClose}
+    >
+      <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-3">
+        <ul className="m-0 flex list-none flex-col gap-1 p-0 text-[13px]">
+          {pending.map(({ position, card }) => (
+            <li key={position.position}>
+              <strong>{position.card.name}</strong>{' '}
+              <span className="text-rs-muted">
+                · {label(position.position)} ·{' '}
+                {t('boards.live.revisions', {
+                  from: position.card.card_revision,
+                  to: card.current_revision,
+                })}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="m-0 text-xs text-rs-muted">{t('boards.live.effect')}</p>
+        <label className="flex flex-col gap-1 text-[13px] font-semibold">
+          {t('boards.live.reason')}
+          <textarea
+            required
+            rows={3}
+            maxLength={REASON_MAX_LENGTH}
+            value={reason}
+            onChange={(change) => setReason(change.target.value)}
+            placeholder={t('boards.live.reasonAllPlaceholder')}
+            className={`${FIELD_CLASS} resize-y py-2 font-normal`}
+          />
+        </label>
+        {error && (
+          <p
+            role="alert"
+            className="m-0 rounded-sm border border-rs-danger/60 bg-rs-danger-bg p-3 text-sm"
+          >
+            {t('common.apiError')}
+          </p>
+        )}
+        <div className="flex justify-end gap-2">
+          <Button onClick={onClose} disabled={update.isPending}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" variant="primary" disabled={update.isPending || !reason.trim()}>
+            {t(update.isPending ? 'common.saving' : 'boards.live.confirmAll')}
           </Button>
         </div>
       </form>

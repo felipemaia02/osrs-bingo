@@ -92,6 +92,14 @@ class BoardCardSnapshot(BaseModel):
         return revision_estimate(self)
 
 
+def visible_reason(value: str) -> str:
+    """Players read the reason of a live fix (036): it must say something."""
+    cleaned = " ".join(value.split())
+    if not cleaned:
+        raise ValueError("Explain the change")
+    return cleaned
+
+
 class BoardPositionUpdate(BaseModel):
     """Fix a square of the live board with a newer revision of its card (feature 036)."""
 
@@ -103,10 +111,20 @@ class BoardPositionUpdate(BaseModel):
     @field_validator("reason")
     @classmethod
     def visible_reason(cls, value: str) -> str:
-        cleaned = " ".join(value.split())
-        if not cleaned:
-            raise ValueError("Explain the change")
-        return cleaned
+        return visible_reason(value)
+
+
+class BoardCardsUpdate(BaseModel):
+    """Update every square to its card's latest revision, with one reason (feature 067)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reason: str = Field(min_length=1, max_length=UPDATE_REASON_MAX_LENGTH)
+
+    @field_validator("reason")
+    @classmethod
+    def visible_reason(cls, value: str) -> str:
+        return visible_reason(value)
 
 
 class PositionUpdateRecord(BaseModel):

@@ -8,6 +8,7 @@ from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import (
     DEFAULT_BOARD_SIZE,
     BoardCardSnapshot,
+    BoardCardsUpdate,
     BoardPositionResponse,
     BoardPositionUpdate,
     BoardResponse,
@@ -25,6 +26,7 @@ BOARD_CHANGED_DETAIL = "Board changed while you were editing"
 BOARD_REQUIRED_DETAIL = "A complete valid board is required"
 LIVE_ONLY_DETAIL = "Only the active event's board can be fixed"
 NOT_NEWER_DETAIL = "Choose a newer revision of this card"
+NOTHING_NEWER_DETAIL = "Every card on the board is already up to date"
 
 
 class BoardService:
@@ -88,14 +90,7 @@ class BoardService:
         self, event_id: str, position: int, payload: BoardPositionUpdate, actor: CurrentUser
     ) -> BoardResponse:
         """Replaces a live square's card snapshot with a newer revision of the same card (036)."""
-        event = await self._events.get(event_id)
-        if event is None:
-            raise NotFoundError("Event")
-        if event["status"] != EventStatus.ACTIVE:
-            raise ConflictError(LIVE_ONLY_DETAIL)
-        board = await self._require_board(event_id)
-        if board.get("status") != BoardStatus.PUBLISHED:
-            raise ConflictError(LIVE_ONLY_DETAIL)
+        board = await self._require_live_board(event_id)
         slot = next((item for item in board["positions"] if item["position"] == position), None)
         if slot is None:
             raise NotFoundError("Board position")
@@ -113,22 +108,53 @@ class BoardService:
         )
         if revision_data is None:
             raise ConflictError("Selected card revision is unavailable")
-        snapshot = card_snapshot(card, revision_data).model_dump(
-            mode="python", exclude={"estimate"}
-        )
-        record = PositionUpdateRecord(
-            from_revision=current["card_revision"],
-            to_revision=payload.card_revision,
-            reason=payload.reason,
-            updated_by_name=actor.username,
-            updated_at=datetime.now(UTC),
-        ).model_dump(mode="python")
+        snapshot, record = live_update(card, revision_data, current, payload.reason, actor)
         updated = await self._boards.replace_card(
-            event_id, board["revision"], position, snapshot, {**record, "updated_by": actor.id}
+            event_id, board["revision"], position, snapshot, record
         )
         if updated is None:
             raise ConflictError(BOARD_CHANGED_DETAIL)
         return self._response(updated)
+
+    async def update_all_cards(
+        self, event_id: str, payload: BoardCardsUpdate, actor: CurrentUser
+    ) -> BoardResponse:
+        """Moves every square of the live board to its card's latest active revision at once,
+        with one reason players see (feature 067, extends 036)."""
+        board = await self._require_live_board(event_id)
+        positions = []
+        changed = 0
+        for slot in board["positions"]:
+            current = slot["card"]
+            card = await self._cards.get(current["card_id"])
+            latest = latest_active_revision(card, current["card_revision"])
+            if card is None or latest is None:
+                positions.append(slot)
+                continue
+            snapshot, record = live_update(card, latest, current, payload.reason, actor)
+            positions.append(
+                {**slot, "card": snapshot, "updates": [*slot.get("updates", []), record]}
+            )
+            changed += 1
+        if not changed:
+            raise ConflictError(NOTHING_NEWER_DETAIL)
+        updated = await self._boards.replace_positions(
+            event_id, board["revision"], positions, actor.id
+        )
+        if updated is None:
+            raise ConflictError(BOARD_CHANGED_DETAIL)
+        return self._response(updated)
+
+    async def _require_live_board(self, event_id: str) -> BoardDocument:
+        event = await self._events.get(event_id)
+        if event is None:
+            raise NotFoundError("Event")
+        if event["status"] != EventStatus.ACTIVE:
+            raise ConflictError(LIVE_ONLY_DETAIL)
+        board = await self._require_board(event_id)
+        if board.get("status") != BoardStatus.PUBLISHED:
+            raise ConflictError(LIVE_ONLY_DETAIL)
+        return board
 
     async def get_admin(self, event_id: str) -> BoardResponse:
         if await self._events.get(event_id) is None:
@@ -190,6 +216,37 @@ def card_snapshot(card: CardDocument, revision_data: dict[str, Any]) -> BoardCar
             exclude={"revision", "change_reason", "created_by", "created_at", "estimate"}
         ),
     )
+
+
+def latest_active_revision(card: CardDocument | None, on_board: int) -> dict[str, Any] | None:
+    """The card's current revision when it's newer than the board's and still active."""
+    if card is None or card["status"] != CardStatus.ACTIVE:
+        return None
+    if card["current_revision"] <= on_board:
+        return None
+    return next(
+        (item for item in card["revisions"] if item["revision"] == card["current_revision"]),
+        None,
+    )
+
+
+def live_update(
+    card: CardDocument,
+    revision_data: dict[str, Any],
+    current: dict[str, Any],
+    reason: str,
+    actor: CurrentUser,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """The square's new snapshot and the update record players see (036)."""
+    snapshot = card_snapshot(card, revision_data).model_dump(mode="python", exclude={"estimate"})
+    record = PositionUpdateRecord(
+        from_revision=current["card_revision"],
+        to_revision=revision_data["revision"],
+        reason=reason,
+        updated_by_name=actor.username,
+        updated_at=datetime.now(UTC),
+    ).model_dump(mode="python")
+    return snapshot, {**record, "updated_by": actor.id}
 
 
 def board_size(document: BoardDocument | dict[str, Any]) -> int:

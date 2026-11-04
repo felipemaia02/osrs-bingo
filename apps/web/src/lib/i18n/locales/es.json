@@ -851,7 +851,14 @@
       "reason": "Motivo que verán los jugadores",
       "reasonPlaceholder": "p. ej. El requisito era un error: 6, no 8.",
       "confirm": "Actualizar casilla",
-      "done": "{{name}} actualizada en el tablero en vivo."
+      "done": "{{name}} actualizada en el tablero en vivo.",
+      "updateAll": "Actualizar todas ({{count}})",
+      "updateAllTitle_one": "Actualizar {{count}} carta en el tablero en vivo",
+      "updateAllTitle_other": "Actualizar {{count}} cartas en el tablero en vivo",
+      "reasonAllPlaceholder": "p. ej.: Pesos de drops revisados tras la primera semana.",
+      "confirmAll": "Actualizar todas",
+      "doneAll_one": "{{count}} carta actualizada en el tablero en vivo.",
+      "doneAll_other": "{{count}} cartas actualizadas en el tablero en vivo."
     }
   },
   "brand": {

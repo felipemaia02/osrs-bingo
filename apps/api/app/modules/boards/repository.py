@@ -85,6 +85,31 @@ class BoardRepository:
         )
         return cast(BoardDocument | None, document)
 
+    async def replace_positions(
+        self,
+        event_id: str,
+        expected_revision: int,
+        positions: list[dict[str, Any]],
+        updated_by: str,
+    ) -> BoardDocument | None:
+        """Live update of several squares at once (feature 067); None if the board changed."""
+        object_id = self._object_id(event_id)
+        if object_id is None:
+            return None
+        document = await self._collection.find_one_and_update(
+            {"event_id": object_id, "status": BoardStatus.PUBLISHED, "revision": expected_revision},
+            {
+                "$set": {
+                    "positions": positions,
+                    "updated_by": updated_by,
+                    "updated_at": datetime.now(UTC),
+                },
+                "$inc": {"revision": 1},
+            },
+            return_document=ReturnDocument.AFTER,
+        )
+        return cast(BoardDocument | None, document)
+
     async def replace_card(
         self,
         event_id: str,
