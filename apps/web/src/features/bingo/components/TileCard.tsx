@@ -22,6 +22,7 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
   const dimmed = match !== undefined && !match.matches
   const highlighted = match !== undefined && match.matches
   const hit = highlighted ? match.matchedDrop : null
+  const complete = tile.progress?.complete ?? false
 
   return (
     <button
@@ -29,10 +30,12 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
       onClick={() => onSelect(tile)}
       aria-label={label}
       aria-pressed={selected}
-      className={`relative flex min-h-[138px] min-w-0 flex-col gap-1.5 rounded border bg-rs-surface p-[7px] text-left text-rs-text transition-opacity ${
+      className={`relative flex min-h-[138px] min-w-0 flex-col gap-1.5 rounded border p-[7px] text-left text-rs-text transition-opacity ${
+        complete ? 'bg-rs-success-bg' : 'bg-rs-surface'
+      } ${
         highlighted
           ? 'border-rs-gold-bright shadow-[inset_0_0_0_1px_theme(colors.rs.gold-bright)]'
-          : tile.progress?.complete
+          : complete
             ? 'border-rs-success'
             : tile.bonus
               ? 'border-rs-gold'
@@ -64,12 +67,15 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
         </span>
       )}
       {tile.progress && <TileProgressLine progress={tile.progress} />}
-      <span className="mt-auto flex items-baseline justify-between text-xs">
-        <span className="text-rs-muted">
-          {t('board.requirementShort', { count: tile.requirement })}
+      {/* "Complete +N" already says it all; requirement and points stay in the detail (063). */}
+      {!complete && (
+        <span className="mt-auto flex items-baseline justify-between text-xs">
+          <span className="text-rs-muted">
+            {t('board.requirementShort', { count: tile.requirement })}
+          </span>
+          <strong>{t('tile.points', { count: tile.points })}</strong>
         </span>
-        <strong>{t('tile.points', { count: tile.points })}</strong>
-      </span>
+      )}
     </button>
   )
 }

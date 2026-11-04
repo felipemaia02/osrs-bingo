@@ -86,6 +86,7 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
   const dimmed = match !== undefined && !match.matches
   const highlighted = match !== undefined && match.matches
   const hit = highlighted ? match.matchedDrop : null
+  const complete = tile.progress?.complete ?? false
 
   return (
     <button
@@ -93,10 +94,14 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
       onClick={() => onSelect(tile)}
       aria-label={label}
       aria-pressed={selected}
-      className={`flex min-h-[66px] w-full scroll-mt-24 items-center gap-3 rounded border bg-rs-surface px-2.5 py-2 text-left text-rs-text transition-opacity ${
+      className={`flex min-h-[66px] w-full scroll-mt-24 items-center gap-3 rounded border px-2.5 py-2 text-left text-rs-text transition-opacity ${
+        complete ? 'bg-rs-success-bg' : 'bg-rs-surface'
+      } ${
         highlighted
           ? 'border-rs-gold-bright shadow-[inset_0_0_0_1px_theme(colors.rs.gold-bright)]'
-          : 'border-rs-border'
+          : complete
+            ? 'border-rs-success'
+            : 'border-rs-border'
       } ${dimmed ? 'opacity-[.38]' : ''} ${selected ? 'outline outline-2 outline-offset-2 outline-rs-gold-bright' : ''}`}
     >
       <span className="min-w-[30px] text-center text-[11px] font-semibold tabular-nums text-rs-muted">
@@ -107,12 +112,14 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
         <span className="font-semibold">{tile.name}</span>
         <span className="flex items-center gap-1.5">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
-          <span className="text-xs text-rs-muted">
-            {t('board.pointsAndRequirement', {
-              points: tile.points,
-              requirement: tile.requirement,
-            })}
-          </span>
+          {!complete && (
+            <span className="text-xs text-rs-muted">
+              {t('board.pointsAndRequirement', {
+                points: tile.points,
+                requirement: tile.requirement,
+              })}
+            </span>
+          )}
         </span>
         {tile.progress && <TileProgressLine progress={tile.progress} />}
         {hit && (
