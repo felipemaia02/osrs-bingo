@@ -24,7 +24,10 @@ export function useTileLabel(tile: Tile, match?: TileMatch): string {
   const workers = tile.workers?.length
     ? `, ${t('activity.label', { names: tile.workers.map((worker) => worker.name).join(', ') })}`
     : ''
-  const status = progress + workers
+  const preverification = tile.preverification
+    ? `, ${t(`preverification.state.${tile.preverification}`)}`
+    : ''
+  const status = progress + workers + preverification
   if (!match) return base + status
   if (!match.matches) return `${base}${status}, ${t('board.match.none')}`
   if (!match.matchedDrop) return `${base}${status}, ${t('board.match.tile')}`

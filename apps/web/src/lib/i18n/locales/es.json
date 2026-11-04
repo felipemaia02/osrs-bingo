@@ -1736,5 +1736,12 @@
     "renew": "Sigo trabajando en esto",
     "alreadyComplete": "Esta casilla ya está completa.",
     "label": "trabajando en ella: {{names}}"
+  },
+  "preverification": {
+    "state": {
+      "needed": "Falta la preverificación",
+      "pending": "Preverificación en revisión",
+      "accepted": "Preverificado"
+    }
   }
 }

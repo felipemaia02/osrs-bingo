@@ -5,6 +5,7 @@ import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { PreverificationChip } from './PreverificationChip'
 import { TileProgressLine } from './TileProgressLine'
 import { WorkersChip } from './WorkersChip'
 
@@ -116,6 +117,7 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
         </span>
         <span className="flex items-center gap-1.5">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
+          {tile.preverification && <PreverificationChip state={tile.preverification} />}
           {!complete && (
             <span className="text-xs text-rs-muted">
               {t('board.pointsAndRequirement', {

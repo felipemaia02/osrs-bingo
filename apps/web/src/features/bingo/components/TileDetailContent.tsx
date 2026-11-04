@@ -46,7 +46,11 @@ export function TileDetailContent({
             <Badge tone="neutral">{t(`cards.kind.${tile.kind}`)}</Badge>
             {tile.bonus && <Badge tone="gold">★ {t('board.bonus.card')}</Badge>}
             {tile.requiresPreverification && (
-              <Badge tone="info">{t('cards.preverification')}</Badge>
+              <Badge tone={tile.preverification === 'accepted' ? 'success' : 'info'}>
+                {tile.preverification
+                  ? t(`preverification.state.${tile.preverification}`)
+                  : t('cards.preverification')}
+              </Badge>
             )}
           </div>
         </div>

@@ -39,7 +39,10 @@ export function TeamBoardModal({ eventId, teams, initialTeamId, onClose }: TeamB
   const activity = useAdminTeamActivity(eventId, teamId)
   const team = teams.find((candidate) => candidate.team_id === teamId)
   const tiles = useMemo(
-    () => (board.data && score.data ? boardToTiles(board.data, score.data, activity.data) : []),
+    () =>
+      board.data && score.data
+        ? boardToTiles(board.data, score.data, { activity: activity.data })
+        : [],
     [board.data, score.data, activity.data],
   )
   const selected = tiles.find((tile) => tile.id === selectedId) ?? null

@@ -1738,5 +1738,12 @@
     "renew": "Still working on it",
     "alreadyComplete": "This tile is already complete.",
     "label": "working on it: {{names}}"
+  },
+  "preverification": {
+    "state": {
+      "needed": "Pre-verification needed",
+      "pending": "Pre-verification pending",
+      "accepted": "Pre-verified"
+    }
   }
 }

@@ -2,13 +2,21 @@ import { cardImageUrl } from '../cards/artwork'
 import type { EventBoard } from '../boards/types'
 import type { TeamScore } from '../scoring/types'
 import { normalizeSearch } from '../../lib/text/search'
-import type { TeamActivity, TierFilter, Tile, TileMatch } from './types'
+import type { SubmissionStatus } from '../submissions/types'
+import type { PreverificationState, TeamActivity, TierFilter, Tile, TileMatch } from './types'
 
-/** Maps the published board snapshot to tiles, with the team's progress and activity if known. */
+/** What the viewer may know besides the board: team activity (061) and, for players who can
+ * submit, their pre-verification state per position (062). */
+export interface ViewerExtras {
+  activity?: TeamActivity | null
+  preverifications?: Map<number, SubmissionStatus> | null
+}
+
+/** Maps the published board snapshot to tiles, with the viewer's team progress and extras. */
 export function boardToTiles(
   board: EventBoard,
   score?: TeamScore | null,
-  activity?: TeamActivity | null,
+  { activity, preverifications }: ViewerExtras = {},
 ): Tile[] {
   const progress = new Map(score?.tiles.map((tile) => [tile.position, tile]))
   const workers = new Map(activity?.tiles.map((tile) => [tile.position, tile.players]))
@@ -25,6 +33,10 @@ export function boardToTiles(
     drops: card.drops,
     ruleNote: card.rule_note,
     requiresPreverification: card.requires_preverification ?? false,
+    preverification:
+      preverifications && card.requires_preverification
+        ? toPreverification(preverifications.get(position))
+        : undefined,
     bonus: Boolean(bonus),
     imageUrl: cardImageUrl(card),
     imageSourceUrl: card.artwork ? null : (card.wiki_image?.file_page_url ?? null),
@@ -37,6 +49,11 @@ export function boardToTiles(
       ? { reason: updates[updates.length - 1].reason, at: updates[updates.length - 1].updated_at }
       : null,
   }))
+}
+
+/** Rejected (or reverted) means it must be sent again. */
+function toPreverification(status: SubmissionStatus | undefined): PreverificationState {
+  return status === 'pending' || status === 'accepted' ? status : 'needed'
 }
 
 function toProgress(tile: TeamScore['tiles'][number] | undefined): Tile['progress'] {
