@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
 from fractions import Fraction
@@ -28,6 +28,7 @@ from app.modules.scoring.engine import (
     drop_points,
     score_team,
 )
+from app.modules.scoring.estimates import card_estimate
 from app.modules.scoring.schemas import (
     DropProgressResponse,
     PlayerContribution,
@@ -62,6 +63,8 @@ class ScoringInputs:
     bonuses: LineBonuses
     # (position, drop key) -> weight of the card now on that square (036).
     weights: dict[tuple[int, str], Decimal]
+    # position -> card snapshot now on that square, for time estimates (060).
+    cards: dict[int, dict[str, Any]] = field(default_factory=dict)
 
     @property
     def grid_count(self) -> int:
@@ -328,6 +331,7 @@ class ScoringService:
             size=int(board.get("size", DEFAULT_BOARD_SIZE)) if board else DEFAULT_BOARD_SIZE,
             drops=drops,
             weights=weights,
+            cards={item["position"]: item["card"] for item in positions},
             bonuses=LineBonuses(
                 row=board.get("row_bonus") if board else None,
                 column=board.get("column_bonus") if board else None,
@@ -366,6 +370,14 @@ class ScoringService:
                     requirement=float(result.tile.requirement),
                     complete=result.complete,
                     points=float(result.points),
+                    remaining_estimate=(
+                        None
+                        if result.complete
+                        else card_estimate(
+                            inputs.cards.get(result.tile.position, {}),
+                            result.tile.requirement - result.progress,
+                        )
+                    ),
                     drops=[
                         DropProgressResponse(
                             drop_key=count.drop_key,

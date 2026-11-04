@@ -1,10 +1,21 @@
 import re
+from collections.abc import Sequence
 from datetime import datetime
+from decimal import Decimal
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, Protocol
 from urllib.parse import urlparse
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
+
+from app.modules.scoring.estimates import Estimate, card_estimate
 
 WIKI_ORIGIN = "https://oldschool.runescape.wiki"
 SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -60,6 +71,8 @@ class AcceptedDrop(BaseModel):
     item_ids: list[Annotated[int, Field(ge=0)]] = Field(default_factory=list, max_length=200)
     # False when a specific version was picked: only its IDs count, never the shared name.
     match_by_name: bool = True
+    # X in "1 / X", set by an admin because Wiki rates don't fit every activity (feature 060).
+    drop_rate: float | None = Field(default=None, gt=0, le=10_000_000)
 
     @field_validator("item_ids")
     @classmethod
@@ -167,6 +180,9 @@ class CardRevisionFields(BaseModel):
     # Players must have an accepted pre-verification before drops of this card count.
     requires_preverification: bool = False
     categories: list[CardCategory] = Field(default_factory=list, max_length=len(CardCategory))
+    # Feature 060: the WOM boss whose EHB rate suggested `kills_per_hour` (editable by the admin).
+    ehb_boss: str | None = Field(default=None, max_length=64, pattern=r"^[a-z0-9_]+$")
+    kills_per_hour: float | None = Field(default=None, gt=0, le=10_000)
 
     @field_validator("categories")
     @classmethod
@@ -228,12 +244,43 @@ class CardProvenance(BaseModel):
     derived_from_revision: int | None = None
 
 
+class EstimatedCard(Protocol):
+    """What the estimate needs from a card revision or a board snapshot."""
+
+    @property
+    def completion_requirement(self) -> float: ...
+
+    @property
+    def drops(self) -> Sequence[BaseModel]:
+        """Anything with `progress_weight` and `drop_rate`."""
+        ...
+
+    @property
+    def kills_per_hour(self) -> float | None: ...
+
+
+def revision_estimate(card: EstimatedCard) -> Estimate:
+    return card_estimate(
+        {
+            "drops": [drop.model_dump() for drop in card.drops],
+            "kills_per_hour": card.kills_per_hour,
+        },
+        Decimal(str(card.completion_requirement)),
+    )
+
+
 class CardRevisionResponse(CardRevisionFields):
     revision: int
     provenance: CardProvenance
     change_reason: str
     created_by: str
     created_at: datetime
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def estimate(self) -> Estimate:
+        """Expected kills and hours for the whole tile (feature 060)."""
+        return revision_estimate(self)
 
 
 class CardSummary(BaseModel):

@@ -6,6 +6,7 @@ import { Badge } from '../../../components/ui/Badge'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { EstimateText } from '../../scoring/components/EstimateText'
 import { TileProgressLine } from './TileProgressLine'
 
 interface TileDetailContentProps {
@@ -61,6 +62,11 @@ export function TileDetailContent({ tile, match, unavailableReason }: TileDetail
             components={{ strong: <strong /> }}
           />
         </p>
+        {tile.estimate && tile.estimate.kills !== null && (
+          <p className="m-0 text-[13px]" title={t('estimate.disclaimer')}>
+            {t('estimate.fullTile')} <EstimateText estimate={tile.estimate} />
+          </p>
+        )}
         {tile.progress ? (
           <div className="flex flex-col gap-1.5 rounded-[3px] border border-rs-border/60 bg-rs-inset px-3 py-2.5">
             <strong className="text-[13px]">
@@ -71,6 +77,11 @@ export function TileDetailContent({ tile, match, unavailableReason }: TileDetail
               })}
             </strong>
             <TileProgressLine progress={tile.progress} />
+            {tile.progress.remaining && (
+              <span className="text-xs">
+                {t('estimate.remaining')} <EstimateText estimate={tile.progress.remaining} />
+              </span>
+            )}
             {tile.progress.drops.length > 0 && (
               <ul className="m-0 flex list-none flex-col gap-0.5 p-0 text-xs">
                 {tile.progress.drops.map((drop) => (
@@ -122,8 +133,15 @@ export function TileDetailContent({ tile, match, unavailableReason }: TileDetail
                       )}
                       {matched ? <strong>{drop.name}</strong> : drop.name}
                     </span>
-                    <span className="whitespace-nowrap text-xs font-semibold text-rs-gold-bright">
-                      {t('cards.rules.progress', { count: drop.progress_weight })}
+                    <span className="flex items-baseline gap-2 whitespace-nowrap text-xs">
+                      {drop.drop_rate && (
+                        <span className="text-rs-muted">
+                          {t('estimate.rate', { rate: drop.drop_rate })}
+                        </span>
+                      )}
+                      <span className="font-semibold text-rs-gold-bright">
+                        {t('cards.rules.progress', { count: drop.progress_weight })}
+                      </span>
                     </span>
                   </div>
                   {drop.verification_note && (

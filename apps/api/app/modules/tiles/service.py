@@ -162,7 +162,7 @@ class CardService:
     def _detail(cls, document: CardDocument) -> CardDetail:
         summary = cls._summary(document)
         return CardDetail(
-            **summary.model_dump(),
+            **dict(summary),
             revisions=[CardRevisionResponse.model_validate(item) for item in document["revisions"]],
             retired_by=document.get("retired_by"),
             retired_at=document.get("retired_at"),

@@ -26,6 +26,23 @@ export interface AcceptedDrop {
   item_ids?: number[]
   /** False when a specific version was picked: only its IDs count. */
   match_by_name?: boolean
+  /** X in "1 / X", set by an admin (feature 060); null when unknown. */
+  drop_rate?: number | null
+}
+
+/** Expected kills and hours, computed by the API (feature 060); null = unknown. */
+export interface Estimate {
+  kills: number | null
+  hours: number | null
+  drops_without_rate: number
+}
+
+/** A WOM boss with its ironman EHB rate and the 80 % suggestion. */
+export interface EhbRate {
+  boss: string
+  label: string
+  ironman_kills_per_hour: number
+  suggested_kills_per_hour: number
 }
 
 /** One pick in the drop search (feature 033). */
@@ -110,6 +127,9 @@ export interface CardRevision {
   rule_note: string | null
   requires_preverification?: boolean
   categories?: CardCategory[]
+  ehb_boss?: string | null
+  kills_per_hour?: number | null
+  estimate?: Estimate
   provenance: CardProvenance
   change_reason: string
   created_by: string
@@ -147,6 +167,8 @@ export interface CardRevisionPayload {
   rule_note: string | null
   requires_preverification: boolean
   categories: CardCategory[]
+  ehb_boss: string | null
+  kills_per_hour: number | null
   change_reason: string
 }
 

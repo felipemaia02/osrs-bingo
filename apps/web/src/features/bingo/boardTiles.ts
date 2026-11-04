@@ -25,6 +25,7 @@ export function boardToTiles(board: EventBoard, score?: TeamScore | null): Tile[
     imageSourceUrl: card.artwork ? null : (card.wiki_image?.file_page_url ?? null),
     imageAttribution: card.artwork ? null : (card.wiki_image?.attribution ?? null),
     imageArtist: card.artwork?.artist ?? null,
+    estimate: card.estimate ?? null,
     progress: toProgress(progress.get(position)),
     lastUpdate: updates?.length
       ? { reason: updates[updates.length - 1].reason, at: updates[updates.length - 1].updated_at }
@@ -44,6 +45,7 @@ function toProgress(tile: TeamScore['tiles'][number] | undefined): Tile['progres
       count: drop.count,
       progress: drop.progress,
     })),
+    remaining: tile.remaining_estimate ?? null,
   }
 }
 

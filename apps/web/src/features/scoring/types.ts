@@ -1,3 +1,4 @@
+import type { Estimate } from '../cards/types'
 import type { EventStatus } from '../events/types'
 
 export interface DropProgress {
@@ -16,6 +17,8 @@ export interface TileProgressResponse {
   requirement: number
   complete: boolean
   points: number
+  /** Kills and hours the team still needs (feature 060); null once complete. */
+  remaining_estimate?: Estimate | null
   drops: DropProgress[]
 }
 

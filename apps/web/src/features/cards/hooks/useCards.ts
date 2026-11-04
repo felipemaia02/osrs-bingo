@@ -3,13 +3,16 @@ import {
   createCard,
   createCardRevision,
   fetchCards,
+  fetchEhbRates,
   importWorkbookCatalog,
   linkCatalogItems,
   previewDropMatches,
+  previewEstimate,
   resolveWikiImage,
   retireCard,
   searchItems,
   uploadCardArtwork,
+  type EstimateInput,
 } from '../api/cardsApi'
 import type { DropMatchInput } from '../types'
 
@@ -55,6 +58,21 @@ export function useDropMatchPreview(drops: DropMatchInput[]) {
     queryKey: ['drop-match-preview', drops],
     queryFn: () => previewDropMatches(drops),
     enabled: drops.length > 0,
+    placeholderData: keepPreviousData,
+  })
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000
+
+export function useEhbRates() {
+  return useQuery({ queryKey: ['ehb-rates'], queryFn: fetchEhbRates, staleTime: DAY_MS })
+}
+
+export function useEstimatePreview(input: EstimateInput | null) {
+  return useQuery({
+    queryKey: ['estimate-preview', input],
+    queryFn: () => previewEstimate(input as EstimateInput),
+    enabled: input !== null,
     placeholderData: keepPreviousData,
   })
 }

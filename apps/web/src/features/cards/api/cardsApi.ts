@@ -6,6 +6,8 @@ import type {
   CardSummary,
   DropMatchInput,
   DropMatchPreview,
+  EhbRate,
+  Estimate,
   ItemSearchResult,
   LinkItemsResult,
   WikiImage,
@@ -93,4 +95,20 @@ export async function uploadCardArtwork(
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   ).data
+}
+
+/** WOM ironman EHB kills per hour per boss (feature 060). */
+export async function fetchEhbRates(): Promise<EhbRate[]> {
+  return (await apiClient.get<EhbRate[]>('/admin/estimates/ehb-rates')).data
+}
+
+export interface EstimateInput {
+  completion_requirement: number
+  drops: { progress_weight: number; drop_rate: number | null }[]
+  kills_per_hour: number | null
+}
+
+/** Expected kills and hours for unsaved card values; the formula lives in the API. */
+export async function previewEstimate(input: EstimateInput): Promise<Estimate> {
+  return (await apiClient.post<Estimate>('/admin/estimates/preview', input)).data
 }

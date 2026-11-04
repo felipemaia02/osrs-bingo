@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from app.modules.events.schemas import EventStatus
 from app.modules.players.schemas import ParticipantRole
 from app.modules.profiles.schemas import Activity
+from app.modules.scoring.estimates import Estimate
 
 
 class DropProgressResponse(BaseModel):
@@ -23,6 +24,8 @@ class TileProgressResponse(BaseModel):
     requirement: float
     complete: bool
     points: float
+    # Kills and hours still expected for the team (060); None once complete.
+    remaining_estimate: Estimate | None = None
     drops: list[DropProgressResponse]
 
 

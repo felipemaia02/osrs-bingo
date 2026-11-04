@@ -100,7 +100,7 @@ def deps() -> dict[str, Any]:
         accepted(GU, GONE, 5, 1),
     ]
     service = ScoringService(events, boards, teams, players, submissions)
-    return {"service": service, "events": events, "players": players}
+    return {"service": service, "events": events, "players": players, "boards": boards}
 
 
 async def test_player_sees_their_own_team_progress(deps: dict[str, Any]) -> None:

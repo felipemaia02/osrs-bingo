@@ -1,4 +1,4 @@
-import type { AcceptedDrop, CardKind } from '../cards/types'
+import type { AcceptedDrop, CardKind, Estimate } from '../cards/types'
 
 export type TileTier = 'Low' | 'Mid' | 'High'
 
@@ -9,6 +9,8 @@ export interface TileProgress {
   complete: boolean
   points: number
   drops: Array<{ name: string; count: number; progress: number }>
+  /** What the team still needs, on average (feature 060). */
+  remaining?: Estimate | null
 }
 
 /** Presentation model of one board tile, mapped from the event board API snapshot. */
@@ -34,6 +36,8 @@ export interface Tile {
   imageAttribution?: string | null
   /** Clan artwork credit (feature 041). */
   imageArtist?: string | null
+  /** Expected kills and hours for the whole tile (feature 060). */
+  estimate?: Estimate | null
   /** Latest fix of this square during the event (feature 036). */
   lastUpdate?: { reason: string; at: string } | null
 }

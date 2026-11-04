@@ -37,7 +37,11 @@ class BoardRepository:
         if object_id is None:
             return None
         now = datetime.now(UTC)
-        serialized = [position.model_dump(mode="python") for position in positions]
+        # The estimate is computed from the card on every read (060), never stored.
+        serialized = [
+            position.model_dump(mode="python", exclude={"card": {"estimate"}})
+            for position in positions
+        ]
         if expected_revision == 0:
             document: BoardDocument = {
                 "_id": ObjectId(),

@@ -202,6 +202,42 @@ describe('team progress on the board', () => {
   })
 })
 
+describe('time estimates on the board (060)', () => {
+  it('shows the whole-tile estimate, drop rates and what the team still needs', async () => {
+    const hydraCard = {
+      ...card('Hydra'),
+      drops: [{ ...card('Hydra').drops[0], drop_rate: 64 }],
+      kills_per_hour: 24,
+      estimate: { kills: 512, hours: 21.3, drops_without_rate: 0 },
+    }
+    vi.mocked(fetchPublicBoard).mockResolvedValue({
+      ...BOARD,
+      positions: BOARD.positions.map((item) =>
+        item.position === 4 ? { ...item, card: hydraCard } : item,
+      ),
+    })
+    vi.mocked(fetchOwnTeamScore).mockResolvedValue({
+      ...SCORE,
+      tiles: SCORE.tiles.map((tile) =>
+        tile.position === 4
+          ? { ...tile, remaining_estimate: { kills: 128, hours: 5.3, drops_without_rate: 0 } }
+          : tile,
+      ),
+    })
+    const user = userEvent.setup()
+    renderApp(<BoardPage />, '/board')
+
+    const grid = await screen.findByRole('region', { name: '3 by 3 board' })
+    await within(grid).findAllByText('Complete +10')
+    await user.click(within(grid).getByRole('button', { name: /^Hydra,/ }))
+
+    const detail = screen.getByRole('complementary', { name: 'Tile detail' })
+    expect(detail).toHaveTextContent('Whole tile: ≈ 512 kills · ≈ 21.3 h')
+    expect(detail).toHaveTextContent('Still needed: ≈ 128 kills · ≈ 5.3 h')
+    expect(detail).toHaveTextContent('1/64')
+  })
+})
+
 describe('board help', () => {
   it('explains this board line bonuses and shows the written rules', async () => {
     const user = userEvent.setup()

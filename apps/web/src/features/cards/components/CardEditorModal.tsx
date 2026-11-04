@@ -19,6 +19,7 @@ import {
 import { cardImageUrl } from '../artwork'
 import { ArtworkField } from './ArtworkField'
 import { DropListEditor } from './DropListEditor'
+import { TimeEstimateEditor } from './TimeEstimateEditor'
 import { useCardMutations } from '../hooks/useCards'
 import {
   CARD_CATEGORIES,
@@ -230,6 +231,10 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
             onChange={(drops) => update('drops', drops)}
             requirement={form.requirement}
             points={form.tileScore}
+          />
+          <TimeEstimateEditor
+            form={form}
+            onChange={(changes) => setForm((current) => ({ ...current, ...changes }))}
           />
           <div className="flex flex-col gap-2 md:col-span-2">
             <Field label={t('cards.form.wikiArticle')}>

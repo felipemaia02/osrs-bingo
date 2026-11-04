@@ -6,6 +6,8 @@ from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
+from app.modules.scoring.estimate_service import EhbRate, EstimatePreview, EstimateService
+from app.modules.scoring.estimates import Estimate
 from app.modules.scoring.schemas import RankingResponse, TeamHomeResponse, TeamScoreResponse
 from app.modules.scoring.service import ScoringService
 from app.modules.submissions.repository import SubmissionRepository
@@ -55,3 +57,24 @@ async def ranking(
     event_id: str, admin: AdminDependency, service: ScoringServiceDependency
 ) -> RankingResponse:
     return await service.ranking(event_id)
+
+
+def get_estimate_service(request: Request) -> EstimateService:
+    return EstimateService(request.app.state.wom_client)
+
+
+EstimateServiceDependency = Annotated[EstimateService, Depends(get_estimate_service)]
+
+
+@admin_router.get("/estimates/ehb-rates", response_model=list[EhbRate])
+async def ehb_rates(admin: AdminDependency, service: EstimateServiceDependency) -> list[EhbRate]:
+    """WOM ironman EHB kills per hour per boss, with the 80 % suggestion (feature 060)."""
+    return await service.ehb_rates()
+
+
+@admin_router.post("/estimates/preview", response_model=Estimate)
+async def preview_estimate(
+    payload: EstimatePreview, admin: AdminDependency, service: EstimateServiceDependency
+) -> Estimate:
+    """Expected kills and hours for the card being edited; changes nothing."""
+    return service.preview(payload)

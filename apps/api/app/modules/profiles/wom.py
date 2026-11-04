@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import datetime
+from time import monotonic
 from typing import Any
 
 import httpx
@@ -14,6 +15,7 @@ BAD_REQUEST_STATUS = 400
 # WOM answers 400 with these codes when tracking an RSN that doesn't exist in OSRS.
 NOT_FOUND_CODES = {"HISCORES_USERNAME_NOT_FOUND", "INVALID_USERNAME"}
 UNRANKED_KILLS = -1
+EHB_RATES_TTL_SECONDS = 24 * 60 * 60
 OVERALL_SKILL = "overall"
 
 
@@ -75,6 +77,7 @@ class WomClient:
             timeout=settings.wom_timeout_seconds,
             transport=transport,
         )
+        self._ehb_rates: tuple[float, list[tuple[str, float]]] | None = None
 
     async def player(self, rsn: str) -> WomStats | None:
         """Stats of a tracked player, or None when WOM doesn't know the RSN."""
@@ -83,6 +86,28 @@ class WomClient:
     async def track(self, rsn: str) -> WomStats | None:
         """Asks WOM to track/update the RSN; None when the RSN doesn't exist in OSRS."""
         return await self._request("POST", rsn)
+
+    async def ironman_ehb_rates(self) -> list[tuple[str, float]]:
+        """(boss metric, ironman kills per hour) from WOM's EHB rates (feature 060), cached for a
+        day because they change only with WOM releases."""
+        now = monotonic()
+        if self._ehb_rates is not None and now - self._ehb_rates[0] < EHB_RATES_TTL_SECONDS:
+            return self._ehb_rates[1]
+        try:
+            response = await self._client.get(
+                "/efficiency/rates", params={"metric": "ehb", "type": "ironman"}
+            )
+        except httpx.HTTPError as exc:
+            raise WomUnavailableError(str(exc)) from exc
+        if response.status_code >= 400:
+            raise WomUnavailableError(f"WOM answered {response.status_code}")
+        rates = [
+            (str(item["boss"]), float(item["rate"]))
+            for item in response.json()
+            if float(item.get("rate") or 0) > 0
+        ]
+        self._ehb_rates = (now, rates)
+        return rates
 
     async def close(self) -> None:
         await self._client.aclose()
