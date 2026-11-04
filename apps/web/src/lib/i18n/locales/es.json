@@ -1705,5 +1705,17 @@
     },
     "details_one": "{{count}} campo",
     "details_other": "{{count}} campos"
+  },
+  "activity": {
+    "title": "Trabajando en esta casilla",
+    "nobody": "Nadie de tu equipo todavía.",
+    "you": "Tú",
+    "expires_one": "por {{count}} día más",
+    "expires_other": "por {{count}} días más",
+    "start": "Estoy trabajando en esto",
+    "stop": "Dejar de trabajar en esto",
+    "renew": "Sigo trabajando en esto",
+    "alreadyComplete": "Esta casilla ya está completa.",
+    "label": "trabajando en ella: {{names}}"
   }
 }

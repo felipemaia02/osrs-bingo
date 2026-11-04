@@ -1707,5 +1707,17 @@
     },
     "details_one": "{{count}} field",
     "details_other": "{{count}} fields"
+  },
+  "activity": {
+    "title": "Working on this",
+    "nobody": "Nobody on your team yet.",
+    "you": "You",
+    "expires_one": "for {{count}} more day",
+    "expires_other": "for {{count}} more days",
+    "start": "I'm working on this",
+    "stop": "Stop working on this",
+    "renew": "Still working on it",
+    "alreadyComplete": "This tile is already complete.",
+    "label": "working on it: {{names}}"
   }
 }

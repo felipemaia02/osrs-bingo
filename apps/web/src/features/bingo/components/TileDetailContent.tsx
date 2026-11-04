@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import HourglassDisabledOutlinedIcon from '@mui/icons-material/HourglassDisabledOutlined'
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
@@ -14,10 +15,17 @@ interface TileDetailContentProps {
   /** The dialog already shows the name as its title. */
   /** i18n key: why team progress can't be shown (feature 025). */
   unavailableReason: string
+  /** Shown under the team progress, e.g. who works on the tile (061). */
+  extra?: ReactNode
 }
 
 /** Read-only tile rules (board-a-desktop detail panel). Drop weights are progress, never points. */
-export function TileDetailContent({ tile, match, unavailableReason }: TileDetailContentProps) {
+export function TileDetailContent({
+  tile,
+  match,
+  unavailableReason,
+  extra,
+}: TileDetailContentProps) {
   const { t, i18n } = useTranslation()
   const highlighted = match?.matches ? match.matchedDrop?.name : undefined
 
@@ -92,6 +100,7 @@ export function TileDetailContent({ tile, match, unavailableReason }: TileDetail
             <span className="text-rs-muted">{t(unavailableReason)}</span>
           </p>
         )}
+        {extra}
         <div>
           <div className="mb-1 flex items-baseline justify-between">
             <strong className="text-[13px]">

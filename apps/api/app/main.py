@@ -16,6 +16,8 @@ from app.core.logging import OAuthAccessLogFilter, get_logger, log_event
 from app.core.storage import build_storage, uses_bucket
 from app.database.indexes import IndexManager
 from app.database.mongodb import DatabaseClient
+from app.modules.activity.router import admin_router as admin_activity_router
+from app.modules.activity.router import player_router as activity_router
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.administration.router import router as administration_router
 from app.modules.audit.router import admin_router as admin_audit_router
@@ -225,6 +227,8 @@ app.include_router(items_router)
 app.include_router(balance_router)
 app.include_router(admin_audit_router)
 app.include_router(bot_audit_router)
+app.include_router(activity_router)
+app.include_router(admin_activity_router)
 
 
 @app.get("/health", tags=["infra"])

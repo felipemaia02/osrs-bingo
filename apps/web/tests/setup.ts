@@ -136,3 +136,10 @@ vi.mock('../src/features/balance/api', () => ({
   }),
   saveBossKcSettings: vi.fn(),
 }))
+
+vi.mock('../src/features/bingo/api/activityApi', () => ({
+  fetchTeamActivity: vi.fn().mockResolvedValue({ tiles: [] }),
+  fetchAdminTeamActivity: vi.fn().mockResolvedValue({ tiles: [] }),
+  startWorking: vi.fn(),
+  stopWorking: vi.fn(),
+}))

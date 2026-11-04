@@ -1,6 +1,7 @@
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined'
 import { useTranslation } from 'react-i18next'
+import type { ReactNode } from 'react'
 import type { Tile, TileMatch } from '../types'
 import { TileDetailContent } from './TileDetailContent'
 
@@ -9,10 +10,17 @@ interface TileDetailPanelProps {
   match?: TileMatch
   unavailableReason: string
   onClose: () => void
+  extra?: ReactNode
 }
 
 /** Fixed desktop panel beside the grid; shows a prompt until a tile is selected. */
-export function TileDetailPanel({ tile, match, unavailableReason, onClose }: TileDetailPanelProps) {
+export function TileDetailPanel({
+  tile,
+  match,
+  unavailableReason,
+  onClose,
+  extra,
+}: TileDetailPanelProps) {
   const { t } = useTranslation()
   return (
     <aside
@@ -35,7 +43,12 @@ export function TileDetailPanel({ tile, match, unavailableReason, onClose }: Til
               <CloseOutlinedIcon fontSize="small" aria-hidden="true" />
             </button>
           </div>
-          <TileDetailContent tile={tile} match={match} unavailableReason={unavailableReason} />
+          <TileDetailContent
+            tile={tile}
+            match={match}
+            unavailableReason={unavailableReason}
+            extra={extra}
+          />
         </>
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-10 text-center text-rs-muted">

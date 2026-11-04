@@ -71,6 +71,12 @@ export function MiniMap({ tiles, size, matches, summary, currentId, onSelect }: 
           className={`absolute right-0.5 top-0.5 ${hit ? 'text-rs-canvas' : STAR_COLOR[tile.tier]}`}
         />
         <span className={shortNameClass(tile.name)}>{shortNameOf(tile.name)}</span>
+        {tile.workers && tile.workers.length > 0 && (
+          <span
+            aria-hidden="true"
+            className="absolute bottom-0.5 left-0.5 size-1.5 rounded-full bg-rs-gold-bright"
+          />
+        )}
       </button>
     )
   }

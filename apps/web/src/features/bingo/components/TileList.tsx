@@ -6,6 +6,7 @@ import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
 import { TileProgressLine } from './TileProgressLine'
+import { WorkersChip } from './WorkersChip'
 
 interface TileListProps {
   tiles: Tile[]
@@ -104,7 +105,10 @@ function TileRow({ tile, match, selected, onSelect }: TileRowProps) {
       </span>
       <CardImage name={tile.name} imageUrl={tile.imageUrl} className="h-12 w-[52px] shrink-0" />
       <span className="flex min-w-0 flex-1 flex-col gap-[3px]">
-        <span className="font-semibold">{tile.name}</span>
+        <span className="flex items-center gap-1.5 font-semibold">
+          {tile.name}
+          {tile.workers && <WorkersChip workers={tile.workers} />}
+        </span>
         <span className="flex items-center gap-1.5">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
           <span className="text-xs text-rs-muted">

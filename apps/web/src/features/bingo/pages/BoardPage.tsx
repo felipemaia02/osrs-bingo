@@ -20,7 +20,9 @@ import { MyEventsLanding } from '../components/MyEventsLanding'
 import { TileDetailPanel } from '../components/TileDetailPanel'
 import { MobileTileDetail } from '../components/MobileTileDetail'
 import { TileList } from '../components/TileList'
+import { TileWorkersSection } from '../components/TileWorkersSection'
 import { useBoardView } from '../hooks/useBoardView'
+import { useTeamActivity } from '../hooks/useTileActivity'
 import { useProgressReason } from '../hooks/useProgressReason'
 import { useFilterSummary, type FilterSummary } from '../hooks/useFilterSummary'
 import { useTierOptions } from '../hooks/useTierOptions'
@@ -70,9 +72,11 @@ export function BoardPage() {
     registration.data?.status === 'pending' || registration.data?.status === 'approved'
   const deciding = session.isLoading || (Boolean(session.data) && registration.isLoading)
 
+  // Team activity (061) only exists for players on a team, like the score.
+  const activity = useTeamActivity(event?.id ?? null, Boolean(score))
   const tiles = useMemo(
-    () => (board.data ? boardToTiles(board.data, score) : []),
-    [board.data, score],
+    () => (board.data ? boardToTiles(board.data, score, activity.data) : []),
+    [board.data, score, activity.data],
   )
   const matches = useMemo(() => {
     if (!isFiltering(search, tier)) return null
@@ -139,6 +143,10 @@ export function BoardPage() {
   )
 }
 
+function workersFor(tile: Tile | null, event: BingoEvent) {
+  return tile?.workers ? <TileWorkersSection tile={tile} eventId={event.id} /> : null
+}
+
 function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }) {
   const { t } = useTranslation()
   const [view, setView] = useBoardView()
@@ -195,6 +203,7 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
           match={selectedMatch}
           unavailableReason={reason}
           onClose={() => state.setSelectedId(null)}
+          extra={workersFor(state.selected, event)}
         />
       </div>
       {helpOpen && (
@@ -262,6 +271,7 @@ function MobileBoard({ event, state }: { event: BingoEvent; state: BoardState })
           onPrevious={step(-1)}
           onNext={step(1)}
           onClose={() => state.setSelectedId(null)}
+          extra={workersFor(tile, event)}
         />
       ) : (
         <p className="m-0 rounded border border-dashed border-rs-border px-3 py-4 text-center text-[13px] text-rs-muted">

@@ -21,10 +21,14 @@ export function useTileLabel(tile: Tile, match?: TileMatch): string {
             })
       }`
     : ''
-  if (!match) return base + progress
-  if (!match.matches) return `${base}${progress}, ${t('board.match.none')}`
-  if (!match.matchedDrop) return `${base}${progress}, ${t('board.match.tile')}`
-  return `${base}${progress}, ${t('board.match.drop', {
+  const workers = tile.workers?.length
+    ? `, ${t('activity.label', { names: tile.workers.map((worker) => worker.name).join(', ') })}`
+    : ''
+  const status = progress + workers
+  if (!match) return base + status
+  if (!match.matches) return `${base}${status}, ${t('board.match.none')}`
+  if (!match.matchedDrop) return `${base}${status}, ${t('board.match.tile')}`
+  return `${base}${status}, ${t('board.match.drop', {
     drop: `${match.matchedDrop.name} +${match.matchedDrop.progressWeight}`,
   })}`
 }
