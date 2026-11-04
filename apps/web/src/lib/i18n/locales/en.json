@@ -858,7 +858,9 @@
       "reasonAllPlaceholder": "e.g. Drop weights reviewed after the first week.",
       "confirmAll": "Update all",
       "doneAll_one": "{{count}} card updated on the live board.",
-      "doneAll_other": "{{count}} cards updated on the live board."
+      "doneAll_other": "{{count}} cards updated on the live board.",
+      "required": "Required",
+      "notRequired": "Not required"
     }
   },
   "brand": {

@@ -858,7 +858,9 @@
       "reasonAllPlaceholder": "p. ej.: Pesos de drops revisados tras la primera semana.",
       "confirmAll": "Actualizar todas",
       "doneAll_one": "{{count}} carta actualizada en el tablero en vivo.",
-      "doneAll_other": "{{count}} cartas actualizadas en el tablero en vivo."
+      "doneAll_other": "{{count}} cartas actualizadas en el tablero en vivo.",
+      "required": "Obligatoria",
+      "notRequired": "No obligatoria"
     }
   },
   "brand": {

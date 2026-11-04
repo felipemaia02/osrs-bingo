@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import BuildOutlinedIcon from '@mui/icons-material/BuildOutlined'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { Button } from '../../../components/ui/Button'
 import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { FormModal } from '../../../components/ui/FormModal'
-import type { CardSummary } from '../../cards/types'
+import type { CardSummary, Estimate } from '../../cards/types'
 import { useUpdateAllBoardCards, useUpdateBoardPosition } from '../hooks/useBoards'
 import type { BoardCardSnapshot, BoardPosition, EventBoard } from '../types'
 import { usePositionLabel } from '../hooks/usePositionLabel'
@@ -139,36 +140,62 @@ export function LiveCardFixes({
 
 type Row = { label: string; before: string; after: string }
 
-function comparison(
-  before: BoardCardSnapshot,
-  after: CardSummary['revision'],
-  t: (key: string) => string,
-): Row[] {
-  const drops = (card: { drops: BoardCardSnapshot['drops'] }) =>
-    card.drops.map((drop) => `${drop.name} (+${drop.progress_weight})`).join(', ')
+type ComparedCard = Pick<
+  BoardCardSnapshot,
+  | 'name'
+  | 'tile_score'
+  | 'completion_requirement'
+  | 'difficulty'
+  | 'drops'
+  | 'description'
+  | 'categories'
+  | 'kills_per_hour'
+  | 'requires_preverification'
+> & { estimate?: Estimate }
+
+const EMPTY = '—'
+
+function estimateText(estimate: Estimate | undefined, t: TFunction): string {
+  if (!estimate || estimate.kills === null) return EMPTY
+  const format = (value: number | null) => (value === null ? EMPTY : `≈ ${round(value)}`)
+  return t('estimate.value', { kills: format(estimate.kills), hours: format(estimate.hours) })
+}
+
+const round = (value: number) => Math.round(value * 10) / 10
+
+/** Every rule players see on the tile, before and after the update (036, 060). */
+function comparison(before: ComparedCard, after: ComparedCard, t: TFunction): Row[] {
+  const drops = (card: ComparedCard) =>
+    card.drops
+      .map(
+        (drop) =>
+          `${drop.name} (+${drop.progress_weight}${drop.drop_rate ? ` · ${drop.drop_rate}` : ''})`,
+      )
+      .join(', ')
+  const categories = (card: ComparedCard) =>
+    card.categories?.length
+      ? card.categories.map((category) => t(`cards.category.${category}`)).join(', ')
+      : EMPTY
+  const row = (label: string, read: (card: ComparedCard) => string): Row => ({
+    label,
+    before: read(before),
+    after: read(after),
+  })
   return [
-    { label: t('cards.form.name'), before: before.name, after: after.name },
-    {
-      label: t('cards.form.score'),
-      before: String(before.tile_score),
-      after: String(after.tile_score),
-    },
-    {
-      label: t('cards.form.requirement'),
-      before: String(before.completion_requirement),
-      after: String(after.completion_requirement),
-    },
-    {
-      label: t('cards.form.difficulty'),
-      before: t(`tile.tier.${before.difficulty}`),
-      after: t(`tile.tier.${after.difficulty}`),
-    },
-    { label: t('cards.drops.title'), before: drops(before), after: drops(after) },
-    {
-      label: t('cards.form.description'),
-      before: before.description ?? '—',
-      after: after.description ?? '—',
-    },
+    row(t('cards.form.name'), (card) => card.name),
+    row(t('cards.form.score'), (card) => String(card.tile_score)),
+    row(t('cards.form.requirement'), (card) => String(card.completion_requirement)),
+    row(t('cards.form.difficulty'), (card) => t(`tile.tier.${card.difficulty}`)),
+    row(t('cards.drops.title'), drops),
+    row(t('estimate.killsPerHour'), (card) =>
+      card.kills_per_hour ? String(card.kills_per_hour) : EMPTY,
+    ),
+    row(t('estimate.title'), (card) => estimateText(card.estimate, t)),
+    row(t('cards.form.categories'), categories),
+    row(t('cards.preverification'), (card) =>
+      t(card.requires_preverification ? 'boards.live.required' : 'boards.live.notRequired'),
+    ),
+    row(t('cards.form.description'), (card) => card.description ?? EMPTY),
   ]
 }
 

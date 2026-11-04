@@ -506,7 +506,7 @@ describe('board builder v2', () => {
     const fixed: CardSummary = {
       ...CARD,
       current_revision: 2,
-      revision: { ...CARD.revision, revision: 2, completion_requirement: 6 },
+      revision: { ...CARD.revision, revision: 2, completion_requirement: 6, kills_per_hour: 30 },
     }
     vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
     vi.mocked(fetchCards).mockResolvedValue([fixed])
@@ -528,6 +528,11 @@ describe('board builder v2', () => {
     expect(
       within(dialog).getByRole('rowheader', { name: /Progress requirement/ }),
     ).toHaveTextContent('changed')
+    // Feature 060 fields are compared too.
+    expect(within(dialog).getByRole('rowheader', { name: /Kills per hour/ })).toHaveTextContent(
+      'changed',
+    )
+    expect(within(dialog).getByRole('rowheader', { name: /Pre-verification/ })).toBeInTheDocument()
     const confirm = within(dialog).getByRole('button', { name: 'Update square' })
     expect(confirm).toBeDisabled()
     await user.type(within(dialog).getByLabelText('Reason players will see'), 'Typo: 6, not 8')
