@@ -1724,5 +1724,17 @@
     "rate": "1/{{rate}}",
     "hoursShort": "≈ {{hours}} h",
     "disclaimer": "É uma média, não uma garantia: cerca de metade termina antes, e uma seca pode levar 2–3× mais. Considera kills solo."
+  },
+  "activity": {
+    "title": "Atuando neste tile",
+    "nobody": "Ninguém do seu time ainda.",
+    "you": "Você",
+    "expires_one": "por mais {{count}} dia",
+    "expires_other": "por mais {{count}} dias",
+    "start": "Estou atuando neste tile",
+    "stop": "Parar de atuar",
+    "renew": "Ainda estou atuando",
+    "alreadyComplete": "Este tile já está completo.",
+    "label": "atuando: {{names}}"
   }
 }

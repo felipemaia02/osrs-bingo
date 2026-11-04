@@ -8,6 +8,8 @@ import { BingoBoard } from '../../bingo/components/BingoBoard'
 import { MiniMap } from '../../bingo/components/MiniMap'
 import { TileDetailContent } from '../../bingo/components/TileDetailContent'
 import { TileDetailPanel } from '../../bingo/components/TileDetailPanel'
+import { TileWorkersSection } from '../../bingo/components/TileWorkersSection'
+import { useAdminTeamActivity } from '../../bingo/hooks/useTileActivity'
 import type { Tile } from '../../bingo/types'
 import { useAdminBoard } from '../../boards/hooks/useBoards'
 import { useTeamScore } from '../hooks/useScoring'
@@ -34,13 +36,16 @@ export function TeamBoardModal({ eventId, teams, initialTeamId, onClose }: TeamB
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const board = useAdminBoard(eventId)
   const score = useTeamScore(eventId, teamId)
+  const activity = useAdminTeamActivity(eventId, teamId)
   const team = teams.find((candidate) => candidate.team_id === teamId)
   const tiles = useMemo(
-    () => (board.data && score.data ? boardToTiles(board.data, score.data) : []),
-    [board.data, score.data],
+    () => (board.data && score.data ? boardToTiles(board.data, score.data, activity.data) : []),
+    [board.data, score.data, activity.data],
   )
   const selected = tiles.find((tile) => tile.id === selectedId) ?? null
   const toggle = (tile: Tile) => setSelectedId(tile.id === selectedId ? null : tile.id)
+  // Read-only: admins see who works on the tile but can't mark it (061).
+  const workers = selected?.workers ? <TileWorkersSection tile={selected} eventId={null} /> : null
 
   return (
     <FormModal
@@ -83,6 +88,7 @@ export function TeamBoardModal({ eventId, teams, initialTeamId, onClose }: TeamB
                   tile={selected}
                   unavailableReason={PROGRESS_UNAVAILABLE}
                   onClose={() => setSelectedId(null)}
+                  extra={workers}
                 />
               </div>
             ) : (
@@ -103,7 +109,11 @@ export function TeamBoardModal({ eventId, teams, initialTeamId, onClose }: TeamB
                     <h3 className="m-0 border-b border-rs-border px-3.5 py-3 font-display text-lg text-rs-gold-bright">
                       {selected.name}
                     </h3>
-                    <TileDetailContent tile={selected} unavailableReason={PROGRESS_UNAVAILABLE} />
+                    <TileDetailContent
+                      tile={selected}
+                      unavailableReason={PROGRESS_UNAVAILABLE}
+                      extra={workers}
+                    />
                   </section>
                 )}
               </>

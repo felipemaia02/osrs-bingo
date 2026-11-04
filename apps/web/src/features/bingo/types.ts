@@ -13,6 +13,19 @@ export interface TileProgress {
   remaining?: Estimate | null
 }
 
+/** A teammate working on a tile (feature 061). */
+export interface TileWorker {
+  player_id: string
+  name: string
+  since: string
+  expires_at: string
+  is_you: boolean
+}
+
+export interface TeamActivity {
+  tiles: Array<{ position: number; players: TileWorker[] }>
+}
+
 /** Presentation model of one board tile, mapped from the event board API snapshot. */
 export interface Tile {
   id: string
@@ -38,6 +51,8 @@ export interface Tile {
   imageArtist?: string | null
   /** Expected kills and hours for the whole tile (feature 060). */
   estimate?: Estimate | null
+  /** Teammates working on it; undefined when the viewer can't see team activity (061). */
+  workers?: TileWorker[]
   /** Latest fix of this square during the event (feature 036). */
   lastUpdate?: { reason: string; at: string } | null
 }

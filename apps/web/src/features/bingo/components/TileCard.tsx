@@ -6,6 +6,7 @@ import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
 import { TileProgressLine } from './TileProgressLine'
+import { WorkersChip } from './WorkersChip'
 
 interface TileCardProps {
   tile: Tile
@@ -47,6 +48,9 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
         <span className="absolute left-1 top-1">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
         </span>
+        {tile.workers && (
+          <WorkersChip workers={tile.workers} className="absolute bottom-1 right-1" />
+        )}
         {tile.bonus && (
           <span
             className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-[2px] border border-rs-border-strong bg-rs-warning-bg text-[11px] text-rs-gold-bright"

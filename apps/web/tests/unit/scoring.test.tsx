@@ -19,6 +19,11 @@ import {
   fetchTeamScore,
 } from '../../src/features/scoring/api/scoringApi'
 import { RankingPage } from '../../src/features/scoring/pages/RankingPage'
+import {
+  fetchTeamActivity,
+  startWorking,
+  stopWorking,
+} from '../../src/features/bingo/api/activityApi'
 import type { Ranking, TeamScore } from '../../src/features/scoring/types'
 import { fetchOwnRegistration } from '../../src/features/teams/api/teamsApi'
 import { renderApp } from '../render'
@@ -252,6 +257,61 @@ describe('time estimates on the board (060)', () => {
     expect(detail).toHaveTextContent('Whole tile: ≈ 512 kills · ≈ 21.3 h')
     expect(detail).toHaveTextContent('Still needed: ≈ 128 kills · ≈ 5.3 h')
     expect(detail).toHaveTextContent('1/64')
+  })
+})
+
+describe('who is working on a tile (061)', () => {
+  const since = '2026-10-23T12:00:00Z'
+  const later = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+  const pete = {
+    player_id: 'p2',
+    name: 'Prayer Pete',
+    since,
+    expires_at: later,
+    is_you: false,
+  }
+
+  it('shows a small count on the tile and lets the player join and leave', async () => {
+    vi.mocked(fetchOwnTeamScore).mockResolvedValue(SCORE)
+    vi.mocked(fetchTeamActivity).mockResolvedValue({ tiles: [{ position: 4, players: [pete] }] })
+    vi.mocked(startWorking).mockResolvedValue({
+      tiles: [
+        {
+          position: 4,
+          players: [{ ...pete, player_id: 'p1', name: 'Holy Hal', is_you: true }, pete],
+        },
+      ],
+    })
+    vi.mocked(stopWorking).mockResolvedValue({ tiles: [{ position: 4, players: [pete] }] })
+    const user = userEvent.setup()
+    renderApp(<BoardPage />, '/board')
+
+    const grid = await screen.findByRole('region', { name: '3 by 3 board' })
+    const hydra = await within(grid).findByRole('button', {
+      name: /^Hydra,.*working on it: Prayer Pete/,
+    })
+    expect(within(hydra).getByText('1')).toBeInTheDocument()
+
+    await user.click(hydra)
+    const section = screen.getByRole('region', { name: 'Working on this' })
+    expect(section).toHaveTextContent('Prayer Pete')
+    await user.click(within(section).getByRole('button', { name: "I'm working on this" }))
+
+    expect(startWorking).toHaveBeenCalledWith(EVENT.id, 4)
+    expect(await within(section).findByText('You')).toBeInTheDocument()
+    expect(section).toHaveTextContent('for 7 more days')
+    expect(within(hydra).getByText('2')).toBeInTheDocument()
+
+    await user.click(within(section).getByRole('button', { name: 'Stop working on this' }))
+    expect(stopWorking).toHaveBeenCalledWith(EVENT.id, 4)
+    await waitFor(() => expect(within(section).queryByText('You')).toBeNull())
+  })
+
+  it('stays hidden for players without a team', async () => {
+    renderApp(<BoardPage />, '/board')
+
+    expect((await screen.findAllByText(/Progress unavailable/)).length).toBeGreaterThan(0)
+    expect(fetchTeamActivity).not.toHaveBeenCalled()
   })
 })
 

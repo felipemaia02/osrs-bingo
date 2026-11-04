@@ -3,6 +3,7 @@ import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import ChevronRightOutlinedIcon from '@mui/icons-material/ChevronRightOutlined'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui/Button'
+import type { ReactNode } from 'react'
 import type { Tile, TileMatch } from '../types'
 import { TileDetailContent } from './TileDetailContent'
 
@@ -14,6 +15,7 @@ export function MobileTileDetail({
   onPrevious,
   onNext,
   onClose,
+  extra,
 }: {
   tile: Tile
   match?: TileMatch
@@ -21,6 +23,7 @@ export function MobileTileDetail({
   onPrevious: (() => void) | null
   onNext: (() => void) | null
   onClose: () => void
+  extra?: ReactNode
 }) {
   const { t } = useTranslation()
   return (
@@ -55,7 +58,12 @@ export function MobileTileDetail({
           </Button>
         </span>
       </div>
-      <TileDetailContent tile={tile} match={match} unavailableReason={unavailableReason} />
+      <TileDetailContent
+        tile={tile}
+        match={match}
+        unavailableReason={unavailableReason}
+        extra={extra}
+      />
     </section>
   )
 }

@@ -2,11 +2,16 @@ import { cardImageUrl } from '../cards/artwork'
 import type { EventBoard } from '../boards/types'
 import type { TeamScore } from '../scoring/types'
 import { normalizeSearch } from '../../lib/text/search'
-import type { TierFilter, Tile, TileMatch } from './types'
+import type { TeamActivity, TierFilter, Tile, TileMatch } from './types'
 
-/** Maps the published board snapshot to tiles. No progress or score exists yet (BR-001). */
-export function boardToTiles(board: EventBoard, score?: TeamScore | null): Tile[] {
+/** Maps the published board snapshot to tiles, with the team's progress and activity if known. */
+export function boardToTiles(
+  board: EventBoard,
+  score?: TeamScore | null,
+  activity?: TeamActivity | null,
+): Tile[] {
   const progress = new Map(score?.tiles.map((tile) => [tile.position, tile]))
+  const workers = new Map(activity?.tiles.map((tile) => [tile.position, tile.players]))
   return board.positions.map(({ position, row, column, card, bonus, updates }) => ({
     id: `${card.card_id}:${card.card_revision}`,
     position,
@@ -27,6 +32,7 @@ export function boardToTiles(board: EventBoard, score?: TeamScore | null): Tile[
     imageArtist: card.artwork?.artist ?? null,
     estimate: card.estimate ?? null,
     progress: toProgress(progress.get(position)),
+    workers: activity ? (workers.get(position) ?? []) : undefined,
     lastUpdate: updates?.length
       ? { reason: updates[updates.length - 1].reason, at: updates[updates.length - 1].updated_at }
       : null,

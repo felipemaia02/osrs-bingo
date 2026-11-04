@@ -1724,5 +1724,17 @@
     "rate": "1/{{rate}}",
     "hoursShort": "≈ {{hours}} h",
     "disclaimer": "Es una media, no una garantía: cerca de la mitad termina antes y una mala racha puede tardar 2–3× más. Supone kills en solitario."
+  },
+  "activity": {
+    "title": "Trabajando en esta casilla",
+    "nobody": "Nadie de tu equipo todavía.",
+    "you": "Tú",
+    "expires_one": "por {{count}} día más",
+    "expires_other": "por {{count}} días más",
+    "start": "Estoy trabajando en esto",
+    "stop": "Dejar de trabajar en esto",
+    "renew": "Sigo trabajando en esto",
+    "alreadyComplete": "Esta casilla ya está completa.",
+    "label": "trabajando en ella: {{names}}"
   }
 }

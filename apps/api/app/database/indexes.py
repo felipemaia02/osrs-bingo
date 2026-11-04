@@ -187,6 +187,17 @@ class IndexManager:
         ("audit_log", [("event_id", 1), ("at", -1)], {"name": "audit_log_event_at"}),
         ("audit_log", [("action", 1), ("at", -1)], {"name": "audit_log_action_at"}),
         ("audit_log", [("expires_at", 1)], {"name": "audit_log_expiry", "expireAfterSeconds": 0}),
+        # Who works on which tile (feature 061): one mark per player and tile, gone after 7 days.
+        (
+            "tile_activity",
+            [("event_id", 1), ("team_id", 1), ("player_id", 1), ("position", 1)],
+            {"name": "tile_activity_unique", "unique": True},
+        ),
+        (
+            "tile_activity",
+            [("expires_at", 1)],
+            {"name": "tile_activity_expiry", "expireAfterSeconds": 0},
+        ),
     ]
 
     async def ensure_all(self, db: AsyncIOMotorDatabase) -> None:  # type: ignore[type-arg]
