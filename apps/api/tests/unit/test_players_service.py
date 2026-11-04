@@ -416,11 +416,17 @@ async def test_captain_needs_approval_and_a_team_and_is_unique(
         await service.update_participation(EVENT_ID, PLAYER_ID, participation("captain"))
 
     players.get.return_value = registration(RegistrationStatus.APPROVED)
-    with pytest.raises(ConflictError, match="Assign a team"):
-        await service.update_participation(EVENT_ID, PLAYER_ID, participation("captain"))
+    for role in ("captain", "reviewer"):
+        with pytest.raises(ConflictError, match="Assign a team"):
+            await service.update_participation(EVENT_ID, PLAYER_ID, participation(role))
     players.get.return_value = registration(RegistrationStatus.PENDING)
     with pytest.raises(ConflictError, match="Only approved"):
-        await service.update_participation(EVENT_ID, PLAYER_ID, participation("instructor"))
+        await service.update_participation(EVENT_ID, PLAYER_ID, participation("reviewer"))
+
+
+def test_instructor_is_no_longer_a_role() -> None:
+    with pytest.raises(ValidationError):
+        participation("instructor")
 
 
 async def test_paid_buy_in_records_a_current_administrator(
@@ -443,7 +449,7 @@ async def test_unchanged_buy_in_is_not_rewritten(
     participants: tuple[PlayerService, AsyncMock],
 ) -> None:
     service, players = participants
-    await service.update_participation(EVENT_ID, PLAYER_ID, participation("instructor"))
+    await service.update_participation(EVENT_ID, PLAYER_ID, participation("reviewer"))
     assert players.set_participation.await_args.kwargs["buy_in"] is None
 
 

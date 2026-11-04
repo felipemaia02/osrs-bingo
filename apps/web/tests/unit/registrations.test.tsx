@@ -653,7 +653,7 @@ describe('participants and team balance (feature 023)', () => {
         ehb_total: 845.2,
         timezone: 'America/Sao_Paulo',
         teammates: ['Druid Duda'],
-        role: 'instructor',
+        role: 'reviewer',
         buy_in_status: 'paid',
         buy_in_admin_name: 'felps_',
       }),
@@ -669,7 +669,7 @@ describe('participants and team balance (feature 023)', () => {
     expect(row).toHaveTextContent('17,950')
     expect(row).toHaveTextContent('845.2')
     expect(row).toHaveTextContent('Druid Duda')
-    expect(within(row).getByText('Instructor')).toBeInTheDocument()
+    expect(within(row).getByText('Reviewer')).toBeInTheDocument()
     expect(within(row).getByText('Paid')).toBeInTheDocument()
     expect(within(row).getByText('to felps_')).toBeInTheDocument()
     expect(screen.getByText('Sorted by EHB total ↓')).toBeInTheDocument()

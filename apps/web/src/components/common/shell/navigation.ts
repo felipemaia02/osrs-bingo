@@ -99,6 +99,15 @@ export const PLAY_ENTRIES: NavEntry[] = [
   },
 ]
 
+/** Also the only entry captains and reviewers get (feature 064). */
+export const REVIEW_ENTRY: NavEntry = {
+  key: 'review',
+  labelKey: 'admin.review',
+  to: '/admin/review',
+  icon: FactCheckOutlined,
+  activeIcon: FactCheck,
+}
+
 export const ADMIN_ENTRIES: NavEntry[] = [
   {
     key: 'overview',
@@ -108,13 +117,7 @@ export const ADMIN_ENTRIES: NavEntry[] = [
     activeIcon: SpaceDashboard,
     exact: true,
   },
-  {
-    key: 'review',
-    labelKey: 'admin.review',
-    to: '/admin/review',
-    icon: FactCheckOutlined,
-    activeIcon: FactCheck,
-  },
+  REVIEW_ENTRY,
   {
     key: 'adminEvents',
     labelKey: 'admin.events',

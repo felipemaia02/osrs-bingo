@@ -11,6 +11,7 @@ import { MaintenanceScreen, OfflineScreen } from './status/StatusScreens'
 import { useSiteStatus } from '../../features/maintenance/siteStatus'
 import { ProfileSetupNotice } from '../../features/profiles/components/ProfileSetupNotice'
 import ConstructionOutlinedIcon from '@mui/icons-material/ConstructionOutlined'
+import { useReviewAccess } from '../../features/submissions/hooks/useReviewAccess'
 import { MobileBottomBar } from './shell/MobileBottomBar'
 import { ShellSidebar } from './shell/ShellSidebar'
 import { SiteFooter } from './shell/SiteFooter'
@@ -32,7 +33,9 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
   const siteStatus = useSiteStatus()
   const maintenance = siteStatus.data?.maintenance === true
   const registrations = useDraftRegistrationCounts(isAdmin)
-  const pendingReviews = usePendingReviews(isAdmin)
+  // Captains and reviewers of the active event review the other teams (064).
+  const { teamReviewer } = useReviewAccess()
+  const pendingReviews = usePendingReviews(isAdmin || teamReviewer)
 
   return (
     <div className="flex min-h-screen flex-col bg-rs-canvas text-rs-text">
@@ -61,6 +64,7 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
       <div className="flex flex-1 flex-col md:flex-row">
         <ShellSidebar
           isAdmin={isAdmin}
+          isReviewer={teamReviewer}
           pendingRegistrations={registrations?.pending ?? null}
           pendingReviews={pendingReviews}
         />
@@ -97,7 +101,7 @@ export function AppShell({ children, desktopPadding = DEFAULT_DESKTOP_PADDING }:
         </main>
       </div>
 
-      <MobileBottomBar isAdmin={isAdmin} />
+      <MobileBottomBar isAdmin={isAdmin} isReviewer={teamReviewer} />
     </div>
   )
 }

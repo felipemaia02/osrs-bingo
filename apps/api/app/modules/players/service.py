@@ -36,7 +36,8 @@ ACCOUNT_NOT_ON_WOM = "This account isn't found on Wise Old Man"
 TEAMMATE_IS_SELF = "You can't pick yourself as a teammate"
 TEAMMATE_UNKNOWN = "Preferred teammate not found"
 ROLE_NEEDS_APPROVAL = "Only approved players can have a role"
-CAPTAIN_NEEDS_TEAM = "Assign a team before making this player captain"
+TEAM_ROLE_NEEDS_TEAM = "Assign a team before giving this player a team role"
+TEAM_ROLES = {ParticipantRole.CAPTAIN, ParticipantRole.REVIEWER}
 CAPTAIN_TAKEN = "This team already has a captain"
 BUY_IN_ADMIN_UNKNOWN = "Choose a current administrator"
 PARTICIPANT_CHANGED = "This registration changed meanwhile. Reload and try again"
@@ -228,8 +229,8 @@ class PlayerService:
             return
         if player.get("status") != RegistrationStatus.APPROVED:
             raise ConflictError(ROLE_NEEDS_APPROVAL)
-        if role == ParticipantRole.CAPTAIN and player["team_id"] is None:
-            raise ConflictError(CAPTAIN_NEEDS_TEAM)
+        if role in TEAM_ROLES and player["team_id"] is None:
+            raise ConflictError(TEAM_ROLE_NEEDS_TEAM)
 
     async def _buy_in_change(
         self, player: PlayerDocument, payload: ParticipationUpdate

@@ -2,7 +2,13 @@ import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettin
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { Badge } from '../../ui/Badge'
-import { ADMIN_ENTRIES, PLAY_ENTRIES, isEntryActive, type NavEntry } from './navigation'
+import {
+  ADMIN_ENTRIES,
+  PLAY_ENTRIES,
+  REVIEW_ENTRY,
+  isEntryActive,
+  type NavEntry,
+} from './navigation'
 
 function SidebarItem({ entry, badge }: { entry: NavEntry; badge?: number | null }) {
   const { t } = useTranslation()
@@ -58,12 +64,19 @@ function GroupLabel({ children, icon }: { children: string; icon?: boolean }) {
 
 interface ShellSidebarProps {
   isAdmin: boolean
+  /** Captain or reviewer of the active event: sees only "Review" (064). */
+  isReviewer: boolean
   pendingRegistrations: number | null
   pendingReviews: number | null
 }
 
 /** Desktop sidebar (layout 4A): Play for everyone, Administration only for administrators. */
-export function ShellSidebar({ isAdmin, pendingRegistrations, pendingReviews }: ShellSidebarProps) {
+export function ShellSidebar({
+  isAdmin,
+  isReviewer,
+  pendingRegistrations,
+  pendingReviews,
+}: ShellSidebarProps) {
   const { t } = useTranslation()
   const badges: Record<string, number | null> = {
     teams: pendingRegistrations,
@@ -78,10 +91,10 @@ export function ShellSidebar({ isAdmin, pendingRegistrations, pendingReviews }: 
       {PLAY_ENTRIES.map((entry) => (
         <SidebarItem key={entry.key} entry={entry} />
       ))}
-      {isAdmin && (
+      {(isAdmin || isReviewer) && (
         <>
           <GroupLabel icon>{t('admin.title')}</GroupLabel>
-          {ADMIN_ENTRIES.map((entry) => (
+          {(isAdmin ? ADMIN_ENTRIES : [REVIEW_ENTRY]).map((entry) => (
             <SidebarItem key={entry.key} entry={entry} badge={badges[entry.key]} />
           ))}
         </>

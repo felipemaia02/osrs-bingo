@@ -30,6 +30,7 @@ def to_player_response(document: PlayerDocument) -> PlayerResponse:
         buy_in_status=BuyInStatus(buy_in["status"]) if buy_in else None,
         joined_late=bool(document.get("joined_late")),
         team_assigned_at=document.get("team_assigned_at"),
+        role=ParticipantRole(role) if (role := document.get("role")) else None,
         created_at=document["created_at"],
         updated_at=document["updated_at"],
     )
@@ -37,13 +38,11 @@ def to_player_response(document: PlayerDocument) -> PlayerResponse:
 
 def to_roster_entry(document: RosterDocument) -> RosterEntry:
     """Admin roster row: registration, current profile experience and names (feature 023)."""
-    role = document.get("role")
     account_count = document.get("account_count")
     admins = document.get("buy_in_admin") or []
     snapshots = account_snapshots(document)
     return RosterEntry(
         **to_player_response(document).model_dump(),
-        role=ParticipantRole(role) if role else None,
         boss_kc_total=document.get("boss_kc_total"),
         raids_kc_total=document.get("raids_kc_total"),
         ehb_total=document.get("ehb_total"),

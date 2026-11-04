@@ -15,7 +15,7 @@ from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.repository import PlayerRepository
-from app.modules.players.schemas import RegistrationStatus
+from app.modules.players.schemas import ParticipantRole, RegistrationStatus
 from app.modules.scoring.service import ScoringService
 from app.modules.submissions.duplicates import possible_duplicates
 from app.modules.submissions.images import EXTENSIONS, validate_screenshot
@@ -49,6 +49,8 @@ PREVERIFICATION_REQUIRED = "Send this card's pre-verification first"
 PREVERIFICATION_NOT_NEEDED = "This card doesn't require pre-verification"
 PREVERIFICATION_EXISTS = "A pre-verification for this card is already pending or accepted"
 PREVERIFICATION_NOT_ACCEPTED = "Accept this player's pre-verification for the card first"
+REVIEW_ACCESS_REQUIRED = "Administrator, captain or reviewer access required"
+REVIEW_ROLES = {ParticipantRole.CAPTAIN, ParticipantRole.REVIEWER}
 ALREADY_REVIEWED = "Submission already reviewed"
 OWN_SUBMISSION_REVIEW = "This is your own submission — another admin reviews it"
 REVIEW_CLOSED = "Submissions can only be reviewed for active or finished events"
@@ -61,6 +63,12 @@ SCREENSHOT_KEY_DIGEST_LENGTH = 16
 
 REVIEWABLE_EVENT_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
 OPEN_PREVERIFICATION = {SubmissionStatus.PENDING, SubmissionStatus.ACCEPTED}
+
+
+def all_of(filters: list[dict[str, Any]]) -> dict[str, Any] | None:
+    if len(filters) > 1:
+        return {"$and": filters}
+    return filters[0] if filters else None
 
 
 class SubmissionService:
@@ -174,9 +182,18 @@ class SubmissionService:
         )
 
     async def queue(
-        self, event_id: str, query: ReviewQueueQuery, admin: CurrentUser
+        self, event_id: str, query: ReviewQueueQuery, reviewer: CurrentUser
     ) -> ReviewQueueResponse:
         event = await self._require_event(event_id)
+        own_team = await self._review_scope(event_id, reviewer)
+        filters = [
+            item
+            for item in (
+                await self._search_filter(event_id, query.q),
+                {"team_id": {"$ne": own_team}} if own_team is not None else None,
+            )
+            if item
+        ]
         documents, total = await self._submissions.page(
             event["_id"],
             query.status,
@@ -185,7 +202,7 @@ class SubmissionService:
             query.limit,
             # Accepted ones are browsed to revert mistakes: latest first (feature 035).
             newest_first=query.status != SubmissionStatus.PENDING,
-            extra=await self._search_filter(event_id, query.q),
+            extra=all_of(filters),
         )
         candidates = await self._submissions.open_drops(
             event["_id"],
@@ -212,7 +229,7 @@ class SubmissionService:
             if document["kind"] == SubmissionKind.DROP and document["requires_preverification"]
         }
         gates = await self._submissions.preverification_statuses(event["_id"], gated)
-        pending = await self._submissions.pending_counts(event["_id"])
+        pending = await self._submissions.pending_counts(event["_id"], exclude_team=own_team)
         items = []
         for document in documents:
             player = players.get(document["player_id"])
@@ -242,7 +259,7 @@ class SubmissionService:
                     requires_preverification=document["requires_preverification"],
                     preverification_status=SubmissionStatus(gate) if gate else None,
                     within_event=self._within_event(event, document["submitted_at"]),
-                    own_submission=self._is_own(document, admin),
+                    own_submission=self._is_own(document, reviewer),
                     possible_duplicates=duplicates.get(document["_id"], []),
                 )
             )
@@ -258,11 +275,9 @@ class SubmissionService:
             ),
         )
 
-    async def tile_history(self, submission_id: str, admin: CurrentUser) -> TileHistoryResponse:
+    async def tile_history(self, submission_id: str, reviewer: CurrentUser) -> TileHistoryResponse:
         """What the submission's team already has on that tile (feature 035)."""
-        document = await self._submissions.get(submission_id)
-        if document is None:
-            raise NotFoundError("Submission")
+        document = await self._visible_to_reviewer(submission_id, reviewer)
         event_id = str(document["event_id"])
         drops = await self._submissions.tile_drops(
             document["event_id"], document["team_id"], document["position"]
@@ -324,8 +339,8 @@ class SubmissionService:
             raise AppException(409, NOT_ACCEPTED)
         return self._response(updated)
 
-    async def accept(self, submission_id: str, admin: CurrentUser) -> SubmissionResponse:
-        document = await self._require_reviewable(submission_id, admin)
+    async def accept(self, submission_id: str, reviewer: CurrentUser) -> SubmissionResponse:
+        document = await self._require_reviewable(submission_id, reviewer)
         if document["kind"] == SubmissionKind.DROP and document["requires_preverification"]:
             gates = await self._submissions.preverification_statuses(
                 document["event_id"], {(document["player_id"], document["position"])}
@@ -338,23 +353,29 @@ class SubmissionService:
             slot = await self._board_position(str(document["event_id"]), document["position"])
             if document["drop_key"] not in {drop["key"] for drop in slot["card"]["drops"]}:
                 raise AppException(409, DROP_REMOVED)
-        return await self._decide(document, SubmissionStatus.ACCEPTED, admin)
+        return await self._decide(document, SubmissionStatus.ACCEPTED, reviewer)
 
     async def reject(
-        self, submission_id: str, payload: SubmissionReject, admin: CurrentUser
+        self, submission_id: str, payload: SubmissionReject, reviewer: CurrentUser
     ) -> SubmissionResponse:
-        document = await self._require_reviewable(submission_id, admin)
+        document = await self._require_reviewable(submission_id, reviewer)
         return await self._decide(
-            document, SubmissionStatus.REJECTED, admin, payload.reason, payload.note
+            document, SubmissionStatus.REJECTED, reviewer, payload.reason, payload.note
         )
 
     async def screenshot(
         self, submission_id: str, user: CurrentUser
     ) -> tuple[str | None, bytes | None, str]:
-        """A signed URL, or the bytes to serve, plus the content type."""
+        """A signed URL, or the bytes to serve, plus the content type. Seen by its owner, admins,
+        and captains/reviewers of the other teams (064)."""
         document = await self._submissions.get(submission_id)
-        if document is None or (not user.is_admin and str(document["user_id"]) != user.id):
+        if document is None:
             raise NotFoundError("Submission")
+        if str(document["user_id"]) != user.id:
+            try:
+                await self._visible_to_reviewer(submission_id, user)
+            except AppException as error:
+                raise NotFoundError("Submission") from error
         # DropTracker hosts the image unless the player sent one (057); some have neither.
         if (
             document.get("source") == SubmissionSource.DROPTRACKER
@@ -441,23 +462,48 @@ class SubmissionService:
         """The reviewing admin sent this submission (feature 054)."""
         return str(document.get("user_id")) == admin.id
 
+    async def _review_scope(self, event_id: str, user: CurrentUser) -> ObjectId | None:
+        """Admins review every team (None). Captains and reviewers of the event review only the
+        other teams: their own team id is returned to leave it out (064, BR-001)."""
+        if user.is_admin:
+            return None
+        player = await self._players.get_for_user(event_id, user.id)
+        if (
+            player is None
+            or player.get("status") != RegistrationStatus.APPROVED
+            or player["team_id"] is None
+            or player.get("role") not in REVIEW_ROLES
+        ):
+            raise AppException(403, REVIEW_ACCESS_REQUIRED)
+        return player["team_id"]
+
+    async def _visible_to_reviewer(
+        self, submission_id: str, user: CurrentUser
+    ) -> SubmissionDocument:
+        """404 for the reviewer's own team, so they can't even tell it exists."""
+        document = await self._submissions.get(submission_id)
+        if document is None:
+            raise NotFoundError("Submission")
+        own_team = await self._review_scope(str(document["event_id"]), user)
+        if own_team is not None and document["team_id"] == own_team:
+            raise NotFoundError("Submission")
+        return document
+
     def _require_not_own(self, document: SubmissionDocument, admin: CurrentUser) -> None:
         # Nobody judges their own submission; teammates' ones are fine (054 revises 026).
         if self._is_own(document, admin):
             raise AppException(403, OWN_SUBMISSION_REVIEW)
 
     async def _require_reviewable(
-        self, submission_id: str, admin: CurrentUser
+        self, submission_id: str, reviewer: CurrentUser
     ) -> SubmissionDocument:
-        document = await self._submissions.get(submission_id)
-        if document is None:
-            raise NotFoundError("Submission")
+        document = await self._visible_to_reviewer(submission_id, reviewer)
         if document["status"] != SubmissionStatus.PENDING:
             raise AppException(409, ALREADY_REVIEWED)
         event = await self._events.get(str(document["event_id"]))
         if event is None or event["status"] not in REVIEWABLE_EVENT_STATUSES:
             raise AppException(409, REVIEW_CLOSED)
-        self._require_not_own(document, admin)
+        self._require_not_own(document, reviewer)
         return document
 
     async def _require_event(self, event_id: str) -> EventDocument:

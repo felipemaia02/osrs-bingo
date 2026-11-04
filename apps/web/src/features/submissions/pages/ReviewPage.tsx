@@ -11,6 +11,7 @@ import { useEvents } from '../../events/hooks/useEvents'
 import { ReviewDetail } from '../components/ReviewDetail'
 import { ReviewList } from '../components/ReviewList'
 import { submissionErrorKey } from '../errors'
+import { useReviewAccess } from '../hooks/useReviewAccess'
 import { useReviewActions, useReviewQueue } from '../hooks/useSubmissions'
 import type { RejectPayload, ReviewStatus, SubmissionKind } from '../types'
 
@@ -23,7 +24,11 @@ export function ReviewPage() {
   const { t } = useTranslation()
   const isDesktop = useIsDesktop()
   const events = useEvents()
-  const reviewable = (events.data ?? []).filter((event) => event.status !== 'draft')
+  const access = useReviewAccess()
+  // Captains and reviewers only review the active event's other teams (064).
+  const reviewable = (events.data ?? []).filter((event) =>
+    access.isAdmin ? event.status !== 'draft' : event.id === access.activeEventId,
+  )
   const [chosenEventId, setChosenEventId] = useState<string | null>(null)
   const eventId =
     chosenEventId ??
@@ -121,7 +126,7 @@ export function ReviewPage() {
   return (
     <AppShell desktopPadding="md:px-7 md:pt-[22px]">
       <div className="flex flex-col gap-3 md:gap-3.5">
-        {!isDesktop && (
+        {!isDesktop && access.isAdmin && (
           <Link
             to="/admin"
             className="inline-flex min-h-8 items-center gap-0.5 self-start text-[13px] text-rs-gold-bright"
@@ -140,7 +145,9 @@ export function ReviewPage() {
             <h1 className="m-0 font-display text-[23px] font-bold leading-[1.15] text-rs-gold-bright md:text-[30px]">
               {t('review.title')}
             </h1>
-            <span className="text-rs-muted">{t('review.description')}</span>
+            <span className="text-rs-muted">
+              {t(access.isAdmin ? 'review.description' : 'review.teamReviewerDescription')}
+            </span>
           </div>
           <div className="flex flex-col items-end gap-2">
             {reviewable.length > 1 && (
@@ -189,23 +196,26 @@ export function ReviewPage() {
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-2">
-              <SegmentedControl<ReviewStatus>
-                label={t('review.statusFilter')}
-                variant="chip"
-                value={status}
-                onChange={(value) => {
-                  setStatus(value)
-                  setSelectedId(null)
-                  setSearch('')
-                }}
-                options={[
-                  {
-                    value: 'pending',
-                    label: `${t('review.statuses.pending')} ${counts?.pending ?? 0}`,
-                  },
-                  { value: 'accepted', label: t('review.statuses.accepted') },
-                ]}
-              />
+              {/* Reverting accepted submissions stays admin-only (064, BR-003). */}
+              {access.isAdmin && (
+                <SegmentedControl<ReviewStatus>
+                  label={t('review.statusFilter')}
+                  variant="chip"
+                  value={status}
+                  onChange={(value) => {
+                    setStatus(value)
+                    setSelectedId(null)
+                    setSearch('')
+                  }}
+                  options={[
+                    {
+                      value: 'pending',
+                      label: `${t('review.statuses.pending')} ${counts?.pending ?? 0}`,
+                    },
+                    { value: 'accepted', label: t('review.statuses.accepted') },
+                  ]}
+                />
+              )}
               <SegmentedControl<KindFilter>
                 label={t('review.filter')}
                 variant="chip"

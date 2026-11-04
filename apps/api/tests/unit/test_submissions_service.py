@@ -19,6 +19,7 @@ from app.modules.submissions.images import PNG_SIGNATURE, sniff_image_type
 from app.modules.submissions.repository import SubmissionRepository
 from app.modules.submissions.schemas import (
     RejectionReason,
+    ReviewQueueQuery,
     SubmissionKind,
     SubmissionReject,
     SubmissionStatus,
@@ -471,3 +472,87 @@ async def test_droptracker_drop_serves_the_screenshot_the_player_sent(
     deps["submissions"].get.return_value = document
 
     assert await deps["service"].screenshot("id", USER) == (None, PNG, "image/png")
+
+
+# --- team reviewers (feature 064) -----------------------------------------------------------
+
+REVIEWER = CurrentUser(id=str(ObjectId()), discord_id="3", username="Cap", is_admin=False)
+OTHER_TEAM = ObjectId()
+
+
+def reviewer_registration(role: str | None) -> dict[str, Any]:
+    return {**player(), "_id": ObjectId(), "role": role}
+
+
+def submission_of(team: ObjectId) -> dict[str, Any]:
+    return {
+        **pending(requires=False),
+        "position": 1,
+        "team_id": team,
+        "card_name": "Vorkath",
+        "drop_name": "Skeletal Visage",
+    }
+
+
+def as_reviewer(deps: dict[str, Any], role: str | None) -> None:
+    def registration(_event: str, user_id: str) -> dict[str, Any] | None:
+        if user_id == REVIEWER.id:
+            return reviewer_registration(role)
+        return player() if user_id == USER.id else None
+
+    deps["players"].get_for_user.side_effect = registration
+
+
+@pytest.mark.parametrize("role", ["captain", "reviewer"])
+async def test_captains_and_reviewers_review_the_other_teams(
+    deps: dict[str, Any], role: str
+) -> None:
+    as_reviewer(deps, role)
+    deps["submissions"].get.return_value = submission_of(OTHER_TEAM)
+    deps["submissions"].review.return_value = {**submission_of(OTHER_TEAM), "status": "accepted"}
+
+    with contextlib.suppress(Exception):
+        await deps["service"].accept("id", REVIEWER)
+
+    deps["submissions"].review.assert_awaited_once()
+
+
+async def test_reviewers_never_see_their_own_teams_submissions(deps: dict[str, Any]) -> None:
+    as_reviewer(deps, "reviewer")
+    deps["submissions"].get.return_value = submission_of(TEAM_ID)
+
+    for action in (
+        deps["service"].accept("id", REVIEWER),
+        deps["service"].reject("id", SubmissionReject(reason=REASON), REVIEWER),
+        deps["service"].tile_history("id", REVIEWER),
+        deps["service"].screenshot("id", REVIEWER),
+    ):
+        with pytest.raises(NotFoundError):
+            await action
+    deps["submissions"].review.assert_not_awaited()
+
+
+async def test_reviewer_queue_leaves_out_their_own_team(deps: dict[str, Any]) -> None:
+    as_reviewer(deps, "captain")
+    deps["submissions"].page.return_value = ([], 0)
+    deps["submissions"].open_drops.return_value = []
+    deps["submissions"].pending_counts.return_value = {}
+
+    await deps["service"].queue(str(EVENT_ID), ReviewQueueQuery(), REVIEWER)
+
+    assert deps["submissions"].page.await_args.kwargs["extra"] == {"team_id": {"$ne": TEAM_ID}}
+    assert deps["submissions"].pending_counts.await_args.kwargs == {"exclude_team": TEAM_ID}
+
+
+@pytest.mark.parametrize("role", [None, "unknown"])
+async def test_players_without_a_review_role_are_refused(
+    deps: dict[str, Any], role: str | None
+) -> None:
+    as_reviewer(deps, role)
+    deps["submissions"].get.return_value = submission_of(OTHER_TEAM)
+
+    with pytest.raises(AppException) as caught:
+        await deps["service"].accept("id", REVIEWER)
+    assert caught.value.status_code == 403
+    with pytest.raises(NotFoundError):
+        await deps["service"].screenshot("id", REVIEWER)

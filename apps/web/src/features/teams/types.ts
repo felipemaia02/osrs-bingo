@@ -29,7 +29,7 @@ export interface Player {
   account_id?: string | null
   activity?: 'under_1h' | 'one_to_three_h' | 'over_3h' | null
   buy_in_status?: BuyInStatus | null
-  /** Admin roster only (feature 023): the player's current profile and roles. */
+  /** The player's team role (023); also on the player's own registration since 064. */
   role?: ParticipantRole | null
   boss_kc_total?: number | null
   /** Raids KC apart from boss KC (feature 039). */
@@ -64,9 +64,10 @@ export interface AccountSnapshot {
 }
 
 export type BuyInStatus = 'pending' | 'paid'
-export type ParticipantRole = 'captain' | 'instructor'
+/** Team roles per event; both review the other teams' submissions (064). */
+export type ParticipantRole = 'captain' | 'reviewer'
 export const BUY_IN_STATUSES: BuyInStatus[] = ['pending', 'paid']
-export const PARTICIPANT_ROLES: ParticipantRole[] = ['captain', 'instructor']
+export const PARTICIPANT_ROLES: ParticipantRole[] = ['captain', 'reviewer']
 
 export interface ParticipationPayload {
   role: ParticipantRole | null
