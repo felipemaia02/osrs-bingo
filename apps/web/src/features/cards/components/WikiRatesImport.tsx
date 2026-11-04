@@ -1,29 +1,23 @@
 import { useState } from 'react'
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui/Button'
 import type { DropRow } from '../cardForm'
 import { useWikiRates } from '../hooks/useCards'
 import type { WikiDropRate } from '../types'
 
-interface WikiRatesImportProps {
-  cardName: string
-  rows: DropRow[]
-  onChange: (rows: DropRow[]) => void
-}
-
 /** "Import rates from the wiki": fills each drop's rate as the wiki writes it; when the wiki
  * has several sources for an item (e.g. raid modes), the admin picks one (060 rev 2). */
-export function WikiRatesImport({ cardName, rows, onChange }: WikiRatesImportProps) {
-  const { t } = useTranslation()
+export function useWikiRatesImport(
+  cardName: string,
+  rows: DropRow[],
+  onChange: (rows: DropRow[]) => void,
+) {
   const lookup = useWikiRates()
   const [pending, setPending] = useState<WikiDropRate[]>([])
   const [missing, setMissing] = useState<string[]>([])
   const [filled, setFilled] = useState<number | null>(null)
   const named = rows.filter((row) => row.name.trim())
-
-  function setRate(name: string, rate: string, current: DropRow[] = rows) {
-    onChange(current.map((row) => (row.name.trim() === name ? { ...row, dropRate: rate } : row)))
-  }
 
   function importRates() {
     lookup.mutate(
@@ -44,29 +38,53 @@ export function WikiRatesImport({ cardName, rows, onChange }: WikiRatesImportPro
     )
   }
 
+  function pick(name: string, rate: string) {
+    onChange(rows.map((row) => (row.name.trim() === name ? { ...row, dropRate: rate } : row)))
+    setPending((current) => current.filter((item) => item.name !== name))
+  }
+
+  return {
+    importRates,
+    pick,
+    busy: lookup.isPending,
+    disabled: lookup.isPending || !named.length || !cardName.trim(),
+    failed: lookup.isError,
+    filled,
+    missing,
+    pending,
+  }
+}
+
+type WikiImport = ReturnType<typeof useWikiRatesImport>
+
+export function WikiRatesButton({ wiki }: { wiki: WikiImport }) {
+  const { t } = useTranslation()
   return (
-    <div className="flex flex-col gap-1.5">
-      <span>
-        <Button
-          size="sm"
-          disabled={lookup.isPending || !named.length || !cardName.trim()}
-          onClick={importRates}
-        >
-          {t(lookup.isPending ? 'common.loading' : 'cards.drops.wikiImport')}
-        </Button>
-      </span>
-      {lookup.isError && (
+    <Button size="sm" disabled={wiki.disabled} onClick={wiki.importRates}>
+      <MenuBookOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
+      {t(wiki.busy ? 'common.loading' : 'cards.drops.wikiImport')}
+    </Button>
+  )
+}
+
+/** What the import did: how many were filled, what the wiki lacks, and sources to pick from. */
+export function WikiRatesResult({ wiki }: { wiki: WikiImport }) {
+  const { t } = useTranslation()
+  return (
+    <>
+      {wiki.failed && (
         <p role="alert" className="m-0 text-xs text-rs-danger-text">
           {t('cards.drops.wikiUnavailable')}
         </p>
       )}
-      {filled !== null && (
+      {wiki.filled !== null && (
         <p role="status" className="m-0 text-xs text-rs-muted">
-          {t('cards.drops.wikiFilled', { count: filled })}
-          {missing.length > 0 && ` ${t('cards.drops.wikiMissing', { names: missing.join(', ') })}`}
+          {t('cards.drops.wikiFilled', { count: wiki.filled })}
+          {wiki.missing.length > 0 &&
+            ` ${t('cards.drops.wikiMissing', { names: wiki.missing.join(', ') })}`}
         </p>
       )}
-      {pending.map((item) => (
+      {wiki.pending.map((item) => (
         <div
           key={item.name}
           className="flex flex-wrap items-center gap-1.5 rounded-[3px] border border-rs-border/70 bg-rs-inset p-2 text-xs"
@@ -76,16 +94,13 @@ export function WikiRatesImport({ cardName, rows, onChange }: WikiRatesImportPro
             <Button
               key={`${source.source}-${source.rarity}`}
               size="sm"
-              onClick={() => {
-                setRate(item.name, source.rarity)
-                setPending((current) => current.filter((other) => other.name !== item.name))
-              }}
+              onClick={() => wiki.pick(item.name, source.rarity)}
             >
               {source.source}: {source.rarity}
             </Button>
           ))}
         </div>
       ))}
-    </div>
+    </>
   )
 }

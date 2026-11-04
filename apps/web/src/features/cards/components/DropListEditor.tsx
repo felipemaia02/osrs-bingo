@@ -21,7 +21,7 @@ import {
 import { useDropMatchPreview } from '../hooks/useCards'
 import type { DropMatchInput, ItemOption } from '../types'
 import { ItemIcon, ItemPicker } from './ItemPicker'
-import { WikiRatesImport } from './WikiRatesImport'
+import { WikiRatesButton, WikiRatesResult, useWikiRatesImport } from './WikiRatesImport'
 
 const PREVIEW_DELAY_MS = 600
 const SUMMARY_EXAMPLES = 3
@@ -49,6 +49,7 @@ export function DropListEditor({
   const [pasteNote, setPasteNote] = useState<string | null>(null)
   const [pasteBusy, setPasteBusy] = useState(false)
   const queryClient = useQueryClient()
+  const wiki = useWikiRatesImport(cardName, rows, onChange)
 
   const update = (uid: string, changes: Partial<DropRow>) =>
     onChange(rows.map((row) => (row.uid === uid ? { ...row, ...changes } : row)))
@@ -121,10 +122,13 @@ export function DropListEditor({
     <div className="flex flex-col gap-2 md:col-span-2">
       <div className="flex items-center justify-between gap-2">
         <span className="text-[13px] font-semibold">{t('cards.drops.title')}</span>
-        <Button size="sm" onClick={() => setPasting(!pasting)} aria-expanded={pasting}>
-          <ContentPasteOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
-          {t('cards.drops.paste')}
-        </Button>
+        <span className="flex flex-wrap justify-end gap-2">
+          <WikiRatesButton wiki={wiki} />
+          <Button size="sm" onClick={() => setPasting(!pasting)} aria-expanded={pasting}>
+            <ContentPasteOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
+            {t('cards.drops.paste')}
+          </Button>
+        </span>
       </div>
       {pasting && (
         <div className="flex flex-col gap-2 rounded-[3px] border border-rs-border bg-rs-inset p-3">
@@ -150,7 +154,7 @@ export function DropListEditor({
           </span>
         </div>
       )}
-      <WikiRatesImport cardName={cardName} rows={rows} onChange={onChange} />
+      <WikiRatesResult wiki={wiki} />
       {pasteNote && (
         <p role="status" className="m-0 text-xs text-rs-gold-bright">
           {pasteNote}
