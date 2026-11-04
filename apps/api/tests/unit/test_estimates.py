@@ -1,5 +1,6 @@
 """Drop rates and expected time to completion (feature 060)."""
 
+import json
 from decimal import Decimal
 from typing import Any
 from unittest.mock import AsyncMock
@@ -17,6 +18,7 @@ from app.modules.scoring.estimates import (
     estimate,
     suggested_kills_per_hour,
 )
+from app.modules.scoring.wiki_rates import WikiDropRateClient
 from app.modules.tiles.schemas import CardRevisionResponse
 from tests.unit.test_scoring_service import EVENT_ID, USER, deps  # noqa: F401
 
@@ -185,3 +187,78 @@ async def test_find_on_wom_matches_the_card_name_with_or_without_the() -> None:
     with pytest.raises(AppException) as caught:
         await service.match("God Wars Dungeon")
     assert caught.value.status_code == 404
+
+
+def wiki_line(item: str, source: str, rarity: str) -> dict[str, str]:
+    return {
+        "item_name": item,
+        "drop_json": json.dumps({"Dropped from": source, "Rarity": rarity}),
+    }
+
+
+def wiki(
+    rows: list[dict[str, str]], calls: list[httpx.Request] | None = None
+) -> WikiDropRateClient:
+    def handler(request: httpx.Request) -> httpx.Response:
+        if calls is not None:
+            calls.append(request)
+        return httpx.Response(200, json={"bucket": rows})
+
+    return WikiDropRateClient(transport=httpx.MockTransport(handler))
+
+
+async def test_import_from_wiki_uses_the_cards_own_source_in_one_request() -> None:
+    calls: list[httpx.Request] = []
+    client = wiki(
+        [
+            wiki_line("Tormented synapse", "Tormented Demon", "1/500"),
+            wiki_line("Hydra's claw", "Alchemical Hydra", "1/1,001"),
+            wiki_line("Shared item", "Tormented Demon", "1/50"),
+            wiki_line("Shared item", "Other boss", "1/10"),
+        ],
+        calls,
+    )
+
+    rates = await EstimateService(AsyncMock(spec=WomClient), client).wiki_rates(
+        "Tormented Demons", ["Tormented synapse", "Shared item", "Hydra's claw", "Unknown"]
+    )
+
+    assert [(rate.name, rate.rate) for rate in rates] == [
+        ("Tormented synapse", "1/500"),
+        ("Shared item", "1/50"),
+        # Another source, but the only one there is: its rarity is used.
+        ("Hydra's claw", "1/1,001"),
+        ("Unknown", None),
+    ]
+    assert rates[3].sources == []
+    assert len(calls) == 1
+    assert "{'item_name','Hydra\\'s claw'}" in calls[0].url.params["query"]
+
+
+async def test_import_from_wiki_leaves_ambiguous_sources_to_the_admin() -> None:
+    client = wiki(
+        [
+            wiki_line("Twisted bow", "Ancient chest#Normal Mode", "2/60"),
+            wiki_line("Twisted bow", "Ancient chest#Challenge Mode", "2/56"),
+        ]
+    )
+
+    (rate,) = await EstimateService(AsyncMock(spec=WomClient), client).wiki_rates(
+        "Chambers of Xeric", ["Twisted bow"]
+    )
+
+    assert rate.rate is None
+    assert [(item.source, item.rarity) for item in rate.sources] == [
+        ("Ancient chest#Normal Mode", "2/60"),
+        ("Ancient chest#Challenge Mode", "2/56"),
+    ]
+
+
+async def test_wiki_down_gives_a_clear_error() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(503)
+
+    client = WikiDropRateClient(transport=httpx.MockTransport(handler))
+    with pytest.raises(AppException, match="type the drop rates by hand") as caught:
+        await EstimateService(AsyncMock(spec=WomClient), client).wiki_rates("Vorkath", ["x"])
+    assert caught.value.status_code == 502

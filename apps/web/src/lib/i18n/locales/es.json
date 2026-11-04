@@ -706,7 +706,13 @@
       "checkMissing": "Aún sin coincidencias: {{names}}. Revisa los nombres si son drops comunes.",
       "checkUnavailable": "Aún no hay datos de DropTracker, así que la comprobación de drops del clan está apagada.",
       "rate": "Tasa",
-      "rateFor": "Tasa de drop de {{name}}, como en la wiki"
+      "rateFor": "Tasa de drop de {{name}}, como en la wiki",
+      "wikiImport": "Importar tasas de la wiki",
+      "wikiUnavailable": "La OSRS Wiki no está disponible; escribe las tasas a mano.",
+      "wikiFilled_one": "{{count}} tasa rellenada desde la wiki.",
+      "wikiFilled_other": "{{count}} tasas rellenadas desde la wiki.",
+      "wikiMissing": "No encontrado en la wiki: {{names}}.",
+      "wikiPick": "{{name}} tiene varias fuentes en la wiki:"
     },
     "unlinked_one": "{{count}} drop no automático",
     "unlinked_other": "{{count}} drops no automáticos",

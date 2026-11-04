@@ -4,6 +4,7 @@ import {
   createCardRevision,
   fetchCards,
   fetchEhbRates,
+  fetchWikiRates,
   importWorkbookCatalog,
   matchEhbRate,
   linkCatalogItems,
@@ -79,5 +80,11 @@ export function useEstimatePreview(input: EstimateInput | null) {
     queryFn: () => previewEstimate(input as EstimateInput),
     enabled: input !== null,
     placeholderData: keepPreviousData,
+  })
+}
+
+export function useWikiRates() {
+  return useMutation({
+    mutationFn: ({ card, items }: { card: string; items: string[] }) => fetchWikiRates(card, items),
   })
 }

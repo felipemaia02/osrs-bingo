@@ -706,7 +706,13 @@
       "checkMissing": "Ainda sem correspondência: {{names}}. Confira os nomes se forem drops comuns.",
       "checkUnavailable": "Ainda não há dados do DropTracker, então a checagem de drops do clã está desligada.",
       "rate": "Taxa",
-      "rateFor": "Taxa de drop de {{name}}, como na wiki"
+      "rateFor": "Taxa de drop de {{name}}, como na wiki",
+      "wikiImport": "Importar taxas da wiki",
+      "wikiUnavailable": "A OSRS Wiki está indisponível; digite as taxas à mão.",
+      "wikiFilled_one": "{{count}} taxa preenchida pela wiki.",
+      "wikiFilled_other": "{{count}} taxas preenchidas pela wiki.",
+      "wikiMissing": "Não encontrado na wiki: {{names}}.",
+      "wikiPick": "{{name}} tem várias fontes na wiki:"
     },
     "unlinked_one": "{{count}} drop não automático",
     "unlinked_other": "{{count}} drops não automáticos",

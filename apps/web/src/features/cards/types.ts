@@ -37,6 +37,13 @@ export interface Estimate {
   drops_without_rate: number
 }
 
+/** A drop's rate on the OSRS Wiki for a card: `rate` when one fits, else `sources` to pick. */
+export interface WikiDropRate {
+  name: string
+  rate: string | null
+  sources: { source: string; rarity: string }[]
+}
+
 /** A WOM boss with its ironman EHB rate and the 80 % suggestion. */
 export interface EhbRate {
   boss: string

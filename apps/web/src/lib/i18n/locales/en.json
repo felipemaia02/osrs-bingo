@@ -706,7 +706,13 @@
       "checkMissing": "No match yet: {{names}}. Check the names if these drops are common.",
       "checkUnavailable": "No DropTracker data yet, so the clan drop check is off.",
       "rate": "Rate",
-      "rateFor": "Drop rate of {{name}}, as on the wiki"
+      "rateFor": "Drop rate of {{name}}, as on the wiki",
+      "wikiImport": "Import rates from the wiki",
+      "wikiUnavailable": "The OSRS Wiki is unavailable; type the drop rates by hand.",
+      "wikiFilled_one": "{{count}} rate filled from the wiki.",
+      "wikiFilled_other": "{{count}} rates filled from the wiki.",
+      "wikiMissing": "Not found on the wiki: {{names}}.",
+      "wikiPick": "{{name}} has several sources on the wiki:"
     },
     "unlinked_one": "{{count}} drop not auto-tracked",
     "unlinked_other": "{{count}} drops not auto-tracked",

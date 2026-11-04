@@ -231,6 +231,7 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
             onChange={(drops) => update('drops', drops)}
             requirement={form.requirement}
             points={form.tileScore}
+            cardName={form.name}
           />
           <TimeEstimateEditor
             form={form}

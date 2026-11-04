@@ -7,6 +7,7 @@ import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import {
   createCardRevision,
   fetchEhbRates,
+  fetchWikiRates,
   matchEhbRate,
   previewEstimate,
   fetchCards,
@@ -1146,4 +1147,39 @@ it('lets the admin pick a WOM boss or type kills per hour when the name has none
   await user.type(within(dialog).getByLabelText('Kills per hour'), '50')
   const payload = await save(user, dialog)
   expect(payload).toMatchObject({ ehb_boss: null, kills_per_hour: 50 })
+})
+
+it('imports drop rates from the wiki and lets the admin pick between sources (060)', async () => {
+  vi.mocked(fetchWikiRates).mockResolvedValue([
+    {
+      name: 'Skeletal Visage',
+      rate: '1/5,000',
+      sources: [{ source: 'Vorkath', rarity: '1/5,000' }],
+    },
+    {
+      name: 'Dragonbone necklace',
+      rate: null,
+      sources: [
+        { source: 'Vorkath', rarity: '1/1,000' },
+        { source: 'Vorkath#Post-quest', rarity: '1/1,500' },
+      ],
+    },
+  ])
+  const { user, dialog } = await openEditor([
+    CARD.revision.drops[0],
+    { ...CARD.revision.drops[0], key: 'dragonbone-necklace', name: 'Dragonbone necklace' },
+  ])
+
+  await user.click(within(dialog).getByRole('button', { name: 'Import rates from the wiki' }))
+
+  expect(fetchWikiRates).toHaveBeenCalledWith('Vorkath', ['Skeletal Visage', 'Dragonbone necklace'])
+  expect(within(dialog).getByLabelText('Drop rate of Skeletal Visage, as on the wiki')).toHaveValue(
+    '1/5,000',
+  )
+  expect(within(dialog).getByText('1 rate filled from the wiki.')).toBeInTheDocument()
+  await user.click(within(dialog).getByRole('button', { name: 'Vorkath#Post-quest: 1/1,500' }))
+  expect(
+    within(dialog).getByLabelText('Drop rate of Dragonbone necklace, as on the wiki'),
+  ).toHaveValue('1/1,500')
+  expect(within(dialog).queryByText(/several sources/)).toBeNull()
 })

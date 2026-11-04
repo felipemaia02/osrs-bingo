@@ -21,6 +21,7 @@ import {
 import { useDropMatchPreview } from '../hooks/useCards'
 import type { DropMatchInput, ItemOption } from '../types'
 import { ItemIcon, ItemPicker } from './ItemPicker'
+import { WikiRatesImport } from './WikiRatesImport'
 
 const PREVIEW_DELAY_MS = 600
 const SUMMARY_EXAMPLES = 3
@@ -30,10 +31,18 @@ interface DropListEditorProps {
   onChange: (rows: DropRow[]) => void
   requirement: string
   points: string
+  /** The card's name: the wiki's drop sources are matched against it (060 rev 2). */
+  cardName: string
 }
 
 /** Accepted drops as rows picked from OSRS items (feature 033). */
-export function DropListEditor({ rows, onChange, requirement, points }: DropListEditorProps) {
+export function DropListEditor({
+  rows,
+  onChange,
+  requirement,
+  points,
+  cardName,
+}: DropListEditorProps) {
   const { t } = useTranslation()
   const [pasting, setPasting] = useState(false)
   const [pasted, setPasted] = useState('')
@@ -141,6 +150,7 @@ export function DropListEditor({ rows, onChange, requirement, points }: DropList
           </span>
         </div>
       )}
+      <WikiRatesImport cardName={cardName} rows={rows} onChange={onChange} />
       {pasteNote && (
         <p role="status" className="m-0 text-xs text-rs-gold-bright">
           {pasteNote}
