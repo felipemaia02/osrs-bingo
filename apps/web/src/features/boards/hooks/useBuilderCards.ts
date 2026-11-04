@@ -6,6 +6,7 @@ import type {
   CardDifficulty,
   CardKind,
   CardSummary,
+  Estimate,
 } from '../../cards/types'
 import { cardIdOf, cardKey } from '../draft'
 import type { EventBoard } from '../types'
@@ -27,6 +28,8 @@ export interface BuilderCard {
   /** Administrator's reason for an administrator revision; null for workbook imports. */
   changeReason: string | null
   retired: boolean
+  /** Expected kills and hours for the whole tile (feature 060). */
+  estimate: Estimate | null
 }
 
 function fromCatalog(card: CardSummary): BuilderCard {
@@ -45,6 +48,7 @@ function fromCatalog(card: CardSummary): BuilderCard {
     imageUrl: cardImageUrl(revision),
     changeReason: revision.provenance.source === 'admin' ? revision.change_reason : null,
     retired: card.status === 'retired',
+    estimate: revision.estimate ?? null,
   }
 }
 
@@ -75,6 +79,7 @@ export function useBuilderCards(board: EventBoard | null | undefined, catalog: C
         imageUrl: cardImageUrl(card),
         changeReason: byKey.get(key)?.changeReason ?? null,
         retired: retiredIds.has(card.card_id),
+        estimate: card.estimate ?? null,
       })
     }
     return {

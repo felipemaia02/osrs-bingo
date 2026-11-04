@@ -113,7 +113,9 @@ class BoardService:
         )
         if revision_data is None:
             raise ConflictError("Selected card revision is unavailable")
-        snapshot = card_snapshot(card, revision_data).model_dump(mode="python")
+        snapshot = card_snapshot(card, revision_data).model_dump(
+            mode="python", exclude={"estimate"}
+        )
         record = PositionUpdateRecord(
             from_revision=current["card_revision"],
             to_revision=payload.card_revision,
@@ -184,7 +186,9 @@ def card_snapshot(card: CardDocument, revision_data: dict[str, Any]) -> BoardCar
         card_id=str(card["_id"]),
         slug=card["slug"],
         card_revision=revision.revision,
-        **revision.model_dump(exclude={"revision", "change_reason", "created_by", "created_at"}),
+        **revision.model_dump(
+            exclude={"revision", "change_reason", "created_by", "created_at", "estimate"}
+        ),
     )
 
 

@@ -3,6 +3,7 @@ import type {
   CardArtwork,
   CardCategory,
   CardDifficulty,
+  Estimate,
   CardKind,
   CardProvenance,
   WikiImage,
@@ -26,6 +27,9 @@ export interface BoardCardSnapshot {
   provenance: CardProvenance
   requires_preverification?: boolean
   categories?: CardCategory[]
+  kills_per_hour?: number | null
+  /** Expected kills and hours for the whole tile (feature 060). */
+  estimate?: Estimate
 }
 
 /** A live fix of a square during the event (feature 036). */

@@ -703,7 +703,9 @@
       "checkTotal_other": "✓ Este card teria pego {{count}} drops do clã nos últimos {{days}} dias.",
       "checkNone": "Nenhum drop do clã nos últimos {{days}} dias bateu com estes drops (normal para itens raros).",
       "checkMissing": "Ainda sem correspondência: {{names}}. Confira os nomes se forem drops comuns.",
-      "checkUnavailable": "Ainda não há dados do DropTracker, então a checagem de drops do clã está desligada."
+      "checkUnavailable": "Ainda não há dados do DropTracker, então a checagem de drops do clã está desligada.",
+      "rate": "Taxa 1 /",
+      "rateFor": "Taxa de drop de {{name}} (1 em X)"
     },
     "unlinked_one": "{{count}} drop não automático",
     "unlinked_other": "{{count}} drops não automáticos",
@@ -1705,5 +1707,22 @@
     },
     "details_one": "{{count}} campo",
     "details_other": "{{count}} campos"
+  },
+  "estimate": {
+    "title": "Estimativa de tempo",
+    "boss": "Boss (EHB do Wise Old Man)",
+    "noBoss": "Sem boss",
+    "bossOption": "{{name}} — ironman {{rate}}/h",
+    "killsPerHour": "Kills por hora",
+    "suggestion": "Escolher um boss preenche 80% da taxa de ironman; você pode mudar.",
+    "ratesUnavailable": "O Wise Old Man está indisponível; digite as kills por hora à mão.",
+    "fullTile": "Tile inteiro:",
+    "remaining": "Ainda falta:",
+    "value": "{{kills}} kills · {{hours}} h",
+    "withoutRate_one": "({{count}} drop sem taxa não entra na conta)",
+    "withoutRate_other": "({{count}} drops sem taxa não entram na conta)",
+    "rate": "1/{{rate}}",
+    "hoursShort": "≈ {{hours}} h",
+    "disclaimer": "É uma média, não uma garantia: cerca de metade termina antes, e uma seca pode levar 2–3× mais. Considera kills solo."
   }
 }

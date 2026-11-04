@@ -20,6 +20,8 @@ export interface DropRow {
   matchByName: boolean
   iconUrl: string | null
   weight: string
+  /** X of "1 / X"; empty when unknown (feature 060). */
+  dropRate: string
   // Kept untouched: the form doesn't edit them, saving must not erase them.
   aliases: string[]
   verificationNote: string | null
@@ -41,6 +43,9 @@ export interface CardForm {
   ruleNote: string
   requiresPreverification: boolean
   categories: CardCategory[]
+  /** WOM boss metric whose EHB rate filled kills per hour (feature 060). */
+  ehbBoss: string
+  killsPerHour: string
   changeReason: string
 }
 
@@ -60,6 +65,7 @@ export function newDropRow(changes: Partial<DropRow> = {}): DropRow {
     matchByName: true,
     iconUrl: null,
     weight: DEFAULT_DROP_WEIGHT,
+    dropRate: '',
     aliases: [],
     verificationNote: null,
     countingRestriction: null,
@@ -82,8 +88,16 @@ export function emptyForm(): CardForm {
     ruleNote: '',
     requiresPreverification: false,
     categories: [],
+    ehbBoss: '',
+    killsPerHour: '',
     changeReason: '',
   }
+}
+
+/** A positive number from an input, or null when empty or invalid. */
+export function positiveOrNull(value: string): number | null {
+  const number = Number(value)
+  return value.trim() && number > 0 ? number : null
 }
 
 /** Case-, accent- and spacing-insensitive, like the API compares item names. */
@@ -154,6 +168,7 @@ export function cardToForm(card: CardSummary): CardForm {
         itemIds: drop.item_ids ?? [],
         matchByName: drop.match_by_name ?? true,
         weight: String(drop.progress_weight),
+        dropRate: drop.drop_rate ? String(drop.drop_rate) : '',
         aliases: drop.aliases,
         verificationNote: drop.verification_note,
         countingRestriction: drop.counting_restriction,
@@ -165,6 +180,8 @@ export function cardToForm(card: CardSummary): CardForm {
     ruleNote: revision.rule_note ?? '',
     requiresPreverification: revision.requires_preverification ?? false,
     categories: revision.categories ?? [],
+    ehbBoss: revision.ehb_boss ?? '',
+    killsPerHour: revision.kills_per_hour ? String(revision.kills_per_hour) : '',
     changeReason: '',
   }
 }
@@ -184,6 +201,7 @@ export function toAcceptedDrops(rows: DropRow[]): AcceptedDrop[] {
         counting_restriction: row.countingRestriction,
         item_ids: row.itemIds,
         match_by_name: row.matchByName,
+        drop_rate: positiveOrNull(row.dropRate),
       }
     })
 }
@@ -214,6 +232,8 @@ export function toRevisionPayload(form: CardForm): CardRevisionPayload | null {
     rule_note: form.ruleNote || null,
     requires_preverification: form.requiresPreverification,
     categories: form.categories,
+    ehb_boss: form.ehbBoss || null,
+    kills_per_hour: positiveOrNull(form.killsPerHour),
     change_reason: form.changeReason,
   }
 }

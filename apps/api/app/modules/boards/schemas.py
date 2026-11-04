@@ -1,8 +1,9 @@
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator, model_validator
 
+from app.modules.scoring.estimates import Estimate
 from app.modules.tiles.schemas import (
     AcceptedDrop,
     CardArtwork,
@@ -11,6 +12,7 @@ from app.modules.tiles.schemas import (
     CardKind,
     CardProvenance,
     WikiImage,
+    revision_estimate,
 )
 
 MIN_BOARD_SIZE = 3
@@ -82,6 +84,14 @@ class BoardCardSnapshot(BaseModel):
     provenance: CardProvenance
     requires_preverification: bool = False
     categories: list[CardCategory] = Field(default_factory=list)
+    ehb_boss: str | None = None
+    kills_per_hour: float | None = None
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def estimate(self) -> Estimate:
+        """Expected kills and hours for the whole tile (feature 060)."""
+        return revision_estimate(self)
 
 
 class BoardPositionUpdate(BaseModel):

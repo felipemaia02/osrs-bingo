@@ -157,6 +157,7 @@ export function DropListEditor({ rows, onChange, requirement, points }: DropList
             }
             onPick={(option) => pick(row.uid, option)}
             onWeight={(weight) => update(row.uid, { weight })}
+            onRate={(dropRate) => update(row.uid, { dropRate })}
             onRemove={() => remove(row.uid)}
           />
         ))}
@@ -188,6 +189,7 @@ function DropRowItem({
   onType,
   onPick,
   onWeight,
+  onRate,
   onRemove,
 }: {
   row: DropRow
@@ -195,6 +197,7 @@ function DropRowItem({
   onType: (name: string) => void
   onPick: (option: ItemOption) => void
   onWeight: (weight: string) => void
+  onRate: (dropRate: string) => void
   onRemove: () => void
 }) {
   const { t } = useTranslation()
@@ -238,6 +241,19 @@ function DropRowItem({
             aria-label={t('cards.drops.progressFor', { name: label })}
             value={row.weight}
             onChange={(event) => onWeight(event.target.value)}
+            className="min-h-9 w-20 rounded-[3px] border border-rs-border bg-rs-inset px-2 text-sm text-rs-text outline-none focus:border-rs-gold"
+          />
+        </label>
+        <label className="flex items-center gap-1 whitespace-nowrap text-xs text-rs-muted">
+          {t('cards.drops.rate')}
+          <input
+            type="number"
+            min="1"
+            step="any"
+            placeholder="—"
+            aria-label={t('cards.drops.rateFor', { name: label })}
+            value={row.dropRate}
+            onChange={(event) => onRate(event.target.value)}
             className="min-h-9 w-20 rounded-[3px] border border-rs-border bg-rs-inset px-2 text-sm text-rs-text outline-none focus:border-rs-gold"
           />
         </label>

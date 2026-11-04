@@ -156,6 +156,9 @@ export function BuilderCatalog(props: BuilderCatalogProps) {
                       requirement: card.requirement,
                       revision: card.revision,
                     })}
+                    {card.estimate?.hours != null && (
+                      <> · {t('estimate.hoursShort', { hours: card.estimate.hours })}</>
+                    )}
                   </span>
                 </span>
               </button>

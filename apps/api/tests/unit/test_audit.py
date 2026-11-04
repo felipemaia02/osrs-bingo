@@ -241,6 +241,7 @@ NOT_AUDITED = {
     ("POST", "/auth/logout"),
     ("POST", "/admin/wiki-images/resolve"),
     ("POST", "/admin/droptracker/match-preview"),
+    ("POST", "/admin/estimates/preview"),
     ("POST", "/profile/me/accounts/{account_id}/refresh"),
     ("POST", "/profile/me/accounts/{account_id}/track"),
 }

@@ -6,6 +6,8 @@ import { AppRouter } from '../../src/app/router'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import {
   createCardRevision,
+  fetchEhbRates,
+  previewEstimate,
   fetchCards,
   importWorkbookCatalog,
   linkCatalogItems,
@@ -773,7 +775,7 @@ it('keeps drop keys and verification metadata and links a new drop picked from O
   )
   const payload = await save(user, dialog)
   expect(payload.drops).toEqual([
-    { ...noted, progress_weight: 3, item_ids: [], match_by_name: true },
+    { ...noted, progress_weight: 3, item_ids: [], match_by_name: true, drop_rate: null },
     {
       key: 'dragonbone-necklace',
       name: 'Dragonbone necklace',
@@ -783,6 +785,7 @@ it('keeps drop keys and verification metadata and links a new drop picked from O
       counting_restriction: null,
       item_ids: [22111],
       match_by_name: true,
+      drop_rate: null,
     },
   ])
 })
@@ -1074,4 +1077,37 @@ it('makes the card key from its name', async () => {
   expect(cardSlug('Tombs of Amascut: Expert')).toBe('tombs-of-amascut-expert')
   expect(cardSlug('Kalphite Queen')).toBe('kalphite-queen')
   expect(cardSlug('???')).toMatch(/^card-[a-z0-9]+$/)
+})
+
+it('fills kills per hour from a WOM boss, saves drop rates and previews the time (060)', async () => {
+  vi.mocked(fetchEhbRates).mockResolvedValue([
+    {
+      boss: 'vorkath',
+      label: 'Vorkath',
+      ironman_kills_per_hour: 34,
+      suggested_kills_per_hour: 27.2,
+    },
+  ])
+  vi.mocked(previewEstimate).mockResolvedValue({ kills: 528, hours: 13.2, drops_without_rate: 0 })
+  const { user, dialog } = await openEditor()
+
+  await user.selectOptions(
+    within(dialog).getByLabelText('Boss (Wise Old Man EHB)'),
+    'Vorkath — ironman 34/h',
+  )
+  expect(within(dialog).getByLabelText('Kills per hour')).toHaveValue(27.2)
+  await user.type(within(dialog).getByLabelText('Drop rate of Skeletal Visage (1 in X)'), '5000')
+
+  expect(await within(dialog).findByText(/≈ 528 kills · ≈ 13.2 h/)).toBeInTheDocument()
+  await waitFor(() =>
+    expect(previewEstimate).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        kills_per_hour: 27.2,
+        drops: [expect.objectContaining({ drop_rate: 5000 })],
+      }),
+    ),
+  )
+  const payload = await save(user, dialog)
+  expect(payload).toMatchObject({ ehb_boss: 'vorkath', kills_per_hour: 27.2 })
+  expect(payload.drops[0].drop_rate).toBe(5000)
 })
