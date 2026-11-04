@@ -9,7 +9,8 @@
     "mySubmissions": "Meus envios",
     "profile": "Meu perfil",
     "myTeam": "Meu time",
-    "home": "Início"
+    "home": "Início",
+    "submissions": "Envios"
   },
   "board": {
     "noActiveEvent": "Não há um evento ativo para exibir.",

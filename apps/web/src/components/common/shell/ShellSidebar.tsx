@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Badge } from '../../ui/Badge'
 import {
   ADMIN_ENTRIES,
+  MY_SUBMISSIONS_ENTRY,
   PLAY_ENTRIES,
   REVIEW_ENTRY,
   isEntryActive,
@@ -70,7 +71,8 @@ interface ShellSidebarProps {
   pendingReviews: number | null
 }
 
-/** Desktop sidebar (layout 4A): Play for everyone, Administration only for administrators. */
+/** Desktop sidebar (layout 4A): Play and Submissions for everyone (review only for admins,
+ * captains and reviewers), Administration only for administrators. */
 export function ShellSidebar({
   isAdmin,
   isReviewer,
@@ -78,10 +80,7 @@ export function ShellSidebar({
   pendingReviews,
 }: ShellSidebarProps) {
   const { t } = useTranslation()
-  const badges: Record<string, number | null> = {
-    teams: pendingRegistrations,
-    review: pendingReviews,
-  }
+  const badges: Record<string, number | null> = { teams: pendingRegistrations }
   return (
     <nav
       aria-label={t('navigation.primary')}
@@ -91,10 +90,13 @@ export function ShellSidebar({
       {PLAY_ENTRIES.map((entry) => (
         <SidebarItem key={entry.key} entry={entry} />
       ))}
-      {(isAdmin || isReviewer) && (
+      <GroupLabel>{t('navigation.submissions')}</GroupLabel>
+      <SidebarItem entry={MY_SUBMISSIONS_ENTRY} />
+      {(isAdmin || isReviewer) && <SidebarItem entry={REVIEW_ENTRY} badge={pendingReviews} />}
+      {isAdmin && (
         <>
           <GroupLabel icon>{t('admin.title')}</GroupLabel>
-          {(isAdmin ? ADMIN_ENTRIES : [REVIEW_ENTRY]).map((entry) => (
+          {ADMIN_ENTRIES.map((entry) => (
             <SidebarItem key={entry.key} entry={entry} badge={badges[entry.key]} />
           ))}
         </>

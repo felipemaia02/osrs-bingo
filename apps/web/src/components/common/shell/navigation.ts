@@ -90,16 +90,18 @@ export const PLAY_ENTRIES: NavEntry[] = [
     activeIcon: AccountCircle,
     desktopOnly: true,
   },
-  {
-    key: 'submissions',
-    labelKey: 'navigation.mySubmissions',
-    to: '/submissions',
-    icon: UploadFileOutlined,
-    activeIcon: UploadFile,
-  },
 ]
 
-/** Also the only entry captains and reviewers get (feature 064). */
+/** Own submissions; with the review queue it forms the sidebar's "Submissions" group. */
+export const MY_SUBMISSIONS_ENTRY: NavEntry = {
+  key: 'submissions',
+  labelKey: 'navigation.mySubmissions',
+  to: '/submissions',
+  icon: UploadFileOutlined,
+  activeIcon: UploadFile,
+}
+
+/** For administrators and the captains and reviewers of the active event (feature 064). */
 export const REVIEW_ENTRY: NavEntry = {
   key: 'review',
   labelKey: 'admin.review',
@@ -117,7 +119,6 @@ export const ADMIN_ENTRIES: NavEntry[] = [
     activeIcon: SpaceDashboard,
     exact: true,
   },
-  REVIEW_ENTRY,
   {
     key: 'adminEvents',
     labelKey: 'admin.events',

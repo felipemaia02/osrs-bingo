@@ -9,7 +9,8 @@
     "mySubmissions": "My submissions",
     "profile": "My profile",
     "myTeam": "My team",
-    "home": "Home"
+    "home": "Home",
+    "submissions": "Submissions"
   },
   "board": {
     "noActiveEvent": "There is no active event to display.",

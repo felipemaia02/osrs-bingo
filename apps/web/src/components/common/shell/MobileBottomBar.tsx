@@ -2,7 +2,13 @@ import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings'
 import AdminPanelSettingsOutlined from '@mui/icons-material/AdminPanelSettingsOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
-import { PLAY_ENTRIES, REVIEW_ENTRY, isEntryActive, type NavEntry } from './navigation'
+import {
+  MY_SUBMISSIONS_ENTRY,
+  PLAY_ENTRIES,
+  REVIEW_ENTRY,
+  isEntryActive,
+  type NavEntry,
+} from './navigation'
 
 const ADMIN_TAB: NavEntry = {
   key: 'admin',
@@ -49,7 +55,7 @@ export function MobileBottomBar({
   isReviewer: boolean
 }) {
   const { t } = useTranslation()
-  const play = PLAY_ENTRIES.filter((entry) => !entry.desktopOnly)
+  const play = [...PLAY_ENTRIES.filter((entry) => !entry.desktopOnly), MY_SUBMISSIONS_ENTRY]
   const extra = isAdmin ? ADMIN_TAB : isReviewer ? REVIEW_ENTRY : null
   const entries = extra ? [...play, extra] : play
   return (

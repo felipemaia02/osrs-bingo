@@ -48,7 +48,7 @@ describe('App shell v2', () => {
     mockEvents([running])
   })
 
-  it('shows players only the Play group, with My submissions enabled', async () => {
+  it('shows players the Play group and My submissions in its own group', async () => {
     vi.mocked(fetchSession).mockResolvedValue(PLAYER)
     renderApp(<AppShell>Board content</AppShell>)
 
@@ -65,10 +65,13 @@ describe('App shell v2', () => {
       'href',
       '/profile',
     )
+    expect(within(sidebar).getByText('Submissions')).toBeInTheDocument()
     expect(within(sidebar).getByRole('link', { name: 'My submissions' })).toHaveAttribute(
       'href',
       '/submissions',
     )
+    // The review queue is for admins, captains and reviewers only.
+    expect(within(sidebar).queryByRole('link', { name: 'Drop review' })).toBeNull()
     expect(screen.queryByText('Ranking')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Overview' })).not.toBeInTheDocument()
     expect(fetchPlayers).not.toHaveBeenCalled()
@@ -116,6 +119,11 @@ describe('App shell v2', () => {
     for (const name of ['Overview', 'Card catalog', 'Event boards', 'Administrators']) {
       expect(within(sidebar).getByRole('link', { name })).toBeInTheDocument()
     }
+    // My submissions and Drop review sit together in the Submissions group.
+    const links = within(sidebar)
+      .getAllByRole('link')
+      .map((link) => link.getAttribute('href'))
+    expect(links.indexOf('/admin/review')).toBe(links.indexOf('/submissions') + 1)
     expect(within(sidebar).getByRole('link', { name: 'Ranking' })).toHaveAttribute(
       'href',
       '/admin/ranking',
