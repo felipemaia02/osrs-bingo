@@ -21,6 +21,8 @@ import {
 import { RankingPage } from '../../src/features/scoring/pages/RankingPage'
 import type { Ranking, TeamScore } from '../../src/features/scoring/types'
 import { fetchOwnRegistration } from '../../src/features/teams/api/teamsApi'
+import { fetchOwnSubmissions } from '../../src/features/submissions/api/submissionsApi'
+import type { Submission } from '../../src/features/submissions/types'
 import { renderApp } from '../render'
 
 const EVENT: BingoEvent = {
@@ -199,6 +201,73 @@ describe('team progress on the board', () => {
 
     expect((await screen.findAllByText(/Progress unavailable/)).length).toBeGreaterThan(0)
     expect(screen.queryByRole('region', { name: "Your team's score" })).toBeNull()
+  })
+})
+
+describe('pre-verification on the board (062)', () => {
+  function preverification(position: number, status: Submission['status']): Submission {
+    return {
+      id: `pv-${position}`,
+      event_id: EVENT.id,
+      kind: 'preverification',
+      status,
+      position,
+      row: 1,
+      column: position,
+      card_id: 'c',
+      card_revision: 1,
+      card_name: '',
+      drop_key: null,
+      drop_name: null,
+      progress_weight: null,
+      quantity: 1,
+      note: null,
+      submitted_at: '2026-10-23T12:00:00Z',
+      reviewed_at: null,
+      reviewer_name: null,
+      rejection_reason: null,
+      rejection_note: null,
+    }
+  }
+
+  it("shows the player's own state on each tile that needs one", async () => {
+    const gated = (name: string) => ({ ...card(name), requires_preverification: true })
+    vi.mocked(fetchPublicBoard).mockResolvedValue({
+      ...BOARD,
+      positions: BOARD.positions.map((item) =>
+        item.position <= 3 ? { ...item, card: gated(item.card.name) } : item,
+      ),
+    })
+    vi.mocked(fetchOwnRegistration).mockResolvedValue({
+      id: 'p1',
+      event_id: EVENT.id,
+      team_id: 'sa',
+      display_name: 'Holy Hal',
+      status: 'approved',
+    })
+    vi.mocked(fetchOwnSubmissions).mockResolvedValue({
+      items: [
+        preverification(2, 'pending'),
+        preverification(3, 'rejected'),
+        preverification(3, 'accepted'),
+      ],
+      counts: { all: 3, pending: 1, accepted: 1, rejected: 1 },
+    })
+    renderApp(<BoardPage />, '/board')
+
+    const grid = await screen.findByRole('region', { name: '3 by 3 board' })
+    expect(
+      await within(grid).findByRole('button', { name: /^Vorkath,.*Pre-verification needed/ }),
+    ).toBeInTheDocument()
+    expect(
+      within(grid).getByRole('button', { name: /^Zulrah,.*Pre-verification pending/ }),
+    ).toBeInTheDocument()
+    expect(
+      within(grid).getByRole('button', { name: /^Cerberus,.*Pre-verified/ }),
+    ).toBeInTheDocument()
+    expect(within(grid).getByRole('button', { name: /^Hydra,/ })).not.toHaveAccessibleName(
+      /Pre-verif/,
+    )
   })
 })
 

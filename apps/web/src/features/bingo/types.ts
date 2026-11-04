@@ -11,6 +11,9 @@ export interface TileProgress {
   drops: Array<{ name: string; count: number; progress: number }>
 }
 
+/** The viewer's own pre-verification on a tile that needs one (feature 062). */
+export type PreverificationState = 'needed' | 'pending' | 'accepted'
+
 /** Presentation model of one board tile, mapped from the event board API snapshot. */
 export interface Tile {
   id: string
@@ -25,6 +28,8 @@ export interface Tile {
   drops: AcceptedDrop[]
   ruleNote: string | null
   requiresPreverification: boolean
+  /** Only for players who can submit, on tiles that need a pre-verification (062). */
+  preverification?: PreverificationState
   /** Bonus-row card (feature 020): shown under the grid, never part of a row or column. */
   bonus: boolean
   /** Present only for players on a team in an active or finished event. */

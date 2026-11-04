@@ -25,6 +25,8 @@ import { useProgressReason } from '../hooks/useProgressReason'
 import { useFilterSummary, type FilterSummary } from '../hooks/useFilterSummary'
 import { useTierOptions } from '../hooks/useTierOptions'
 import { BoardSubmitButton } from '../../submissions/components/BoardSubmitButton'
+import { useOwnSubmissions } from '../../submissions/hooks/useSubmissions'
+import { preverificationStates } from '../../submissions/preverification'
 import { TeamScorePanel } from '../../scoring/components/TeamScorePanel'
 import { useOwnTeamScore } from '../../scoring/hooks/useScoring'
 import { useOwnRegistration } from '../../teams/hooks/useTeams'
@@ -70,9 +72,16 @@ export function BoardPage() {
     registration.data?.status === 'pending' || registration.data?.status === 'approved'
   const deciding = session.isLoading || (Boolean(session.data) && registration.isLoading)
 
+  // The player's own pre-verifications (062), as the submit button already reads them.
+  const canSubmit = registration.data?.status === 'approved' && Boolean(registration.data.team_id)
+  const submissions = useOwnSubmissions(canSubmit && event ? event.id : null)
+  const preverifications = useMemo(
+    () => (submissions.data ? preverificationStates(submissions.data.items) : null),
+    [submissions.data],
+  )
   const tiles = useMemo(
-    () => (board.data ? boardToTiles(board.data, score) : []),
-    [board.data, score],
+    () => (board.data ? boardToTiles(board.data, score, preverifications) : []),
+    [board.data, score, preverifications],
   )
   const matches = useMemo(() => {
     if (!isFiltering(search, tier)) return null

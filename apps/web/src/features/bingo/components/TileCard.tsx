@@ -5,6 +5,7 @@ import { useTileLabel } from '../hooks/useTileLabel'
 import { TIER_TONE } from '../tierTone'
 import type { Tile, TileMatch } from '../types'
 import { CardImage } from '../../../components/ui/CardImage'
+import { PreverificationChip } from './PreverificationChip'
 import { TileProgressLine } from './TileProgressLine'
 
 interface TileCardProps {
@@ -44,13 +45,18 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
         <span className="absolute left-1 top-1">
           <Badge tone={TIER_TONE[tile.tier]}>{t(`tile.tier.${tile.tier}`)}</Badge>
         </span>
-        {tile.bonus && (
-          <span
-            className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-[2px] border border-rs-border-strong bg-rs-warning-bg text-[11px] text-rs-gold-bright"
-            title={t('board.bonus.card')}
-            aria-hidden="true"
-          >
-            ★
+        {(tile.bonus || tile.preverification) && (
+          <span className="absolute right-1 top-1 flex flex-col items-end gap-0.5">
+            {tile.bonus && (
+              <span
+                className="flex size-5 items-center justify-center rounded-[2px] border border-rs-border-strong bg-rs-warning-bg text-[11px] text-rs-gold-bright"
+                title={t('board.bonus.card')}
+                aria-hidden="true"
+              >
+                ★
+              </span>
+            )}
+            {tile.preverification && <PreverificationChip state={tile.preverification} />}
           </span>
         )}
       </span>

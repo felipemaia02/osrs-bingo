@@ -1705,5 +1705,12 @@
     },
     "details_one": "{{count}} campo",
     "details_other": "{{count}} campos"
+  },
+  "preverification": {
+    "state": {
+      "needed": "Pré-verificação pendente de envio",
+      "pending": "Pré-verificação em análise",
+      "accepted": "Pré-verificado"
+    }
   }
 }
