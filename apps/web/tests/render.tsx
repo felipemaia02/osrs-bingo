@@ -5,12 +5,12 @@ import { MemoryRouter } from 'react-router-dom'
 import { DateLocalizationProvider } from '../src/app/providers/DateLocalizationProvider'
 
 export function renderApp(element: ReactElement, route = '/') {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <DateLocalizationProvider>
-        <MemoryRouter initialEntries={[route]}>{element}</MemoryRouter>
-      </DateLocalizationProvider>
-    </QueryClientProvider>,
-  )
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    return render(
+        <QueryClientProvider client={queryClient}>
+            <DateLocalizationProvider>
+                <MemoryRouter initialEntries={[route]}>{element}</MemoryRouter>
+            </DateLocalizationProvider>
+        </QueryClientProvider>,
+    )
 }
