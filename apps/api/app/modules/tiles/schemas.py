@@ -32,14 +32,6 @@ class CardDifficulty(StrEnum):
     HIGH = "High"
 
 
-class CardKind(StrEnum):
-    BOSS = "boss"
-    BOSS_GROUP = "boss_group"
-    RAID = "raid"
-    ACTIVITY = "activity"
-    TASK = "task"
-
-
 class CardCategory(StrEnum):
     """Clan-style groups for browsing the catalog (feature 040); never used for scoring."""
 
@@ -168,7 +160,6 @@ class CardRevisionFields(BaseModel):
 
     name: str = Field(min_length=1, max_length=120)
     description: str | None = Field(default=None, max_length=2000)
-    kind: CardKind
     difficulty: CardDifficulty
     tile_score: float = Field(ge=0, le=100000)
     completion_requirement: float = Field(gt=0, le=100000)

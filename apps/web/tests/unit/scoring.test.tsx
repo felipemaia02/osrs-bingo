@@ -49,7 +49,6 @@ function card(name: string): BoardCardSnapshot {
     card_revision: 1,
     name,
     description: null,
-    kind: 'boss',
     difficulty: 'Mid',
     tile_score: 10,
     completion_requirement: 8,

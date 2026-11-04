@@ -50,7 +50,6 @@ const CARD: CardSummary = {
     revision: 1,
     name: 'Vorkath',
     description: null,
-    kind: 'boss',
     difficulty: 'High',
     tile_score: 13,
     completion_requirement: 8,

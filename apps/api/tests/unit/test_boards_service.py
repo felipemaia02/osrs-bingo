@@ -47,7 +47,6 @@ def card_document() -> CardDocument:
                 "revision": 1,
                 "name": "Vorkath",
                 "description": None,
-                "kind": "boss",
                 "difficulty": "High",
                 "tile_score": 13,
                 "completion_requirement": 8,

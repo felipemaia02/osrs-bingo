@@ -8,7 +8,6 @@ import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { FormModal } from '../../../components/ui/FormModal'
 import {
   CARD_DIFFICULTIES,
-  CARD_KINDS,
   cardErrorKey,
   cardToForm,
   emptyForm,
@@ -25,7 +24,6 @@ import {
   CARD_CATEGORIES,
   type CardCreatePayload,
   type CardDifficulty,
-  type CardKind,
   type CardSummary,
 } from '../types'
 
@@ -135,19 +133,6 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               onChange={(event) => update('name', event.target.value)}
               className={FIELD}
             />
-          </Field>
-          <Field label={t('cards.form.kind')}>
-            <select
-              value={form.kind}
-              onChange={(event) => update('kind', event.target.value as CardKind)}
-              className={FIELD}
-            >
-              {CARD_KINDS.map((kind) => (
-                <option key={kind} value={kind}>
-                  {t(`cards.kind.${kind}`)}
-                </option>
-              ))}
-            </select>
           </Field>
           <Field label={t('cards.form.difficulty')}>
             <select

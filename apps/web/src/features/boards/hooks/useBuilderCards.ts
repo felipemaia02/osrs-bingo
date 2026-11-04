@@ -4,7 +4,6 @@ import type {
   AcceptedDrop,
   CardCategory,
   CardDifficulty,
-  CardKind,
   CardSummary,
   Estimate,
 } from '../../cards/types'
@@ -17,7 +16,6 @@ export interface BuilderCard {
   cardId: string
   revision: number
   name: string
-  kind: CardKind
   difficulty: CardDifficulty
   points: number
   requirement: number
@@ -39,7 +37,6 @@ function fromCatalog(card: CardSummary): BuilderCard {
     cardId: card.id,
     revision: card.current_revision,
     name: revision.name,
-    kind: revision.kind,
     difficulty: revision.difficulty,
     points: revision.tile_score,
     requirement: revision.completion_requirement,
@@ -70,7 +67,6 @@ export function useBuilderCards(board: EventBoard | null | undefined, catalog: C
         cardId: card.card_id,
         revision: card.card_revision,
         name: card.name,
-        kind: card.kind,
         difficulty: card.difficulty,
         points: card.tile_score,
         requirement: card.completion_requirement,

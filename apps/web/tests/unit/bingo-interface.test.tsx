@@ -36,7 +36,6 @@ function snapshot(index: number, overrides: Partial<BoardCardSnapshot> = {}): Bo
     card_revision: 1,
     name: `Objective ${index}`,
     description: null,
-    kind: 'boss',
     difficulty: 'Low',
     tile_score: 5,
     completion_requirement: 6,
@@ -57,7 +56,6 @@ function snapshot(index: number, overrides: Partial<BoardCardSnapshot> = {}): Bo
 const SPECIAL: Record<number, Partial<BoardCardSnapshot>> = {
   1: {
     name: 'Grotesque Guardians',
-    kind: 'boss_group',
     difficulty: 'Mid',
     tile_score: 10,
     completion_requirement: 8,
@@ -295,7 +293,6 @@ describe('Board v2', () => {
         within(panel).getByRole('heading', { name: 'Grotesque Guardians', level: 2 }),
       ).toBeInTheDocument()
       expect(panel).not.toHaveTextContent(/Row \d · Column \d/)
-      expect(within(panel).getByText('Boss group')).toBeInTheDocument()
       expect(panel).toHaveTextContent(
         'Completes when progress reaches 8. Worth 10 pts only once — extra progress gives no points.',
       )

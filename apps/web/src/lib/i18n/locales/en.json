@@ -575,18 +575,10 @@
       "active": "Active",
       "retired": "Retired"
     },
-    "kind": {
-      "boss": "Boss",
-      "boss_group": "Boss group",
-      "raid": "Raid",
-      "activity": "Activity",
-      "task": "Task"
-    },
     "form": {
       "createTitle": "Create catalog card",
       "reviseTitle": "Publish a new card revision",
       "name": "Name",
-      "kind": "Card type",
       "difficulty": "Difficulty",
       "score": "Completion points",
       "requirement": "Progress requirement",
@@ -738,6 +730,9 @@
       "hint": "PNG, JPEG or WebP, up to 5 MB. Shown instead of the OSRS Wiki image. Only upload the clan's own art or art you may use.",
       "inUse": "Clan artwork",
       "credit": "Art by {{artist}}"
+    },
+    "detail": {
+      "card": "Card"
     }
   },
   "boards": {

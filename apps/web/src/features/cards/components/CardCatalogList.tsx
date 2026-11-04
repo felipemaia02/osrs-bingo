@@ -97,9 +97,13 @@ export function CardCatalogTable({
                     <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold">
                       {card.revision.name} <RetiredBadge card={card} />
                     </span>
-                    <span className="text-xs text-rs-muted">
-                      {t(`cards.kind.${card.revision.kind}`)}
-                    </span>
+                    {(card.revision.categories ?? []).length > 0 && (
+                      <span className="text-xs text-rs-muted">
+                        {(card.revision.categories ?? [])
+                          .map((category) => t(`cards.category.${category}`))
+                          .join(' · ')}
+                      </span>
+                    )}
                   </span>
                 </span>
               </td>

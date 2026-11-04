@@ -218,4 +218,12 @@ class IndexManager:
         )
         # The instructor role was removed in feature 064.
         await db["players"].update_many({"role": "instructor"}, {"$set": {"role": None}})
+        # The card type ("kind") was removed in feature 066: categories group cards instead.
+        await db["tile_cards"].update_many(
+            {"revisions.kind": {"$exists": True}}, {"$unset": {"revisions.$[].kind": ""}}
+        )
+        await db["event_boards"].update_many(
+            {"positions.card.kind": {"$exists": True}},
+            {"$unset": {"positions.$[].card.kind": ""}},
+        )
         log_event(logger, 20, "database_indexes_ready")

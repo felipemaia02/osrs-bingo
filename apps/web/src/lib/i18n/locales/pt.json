@@ -575,18 +575,10 @@
       "active": "Ativo",
       "retired": "Desativado"
     },
-    "kind": {
-      "boss": "Boss",
-      "boss_group": "Grupo de bosses",
-      "raid": "Raid",
-      "activity": "Atividade",
-      "task": "Tarefa"
-    },
     "form": {
       "createTitle": "Criar card do catálogo",
       "reviseTitle": "Publicar nova revisão do card",
       "name": "Nome",
-      "kind": "Tipo do card",
       "difficulty": "Dificuldade",
       "score": "Pontos ao concluir",
       "requirement": "Requisito de progresso",
@@ -738,6 +730,9 @@
       "hint": "PNG, JPEG ou WebP, até 5 MB. Aparece no lugar da imagem da OSRS Wiki. Envie só arte do próprio clã ou que vocês possam usar.",
       "inUse": "Arte do clã",
       "credit": "Arte de {{artist}}"
+    },
+    "detail": {
+      "card": "Card"
     }
   },
   "boards": {

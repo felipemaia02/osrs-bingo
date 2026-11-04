@@ -9,7 +9,6 @@ from app.modules.tiles.schemas import (
     CardArtwork,
     CardCategory,
     CardDifficulty,
-    CardKind,
     CardProvenance,
     WikiImage,
     revision_estimate,
@@ -72,7 +71,6 @@ class BoardCardSnapshot(BaseModel):
     card_revision: int
     name: str
     description: str | None
-    kind: CardKind
     difficulty: CardDifficulty
     tile_score: float
     completion_requirement: float

@@ -1,6 +1,5 @@
 export type CardStatus = 'active' | 'retired'
 export type CardDifficulty = 'Low' | 'Mid' | 'High'
-export type CardKind = 'boss' | 'boss_group' | 'raid' | 'activity' | 'task'
 
 /** Clan-style groups for browsing (feature 040); never used for scoring. */
 export const CARD_CATEGORIES = [
@@ -123,7 +122,6 @@ export interface CardRevision {
   revision: number
   name: string
   description: string | null
-  kind: CardKind
   difficulty: CardDifficulty
   tile_score: number
   completion_requirement: number
@@ -163,7 +161,6 @@ export interface CardDetail extends CardSummary {
 export interface CardRevisionPayload {
   name: string
   description: string | null
-  kind: CardKind
   difficulty: CardDifficulty
   tile_score: number
   completion_requirement: number

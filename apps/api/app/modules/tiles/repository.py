@@ -124,7 +124,6 @@ class CardRepository:
             revision = {
                 "name": card["name"],
                 "description": card["description"],
-                "kind": card["kind"],
                 "difficulty": card["difficulty"],
                 "tile_score": card["tile_score"],
                 "completion_requirement": card["completion_requirement"],

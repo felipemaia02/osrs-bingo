@@ -575,18 +575,10 @@
       "active": "Activa",
       "retired": "Retirada"
     },
-    "kind": {
-      "boss": "Jefe",
-      "boss_group": "Grupo de jefes",
-      "raid": "Raid",
-      "activity": "Actividad",
-      "task": "Tarea"
-    },
     "form": {
       "createTitle": "Crear tarjeta del catálogo",
       "reviseTitle": "Publicar una nueva revisión",
       "name": "Nombre",
-      "kind": "Tipo de tarjeta",
       "difficulty": "Dificultad",
       "score": "Puntos al completar",
       "requirement": "Requisito de progreso",
@@ -738,6 +730,9 @@
       "hint": "PNG, JPEG o WebP, hasta 5 MB. Se muestra en lugar de la imagen de la OSRS Wiki. Sube solo arte del clan o que puedan usar.",
       "inUse": "Arte del clan",
       "credit": "Arte de {{artist}}"
+    },
+    "detail": {
+      "card": "Carta"
     }
   },
   "boards": {

@@ -78,7 +78,6 @@ def test_wom_ironman_rate_suggests_80_percent() -> None:
 def card_revision(**changes: Any) -> CardRevisionResponse:
     fields: dict[str, Any] = {
         "name": "Mad Angel",
-        "kind": "boss",
         "difficulty": "High",
         "tile_score": 20,
         "completion_requirement": 6,
