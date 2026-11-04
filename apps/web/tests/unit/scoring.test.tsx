@@ -194,6 +194,23 @@ describe('team progress on the board', () => {
     expect(detail).toHaveTextContent('Hydra Head × 6')
   })
 
+  it('makes completed tiles stand out and drops their requirement row (063)', async () => {
+    vi.mocked(fetchOwnTeamScore).mockResolvedValue(SCORE)
+    renderApp(<BoardPage />, '/board')
+
+    const grid = await screen.findByRole('region', { name: '3 by 3 board' })
+    await within(grid).findAllByText('Complete +10')
+    const vorkath = within(grid).getByRole('button', { name: /^Vorkath,/ })
+    expect(vorkath).toHaveClass('bg-rs-success-bg', 'border-rs-success')
+    expect(within(vorkath).queryByText('Req. 8')).toBeNull()
+    expect(within(vorkath).queryByText('10 pts')).toBeNull()
+
+    const hydra = within(grid).getByRole('button', { name: /^Hydra,/ })
+    expect(hydra).toHaveClass('bg-rs-surface')
+    expect(within(hydra).getByText('Req. 8')).toBeInTheDocument()
+    expect(within(hydra).getByText('10 pts')).toBeInTheDocument()
+  })
+
   it('keeps the notice for players without a team', async () => {
     renderApp(<BoardPage />, '/board')
 
