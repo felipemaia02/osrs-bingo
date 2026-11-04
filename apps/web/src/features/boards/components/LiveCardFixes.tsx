@@ -57,13 +57,16 @@ export function LiveCardFixes({
         {t('boards.live.title')}
       </h2>
       <p className="m-0 text-xs text-rs-muted">{t('boards.live.hint')}</p>
-      {available.length > 1 && (
-        <span>
-          <Button size="sm" variant="primary" onClick={() => setUpdatingAll(true)}>
-            {t('boards.live.updateAll', { count: available.length })}
-          </Button>
-        </span>
-      )}
+      <span>
+        <Button
+          size="sm"
+          variant="primary"
+          disabled={!available.length}
+          onClick={() => setUpdatingAll(true)}
+        >
+          {t('boards.live.updateAll', { count: available.length })}
+        </Button>
+      </span>
       {available.length ? (
         <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
           {available.map(({ position, card }) => (
