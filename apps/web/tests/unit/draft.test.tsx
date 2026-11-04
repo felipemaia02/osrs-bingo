@@ -113,7 +113,7 @@ const PLAYERS = [
     boss_kc_total: 15230,
     timezone: 'Europe/London',
     activity: 'one_to_three_h',
-    role: 'instructor',
+    role: 'reviewer',
   }),
   player('Varrock Vic', {
     ehb_total: 402,
@@ -220,7 +220,7 @@ describe('Draft preview', () => {
     expect(within(iris).getByText('1 alt')).toBeInTheDocument()
     expect(within(iris).getByText('Druid Duda')).toBeInTheDocument()
     expect(
-      within(screen.getByRole('article', { name: 'Holy Hal' })).getByText('Instructor'),
+      within(screen.getByRole('article', { name: 'Holy Hal' })).getByText('Reviewer'),
     ).toBeInTheDocument()
     expect(
       within(screen.getByRole('article', { name: 'Varrock Vic' })).getByText('Buy-in pending'),

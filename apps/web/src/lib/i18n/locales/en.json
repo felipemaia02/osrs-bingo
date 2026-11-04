@@ -316,7 +316,7 @@
       "pendingOnly": "This request is no longer pending.",
       "removed": "This registration has already been removed.",
       "roleNeedsApproval": "Only approved players can have a role.",
-      "captainNeedsTeam": "Assign a team before making this player captain.",
+      "captainNeedsTeam": "Assign a team before giving this player a team role.",
       "captainTaken": "This team already has a captain.",
       "buyInAdmin": "Choose a current administrator.",
       "changed": "This registration changed meanwhile. Reload and try again.",
@@ -410,7 +410,7 @@
     "roles": {
       "none": "None",
       "captain": "Captain",
-      "instructor": "Instructor"
+      "reviewer": "Reviewer"
     },
     "buyIn": {
       "pending": "Pending",
@@ -422,7 +422,8 @@
       "title": "Edit {{name}}",
       "receivedBy": "Received by",
       "saved": "{{name}} updated.",
-      "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role."
+      "captainHint": "A captain must be approved and on a team; each team has one captain. Changing their team removes the role.",
+      "reviewHint": "Captains and reviewers review the other teams' submissions, never their own team's."
     },
     "edit": "Edit",
     "editTeam": "Edit {{name}}",
@@ -1054,7 +1055,8 @@
     "emptyAccepted": "No accepted submissions match.",
     "dropRemoved": "This item is no longer on this card (fixed during the event). It can only be rejected.",
     "ownSubmission": "This is your own submission — another admin reviews it.",
-    "screenshotFromPlayer": "Screenshot sent by the player."
+    "screenshotFromPlayer": "Screenshot sent by the player.",
+    "teamReviewerDescription": "You review the other teams' submissions, never your own team's."
   },
   "score": {
     "tileComplete": "Complete +{{points}}",

@@ -142,9 +142,14 @@ class SubmissionRepository:
             ),
         )
 
-    async def pending_counts(self, event_id: ObjectId) -> dict[str, int]:
+    async def pending_counts(
+        self, event_id: ObjectId, exclude_team: ObjectId | None = None
+    ) -> dict[str, int]:
+        match: dict[str, Any] = {"event_id": event_id, "status": SubmissionStatus.PENDING}
+        if exclude_team is not None:
+            match["team_id"] = {"$ne": exclude_team}
         pipeline: list[dict[str, Any]] = [
-            {"$match": {"event_id": event_id, "status": SubmissionStatus.PENDING}},
+            {"$match": match},
             {"$group": {"_id": "$kind", "count": {"$sum": 1}}},
         ]
         return {row["_id"]: row["count"] async for row in self._collection.aggregate(pipeline)}

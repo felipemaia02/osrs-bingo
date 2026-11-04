@@ -216,4 +216,6 @@ class IndexManager:
         await db["players"].update_many(
             {"status": {"$exists": False}}, {"$set": {"status": "approved"}}
         )
+        # The instructor role was removed in feature 064.
+        await db["players"].update_many({"role": "instructor"}, {"$set": {"role": None}})
         log_event(logger, 20, "database_indexes_ready")

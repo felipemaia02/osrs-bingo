@@ -113,12 +113,18 @@ async def test_screenshot_redirects_to_a_signed_url(
     assert result.headers["location"] == "https://bucket.example/signed"
 
 
-async def test_review_routes_are_admin_only(
+async def test_review_routes_let_the_service_check_team_reviewers_but_revert_is_admin_only(
     client: AsyncClient, services: tuple[AsyncMock, AsyncMock]
 ) -> None:
-    assert (await client.get(f"/admin/events/{EVENT_ID}/submissions")).status_code == 403
-    assert (await client.post("/admin/submissions/x/accept", headers=ORIGIN)).status_code == 403
-    services[1].accept.assert_not_awaited()
+    # Captains and reviewers aren't admins (064): the service decides per event and team.
+    services[1].accept.return_value = response()
+    assert (await client.post("/admin/submissions/x/accept", headers=ORIGIN)).status_code == 200
+    assert services[1].accept.await_args.args[1].is_admin is False
+    revert = await client.post(
+        "/admin/submissions/x/revert", json={"reason": "item_mismatch"}, headers=ORIGIN
+    )
+    assert revert.status_code == 403
+    services[1].revert.assert_not_awaited()
 
 
 async def test_screenshot_can_be_added_with_a_screenshot_sized_upload(

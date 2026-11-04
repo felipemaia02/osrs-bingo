@@ -112,19 +112,19 @@ async def attach_screenshot(
 @admin_router.get("/events/{event_id}/submissions", response_model=ReviewQueueResponse)
 async def review_queue(
     event_id: str,
-    admin: AdminDependency,
+    reviewer: UserDependency,
     service: SubmissionServiceDependency,
     query: Annotated[ReviewQueueQuery, Query()],
 ) -> ReviewQueueResponse:
-    return await service.queue(event_id, query, admin)
+    return await service.queue(event_id, query, reviewer)
 
 
 @admin_router.post("/submissions/{submission_id}/accept", response_model=SubmissionResponse)
 @audited("submission.accepted", resource_id="submission_id")
 async def accept(
-    submission_id: str, admin: AdminDependency, service: SubmissionServiceDependency
+    submission_id: str, reviewer: UserDependency, service: SubmissionServiceDependency
 ) -> SubmissionResponse:
-    return await service.accept(submission_id, admin)
+    return await service.accept(submission_id, reviewer)
 
 
 @admin_router.post("/submissions/{submission_id}/reject", response_model=SubmissionResponse)
@@ -132,10 +132,10 @@ async def accept(
 async def reject(
     submission_id: str,
     payload: SubmissionReject,
-    admin: AdminDependency,
+    reviewer: UserDependency,
     service: SubmissionServiceDependency,
 ) -> SubmissionResponse:
-    return await service.reject(submission_id, payload, admin)
+    return await service.reject(submission_id, payload, reviewer)
 
 
 @admin_router.post("/submissions/{submission_id}/revert", response_model=SubmissionResponse)
@@ -151,6 +151,6 @@ async def revert(
 
 @admin_router.get("/submissions/{submission_id}/tile-history", response_model=TileHistoryResponse)
 async def tile_history(
-    submission_id: str, admin: AdminDependency, service: SubmissionServiceDependency
+    submission_id: str, reviewer: UserDependency, service: SubmissionServiceDependency
 ) -> TileHistoryResponse:
-    return await service.tile_history(submission_id, admin)
+    return await service.tile_history(submission_id, reviewer)

@@ -36,7 +36,7 @@ class PlayerDocument(TypedDict):
     teammate_ids: NotRequired[list[ObjectId]]
     agreements_accepted_at: NotRequired[datetime]
     buy_in: NotRequired[BuyInRecord]
-    # captain | instructor (feature 023)
+    # captain | reviewer (features 023, 064)
     role: NotRequired[str | None]
     # Feature 037: late joiners, and when the player was placed in their team.
     joined_late: NotRequired[bool]

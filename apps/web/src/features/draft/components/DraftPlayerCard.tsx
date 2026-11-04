@@ -17,10 +17,10 @@ import type { Player } from '../../teams/types'
 import { skillLevel } from '../filters'
 import { DRAG_TYPE } from '../rosters'
 
-/** Instructor first, then the buy-in; none for nickname registrations (FR-003). */
+/** Reviewer first, then the buy-in; none for nickname registrations (FR-003). */
 function PlayerBadge({ player }: { player: Player }) {
   const { t } = useTranslation()
-  if (player.role === 'instructor') return <Badge tone="info">{t('teams.roles.instructor')}</Badge>
+  if (player.role === 'reviewer') return <Badge tone="info">{t('teams.roles.reviewer')}</Badge>
   if (player.buy_in_status === 'paid')
     return (
       <Badge tone="success">

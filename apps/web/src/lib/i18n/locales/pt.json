@@ -316,7 +316,7 @@
       "pendingOnly": "Esta solicitação não está mais pendente.",
       "removed": "Esta inscrição já foi removida.",
       "roleNeedsApproval": "Só jogadores aprovados podem ter uma função.",
-      "captainNeedsTeam": "Coloque o jogador num time antes de torná-lo capitão.",
+      "captainNeedsTeam": "Coloque o jogador num time antes de dar um cargo de time.",
       "captainTaken": "Este time já tem um capitão.",
       "buyInAdmin": "Escolha um administrador atual.",
       "changed": "Esta inscrição mudou nesse meio-tempo. Recarregue e tente de novo.",
@@ -410,7 +410,7 @@
     "roles": {
       "none": "Nenhuma",
       "captain": "Capitão",
-      "instructor": "Instrutor"
+      "reviewer": "Revisor"
     },
     "buyIn": {
       "pending": "Pendente",
@@ -422,7 +422,8 @@
       "title": "Editar {{name}}",
       "receivedBy": "Recebido por",
       "saved": "{{name}} atualizado.",
-      "captainHint": "O capitão precisa estar aprovado e num time; cada time tem um capitão. Mudar o time dele remove a função."
+      "captainHint": "O capitão precisa estar aprovado e num time; cada time tem um capitão. Mudar o time dele remove a função.",
+      "reviewHint": "Capitães e revisores revisam os envios dos outros times, nunca os do próprio time."
     },
     "edit": "Editar",
     "editTeam": "Editar {{name}}",
@@ -1054,7 +1055,8 @@
     "emptyAccepted": "Nenhum envio aceito encontrado.",
     "dropRemoved": "Este item não está mais neste card (corrigido durante o evento). Só pode ser rejeitado.",
     "ownSubmission": "Este envio é seu — outro admin faz a revisão.",
-    "screenshotFromPlayer": "Screenshot enviada pelo jogador."
+    "screenshotFromPlayer": "Screenshot enviada pelo jogador.",
+    "teamReviewerDescription": "Você revisa os envios dos outros times, nunca os do seu próprio time."
   },
   "score": {
     "tileComplete": "Completo +{{points}}",

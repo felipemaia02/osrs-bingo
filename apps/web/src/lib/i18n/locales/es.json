@@ -316,7 +316,7 @@
       "pendingOnly": "Esta solicitud ya no está pendiente.",
       "removed": "Esta inscripción ya fue eliminada.",
       "roleNeedsApproval": "Solo los jugadores aprobados pueden tener un rol.",
-      "captainNeedsTeam": "Asigna un equipo antes de hacerlo capitán.",
+      "captainNeedsTeam": "Asigna un equipo antes de darle un rol de equipo.",
       "captainTaken": "Este equipo ya tiene capitán.",
       "buyInAdmin": "Elige un administrador actual.",
       "changed": "Esta inscripción cambió mientras tanto. Recarga e inténtalo de nuevo.",
@@ -410,7 +410,7 @@
     "roles": {
       "none": "Ninguno",
       "captain": "Capitán",
-      "instructor": "Instructor"
+      "reviewer": "Revisor"
     },
     "buyIn": {
       "pending": "Pendiente",
@@ -422,7 +422,8 @@
       "title": "Editar {{name}}",
       "receivedBy": "Recibido por",
       "saved": "{{name}} actualizado.",
-      "captainHint": "El capitán debe estar aprobado y en un equipo; cada equipo tiene un capitán. Cambiar su equipo quita el rol."
+      "captainHint": "El capitán debe estar aprobado y en un equipo; cada equipo tiene un capitán. Cambiar su equipo quita el rol.",
+      "reviewHint": "Capitanes y revisores revisan los envíos de los otros equipos, nunca los del suyo."
     },
     "edit": "Editar",
     "editTeam": "Editar {{name}}",
@@ -1054,7 +1055,8 @@
     "emptyAccepted": "Ningún envío aceptado coincide.",
     "dropRemoved": "Este ítem ya no está en esta carta (corregida durante el evento). Solo se puede rechazar.",
     "ownSubmission": "Este envío es tuyo — otro admin lo revisa.",
-    "screenshotFromPlayer": "Captura enviada por el jugador."
+    "screenshotFromPlayer": "Captura enviada por el jugador.",
+    "teamReviewerDescription": "Revisas los envíos de los otros equipos, nunca los de tu propio equipo."
   },
   "score": {
     "tileComplete": "Completa +{{points}}",

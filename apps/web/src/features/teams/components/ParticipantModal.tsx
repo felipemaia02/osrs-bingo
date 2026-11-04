@@ -139,6 +139,7 @@ export function ParticipantModal({
           </label>
         )}
         <p className="m-0 text-xs text-rs-muted">{t('teams.participant.captainHint')}</p>
+        <p className="m-0 text-xs text-rs-muted">{t('teams.participant.reviewHint')}</p>
         {errorKey && (
           <p role="alert" className="m-0 text-sm text-rs-danger-text">
             {t(errorKey)}

@@ -18,7 +18,7 @@ const ERROR_TRANSLATION: Record<string, string> = {
   'Player not found': 'teams.errors.playerNotFound',
   'Team not found': 'teams.errors.teamNotFound',
   'Only approved players can have a role': 'teams.errors.roleNeedsApproval',
-  'Assign a team before making this player captain': 'teams.errors.captainNeedsTeam',
+  'Assign a team before giving this player a team role': 'teams.errors.captainNeedsTeam',
   'This team already has a captain': 'teams.errors.captainTaken',
   'Choose a current administrator': 'teams.errors.buyInAdmin',
   'This registration changed meanwhile. Reload and try again': 'teams.errors.changed',

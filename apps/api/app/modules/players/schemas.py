@@ -38,8 +38,10 @@ class BuyInStatus(StrEnum):
 
 
 class ParticipantRole(StrEnum):
+    """Per-event team roles (023, 064): both review the other teams' submissions."""
+
     CAPTAIN = "captain"
-    INSTRUCTOR = "instructor"
+    REVIEWER = "reviewer"
 
 
 class ParticipationUpdate(BaseModel):
@@ -103,6 +105,8 @@ class PlayerResponse(PlayerFields):
     status: RegistrationStatus
     event_id: str
     team_id: str | None
+    # The player's own role, so the site can show "Review" to captains and reviewers (064).
+    role: ParticipantRole | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -131,7 +135,6 @@ class AccountSnapshot(BaseModel):
 class RosterEntry(PlayerResponse):
     """Admin roster row: the registration plus the player's current profile (feature 023)."""
 
-    role: ParticipantRole | None = None
     # None for nickname registrations (before feature 022).
     boss_kc_total: int | None = None
     # Raids KC apart from boss KC (feature 039).

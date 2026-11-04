@@ -2,7 +2,7 @@ import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings'
 import AdminPanelSettingsOutlined from '@mui/icons-material/AdminPanelSettingsOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
-import { PLAY_ENTRIES, isEntryActive, type NavEntry } from './navigation'
+import { PLAY_ENTRIES, REVIEW_ENTRY, isEntryActive, type NavEntry } from './navigation'
 
 const ADMIN_TAB: NavEntry = {
   key: 'admin',
@@ -39,16 +39,24 @@ function BottomItem({ entry }: { entry: NavEntry }) {
   )
 }
 
-/** Mobile bottom bar: Board, Events, My team, My submissions and Admin for administrators. */
-export function MobileBottomBar({ isAdmin }: { isAdmin: boolean }) {
+/** Mobile bottom bar: Board, Events, My team, My submissions, plus Admin for administrators
+ * or Review for captains and reviewers (064). */
+export function MobileBottomBar({
+  isAdmin,
+  isReviewer,
+}: {
+  isAdmin: boolean
+  isReviewer: boolean
+}) {
   const { t } = useTranslation()
   const play = PLAY_ENTRIES.filter((entry) => !entry.desktopOnly)
-  const entries = isAdmin ? [...play, ADMIN_TAB] : play
+  const extra = isAdmin ? ADMIN_TAB : isReviewer ? REVIEW_ENTRY : null
+  const entries = extra ? [...play, extra] : play
   return (
     <nav
       aria-label={t('navigation.mobile')}
       className={`fixed inset-x-0 bottom-0 z-30 grid h-[68px] border-t border-rs-border bg-rs-inset md:hidden ${
-        isAdmin ? 'grid-cols-5' : 'grid-cols-4'
+        extra ? 'grid-cols-5' : 'grid-cols-4'
       }`}
     >
       {entries.map((entry) => (
