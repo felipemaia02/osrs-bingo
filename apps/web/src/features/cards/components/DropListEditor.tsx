@@ -21,7 +21,8 @@ import {
 import { useDropMatchPreview } from '../hooks/useCards'
 import type { DropMatchInput, ItemOption } from '../types'
 import { ItemIcon, ItemPicker } from './ItemPicker'
-import { WikiRatesButton, WikiRatesResult, useWikiRatesImport } from './WikiRatesImport'
+import { useWikiRatesImport } from '../hooks/useWikiRatesImport'
+import { WikiRatesButton, WikiRatesResult } from './WikiRatesImport'
 
 const PREVIEW_DELAY_MS = 600
 const SUMMARY_EXAMPLES = 3
