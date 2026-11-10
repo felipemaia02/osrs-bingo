@@ -88,3 +88,25 @@ async def test_revoke_by_name() -> None:
     repository.revoke.return_value = True
     assert await keys.revoke("clan-bot")
     assert repository.revoke.await_args.args[0] == "clan-bot"
+
+
+async def test_grant_adds_scopes_to_an_active_key() -> None:
+    keys, repository = service()
+    repository.add_scopes.return_value = {
+        "_id": KEY_ID,
+        "name": "clan-bot",
+        "scopes": ["events:read", "rosters:read"],
+    }
+
+    key = await keys.grant(" clan-bot ", {BotScope.ROSTERS_READ})
+
+    assert key is not None and BotScope.ROSTERS_READ in key.scopes
+    assert repository.add_scopes.await_args.args == ("clan-bot", ["rosters:read"])
+
+
+async def test_grant_reports_an_unknown_key_and_needs_a_scope() -> None:
+    keys, repository = service()
+    repository.add_scopes.return_value = None
+    assert await keys.grant("ghost", {BotScope.ROSTERS_READ}) is None
+    with pytest.raises(ValueError, match="at least one scope"):
+        await keys.grant("clan-bot", set())

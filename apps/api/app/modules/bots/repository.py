@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from datetime import datetime
 from typing import Any
 
@@ -30,6 +31,16 @@ class BotKeyRepository:
     async def list(self) -> list[dict[str, Any]]:
         cursor = self._keys.find({}, {"key_hash": 0}).sort("created_at", 1)
         return [dict(document) async for document in cursor]
+
+    async def add_scopes(self, name: str, scopes: Sequence[str]) -> dict[str, Any] | None:
+        """Adds scopes to an active key; None when no active key has that name."""
+        document = await self._keys.find_one_and_update(
+            {"name": name, "revoked_at": None},
+            {"$addToSet": {"scopes": {"$each": list(scopes)}}},
+            projection={"key_hash": 0},
+            return_document=ReturnDocument.AFTER,
+        )
+        return dict(document) if document else None
 
     async def revoke(self, name: str, now: datetime) -> bool:
         result = await self._keys.update_one(

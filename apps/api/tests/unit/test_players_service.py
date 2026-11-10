@@ -552,3 +552,47 @@ async def test_several_players_are_assigned_to_one_team(
     teams.get.return_value = None
     with pytest.raises(NotFoundError, match="Team"):
         await service.assign_selected(EVENT_ID, ids, TEAM_ID)
+
+
+async def test_bot_roster_maps_discord_team_and_role_sorted_by_team(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, teams, _ = repositories
+    crabs, whales = ObjectId(), ObjectId()
+    teams.list.return_value = [{"_id": whales, "name": "Whales"}, {"_id": crabs, "name": "crabs"}]
+    players.approved_with_discord.return_value = [
+        {"display_name": "Loner", "team_id": None, "discord_id": "1", "discord_username": "aa"},
+        {"display_name": "Big", "team_id": whales, "discord_id": "2", "discord_username": "zz"},
+        {
+            "display_name": "Cap",
+            "team_id": crabs,
+            "role": "captain",
+            "discord_id": "3",
+            "discord_username": "Mm",
+        },
+        {"display_name": "Two", "team_id": crabs, "discord_id": "4", "discord_username": "bb"},
+    ]
+
+    result = await service.bot_roster(EVENT_ID)
+
+    assert [entry.rsn for entry in result.items] == ["Two", "Cap", "Big", "Loner"]
+    captain = result.items[1]
+    assert captain.model_dump() == {
+        "discord_id": "3",
+        "discord_username": "Mm",
+        "rsn": "Cap",
+        "team_id": str(crabs),
+        "team_name": "crabs",
+        "role": "captain",
+    }
+    assert result.items[3].team_id is None and result.items[3].team_name is None
+
+
+async def test_bot_roster_of_unknown_event_is_not_found(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, events = repositories
+    events.get.return_value = None
+    with pytest.raises(NotFoundError):
+        await service.bot_roster(EVENT_ID)
+    players.approved_with_discord.assert_not_awaited()

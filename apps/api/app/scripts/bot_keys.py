@@ -1,6 +1,7 @@
 """Manage bot keys (feature 048).
 
     python -m app.scripts.bot_keys create <name> --scope events:read --scope score:read
+    python -m app.scripts.bot_keys grant <name> --scope rosters:read
     python -m app.scripts.bot_keys list
     python -m app.scripts.bot_keys revoke <name>
 
@@ -27,14 +28,16 @@ def parse_arguments(argv: Sequence[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(prog="python -m app.scripts.bot_keys")
     commands = parser.add_subparsers(dest="command", required=True)
     create = commands.add_parser("create", help="create a key and print it once")
-    create.add_argument("name")
-    create.add_argument(
-        "--scope",
-        dest="scopes",
-        action="append",
-        required=True,
-        choices=[scope.value for scope in BotScope],
-    )
+    grant = commands.add_parser("grant", help="add scopes to an active key (same secret)")
+    for command in (create, grant):
+        command.add_argument("name")
+        command.add_argument(
+            "--scope",
+            dest="scopes",
+            action="append",
+            required=True,
+            choices=[scope.value for scope in BotScope],
+        )
     commands.add_parser("list", help="list keys (never shows the key)")
     revoke = commands.add_parser("revoke", help="revoke a key by name")
     revoke.add_argument("name")
@@ -53,6 +56,14 @@ async def run(arguments: argparse.Namespace, service: BotKeyService) -> int:
         print(f"Created {key.name} ({', '.join(sorted(key.scopes))}).")
         print("Key (shown only now, store it in the bot's secrets):")
         print(plain)
+    elif arguments.command == "grant":
+        granted = await service.grant(
+            arguments.name, {BotScope(scope) for scope in arguments.scopes}
+        )
+        if granted is None:
+            print(f"No active bot key named {arguments.name!r}", file=sys.stderr)
+            return FAILURE
+        print(f"Updated {granted.name} ({', '.join(sorted(granted.scopes))}).")
     elif arguments.command == "list":
         for summary in await service.list():
             state = f"revoked {summary.revoked_at:%Y-%m-%d}" if summary.revoked_at else "active"

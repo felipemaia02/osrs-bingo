@@ -66,6 +66,13 @@ class BotKeyService:
             for document in await self._repository.list()
         ]
 
+    async def grant(self, name: str, scopes: set[BotScope]) -> BotKey | None:
+        """Adds scopes to an active key, keeping its secret (048 revision 2)."""
+        if not scopes:
+            raise ValueError("Grant at least one scope")
+        document = await self._repository.add_scopes(name.strip(), sorted(scopes))
+        return self._to_key(document) if document else None
+
     async def revoke(self, name: str) -> bool:
         return await self._repository.revoke(name, datetime.now(UTC))
 

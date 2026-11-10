@@ -13,6 +13,8 @@ from app.modules.players.models import NewRegistration, PlayerDocument
 from app.modules.players.repository import CaptainTakenError, PlayerRepository
 from app.modules.players.roster import for_event, to_player_response, to_roster_entry
 from app.modules.players.schemas import (
+    BotRosterEntry,
+    BotRosterResponse,
     JoinRequest,
     ParticipantRole,
     ParticipationUpdate,
@@ -191,6 +193,33 @@ class PlayerService:
         if await self._players.get(event_id, player_id) is None:
             raise NotFoundError("Player")
         raise ConflictError(detail)
+
+    async def bot_roster(self, event_id: str) -> BotRosterResponse:
+        """Approved players with Discord ID, team and role (048 revision 2), by team name
+        then Discord username; players without a team come last."""
+        await self._require_event(event_id)
+        team_names = {str(team["_id"]): team["name"] for team in await self._teams.list(event_id)}
+        entries = []
+        for document in await self._players.approved_with_discord(event_id):
+            team_id = str(document["team_id"]) if document.get("team_id") else None
+            entries.append(
+                BotRosterEntry(
+                    discord_id=document["discord_id"],
+                    discord_username=document["discord_username"],
+                    rsn=document["display_name"],
+                    team_id=team_id,
+                    team_name=team_names.get(team_id) if team_id else None,
+                    role=ParticipantRole(role) if (role := document.get("role")) else None,
+                )
+            )
+        entries.sort(
+            key=lambda entry: (
+                entry.team_name is None,
+                (entry.team_name or "").casefold(),
+                entry.discord_username.casefold(),
+            )
+        )
+        return BotRosterResponse(items=entries)
 
     async def _require_event(self, event_id: str) -> EventDocument:
         event = await self._events.get(event_id)

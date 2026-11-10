@@ -254,6 +254,37 @@ class PlayerRepository:
         total = page["total"][0]["value"] if page["total"] else 0
         return cast(builtin_list[RosterDocument], page["items"]), int(total)
 
+    async def approved_with_discord(self, event_id: str) -> builtin_list[dict[str, Any]]:
+        """The event's approved registrations with their Discord ID and username (048 r2)."""
+        pipeline: builtin_list[dict[str, Any]] = [
+            {
+                "$match": {
+                    "event_id": self._object_id(event_id),
+                    "status": RegistrationStatus.APPROVED,
+                }
+            },
+            {
+                "$lookup": {
+                    "from": USERS_COLLECTION,
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "discord_user",
+                }
+            },
+            {"$unwind": "$discord_user"},
+            {
+                "$project": {
+                    "_id": 0,
+                    "display_name": 1,
+                    "team_id": 1,
+                    "role": 1,
+                    "discord_id": "$discord_user.discord_id",
+                    "discord_username": "$discord_user.username",
+                }
+            },
+        ]
+        return await self._collection.aggregate(pipeline).to_list(length=None)
+
     @staticmethod
     def _row_lookups() -> builtin_list[dict[str, Any]]:
         """Names for wanted teammates (users + profiles) and the buy-in's receiving admin."""

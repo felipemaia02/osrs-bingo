@@ -163,6 +163,21 @@ class PlayerCounts(BaseModel):
     assigned: int = 0
 
 
+class BotRosterEntry(BaseModel):
+    """One approved player as the bot sees it (048 revision 2): no admin-only data."""
+
+    discord_id: str
+    discord_username: str
+    rsn: str
+    team_id: str | None
+    team_name: str | None
+    role: ParticipantRole | None
+
+
+class BotRosterResponse(BaseModel):
+    items: list[BotRosterEntry]
+
+
 class PlayerListResponse(BaseModel):
     items: list[RosterEntry]
     total: int

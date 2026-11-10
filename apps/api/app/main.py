@@ -46,6 +46,7 @@ from app.modules.items.syncer import ItemSyncer
 from app.modules.maintenance.gate import maintenance_gate
 from app.modules.maintenance.router import router as maintenance_router
 from app.modules.players.repository import PlayerRepository
+from app.modules.players.router import bot_roster_router
 from app.modules.players.router import router as players_router
 from app.modules.profiles.router import router as profile_router
 from app.modules.profiles.wom import WomClient
@@ -211,6 +212,7 @@ app.include_router(auth_router)
 app.include_router(administration_router)
 app.include_router(teams_router)
 app.include_router(players_router)
+app.include_router(bot_roster_router)
 app.include_router(tiles_router)
 app.include_router(wiki_router)
 app.include_router(artwork_router)

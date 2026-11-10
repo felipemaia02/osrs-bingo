@@ -2,13 +2,16 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, status
 
+from app.core.exceptions import AppException
 from app.modules.administration.repository import AdministrationRepository
 from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency, UserDependency
+from app.modules.bots.dependencies import BotCallerDependency
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
     ApprovalResponse,
+    BotRosterResponse,
     JoinRequest,
     ParticipationUpdate,
     PlayerListQuery,
@@ -24,6 +27,7 @@ from app.modules.profiles.repository import ProfileRepository
 from app.modules.teams.repository import TeamRepository
 
 router = APIRouter(prefix="/events/{event_id}/players", tags=["players"])
+bot_roster_router = APIRouter(prefix="/events/{event_id}/roster", tags=["players"])
 
 
 async def get_player_service(request: Request) -> PlayerService:
@@ -145,3 +149,13 @@ async def remove_player(
     event_id: str, player_id: str, admin: AdminDependency, service: PlayerServiceDependency
 ) -> PlayerResponse:
     return await service.remove(event_id, player_id)
+
+
+@bot_roster_router.get("", response_model=BotRosterResponse)
+async def bot_roster(
+    event_id: str, bot: BotCallerDependency, service: PlayerServiceDependency
+) -> BotRosterResponse:
+    """Bot keys holding `rosters:read` only (bot_gate checks the scope); never website users."""
+    if bot is None:
+        raise AppException(403, "Bot key required")
+    return await service.bot_roster(event_id)

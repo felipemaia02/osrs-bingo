@@ -21,6 +21,8 @@ from app.modules.bots import dependencies as bot_dependencies
 from app.modules.bots.schemas import BotKey, BotScope
 from app.modules.bots.service import invalid_key
 from app.modules.events.router import get_event_service
+from app.modules.players.router import get_player_service
+from app.modules.players.schemas import BotRosterEntry, BotRosterResponse, ParticipantRole
 from app.modules.scoring.router import get_scoring_service
 from app.modules.scoring.schemas import TeamScoreResponse
 from app.modules.submissions.router import get_submission_service
@@ -57,11 +59,12 @@ class Services:
     scoring: AsyncMock
     submissions: AsyncMock
     events: AsyncMock
+    players: AsyncMock
 
 
 @pytest.fixture
 def services(monkeypatch: pytest.MonkeyPatch) -> Iterator[Services]:
-    found = Services(*(AsyncMock() for _ in range(7)))
+    found = Services(*(AsyncMock() for _ in range(8)))
     found.events.list.return_value = []
     found.keys.authenticate.return_value = key(*BotScope)
     found.auth.acting_user.return_value = CurrentUser(
@@ -106,6 +109,18 @@ def services(monkeypatch: pytest.MonkeyPatch) -> Iterator[Services]:
         calculated_at=NOW,
     )
     found.submissions.submit.return_value = submission_response()
+    found.players.bot_roster.return_value = BotRosterResponse(
+        items=[
+            BotRosterEntry(
+                discord_id=PLAYER_DISCORD_ID,
+                discord_username="Hal",
+                rsn="Thunder Crab",
+                team_id="66d000000000000000000004",
+                team_name="Crabs",
+                role=ParticipantRole.CAPTAIN,
+            )
+        ]
+    )
     monkeypatch.setattr(bot_dependencies, "get_bot_key_service", lambda _request: found.keys)
     overrides = {
         get_auth_service: found.auth,
@@ -114,6 +129,7 @@ def services(monkeypatch: pytest.MonkeyPatch) -> Iterator[Services]:
         get_scoring_service: found.scoring,
         get_submission_service: found.submissions,
         get_event_service: found.events,
+        get_player_service: found.players,
     }
     for dependency, service in overrides.items():
         app.dependency_overrides[dependency] = provider(service)
@@ -155,6 +171,39 @@ async def test_events_need_their_scope(client: AsyncClient, services: Services) 
     result = await client.get("/events", headers=bearer(acting=None))
     assert result.status_code == 403
     services.events.list.assert_not_awaited()
+
+
+async def test_roster_is_read_with_the_rosters_scope(
+    client: AsyncClient, services: Services
+) -> None:
+    services.keys.authenticate.return_value = key(BotScope.ROSTERS_READ)
+
+    result = await client.get(f"/events/{EVENT_ID}/roster", headers=bearer(acting=None))
+
+    assert result.status_code == 200
+    assert result.json()["items"] == [
+        {
+            "discord_id": PLAYER_DISCORD_ID,
+            "discord_username": "Hal",
+            "rsn": "Thunder Crab",
+            "team_id": "66d000000000000000000004",
+            "team_name": "Crabs",
+            "role": "captain",
+        }
+    ]
+    services.players.bot_roster.assert_awaited_once_with(EVENT_ID)
+    services.auth.acting_user.assert_not_awaited()
+
+
+async def test_roster_needs_its_scope_and_a_key(client: AsyncClient, services: Services) -> None:
+    services.keys.authenticate.return_value = key(BotScope.TEAMS_READ)
+
+    other_scope = await client.get(f"/events/{EVENT_ID}/roster", headers=bearer(acting=None))
+    no_key = await client.get(f"/events/{EVENT_ID}/roster")
+
+    assert (other_scope.status_code, no_key.status_code) == (403, 403)
+    assert no_key.json() == {"detail": "Bot key required"}
+    services.players.bot_roster.assert_not_awaited()
 
 
 async def test_score_is_read_for_the_acting_player_and_ignores_cookies(
@@ -221,6 +270,7 @@ async def test_routes_outside_the_key_scopes_are_forbidden(
         ("POST", "/admin/submissions/66d0000000000000000000aa/accept"),
         ("GET", f"/events/{EVENT_ID}/submissions/me"),
         ("GET", "/auth/me"),
+        ("GET", f"/events/{EVENT_ID}/players"),
         ("GET", "/health"),
     ],
 )
