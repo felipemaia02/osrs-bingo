@@ -16,11 +16,6 @@ export async function fetchEvents(status?: EventStatus | EventStatus[]): Promise
   return response.data.items
 }
 
-/** Events the logged-in player is in (pending or approved), feature 026. */
-export async function fetchMyEvents(): Promise<BingoEvent[]> {
-  return (await apiClient.get<EventListResponse>('/events/mine')).data.items
-}
-
 export async function createEvent(payload: EventPayload): Promise<BingoEvent> {
   const response = await apiClient.post<BingoEvent>('/events', payload)
   return response.data

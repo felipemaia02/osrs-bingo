@@ -10,7 +10,7 @@ import { initialsOf as tileInitials } from '../../src/lib/text/initials'
 import { shortNameOf } from '../../src/lib/text/shortName'
 import { BoardPage } from '../../src/features/bingo/pages/BoardPage'
 import type { AcceptedDrop } from '../../src/features/cards/types'
-import { fetchEvents, fetchMyEvents } from '../../src/features/events/api/eventsApi'
+import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
 import { fetchOwnRegistration, fetchTeams } from '../../src/features/teams/api/teamsApi'
 import { renderApp } from '../render'
@@ -162,19 +162,26 @@ describe('first screen (feature 026)', () => {
     })
   })
 
-  it('shows my events first when the player is not in the active event', async () => {
-    const draft = { ...EVENT, id: 'winter', name: 'Winter Bingo', status: 'draft' as const }
-    vi.mocked(fetchMyEvents).mockResolvedValue([draft])
+  it('shows the active board with a note when the player is not in the event', async () => {
     vi.mocked(fetchOwnRegistration).mockResolvedValue(null)
     renderApp(<BoardPage />, '/board')
 
-    expect(await screen.findByRole('heading', { name: 'My events', level: 1 })).toBeInTheDocument()
-    expect(await screen.findByText('Winter Bingo')).toBeInTheDocument()
-    expect(screen.getByText("Active event — you're not playing in it.")).toBeInTheDocument()
-    expect(screen.queryByRole('region', { name: '6 by 6 board' })).toBeNull()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Browse board' }))
     expect(await screen.findByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
+    expect(screen.getByText(/You're not playing this event./)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'See events on the home page' })).toHaveAttribute(
+      'href',
+      '/',
+    )
+    // Events are listed on the home page, not here (068).
+    expect(screen.queryByRole('heading', { name: 'My events' })).toBeNull()
+  })
+
+  it('says when no event is running', async () => {
+    vi.mocked(fetchEvents).mockResolvedValue([])
+    renderApp(<BoardPage />, '/board')
+
+    expect(await screen.findByText(/No event is running right now./)).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: '6 by 6 board' })).toBeNull()
   })
 
   it('opens the board directly for players in the active event', async () => {
@@ -188,7 +195,7 @@ describe('first screen (feature 026)', () => {
     renderApp(<BoardPage />, '/board')
 
     expect(await screen.findByRole('region', { name: '6 by 6 board' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: 'My events' })).toBeNull()
+    expect(screen.queryByText(/You're not playing this event./)).toBeNull()
   })
 })
 
@@ -533,7 +540,6 @@ describe('Board v2', () => {
   it('keeps the unavailable-board state', async () => {
     vi.mocked(fetchPublicBoard).mockResolvedValue(null)
     renderApp(<BoardPage />, '/board')
-    fireEvent.click(await screen.findByRole('button', { name: 'Browse board' }))
     expect(
       await screen.findByText('The active event board is not available yet.'),
     ).toBeInTheDocument()

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
@@ -16,7 +17,6 @@ import { BoardToolbar, MobileSearch } from '../components/BoardToolbar'
 import { EventHeader, MobileEventSummary } from '../components/EventHeader'
 import { HelpDialog } from '../components/HelpDialog'
 import { MiniMap } from '../components/MiniMap'
-import { MyEventsLanding } from '../components/MyEventsLanding'
 import { TileDetailPanel } from '../components/TileDetailPanel'
 import { MobileTileDetail } from '../components/MobileTileDetail'
 import { TileList } from '../components/TileList'
@@ -67,9 +67,8 @@ export function BoardPage() {
   const [search, setSearch] = useState('')
   const [tier, setTier] = useState<TierFilter>('all')
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [browsing, setBrowsing] = useState(false)
   const registration = useOwnRegistration(event?.id ?? '', event ? session.data?.id : undefined)
-  // Players in the active event land on its board; everyone else sees their events (026).
+  // Events are listed on the home page now; the board only shows the active event (068).
   const playing =
     registration.data?.status === 'pending' || registration.data?.status === 'approved'
   const deciding = session.isLoading || (Boolean(session.data) && registration.isLoading)
@@ -133,18 +132,23 @@ export function BoardPage() {
           </p>
         )}
         {(events.isError || board.isError) && <p role="alert">{t('common.apiError')}</p>}
-        {!events.isLoading && !deciding && !playing ? (
-          <MyEventsLanding
-            activeEvent={event}
-            browsing={browsing}
-            onBrowse={() => setBrowsing(true)}
-            board={boardView}
-          />
+        {!events.isLoading && !event ? (
+          <p className="m-0 rounded border border-rs-border bg-rs-surface p-6 text-center text-rs-muted">
+            {t('board.noActiveEvent')}{' '}
+            <Link to="/" className="font-semibold text-rs-gold-bright">
+              {t('board.goHome')}
+            </Link>
+          </p>
         ) : (
           !deciding && (
             <>
-              {!events.isLoading && !event && (
-                <p className="text-rs-muted">{t('board.noActiveEvent')}</p>
+              {event && !playing && (
+                <InfoBanner>
+                  {t('board.notPlaying')}{' '}
+                  <Link to="/" className="font-semibold text-rs-gold-bright">
+                    {t('board.goHome')}
+                  </Link>
+                </InfoBanner>
               )}
               {boardView}
             </>

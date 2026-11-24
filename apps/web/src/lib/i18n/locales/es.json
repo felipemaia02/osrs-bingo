@@ -13,7 +13,7 @@
     "submissions": "Envíos"
   },
   "board": {
-    "noActiveEvent": "No hay un evento activo para mostrar.",
+    "noActiveEvent": "No hay ningún evento en curso ahora.",
     "unavailable": "El tablero del evento activo todavía no está disponible.",
     "row": "Fila {{row}}",
     "column": "Columna {{column}}",
@@ -126,7 +126,9 @@
       "removed": "Un admin eliminó tu inscripción.",
       "unassigned": "Verás el progreso de tu equipo cuando un admin te ponga en un equipo.",
       "unavailable": "El progreso de tu equipo no está disponible ahora."
-    }
+    },
+    "notPlaying": "No estás jugando este evento.",
+    "goHome": "Ver eventos en el inicio"
   },
   "tile": {
     "points": "{{count}} pts",
@@ -1488,15 +1490,6 @@
       "fullDetails": "Haz clic en el nombre para ver todo",
       "openDetails": "Detalles de {{name}}"
     }
-  },
-  "home": {
-    "eyebrow": "OSRS Bingo",
-    "title": "Mis eventos",
-    "login": "Inicia sesión para ver los eventos en los que estás.",
-    "none": "Aún no estás en ningún evento.",
-    "browseEvents": "Ver eventos",
-    "notPlaying": "Evento activo — no estás jugando en él.",
-    "browseBoard": "Ver tablero"
   },
   "status": {
     "home": "Teletransportarse al inicio",

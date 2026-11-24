@@ -4,7 +4,6 @@ import {
   createEvent,
   fetchEventReadiness,
   fetchEvents,
-  fetchMyEvents,
   finishEvent,
   updateEvent,
   updateEventRules,
@@ -14,10 +13,6 @@ import {
 import type { EventPayload, EventStatus } from '../types'
 
 export const EVENT_QUERY_KEY = ['events'] as const
-
-export function useMyEvents(enabled: boolean) {
-  return useQuery({ queryKey: [...EVENT_QUERY_KEY, 'mine'], queryFn: fetchMyEvents, enabled })
-}
 
 export function useEvents(status?: EventStatus | EventStatus[]) {
   return useQuery({
