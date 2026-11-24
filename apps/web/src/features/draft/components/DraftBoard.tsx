@@ -258,6 +258,7 @@ function DraftBoardContent({
             canReturn={canReturn}
             onReturn={(playerId) => setSession(removeMember(session, playerId))}
             onEdit={editable ? actions.onEdit : null}
+            onOpen={setOpenPlayer}
           />
         ))}
       </div>

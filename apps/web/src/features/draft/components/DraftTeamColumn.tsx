@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import type { Player } from '../../teams/types'
 import type { DraftColumn } from '../board'
+import { PlayerSummaryTooltip } from './PlayerSummary'
 
 /** One team: colour, name, picks, captain, totals and members in pick order (076 FR-005). */
 export function DraftTeamColumn({
@@ -12,6 +13,7 @@ export function DraftTeamColumn({
   canReturn,
   onReturn,
   onEdit,
+  onOpen,
 }: {
   column: DraftColumn
   onClock: boolean
@@ -20,6 +22,8 @@ export function DraftTeamColumn({
   onReturn: (playerId: string) => void
   /** Role, buy-in and tier of a member; null when read-only. */
   onEdit: ((player: Player) => void) | null
+  /** Opens the full details modal (024). */
+  onOpen: (player: Player) => void
 }) {
   const { t } = useTranslation()
   const format = useStatFormat()
@@ -71,7 +75,16 @@ export function DraftTeamColumn({
             }`}
           >
             <span className="w-6 text-xs tabular-nums text-rs-muted">#{index + 1}</span>
-            <strong className="min-w-0 flex-1 truncate">{member.player.display_name}</strong>
+            <PlayerSummaryTooltip player={member.player}>
+              <button
+                type="button"
+                onClick={() => onOpen(member.player)}
+                aria-label={t('draft.board.openDetails', { name: member.player.display_name })}
+                className="min-w-0 flex-1 truncate text-left font-bold text-rs-text underline decoration-rs-border-strong decoration-dotted underline-offset-4 hover:text-rs-gold-bright"
+              >
+                {member.player.display_name}
+              </button>
+            </PlayerSummaryTooltip>
             {member.captain && (
               <span
                 title={t('teams.roles.captain')}

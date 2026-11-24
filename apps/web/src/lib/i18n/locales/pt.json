@@ -1484,7 +1484,9 @@
         "pool": "Disponíveis",
         "teams": "Times"
       },
-      "liveHint": "Durante o evento só players sem time podem ser colocados; os times já formados ficam travados."
+      "liveHint": "Durante o evento só players sem time podem ser colocados; os times já formados ficam travados.",
+      "fullDetails": "Clique no nome para ver tudo",
+      "openDetails": "Detalhes de {{name}}"
     }
   },
   "home": {

@@ -168,7 +168,7 @@ const team = (name: string) => screen.getByRole('region', { name })
 const memberNames = (name: string) =>
   within(team(name))
     .queryAllByRole('listitem')
-    .map((item) => item.querySelector('strong')?.textContent)
+    .map((item) => item.querySelector('button[aria-label^="Details of"]')?.textContent)
     .filter(Boolean)
 
 async function draft(user: ReturnType<typeof userEvent.setup>, name: string) {
@@ -272,6 +272,24 @@ describe('Draft board (076)', () => {
     await user.click(within(confirm).getByRole('button', { name: 'Discard draft' }))
     expect(memberNames('Saradomin')).toEqual(['felps_'])
     expect(window.localStorage.getItem(STORAGE_KEY)).toBeNull()
+  })
+
+  it('summarizes a team member on hover and opens the full details from the name', async () => {
+    const { user } = renderBoard()
+
+    await draft(user, 'Ironman Iris')
+    const name = within(team('Saradomin')).getByRole('button', { name: 'Details of Ironman Iris' })
+    await user.hover(name)
+    const summary = await screen.findByRole('tooltip')
+    expect(summary).toHaveTextContent('Ironman Iris')
+    expect(summary).toHaveTextContent('845.2')
+    expect(summary).toHaveTextContent('17,950')
+    expect(summary).toHaveTextContent('2,277')
+    expect(summary).toHaveTextContent('New York')
+    expect(summary).toHaveTextContent('Click the name for all details')
+
+    await user.click(name)
+    expect(await screen.findByRole('dialog', { name: 'Ironman Iris' })).toBeInTheDocument()
   })
 
   it('edits and removes players from the board (ex Unassigned/Assigned tabs)', async () => {

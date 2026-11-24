@@ -1484,7 +1484,9 @@
         "pool": "Disponibles",
         "teams": "Equipos"
       },
-      "liveHint": "Durante el evento solo se pueden colocar jugadores sin equipo; los equipos ya formados quedan bloqueados."
+      "liveHint": "Durante el evento solo se pueden colocar jugadores sin equipo; los equipos ya formados quedan bloqueados.",
+      "fullDetails": "Haz clic en el nombre para ver todo",
+      "openDetails": "Detalles de {{name}}"
     }
   },
   "home": {

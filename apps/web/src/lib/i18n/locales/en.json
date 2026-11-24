@@ -1486,7 +1486,9 @@
         "pool": "Pool",
         "teams": "Teams"
       },
-      "liveHint": "During the event only players without a team can be placed; teams already formed stay locked."
+      "liveHint": "During the event only players without a team can be placed; teams already formed stay locked.",
+      "fullDetails": "Click the name for all details",
+      "openDetails": "Details of {{name}}"
     }
   },
   "home": {
