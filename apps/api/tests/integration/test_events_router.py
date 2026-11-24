@@ -79,7 +79,24 @@ async def test_list_events_passes_status_filter(client: AsyncClient) -> None:
 
     assert response.status_code == status.HTTP_200_OK
     assert EventListResponse.model_validate(response.json()).items[0].status is EventStatus.ACTIVE
-    service.list.assert_awaited_once_with(EventStatus.ACTIVE)
+    service.list.assert_awaited_once_with([EventStatus.ACTIVE])
+
+
+async def test_list_events_accepts_several_statuses(client: AsyncClient) -> None:
+    service = AsyncMock()
+    service.list.return_value = [event_response(EventStatus.DRAFT)]
+
+    async def override_service() -> AsyncMock:
+        return service
+
+    app.dependency_overrides[get_event_service] = override_service
+    try:
+        response = await client.get("/events?status=draft&status=active")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == status.HTTP_200_OK
+    service.list.assert_awaited_once_with([EventStatus.DRAFT, EventStatus.ACTIVE])
 
 
 async def test_invalid_schedule_returns_validation_error(client: AsyncClient) -> None:

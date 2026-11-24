@@ -116,11 +116,13 @@ describe('My profile', () => {
     vi.mocked(fetchProfile).mockResolvedValue(
       profile([MAIN, ALT, GHOST], {
         totals: { boss_kc: 28255, ehb: 1229.1, counted: 2, total: 3, not_found: ['felps skiller'] },
+        tier: 'end',
       }),
     )
     renderApp(<ProfilePage />, '/profile')
 
     expect(await screen.findByText('Discord ID 336288077507198977')).toBeInTheDocument()
+    expect(screen.getByText(/Your progression:/)).toHaveTextContent('Your progression:End game')
     expect(screen.getByText('Automatic · from your Discord login')).toBeInTheDocument()
 
     const main = screen.getByRole('article', { name: 'Main account felps' })
@@ -348,5 +350,24 @@ describe('My profile', () => {
 
     expect(await screen.findByText(/Log in to see your profile/)).toBeInTheDocument()
     expect(fetchProfile).not.toHaveBeenCalled()
+  })
+
+  it('welcomes a new user with what to fill in (074)', async () => {
+    vi.mocked(fetchProfile).mockResolvedValue(profile([]))
+    renderApp(<ProfilePage />, '/profile?welcome=1')
+
+    const welcome = await screen.findByRole('region', { name: 'Welcome to OSRS Bingo!' })
+    expect(within(welcome).getAllByRole('listitem')).toHaveLength(4)
+    expect(within(welcome).getByRole('link', { name: 'Done — go to the bingo' })).toHaveAttribute(
+      'href',
+      '/',
+    )
+  })
+
+  it('shows no welcome on a normal visit', async () => {
+    vi.mocked(fetchProfile).mockResolvedValue(profile([MAIN]))
+    renderApp(<ProfilePage />, '/profile')
+    expect(await screen.findByText(/Discord ID/)).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Welcome to OSRS Bingo!' })).toBeNull()
   })
 })

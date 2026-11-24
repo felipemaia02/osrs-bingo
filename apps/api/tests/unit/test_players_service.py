@@ -14,6 +14,8 @@ from app.modules.players.repository import CaptainTakenError, PlayerRepository
 from app.modules.players.roster import to_roster_entry
 from app.modules.players.schemas import (
     BuyInStatus,
+    DraftAssignment,
+    DraftSave,
     JoinRequest,
     ParticipationUpdate,
     PlayerListQuery,
@@ -22,6 +24,7 @@ from app.modules.players.schemas import (
 )
 from app.modules.players.service import PlayerService
 from app.modules.profiles.repository import ProfileRepository
+from app.modules.profiles.schemas import ProgressionTier, TierOverrideRequest
 from app.modules.teams.repository import TeamRepository
 
 EVENT_ID, USER_ID, PLAYER_ID, TEAM_ID = (str(ObjectId()) for _ in range(4))
@@ -596,3 +599,111 @@ async def test_bot_roster_of_unknown_event_is_not_found(
     with pytest.raises(NotFoundError):
         await service.bot_roster(EVENT_ID)
     players.approved_with_discord.assert_not_awaited()
+
+
+async def test_admin_sets_and_clears_the_progression_tier(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, _ = repositories
+    players.get.return_value = registration(RegistrationStatus.APPROVED)
+    profiles = service._profiles  # type: ignore[attr-defined]
+    admin_id = str(ObjectId())
+
+    result = await service.set_tier(
+        EVENT_ID, PLAYER_ID, TierOverrideRequest(tier=ProgressionTier.END), admin_id
+    )
+
+    assert result.tier is ProgressionTier.END and result.tier_overridden
+    override = profiles.set_tier_override.await_args.args[1]
+    assert profiles.set_tier_override.await_args.args[0] == USER_ID
+    assert override["tier"] == "end" and override["admin_id"] == ObjectId(admin_id)
+
+    cleared = await service.set_tier(EVENT_ID, PLAYER_ID, TierOverrideRequest(tier=None), admin_id)
+    assert not cleared.tier_overridden
+    profiles.set_tier_override.assert_awaited_with(USER_ID, None)
+
+
+async def test_tier_needs_a_registration_with_a_profile(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, _, _ = repositories
+    players.get.return_value = None
+    with pytest.raises(NotFoundError):
+        await service.set_tier(EVENT_ID, PLAYER_ID, TierOverrideRequest(tier=None), USER_ID)
+    players.get.return_value = {**registration(), "user_id": None}
+    with pytest.raises(ConflictError):
+        await service.set_tier(EVENT_ID, PLAYER_ID, TierOverrideRequest(tier=None), USER_ID)
+
+
+def test_roster_entry_carries_the_tier() -> None:
+    document = {
+        **registration(RegistrationStatus.APPROVED),
+        "profile_accounts": [
+            {"id": MAIN_ID, "rsn": "Main", "is_main": True, "wom_status": "found", "ehb": 400}
+        ],
+        "tier_override": None,
+    }
+    entry = to_roster_entry(document)  # type: ignore[arg-type]
+    assert (entry.tier, entry.tier_suggested) == (ProgressionTier.END, ProgressionTier.END)
+
+
+def draft(*moves: tuple[str, str | None, str | None]) -> DraftSave:
+    return DraftSave(
+        assignments=[
+            DraftAssignment(player_id=player, from_team_id=source, team_id=target)
+            for player, source, target in moves
+        ]
+    )
+
+
+async def test_draft_save_applies_each_pick_and_reports_skipped_players(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, teams, _ = repositories
+    teams.list.return_value = [{"_id": ObjectId(TEAM_ID)}]
+    stale = str(ObjectId())
+    players.apply_draft_move.side_effect = lambda _event, player, *_: player != stale
+
+    result = await service.save_draft(
+        EVENT_ID,
+        draft((PLAYER_ID, None, TEAM_ID), (stale, None, TEAM_ID), (FRIEND_ID, TEAM_ID, None)),
+    )
+
+    assert (result.changed, result.skipped) == (2, [stale])
+    players.apply_draft_move.assert_any_await(EVENT_ID, FRIEND_ID, TEAM_ID, None)
+
+
+async def test_draft_save_needs_an_open_event_and_known_teams(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    service, players, teams, events = repositories
+    teams.list.return_value = [{"_id": ObjectId(TEAM_ID)}]
+    with pytest.raises(NotFoundError):
+        await service.save_draft(EVENT_ID, draft((PLAYER_ID, None, str(ObjectId()))))
+    events.get.return_value = {"status": EventStatus.FINISHED}
+    with pytest.raises(ConflictError):
+        await service.save_draft(EVENT_ID, draft((PLAYER_ID, None, TEAM_ID)))
+    players.apply_draft_move.assert_not_awaited()
+
+
+async def test_draft_save_during_the_event_only_places_players_without_a_team(
+    repositories: tuple[PlayerService, AsyncMock, AsyncMock, AsyncMock],
+) -> None:
+    """076 revision 1 + 037: late joiners get a team; formed teams stay locked."""
+    service, players, teams, events = repositories
+    events.get.return_value = {"status": EventStatus.ACTIVE}
+    teams.list.return_value = [{"_id": ObjectId(TEAM_ID)}]
+    players.apply_draft_move.return_value = True
+    moved = str(ObjectId())
+
+    result = await service.save_draft(
+        EVENT_ID, draft((PLAYER_ID, None, TEAM_ID), (moved, TEAM_ID, None))
+    )
+
+    assert (result.changed, result.skipped) == (1, [moved])
+    players.apply_draft_move.assert_awaited_once_with(EVENT_ID, PLAYER_ID, None, TEAM_ID)
+
+
+def test_a_player_appears_once_per_draft_save() -> None:
+    with pytest.raises(ValidationError):
+        draft((PLAYER_ID, None, TEAM_ID), (PLAYER_ID, TEAM_ID, None))

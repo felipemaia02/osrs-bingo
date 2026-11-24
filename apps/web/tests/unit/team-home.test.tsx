@@ -2,6 +2,8 @@ import { screen, within } from '@testing-library/react'
 import '../../src/lib/i18n'
 import i18n from '../../src/lib/i18n'
 import { fetchSession } from '../../src/features/auth/api/authApi'
+import { fetchPublicBoard } from '../../src/features/boards/api/boardsApi'
+import type { EventBoard } from '../../src/features/boards/types'
 import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
 import { fetchOwnTeamScore } from '../../src/features/scoring/api/scoringApi'
@@ -116,9 +118,10 @@ describe('team home (050)', () => {
     expect(screen.getByRole('region', { name: "Your team's score" })).toHaveTextContent('55')
 
     const board = screen.getByRole('region', { name: 'Team leaderboard' })
-    const rows = within(board).getAllByRole('row').slice(1)
-    expect(rows[0]).toHaveTextContent('1stHoly HalCaptain330')
-    expect(rows[1]).toHaveTextContent('2ndAmy13.33')
+    // Bars instead of a table (077 FR-003).
+    const rows = within(board).getAllByRole('listitem')
+    expect(rows[0]).toHaveTextContent('1stHoly HalCaptain303 drops')
+    expect(rows[1]).toHaveTextContent('2ndAmy3.331 drop')
 
     const drops = screen.getByRole('region', { name: 'Recent drops' })
     expect(drops).toHaveTextContent('Vorkath Head')
@@ -147,5 +150,80 @@ describe('team home (050)', () => {
       await screen.findByText('Your team will be shown when the event starts.'),
     ).toBeInTheDocument()
     expect(fetchOwnTeamHome).not.toHaveBeenCalled()
+  })
+})
+
+describe('team dashboard (077)', () => {
+  const card = (name: string) =>
+    ({
+      card_id: name,
+      slug: name.toLowerCase(),
+      card_revision: 1,
+      name,
+      description: null,
+      difficulty: 'Mid',
+      tile_score: 10,
+      completion_requirement: 8,
+      drops: [],
+      wiki_image: null,
+      fallback_image_accepted: true,
+      rule_note: null,
+    }) as never
+  const NAMES = ['Vorkath', 'Zulrah', 'Hydra', 'Nex']
+  const BOARD = {
+    event_id: EVENT.id,
+    status: 'published',
+    revision: 1,
+    size: 2,
+    complete: true,
+    created_at: EVENT.created_at,
+    updated_at: EVENT.updated_at,
+    published_at: EVENT.created_at,
+    positions: NAMES.map((name, index) => ({
+      position: index + 1,
+      row: Math.floor(index / 2) + 1,
+      column: (index % 2) + 1,
+      card: card(name),
+    })),
+  } as EventBoard
+  const tile = (position: number, progress: number) => ({
+    position,
+    row: Math.floor((position - 1) / 2) + 1,
+    column: ((position - 1) % 2) + 1,
+    bonus: false,
+    progress,
+    requirement: 8,
+    complete: progress >= 8,
+    points: progress >= 8 ? 10 : 0,
+    drops: [],
+  })
+
+  it('shades the board map and lists the most advanced unfinished tiles', async () => {
+    vi.mocked(fetchPublicBoard).mockResolvedValue(BOARD)
+    vi.mocked(fetchOwnTeamScore).mockResolvedValue({
+      ...SCORE,
+      tile_count: 4,
+      completed_rows: [],
+      tiles: [tile(1, 8), tile(2, 2), tile(3, 6), tile(4, 0)],
+    })
+    renderApp(<TeamHomePage />, '/team')
+
+    const map = await screen.findByRole('region', { name: 'Board map' })
+    const squares = within(map).getByRole('list', { name: 'Tiles by progress' })
+    expect(within(squares).getByText('Vorkath: complete')).toBeInTheDocument()
+    expect(within(squares).getByText('Hydra: 6 of 8')).toBeInTheDocument()
+    expect(within(squares).getByText('Nex: 0 of 8')).toBeInTheDocument()
+    expect(within(map).getByRole('link', { name: 'Open board' })).toHaveAttribute('href', '/board')
+
+    const next = screen.getByRole('region', { name: 'Next objectives' })
+    const names = within(next)
+      .getAllByRole('listitem')
+      .map((item) => item.querySelector('strong')?.textContent)
+    // Complete and untouched tiles are left out; most advanced first.
+    expect(names).toEqual(['Hydra', 'Zulrah'])
+    expect(within(next).getByRole('progressbar', { name: 'Progress on Hydra' })).toHaveAttribute(
+      'aria-valuenow',
+      '75',
+    )
   })
 })

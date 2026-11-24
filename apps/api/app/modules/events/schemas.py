@@ -123,8 +123,34 @@ class EventResponse(BaseModel):
     rules_addenda: list[RulesAddendum] = Field(default_factory=list)
     late_join: bool = False
     buy_in: str | None = None
+    # Feature 071: when the event was finished; events finished earlier use updated_at.
+    finished_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class ReadinessKey(StrEnum):
+    """What an admin prepares before activating a draft event (feature 073)."""
+
+    BOARD = "board"
+    LINE_BONUSES = "line_bonuses"
+    RULES = "rules"
+    TEAMS = "teams"
+    PLAYERS_ASSIGNED = "players_assigned"
+    CAPTAINS = "captains"
+    NO_PENDING = "no_pending"
+
+
+class ReadinessItem(BaseModel):
+    key: ReadinessKey
+    done: bool
+    # Activation refuses the event while a required item is missing.
+    required: bool
+
+
+class EventReadiness(BaseModel):
+    items: list[ReadinessItem]
+    ready: bool
 
 
 class EventListResponse(BaseModel):

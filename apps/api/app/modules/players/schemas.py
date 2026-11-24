@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from app.modules.profiles.schemas import Activity, WikiSyncResponse
+from app.modules.profiles.schemas import Activity, ProgressionTier, WikiSyncResponse
 
 OBJECT_ID_PATTERN = r"^[0-9a-fA-F]{24}$"
 MAX_TEAMMATES = 3
@@ -135,6 +135,11 @@ class AccountSnapshot(BaseModel):
 class RosterEntry(PlayerResponse):
     """Admin roster row: the registration plus the player's current profile (feature 023)."""
 
+    # Progression tier (feature 069): effective, WOM suggestion, and whether an admin set it.
+    tier: ProgressionTier | None = None
+    tier_suggested: ProgressionTier | None = None
+    tier_overridden: bool = False
+
     # None for nickname registrations (before feature 022).
     boss_kc_total: int | None = None
     # Raids KC apart from boss KC (feature 039).
@@ -210,6 +215,39 @@ class TeamAssignmentSelection(PlayerSelection):
     """Several approved players assigned to one team at once (feature 038)."""
 
     team_id: str = Field(pattern=OBJECT_ID_PATTERN)
+
+
+MAX_DRAFT_ASSIGNMENTS = 500
+
+
+class DraftAssignment(BaseModel):
+    """One change from the draft board (feature 076): applied only while the player is still
+    on `from_team_id`, so picks made elsewhere meanwhile are skipped, not overwritten."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    player_id: str = Field(pattern=OBJECT_ID_PATTERN)
+    from_team_id: str | None = Field(pattern=OBJECT_ID_PATTERN)
+    team_id: str | None = Field(pattern=OBJECT_ID_PATTERN)
+
+
+class DraftSave(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    assignments: list[DraftAssignment] = Field(min_length=1, max_length=MAX_DRAFT_ASSIGNMENTS)
+
+    @field_validator("assignments")
+    @classmethod
+    def one_change_per_player(cls, value: list[DraftAssignment]) -> list[DraftAssignment]:
+        if len({item.player_id for item in value}) != len(value):
+            raise ValueError("Each player can appear only once")
+        return value
+
+
+class DraftSaveResult(BaseModel):
+    changed: int
+    # Players whose registration changed meanwhile; the board puts them back.
+    skipped: list[str]
 
 
 class SelectionResult(BaseModel):

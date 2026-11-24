@@ -244,3 +244,27 @@ async def test_counts_are_event_scoped_and_exclude_removed() -> None:
     assert [query["status"] for query in queries] == ["pending", "approved", "approved"]
     assert queries[1]["team_id"] is None
     assert queries[2]["team_id"] == {"$ne": None}
+
+
+async def test_draft_move_applies_only_to_an_approved_non_captain_on_the_expected_team() -> None:
+    database = MagicMock()
+    collection = database.__getitem__.return_value
+    collection.update_one = AsyncMock(return_value=MagicMock(modified_count=1))
+    event_id, player_id, team_id = (str(ObjectId()) for _ in range(3))
+
+    applied = await PlayerRepository(database).apply_draft_move(event_id, player_id, None, team_id)
+
+    query, update = collection.update_one.await_args.args
+    assert applied
+    assert query == {
+        "_id": ObjectId(player_id),
+        "event_id": ObjectId(event_id),
+        "status": RegistrationStatus.APPROVED,
+        "team_id": None,
+        "role": {"$ne": "captain"},
+    }
+    assert update["$set"]["team_id"] == ObjectId(team_id)
+    assert update["$set"]["team_assigned_at"] is not None
+
+    collection.update_one.return_value = MagicMock(modified_count=0)
+    assert not await PlayerRepository(database).apply_draft_move(event_id, player_id, team_id, None)

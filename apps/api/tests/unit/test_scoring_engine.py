@@ -5,10 +5,12 @@ from app.modules.scoring.engine import (
     AcceptedDrop,
     LineBonuses,
     Tile,
+    closest_lines,
     competition_positions,
     contributions,
     decimal,
     drop_points,
+    max_total,
     score_team,
 )
 
@@ -143,3 +145,27 @@ def test_drop_points_is_the_contribution_share() -> None:
     assert drop_points(tile, Decimal(1), 1) == Fraction(10, 3)
     assert drop_points(tile, Decimal(2), 3) == Fraction(20)
     assert drop_points(None, Decimal(1), 1) == 0
+
+
+def test_max_total_adds_every_tile_row_and_column_bonus() -> None:
+    bonus_card = Tile(
+        position=10, row=4, column=1, score=Decimal(5), requirement=Decimal(1), bonus=True
+    )
+    tiles = [*grid(3), bonus_card]
+    assert max_total(tiles, 3, LineBonuses(row=20, column=30)) == Decimal(9 * 10 + 5 + 3 * 50)
+    assert max_total(tiles, 3, LineBonuses(row=None, column=None)) == Decimal(95)
+
+
+def test_closest_lines_lists_incomplete_lines_with_fewest_tiles_missing() -> None:
+    tiles = grid(3, requirement=1)
+    # Row 1 complete; row 2 has 2/3; column 1 complete; column 2 has 2/3; column 3 has 1/3.
+    drops = [drop(position) for position in (1, 2, 3, 4, 5, 7)]
+    score = score_team(SA, tiles, 3, drops, LineBonuses(row=20, column=30))
+    lines = closest_lines(score, 3, LineBonuses(row=20, column=30))
+    assert [(line.axis, line.line, line.completed, line.bonus) for line in lines] == [
+        ("row", 2, 2, 20),
+        ("column", 2, 2, 30),
+        ("row", 3, 1, 20),
+    ]
+    empty = score_team(SA, tiles, 3, [], LineBonuses(row=20, column=30))
+    assert closest_lines(empty, 3, LineBonuses(row=20, column=30)) == []

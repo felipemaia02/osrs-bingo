@@ -5,39 +5,53 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.core.logging import get_logger, log_event
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.service import BOARD_REQUIRED_DETAIL, is_publishable_board
-from app.modules.events.models import EventDocument
+from app.modules.events.models import EventDocument, finished_at
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import (
     EventCreate,
+    EventReadiness,
     EventResponse,
     EventRules,
     EventStatus,
     EventUpdate,
     LateJoinUpdate,
+    ReadinessItem,
+    ReadinessKey,
     RulesAddendum,
     RulesAddendumCreate,
 )
 from app.modules.players.repository import PlayerRepository
+from app.modules.teams.repository import TeamRepository
 
 ACTIVE_EVENT_LIMIT_DETAIL = "Active event limit reached"
+DRAFT_EVENT_LIMIT_DETAIL = "Draft event limit reached"
 INVALID_TRANSITION_DETAIL = "Event status does not allow this transition"
 READ_ONLY_EVENT_DETAIL = "Only draft events can be edited"
 ADDENDUM_ACTIVE_ONLY = "Clarifications can only be added while the event is active"
 LATE_JOIN_CLOSED = "Late join can't change once the event is finished"
 LINE_BONUSES_REQUIRED_DETAIL = "Set the row and column bonuses on the board before activating"
+ACTIVATION_REQUIREMENTS = {ReadinessKey.BOARD, ReadinessKey.LINE_BONUSES}
 
 
 class EventService:
     def __init__(
-        self, repository: EventRepository, boards: BoardRepository, players: PlayerRepository
+        self,
+        repository: EventRepository,
+        boards: BoardRepository,
+        players: PlayerRepository,
+        teams: TeamRepository,
     ) -> None:
         self._repository = repository
         self._boards = boards
         self._players = players
+        self._teams = teams
 
     _logger = get_logger(__name__)
 
     async def create(self, payload: EventCreate) -> EventResponse:
+        # One draft at a time: activate (or finish) the current one first (068 revision 1).
+        if await self._repository.has_draft():
+            raise ConflictError(DRAFT_EVENT_LIMIT_DETAIL)
         result = self._to_response(await self._repository.create(payload))
         log_event(self._logger, 20, "event_created", event_id=result.id)
         return result
@@ -46,13 +60,15 @@ class EventService:
         log_event(self._logger, 20, "event_read_requested", event_id=event_id)
         return self._to_response(await self._require_event(event_id))
 
-    async def list(self, status: EventStatus | None = None) -> list[EventResponse]:
-        documents = await self._repository.list(status)
+    async def list(
+        self, statuses: builtin_list[EventStatus] | None = None
+    ) -> builtin_list[EventResponse]:
+        documents = await self._repository.list(statuses)
         log_event(
             self._logger,
             20,
             "events_listed",
-            status=status.value if status else "all",
+            status=",".join(statuses) if statuses else "all",
             count=len(documents),
         )
         return [self._to_response(document) for document in documents]
@@ -116,6 +132,31 @@ class EventService:
             raise ConflictError(ADDENDUM_ACTIVE_ONLY)
         log_event(self._logger, 20, "event_rules_addendum_added", event_id=event_id)
         return self._to_response(updated)
+
+    async def readiness(self, event_id: str) -> EventReadiness:
+        """Preparation checklist of a draft event (feature 073); board and line bonuses are the
+        same checks `activate` enforces."""
+        event = await self._require_event(event_id)
+        board = await self._boards.get_by_event(event_id)
+        teams = await self._teams.list(event_id)
+        counts = await self._players.counts(event_id)
+        captained = {player.get("team_id") for player in await self._players.captains(event_id)}
+        done = {
+            ReadinessKey.BOARD: is_publishable_board(board),
+            ReadinessKey.LINE_BONUSES: board is not None
+            and board.get("row_bonus") is not None
+            and board.get("column_bonus") is not None,
+            ReadinessKey.RULES: bool(event.get("rules_text")),
+            ReadinessKey.TEAMS: bool(teams),
+            ReadinessKey.PLAYERS_ASSIGNED: counts["assigned"] > 0 and counts["unassigned"] == 0,
+            ReadinessKey.CAPTAINS: bool(teams) and all(team["_id"] in captained for team in teams),
+            ReadinessKey.NO_PENDING: counts["pending"] == 0,
+        }
+        items = [
+            ReadinessItem(key=key, done=value, required=key in ACTIVATION_REQUIREMENTS)
+            for key, value in done.items()
+        ]
+        return EventReadiness(items=items, ready=all(item.done for item in items if item.required))
 
     async def activate(self, event_id: str, actor_id: str = "system") -> EventResponse:
         event = await self._require_event(event_id)
@@ -185,6 +226,7 @@ class EventService:
                 for item in document.get("rules_addenda") or []
             ],
             buy_in=document.get("buy_in"),
+            finished_at=finished_at(document),
             created_at=document["created_at"],
             updated_at=document["updated_at"],
         )

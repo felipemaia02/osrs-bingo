@@ -1,3 +1,4 @@
+import type { TierInfo } from './tier'
 import type { Skill } from './skills'
 export const COMBAT_SKILLS = [
   'attack',
@@ -47,7 +48,7 @@ export interface BalanceTotals {
   not_found: string[]
 }
 
-export interface Profile {
+export interface Profile extends TierInfo {
   discord_id: string
   username: string
   timezone: string | null

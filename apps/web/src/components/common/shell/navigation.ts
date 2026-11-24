@@ -2,10 +2,6 @@ import AccountCircle from '@mui/icons-material/AccountCircle'
 import AccountCircleOutlined from '@mui/icons-material/AccountCircleOutlined'
 import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings'
 import AdminPanelSettingsOutlined from '@mui/icons-material/AdminPanelSettingsOutlined'
-import CalendarMonth from '@mui/icons-material/CalendarMonth'
-import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined'
-import CoPresent from '@mui/icons-material/CoPresent'
-import CoPresentOutlined from '@mui/icons-material/CoPresentOutlined'
 import Diversity3 from '@mui/icons-material/Diversity3'
 import Diversity3Outlined from '@mui/icons-material/Diversity3Outlined'
 import EventNote from '@mui/icons-material/EventNote'
@@ -67,14 +63,6 @@ export const PLAY_ENTRIES: NavEntry[] = [
     exact: true,
   },
   {
-    key: 'events',
-    labelKey: 'navigation.events',
-    to: '/events',
-    icon: CalendarMonthOutlined,
-    activeIcon: CalendarMonth,
-    exact: true,
-  },
-  {
     key: 'team',
     labelKey: 'navigation.myTeam',
     to: '/team',
@@ -132,13 +120,6 @@ export const ADMIN_ENTRIES: NavEntry[] = [
     to: '/admin/teams',
     icon: GroupsOutlined,
     activeIcon: Groups,
-  },
-  {
-    key: 'draft',
-    labelKey: 'admin.draft',
-    to: '/admin/draft',
-    icon: CoPresentOutlined,
-    activeIcon: CoPresent,
   },
   {
     key: 'cards',

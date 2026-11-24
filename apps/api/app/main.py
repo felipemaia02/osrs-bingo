@@ -59,6 +59,7 @@ from app.modules.submissions.router import (
     UPLOAD_PATH_PATTERN,
 )
 from app.modules.submissions.router import admin_router as admin_submissions_router
+from app.modules.submissions.router import bot_router as bot_submissions_router
 from app.modules.submissions.router import player_router as submissions_router
 from app.modules.teams.router import router as teams_router
 from app.modules.tiles.router import artwork_router, wiki_router
@@ -219,6 +220,7 @@ app.include_router(artwork_router)
 app.include_router(public_boards_router)
 app.include_router(admin_boards_router)
 app.include_router(submissions_router)
+app.include_router(bot_submissions_router)
 app.include_router(admin_submissions_router)
 app.include_router(scoring_router)
 app.include_router(admin_scoring_router)

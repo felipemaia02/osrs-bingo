@@ -71,6 +71,11 @@ class ProfileRepository:
     async def save_preferences(self, user_id: str, preferences: dict[str, Any]) -> ProfileDocument:
         return await self._set(user_id, preferences)
 
+    async def set_tier_override(self, user_id: str, override: dict[str, Any] | None) -> None:
+        """Feature 069: None goes back to the WOM suggestion."""
+        await self.get_or_create(user_id)
+        await self._set(user_id, {"tier_override": override})
+
     async def _set(self, user_id: str, changes: dict[str, Any]) -> ProfileDocument:
         try:
             document = await self._collection.find_one_and_update(

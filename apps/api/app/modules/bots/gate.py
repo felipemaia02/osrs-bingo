@@ -31,7 +31,9 @@ ROUTE_SCOPES: dict[tuple[str, str], BotRoute] = {
     ("GET", "/events/{event_id}/board"): BotRoute(BotScope.BOARDS_READ, False),
     ("GET", "/events/{event_id}/teams"): BotRoute(BotScope.TEAMS_READ, False),
     ("GET", "/events/{event_id}/score/me"): BotRoute(BotScope.SCORE_READ, True),
+    # Feature 072 added the bot route (by item name); the site route stays open to bots too.
     ("POST", "/events/{event_id}/submissions"): BotRoute(BotScope.SUBMISSIONS_WRITE, True),
+    ("POST", "/bot/events/{event_id}/submissions"): BotRoute(BotScope.SUBMISSIONS_WRITE, True),
     ("GET", "/bot/audit"): BotRoute(BotScope.AUDIT_READ, False),
     ("GET", "/events/{event_id}/roster"): BotRoute(BotScope.ROSTERS_READ, False),
 }

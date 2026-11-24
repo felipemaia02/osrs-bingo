@@ -1,8 +1,18 @@
 import { apiClient } from '../../../lib/api'
-import type { BingoEvent, EventListResponse, EventPayload, EventRules, EventStatus } from '../types'
+import type {
+  BingoEvent,
+  EventListResponse,
+  EventPayload,
+  EventReadiness,
+  EventRules,
+  EventStatus,
+} from '../types'
 
-export async function fetchEvents(status?: EventStatus): Promise<BingoEvent[]> {
-  const response = await apiClient.get<EventListResponse>('/events', { params: { status } })
+/** All events, or only those in the given statuses (`?status=` repeats, feature 068). */
+export async function fetchEvents(status?: EventStatus | EventStatus[]): Promise<BingoEvent[]> {
+  const params = new URLSearchParams()
+  for (const value of [status ?? []].flat()) params.append('status', value)
+  const response = await apiClient.get<EventListResponse>('/events', { params })
   return response.data.items
 }
 
@@ -29,6 +39,11 @@ export async function updateEventRules({
   rules: EventRules
 }): Promise<BingoEvent> {
   return (await apiClient.patch<BingoEvent>(`/events/${eventId}/rules`, rules)).data
+}
+
+/** What is done and missing before activating a draft event (feature 073). */
+export async function fetchEventReadiness(eventId: string): Promise<EventReadiness> {
+  return (await apiClient.get<EventReadiness>(`/events/${eventId}/readiness`)).data
 }
 
 export async function activateEvent(eventId: string): Promise<BingoEvent> {

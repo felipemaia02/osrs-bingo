@@ -1,23 +1,20 @@
-import HowToReg from '@mui/icons-material/HowToReg'
-import HowToRegOutlined from '@mui/icons-material/HowToRegOutlined'
 import LockOpenOutlinedIcon from '@mui/icons-material/LockOpenOutlined'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
 import Pending from '@mui/icons-material/Pending'
 import PendingOutlined from '@mui/icons-material/PendingOutlined'
-import PersonOff from '@mui/icons-material/PersonOff'
-import PersonOffOutlined from '@mui/icons-material/PersonOffOutlined'
 import Shield from '@mui/icons-material/Shield'
 import ShieldOutlined from '@mui/icons-material/ShieldOutlined'
+import ViewWeek from '@mui/icons-material/ViewWeek'
+import ViewWeekOutlined from '@mui/icons-material/ViewWeekOutlined'
 import { useTranslation } from 'react-i18next'
 import type { EventStatus } from '../../events/types'
-import type { RosterGroup } from '../types'
 
-export type RosterTab = RosterGroup | 'teams'
+/** Requests to approve, the draft board (076, where players get their team) and the teams. */
+export type RosterTab = 'pending' | 'draft' | 'teams'
 
 const TABS: Array<{ value: RosterTab; icon: typeof Pending; activeIcon: typeof Pending }> = [
   { value: 'pending', icon: PendingOutlined, activeIcon: Pending },
-  { value: 'unassigned', icon: PersonOffOutlined, activeIcon: PersonOff },
-  { value: 'assigned', icon: HowToRegOutlined, activeIcon: HowToReg },
+  { value: 'draft', icon: ViewWeekOutlined, activeIcon: ViewWeek },
   { value: 'teams', icon: ShieldOutlined, activeIcon: Shield },
 ]
 

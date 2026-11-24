@@ -60,7 +60,7 @@ describe('App shell v2', () => {
       'page',
     )
     expect(within(sidebar).getByRole('link', { name: 'Board' })).toHaveAttribute('href', '/board')
-    expect(within(sidebar).getByRole('link', { name: 'Events' })).toHaveAttribute('href', '/events')
+    expect(within(sidebar).queryByRole('link', { name: 'Rules' })).toBeNull()
     expect(within(sidebar).getByRole('link', { name: 'My profile' })).toHaveAttribute(
       'href',
       '/profile',

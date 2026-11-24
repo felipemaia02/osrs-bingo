@@ -144,6 +144,48 @@ def score_team(
     )
 
 
+CLOSEST_LINES_LIMIT = 3
+
+
+@dataclass(frozen=True)
+class LineProgress:
+    """A row or column not yet complete and how many of its tiles are (feature 070)."""
+
+    axis: str
+    line: int
+    completed: int
+    total: int
+    bonus: int | None
+
+
+def max_total(tiles: Sequence[Tile], size: int, bonuses: LineBonuses) -> Decimal:
+    """Every tile's points plus every row and column bonus (070 FR-001)."""
+    tile_points = sum((tile.score for tile in tiles), ZERO)
+    return tile_points + Decimal(size * ((bonuses.row or 0) + (bonuses.column or 0)))
+
+
+def closest_lines(
+    score: TeamScore, size: int, bonuses: LineBonuses, limit: int = CLOSEST_LINES_LIMIT
+) -> list[LineProgress]:
+    """Incomplete rows/columns with at least one tile done, fewest tiles missing first."""
+    done: dict[tuple[str, int], int] = defaultdict(int)
+    for result in score.tiles.values():
+        if result.tile.bonus:
+            continue
+        for axis in ("row", "column"):
+            done[(axis, getattr(result.tile, axis))] += int(result.complete)
+    complete = {("row", line) for line in score.completed_rows} | {
+        ("column", line) for line in score.completed_columns
+    }
+    candidates = [
+        LineProgress(axis, line, count, size, bonuses.row if axis == "row" else bonuses.column)
+        for (axis, line), count in done.items()
+        if count and (axis, line) not in complete
+    ]
+    candidates.sort(key=lambda item: (item.total - item.completed, item.axis != "row", item.line))
+    return candidates[:limit]
+
+
 def drop_points(tile: Tile | None, weight: Decimal, quantity: int) -> Fraction:
     """One accepted drop's share of its tile's points: weight * quantity / requirement * score.
     Zero when the square is gone or has no requirement."""

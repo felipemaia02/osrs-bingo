@@ -12,6 +12,7 @@ from app.modules.players.schemas import (
 )
 from app.modules.profiles.combat import combat_level
 from app.modules.profiles.schemas import Activity
+from app.modules.profiles.tier import tier_info
 from app.modules.profiles.wikisync import summary as wikisync_summary
 
 
@@ -43,6 +44,9 @@ def to_roster_entry(document: RosterDocument) -> RosterEntry:
     snapshots = account_snapshots(document)
     return RosterEntry(
         **to_player_response(document).model_dump(),
+        **tier_info(
+            document.get("profile_accounts") or [], document.get("tier_override")
+        ).model_dump(),
         boss_kc_total=document.get("boss_kc_total"),
         raids_kc_total=document.get("raids_kc_total"),
         ehb_total=document.get("ehb_total"),

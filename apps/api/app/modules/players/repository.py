@@ -85,6 +85,7 @@ def _experience_stages(excluded: builtin_list[str]) -> builtin_list[dict[str, An
                 "account_count": {"$cond": [joined, {"$size": accounts}, None]},
                 "profile_accounts": {"$cond": [joined, accounts, []]},
                 "timezone": {"$first": "$profile.timezone"},
+                "tier_override": {"$first": "$profile.tier_override"},
             }
         },
         {"$project": {"profile": 0, "counted_accounts": 0, "account_kc": 0}},
@@ -470,6 +471,35 @@ class PlayerRepository:
             ],
         )
         return int(result.modified_count), int(already)
+
+    async def apply_draft_move(
+        self, event_id: str, player_id: str, from_team_id: str | None, team_id: str | None
+    ) -> bool:
+        """One draft-board change (feature 076): only for an approved non-captain still on
+        `from_team_id`. Returns whether it was applied."""
+        event_object_id, player_object_id = self._object_id(event_id), self._object_id(player_id)
+        if event_object_id is None or player_object_id is None:
+            return False
+        from_team = self._object_id(from_team_id) if from_team_id else None
+        team = self._object_id(team_id) if team_id else None
+        now = datetime.now(UTC)
+        result = await self._collection.update_one(
+            {
+                "_id": player_object_id,
+                "event_id": event_object_id,
+                "status": RegistrationStatus.APPROVED,
+                "team_id": from_team,
+                "role": {"$ne": ParticipantRole.CAPTAIN},
+            },
+            {
+                "$set": {
+                    "team_id": team,
+                    "team_assigned_at": now if team else None,
+                    "updated_at": now,
+                }
+            },
+        )
+        return bool(result.modified_count)
 
     async def remove_selected(
         self, event_id: str, player_ids: builtin_list[str], only_without_team: bool = False

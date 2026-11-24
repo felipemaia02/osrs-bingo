@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from unittest.mock import AsyncMock
 
@@ -99,6 +99,7 @@ def deps() -> dict[str, Any]:
         accepted(ZA, PETE, 1, 1),
         accepted(GU, GONE, 5, 1),
     ]
+    submissions.pending_by_team.return_value = {}
     service = ScoringService(events, boards, teams, players, submissions)
     return {"service": service, "events": events, "players": players, "boards": boards}
 
@@ -137,7 +138,10 @@ async def test_draft_events_have_no_player_score(deps: dict[str, Any]) -> None:
 async def test_ranking_orders_teams_with_ties_and_lists_contributions(
     deps: dict[str, Any],
 ) -> None:
+    deps["service"]._submissions.pending_by_team.return_value = {str(ZA): 3}
     result = await deps["service"].ranking(str(EVENT_ID))
+    # Pending reviews per team (feature 077).
+    assert [team.pending_submissions for team in result.teams] == [0, 3, 0]
 
     rows = [(team.team_name, team.position, team.tied, team.total) for team in result.teams]
     assert rows == [("Saradomin", 1, False, 55), ("Zamorak", 2, False, 10), ("Guthix", 3, False, 0)]
@@ -291,3 +295,49 @@ async def test_team_board_of_another_event_is_not_found(deps: dict[str, Any]) ->
     deps["service"]._teams.get.return_value = None
     with pytest.raises(NotFoundError):
         await deps["service"].team_score(str(EVENT_ID), str(ObjectId()))
+
+
+def finished(deps: dict[str, Any], days_ago: float, **extra: Any) -> None:
+    ended = datetime.now(UTC) - timedelta(days=days_ago)
+    deps["events"].get.return_value = {
+        **deps["events"].get.return_value,
+        "status": "finished",
+        "finished_at": ended,
+        "updated_at": ended,
+        **extra,
+    }
+
+
+async def test_podium_shows_the_top_three_for_a_week_after_finishing(deps: dict[str, Any]) -> None:
+    finished(deps, 2)
+    deps["service"]._submissions.pending_counts.return_value = {}
+
+    podium = await deps["service"].podium(str(EVENT_ID))
+
+    rows = [(team.team_name, team.position, team.total) for team in podium.teams]
+    assert rows == [("Saradomin", 1, 55), ("Zamorak", 2, 10), ("Guthix", 3, 0)]
+    assert podium.teams[0].members == ["Holy Hal"] and podium.final
+
+
+async def test_podium_is_provisional_while_submissions_wait(deps: dict[str, Any]) -> None:
+    finished(deps, 1)
+    deps["service"]._submissions.pending_counts.return_value = {"drop": 2}
+    assert not (await deps["service"].podium(str(EVENT_ID))).final
+
+
+@pytest.mark.parametrize("days_ago", [8, None])
+async def test_podium_is_hidden_after_a_week_and_before_finishing(
+    deps: dict[str, Any], days_ago: float | None
+) -> None:
+    if days_ago is not None:
+        finished(deps, days_ago)
+    with pytest.raises(AppException) as error:
+        await deps["service"].podium(str(EVENT_ID))
+    assert error.value.status_code == 404
+
+
+async def test_podium_of_events_finished_before_071_uses_updated_at(deps: dict[str, Any]) -> None:
+    finished(deps, 3)
+    deps["events"].get.return_value.pop("finished_at")
+    deps["service"]._submissions.pending_counts.return_value = {}
+    assert len((await deps["service"].podium(str(EVENT_ID))).teams) == 3

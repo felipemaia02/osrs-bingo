@@ -1142,6 +1142,8 @@ it('finds kills per hour on WOM by the card name and saves wiki-style drop rates
   })
   vi.mocked(previewEstimate).mockResolvedValue({ kills: 528, hours: 13.2, drops_without_rate: 0 })
   const { user, dialog } = await openEditor()
+  await user.click(within(dialog).getByRole('checkbox', { name: /Drop rates/ }))
+  await user.click(within(dialog).getByRole('checkbox', { name: /A time estimate/ }))
 
   await user.type(
     within(dialog).getByLabelText('Drop rate of Skeletal Visage, as on the wiki'),
@@ -1184,6 +1186,7 @@ it('lets the admin pick a WOM boss or type kills per hour when the name has none
     },
   ])
   const { user, dialog } = await openEditor()
+  await user.click(within(dialog).getByRole('checkbox', { name: /A time estimate/ }))
 
   await user.click(within(dialog).getByRole('button', { name: 'Find on WOM' }))
   expect(
@@ -1221,6 +1224,7 @@ it('imports drop rates from the wiki and lets the admin pick between sources (06
     CARD.revision.drops[0],
     { ...CARD.revision.drops[0], key: 'dragonbone-necklace', name: 'Dragonbone necklace' },
   ])
+  await user.click(within(dialog).getByRole('checkbox', { name: /Drop rates/ }))
 
   await user.click(within(dialog).getByRole('button', { name: 'Import rates from the wiki' }))
 
@@ -1234,4 +1238,26 @@ it('imports drop rates from the wiki and lets the admin pick between sources (06
     within(dialog).getByLabelText('Drop rate of Dragonbone necklace, as on the wiki'),
   ).toHaveValue('1/1,500')
   expect(within(dialog).queryByText(/several sources/)).toBeNull()
+})
+
+it('hides drop rates and the time estimate unless the card has them (075)', async () => {
+  const withRates = [{ ...CARD.revision.drops[0], drop_rate: '1/5,000' }]
+  const { user, dialog } = await openEditor(withRates, { kills_per_hour: 30 })
+
+  const rates = within(dialog).getByRole('checkbox', { name: /Drop rates/ })
+  const estimate = within(dialog).getByRole('checkbox', { name: /A time estimate/ })
+  expect(rates).toBeChecked()
+  expect(estimate).toBeChecked()
+  expect(within(dialog).getByLabelText('Kills per hour')).toHaveValue(30)
+
+  await user.click(rates)
+  await user.click(estimate)
+  expect(within(dialog).queryByLabelText(/Drop rate of/)).toBeNull()
+  expect(within(dialog).queryByLabelText('Kills per hour')).toBeNull()
+  expect(within(dialog).getAllByText('These values will be removed on save.')).toHaveLength(2)
+
+  const payload = await save(user, dialog)
+  expect(payload.drops[0].drop_rate).toBeNull()
+  expect(payload.kills_per_hour).toBeNull()
+  expect(payload.ehb_boss).toBeNull()
 })

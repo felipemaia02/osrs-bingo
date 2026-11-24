@@ -41,7 +41,18 @@ export interface TeamScore {
   row_bonus: number | null
   column_bonus: number | null
   tiles: TileProgressResponse[]
+  /** Feature 070: the most the board can give and the lines closest to their bonus. */
+  max_total?: number
+  closest_lines?: LineProgress[]
   calculated_at: string
+}
+
+export interface LineProgress {
+  axis: 'row' | 'column'
+  line: number
+  completed: number
+  total: number
+  bonus: number | null
 }
 
 export interface RankingTeam {
@@ -60,6 +71,8 @@ export interface RankingTeam {
   column_points: number
   bonus_points: number
   completed_bonus: number
+  /** Submissions of this team waiting for review (feature 077). */
+  pending_submissions?: number
 }
 
 export interface PlayerContribution {
@@ -81,4 +94,27 @@ export interface Ranking {
   teams: RankingTeam[]
   players: PlayerContribution[]
   calculated_at: string
+}
+
+/** Top 3 of a finished event, public for 7 days after it finishes (feature 071). */
+export interface PodiumTeam {
+  position: number
+  tied: boolean
+  team_id: string
+  team_name: string
+  team_color: string | null
+  total: number
+  completed_tiles: number
+  members: string[]
+}
+
+export interface Podium {
+  event_id: string
+  event_name: string
+  start_at: string
+  end_at: string
+  finished_at: string
+  /** False while submissions still wait for review. */
+  final: boolean
+  teams: PodiumTeam[]
 }

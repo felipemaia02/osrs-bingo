@@ -16,10 +16,30 @@ interface BingoBoardProps {
   matches: Map<string, TileMatch> | null
   selectedId: string | null
   onSelect: (tile: Tile) => void
+  /** Own team's rows and columns with the bonus earned (feature 070). */
+  completedRows?: number[]
+  completedColumns?: number[]
+}
+
+/** Axis label; a check replaces the number once that line's bonus is earned (070 FR-005). */
+function AxisLabel({ line, done, className }: { line: number; done: boolean; className: string }) {
+  return (
+    <span className={`${className} ${done ? 'text-rs-success-text' : ''}`}>
+      {done ? '✓' : line}
+    </span>
+  )
 }
 
 /** Labeled size×size grid (board-a-desktop). Positions never move when filtering. */
-export function BingoBoard({ tiles, size, matches, selectedId, onSelect }: BingoBoardProps) {
+export function BingoBoard({
+  tiles,
+  size,
+  matches,
+  selectedId,
+  onSelect,
+  completedRows = [],
+  completedColumns = [],
+}: BingoBoardProps) {
   const { t } = useTranslation()
   const axis = 'text-center text-xs font-semibold text-rs-muted'
   const positions = axisOf(size)
@@ -34,15 +54,18 @@ export function BingoBoard({ tiles, size, matches, selectedId, onSelect }: Bingo
         <div className="grid gap-2" style={grid} aria-hidden="true">
           <span />
           {positions.map((col) => (
-            <span key={col} className={axis}>
-              {col}
-            </span>
+            <AxisLabel
+              key={col}
+              line={col}
+              done={completedColumns.includes(col)}
+              className={axis}
+            />
           ))}
         </div>
         {positions.map((row) => (
           <div key={row} className="grid items-stretch gap-2" style={grid}>
-            <span className={`${axis} self-center`} aria-hidden="true">
-              {row}
+            <span aria-hidden="true" className="self-center text-center">
+              <AxisLabel line={row} done={completedRows.includes(row)} className={axis} />
             </span>
             {positions.map((col) => {
               const tile = tiles.find((item) => !item.bonus && item.row === row && item.col === col)

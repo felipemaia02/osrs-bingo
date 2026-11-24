@@ -5,7 +5,7 @@ import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import { Trans, useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { Button } from '../../../components/ui/Button'
 import { FormModal } from '../../../components/ui/FormModal'
@@ -16,14 +16,13 @@ import { defaultWorkingEvent, workingEvents } from '../../events/workingEvent'
 import { useEvents } from '../../events/hooks/useEvents'
 import type { BingoEvent } from '../../events/types'
 import { BossKcSettingsModal } from '../../balance/components/BossKcSettingsModal'
-import { BulkAssignModal } from '../components/BulkAssignModal'
 import { BulkBar } from '../components/BulkBar'
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog'
-import { PlayerAssignment } from '../components/RosterDialogs'
 import { RosterCards } from '../components/RosterCards'
 import { RosterTable } from '../components/RosterTable'
 import { RosterTabs, type RosterTab } from '../components/RosterTabs'
 import { TeamsList } from '../components/TeamsList'
+import { DraftBoard } from '../../draft/components/DraftBoard'
 import { teamErrorKey } from '../errors'
 import { useRosterActions } from '../hooks/useRosterActions'
 import { usePlayers, useTeamBalance, useTeamMutations, useTeams } from '../hooks/useTeams'
@@ -136,28 +135,27 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   const editable = event.status === 'draft' || event.status === 'active'
   const live = event.status === 'active'
   const teamsEditable = event.status === 'draft'
-  const [tab, setTab] = useState<RosterTab>('pending')
+  const [params] = useSearchParams()
+  // `/admin/draft` lands here with ?tab=draft (feature 076).
+  const [tab, setTab] = useState<RosterTab>(params.get('tab') === 'draft' ? 'draft' : 'pending')
   const [searchInput, setSearchInput] = useState('')
   const search = useDebouncedValue(searchInput.trim(), SEARCH_DELAY_MS)
-  const [teamFilter, setTeamFilter] = useState('')
   const [offset, setOffset] = useState(0)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [removing, setRemoving] = useState<Player | null>(null)
   const [removingSelected, setRemovingSelected] = useState(false)
-  const [assigningSelected, setAssigningSelected] = useState(false)
   const [kcSettings, setKcSettings] = useState(false)
   const [confirmAll, setConfirmAll] = useState(false)
-  const [assigning, setAssigning] = useState<Player | null>(null)
   const [creatingTeam, setCreatingTeam] = useState(false)
   const [editing, setEditing] = useState<Player | null>(null)
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
   const teams = useTeams(event.id)
   const balance = useTeamBalance(event.id)
-  const group = tab === 'teams' ? 'assigned' : tab
+  // Only pending requests are listed; teams are made on the draft board (076 revision 1).
+  const group = 'pending'
   const players = usePlayers(event.id, {
     group,
     search,
-    team_id: teamFilter || undefined,
     offset,
     limit: PAGE_SIZE,
   })
@@ -176,11 +174,10 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
     }
   }, [players.data, offset])
 
-  function changeTab(next: RosterTab, filter = '') {
+  function changeTab(next: RosterTab) {
     setTab(next)
     setOffset(0)
     setSearchInput('')
-    setTeamFilter(filter)
     setSelected(new Set())
     actions.clearFeedback()
   }
@@ -216,10 +213,6 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
 
   const handlers = {
     onApprove: (player: Player) => void actions.approve(player),
-    onAssign: (player: Player) => {
-      actions.clearFeedback()
-      setAssigning(player)
-    },
     onRemove: (player: Player) => {
       actions.clearFeedback()
       setRemoving(player)
@@ -231,26 +224,20 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   }
   const tabCounts: Record<RosterTab, number | null> = {
     pending: counts?.pending ?? null,
-    unassigned: counts?.unassigned ?? null,
-    assigned: counts?.assigned ?? null,
+    // Approved players still without a team.
+    draft: counts?.unassigned ?? null,
     teams: teams.data?.length ?? null,
   }
   // Names are listed only when every pending request is on screen (no search, single page).
   const allPendingVisible = tab === 'pending' && !search && items.length === (counts?.pending ?? -1)
   const dialogOpen = Boolean(
-    removing ||
-    removingSelected ||
-    assigningSelected ||
-    confirmAll ||
-    assigning ||
-    creatingTeam ||
-    editing ||
-    editingTeam,
+    removing || removingSelected || confirmAll || creatingTeam || editing || editingTeam,
   )
   const total = players.data?.total ?? 0
   const rangeEnd = Math.min(offset + PAGE_SIZE, total)
 
-  const toolbar = tab !== 'teams' && (
+  const listTab = tab === 'pending'
+  const toolbar = listTab && (
     <div className={`flex gap-2.5 ${desktop ? 'items-center p-3' : 'flex-col'}`}>
       <label className="relative flex flex-1 items-center">
         <SearchOutlinedIcon
@@ -271,26 +258,6 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
       <span className="whitespace-nowrap text-[13px] text-rs-muted">
         {t('teams.roster.sorted')}
       </span>
-      {tab === 'assigned' && (
-        <label className="flex items-center gap-2 text-[13px]">
-          <span className="sr-only">{t('teams.roster.teamFilter')}</span>
-          <select
-            value={teamFilter}
-            onChange={(change) => {
-              setTeamFilter(change.target.value)
-              changePage(0)
-            }}
-            className={`${FIELD} px-3`}
-          >
-            <option value="">{t('teams.roster.allTeams')}</option>
-            {teams.data?.map((team) => (
-              <option key={team.id} value={team.id}>
-                {team.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
       {tab === 'pending' && editable && (counts?.pending ?? 0) > 0 && (
         <Button
           variant="primary"
@@ -318,7 +285,12 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
   )
 
   const list =
-    tab === 'teams' ? (
+    tab === 'draft' ? (
+      <DraftBoard
+        event={event}
+        actions={{ onEdit: handlers.onEdit, onRemove: handlers.onRemove }}
+      />
+    ) : tab === 'teams' ? (
       <>
         {teamsEditable && (
           <div className={desktop ? 'flex justify-end p-3' : ''}>
@@ -336,7 +308,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           <TeamsList
             teams={teams.data}
             mobile={!desktop}
-            onViewMembers={(team) => changeTab('assigned', team.id)}
+            onViewMembers={() => changeTab('draft')}
             onEdit={
               teamsEditable
                 ? (team) => {
@@ -365,10 +337,7 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
       <RosterTable
         showBuyIn={Boolean(event.buy_in)}
         players={items}
-        group={group}
-        teams={teams.data ?? []}
         editable={editable}
-        live={live}
         busy={actions.saving}
         selected={selected}
         onToggle={toggle}
@@ -376,18 +345,10 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
         handlers={handlers}
       />
     ) : (
-      <RosterCards
-        players={items}
-        group={group}
-        teams={teams.data ?? []}
-        editable={editable}
-        live={live}
-        busy={actions.saving}
-        handlers={handlers}
-      />
+      <RosterCards players={items} editable={editable} busy={actions.saving} handlers={handlers} />
     )
 
-  const pagination = tab !== 'teams' && players.data && total > 0 && (
+  const pagination = listTab && players.data && total > 0 && (
     <div className={`flex items-center justify-between gap-3 ${desktop ? 'p-3' : 'flex-col'}`}>
       <span className="text-[13px] text-rs-muted">
         {desktop
@@ -447,35 +408,23 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
             <div role="tabpanel" id="roster-panel" aria-labelledby={`roster-tab-${tab}`}>
               {toolbar}
               {feedbackLine}
-              {editable &&
-                tab !== 'teams' &&
-                !(live && tab === 'assigned') &&
-                selected.size > 0 && (
-                  <BulkBar
-                    count={selected.size}
-                    canApprove={tab === 'pending'}
-                    busy={actions.saving}
-                    onApprove={() =>
-                      void confirm(
-                        () => actions.approveSelected([...selected]),
-                        () => undefined,
-                      )
-                    }
-                    onAssign={
-                      tab === 'unassigned' || (tab === 'assigned' && !live)
-                        ? () => {
-                            actions.clearFeedback()
-                            setAssigningSelected(true)
-                          }
-                        : undefined
-                    }
-                    onRemove={() => {
-                      actions.clearFeedback()
-                      setRemovingSelected(true)
-                    }}
-                    onClear={() => setSelected(new Set())}
-                  />
-                )}
+              {editable && listTab && selected.size > 0 && (
+                <BulkBar
+                  count={selected.size}
+                  busy={actions.saving}
+                  onApprove={() =>
+                    void confirm(
+                      () => actions.approveSelected([...selected]),
+                      () => undefined,
+                    )
+                  }
+                  onRemove={() => {
+                    actions.clearFeedback()
+                    setRemovingSelected(true)
+                  }}
+                  onClear={() => setSelected(new Set())}
+                />
+              )}
               {list}
               {pagination}
             </div>
@@ -537,20 +486,6 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           onClose={() => setRemoving(null)}
         />
       )}
-      {assigningSelected && (
-        <BulkAssignModal
-          players={items.filter((player) => selected.has(player.id))}
-          teams={teams.data ?? []}
-          balance={balance.data?.teams ?? []}
-          busy={actions.saving}
-          onConfirm={async (teamId) => {
-            const done = await actions.assignSelected([...selected], teamId)
-            if (done) setSelected(new Set())
-            return done
-          }}
-          onClose={() => setAssigningSelected(false)}
-        />
-      )}
       {removingSelected && (
         <ConfirmDialog
           title={t('teams.bulk.removeTitle')}
@@ -582,18 +517,6 @@ function EventRoster({ event, desktop }: { event: BingoEvent; desktop: boolean }
           error={actions.feedback?.isError ? actions.feedback.message : null}
           onConfirm={() => void confirm(actions.approveAll, () => setConfirmAll(false))}
           onClose={() => setConfirmAll(false)}
-        />
-      )}
-      {assigning && (
-        <PlayerAssignment
-          eventId={event.id}
-          player={assigning}
-          teams={teams.data ?? []}
-          onClose={() => setAssigning(null)}
-          onSaved={() => {
-            setAssigning(null)
-            actions.notify(t('teams.feedback.assignmentUpdated'))
-          }}
         />
       )}
       {editing && (

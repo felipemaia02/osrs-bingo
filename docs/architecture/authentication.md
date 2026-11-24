@@ -72,7 +72,15 @@ A bot (the clan's Discord bot) authenticates with its own key instead of a sessi
   | `boards:read` | `GET /events/{id}/board` | — |
   | `teams:read` | `GET /events/{id}/teams` | — |
   | `score:read` | `GET /events/{id}/score/me` | required |
-  | `submissions:write` | `POST /events/{id}/submissions` | required |
+  | `submissions:write` | `POST /events/{id}/submissions` and `POST /bot/events/{id}/submissions` (bot-only, feature 072) | required |
+  | `audit:read` | `GET /bot/audit` | — |
+  | `rosters:read` | `GET /events/{id}/roster` | — |
+
+- Bot submissions (feature 072): multipart `item` (item name), `screenshot`, optional `note` and
+  `position`. The API finds the tile whose card accepts the item by name or alias. Several tiles
+  → `409` with `candidates` (`position`, `card_name`, `drop_name`); resend with one `position`.
+  Not on the board → `422`. The 048 route `POST /events/{id}/submissions` (position + drop key)
+  still accepts bot keys with the same scope.
 
 - `X-Acting-User` is the player's Discord ID. The API acts as that user (never as an admin) and
   applies the normal rules; a user who never logged in gets `404`. The bot must check, from

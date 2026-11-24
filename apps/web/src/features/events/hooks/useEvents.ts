@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   activateEvent,
   createEvent,
+  fetchEventReadiness,
   fetchEvents,
   fetchMyEvents,
   finishEvent,
@@ -18,10 +19,19 @@ export function useMyEvents(enabled: boolean) {
   return useQuery({ queryKey: [...EVENT_QUERY_KEY, 'mine'], queryFn: fetchMyEvents, enabled })
 }
 
-export function useEvents(status?: EventStatus) {
+export function useEvents(status?: EventStatus | EventStatus[]) {
   return useQuery({
-    queryKey: [...EVENT_QUERY_KEY, status ?? 'all'],
+    queryKey: [...EVENT_QUERY_KEY, status ? [status].flat().join(',') : 'all'],
     queryFn: () => fetchEvents(status),
+  })
+}
+
+/** Preparation checklist of a draft event (073); `null` skips the request. */
+export function useEventReadiness(eventId: string | null) {
+  return useQuery({
+    queryKey: [...EVENT_QUERY_KEY, 'readiness', eventId],
+    queryFn: () => fetchEventReadiness(eventId!),
+    enabled: Boolean(eventId),
   })
 }
 

@@ -25,7 +25,6 @@ export function NotFoundPage() {
             <StatusLink to="/" primary>
               {t('status.home')}
             </StatusLink>
-            <StatusLink to="/events">{t('navigation.events')}</StatusLink>
           </>
         }
       />

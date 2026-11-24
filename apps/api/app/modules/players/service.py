@@ -15,6 +15,8 @@ from app.modules.players.roster import for_event, to_player_response, to_roster_
 from app.modules.players.schemas import (
     BotRosterEntry,
     BotRosterResponse,
+    DraftSave,
+    DraftSaveResult,
     JoinRequest,
     ParticipantRole,
     ParticipationUpdate,
@@ -27,7 +29,9 @@ from app.modules.players.schemas import (
     SelectionResult,
 )
 from app.modules.profiles.repository import ProfileRepository
+from app.modules.profiles.schemas import TierInfo, TierOverrideRequest
 from app.modules.profiles.service import has_wom_stats
+from app.modules.profiles.tier import tier_info
 from app.modules.teams.repository import TeamRepository
 
 READ_ONLY_EVENT_DETAIL = "Only draft events can be changed"
@@ -43,6 +47,7 @@ TEAM_ROLES = {ParticipantRole.CAPTAIN, ParticipantRole.REVIEWER}
 CAPTAIN_TAKEN = "This team already has a captain"
 BUY_IN_ADMIN_UNKNOWN = "Choose a current administrator"
 PARTICIPANT_CHANGED = "This registration changed meanwhile. Reload and try again"
+TIER_NEEDS_PROFILE = "This registration has no player profile"
 
 
 class PlayerService:
@@ -136,6 +141,25 @@ class PlayerService:
             event_id, player_ids, team_id, only_without_team=live
         )
         return SelectionResult(changed=changed, skipped=len(player_ids) - changed - already)
+
+    async def save_draft(self, event_id: str, payload: DraftSave) -> DraftSaveResult:
+        """Every pick of a draft-board session in one request (076 FR-007): captains never move
+        and players changed meanwhile are skipped (EC-002). During the event only players
+        without a team are placed (037); other changes are skipped."""
+        live = await self._require_open_event(event_id)
+        team_ids = {str(team["_id"]) for team in await self._teams.list(event_id)}
+        targets = {item.team_id for item in payload.assignments} - {None}
+        if not targets <= team_ids:
+            raise NotFoundError("Team")
+        skipped = [
+            item.player_id
+            for item in payload.assignments
+            if (live and (item.from_team_id is not None or item.team_id is None))
+            or not await self._players.apply_draft_move(
+                event_id, item.player_id, item.from_team_id, item.team_id
+            )
+        ]
+        return DraftSaveResult(changed=len(payload.assignments) - len(skipped), skipped=skipped)
 
     async def remove_selected(
         self, event_id: str, player_ids: builtin_list[str]
@@ -251,6 +275,25 @@ class PlayerService:
         if document is None:
             raise ConflictError(PARTICIPANT_CHANGED)
         return to_player_response(document)
+
+    async def set_tier(
+        self, event_id: str, player_id: str, payload: TierOverrideRequest, admin_id: str
+    ) -> TierInfo:
+        """An admin's progression tier for the player's profile, for every event (069 FR-002)."""
+        player = await self._players.get(event_id, player_id)
+        if player is None:
+            raise NotFoundError("Player")
+        user_id = player.get("user_id")
+        if user_id is None:
+            raise ConflictError(TIER_NEEDS_PROFILE)
+        override = (
+            {"tier": payload.tier, "admin_id": ObjectId(admin_id), "set_at": datetime.now(UTC)}
+            if payload.tier
+            else None
+        )
+        await self._profiles.set_tier_override(str(user_id), override)
+        profile = await self._profiles.get(str(user_id))
+        return tier_info(profile["accounts"] if profile else [], override)
 
     @staticmethod
     def _check_role(player: PlayerDocument, role: ParticipantRole | None) -> None:

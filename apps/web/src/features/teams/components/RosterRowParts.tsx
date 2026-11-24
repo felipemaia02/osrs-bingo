@@ -5,11 +5,10 @@ import PersonRemoveOutlinedIcon from '@mui/icons-material/PersonRemoveOutlined'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '../../../components/ui/Badge'
 import { Button } from '../../../components/ui/Button'
-import type { Player, RosterGroup } from '../types'
+import type { Player } from '../types'
 
 export interface RowHandlers {
   onApprove: (player: Player) => void
-  onAssign: (player: Player) => void
   onRemove: (player: Player) => void
   onEdit: (player: Player) => void
 }
@@ -58,50 +57,32 @@ export function StatusBadge({ player }: { player: Player }) {
   )
 }
 
-/** Approve (pending) or assign/change team (approved), plus remove. */
+/** Approve, edit role/buy-in and remove a pending request. */
 export function RowActions({
   player,
-  group,
   busy,
   mobile,
   handlers,
-  live = false,
 }: {
   player: Player
-  group: RosterGroup
   busy: boolean
   mobile: boolean
   handlers: RowHandlers
-  /** Active event (feature 037): players on a team can't be moved or removed. */
-  live?: boolean
 }) {
   const { t } = useTranslation()
   const size = mobile ? 'md' : 'sm'
-  const locked = live && group === 'assigned'
   return (
     <span className={`inline-flex gap-1.5 ${mobile ? 'w-full gap-2' : ''}`}>
-      {group === 'pending' ? (
-        <Button
-          size={size}
-          className={mobile ? 'flex-1' : ''}
-          disabled={busy}
-          aria-label={t('teams.approvePlayer', { name: player.display_name })}
-          onClick={() => handlers.onApprove(player)}
-        >
-          {mobile && <CheckOutlinedIcon fontSize="small" aria-hidden="true" />}
-          {t('teams.approve')}
-        </Button>
-      ) : locked ? null : (
-        <Button
-          size={size}
-          className={mobile ? 'flex-1' : ''}
-          disabled={busy}
-          aria-label={t('teams.roster.assignPlayer', { name: player.display_name })}
-          onClick={() => handlers.onAssign(player)}
-        >
-          {t(group === 'assigned' ? 'teams.roster.changeTeam' : 'teams.roster.assignTeam')}
-        </Button>
-      )}
+      <Button
+        size={size}
+        className={mobile ? 'flex-1' : ''}
+        disabled={busy}
+        aria-label={t('teams.approvePlayer', { name: player.display_name })}
+        onClick={() => handlers.onApprove(player)}
+      >
+        {mobile && <CheckOutlinedIcon fontSize="small" aria-hidden="true" />}
+        {t('teams.approve')}
+      </Button>
       <Button
         size={mobile ? 'icon' : 'sm'}
         disabled={busy}
@@ -111,17 +92,15 @@ export function RowActions({
       >
         <EditOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
       </Button>
-      {!locked && (
-        <Button
-          size={mobile ? 'icon' : 'sm'}
-          disabled={busy}
-          aria-label={t('teams.removePlayer', { name: player.display_name })}
-          title={t('teams.removePlayer', { name: player.display_name })}
-          onClick={() => handlers.onRemove(player)}
-        >
-          <PersonRemoveOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
-        </Button>
-      )}
+      <Button
+        size={mobile ? 'icon' : 'sm'}
+        disabled={busy}
+        aria-label={t('teams.removePlayer', { name: player.display_name })}
+        title={t('teams.removePlayer', { name: player.display_name })}
+        onClick={() => handlers.onRemove(player)}
+      >
+        <PersonRemoveOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />
+      </Button>
     </span>
   )
 }

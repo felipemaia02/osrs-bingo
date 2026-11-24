@@ -1,15 +1,17 @@
+import type { DraftAssignment } from '../../draft/session'
+import type { ProgressionTier, TierInfo } from '../../profiles/tier'
 import { apiClient } from '../../../lib/api'
 import type {
   PlayerFilters,
   PlayerPage,
   Player,
-  PlayerAssignmentPayload,
   JoinPayload,
   ParticipationPayload,
   SelectionResult,
   Team,
   TeamBalanceResponse,
   DraftPreview,
+  DraftSaveResult,
   TeamPayload,
 } from '../types'
 
@@ -35,16 +37,6 @@ export const createPlayer = async ({
   eventId: string
   payload: JoinPayload
 }) => (await apiClient.post<Player>(`/events/${eventId}/players`, payload)).data
-export const updatePlayer = async ({
-  eventId,
-  playerId,
-  payload,
-}: {
-  eventId: string
-  playerId: string
-  payload: PlayerAssignmentPayload
-}) => (await apiClient.patch<Player>(`/events/${eventId}/players/${playerId}`, payload)).data
-
 export const fetchOwnRegistration = async (eventId: string) =>
   (await apiClient.get<Player | null>(`/events/${eventId}/players/me`)).data
 export const approvePlayer = async ({ eventId, playerId }: { eventId: string; playerId: string }) =>
@@ -60,18 +52,6 @@ export const approveSelectedPlayers = async ({ eventId, playerIds }: SelectionRe
   (
     await apiClient.post<SelectionResult>(`/events/${eventId}/players/approve-selected`, {
       player_ids: playerIds,
-    })
-  ).data
-/** Several approved players to one team (feature 038). */
-export const assignSelectedPlayers = async ({
-  eventId,
-  playerIds,
-  teamId,
-}: SelectionRequest & { teamId: string }) =>
-  (
-    await apiClient.post<SelectionResult>(`/events/${eventId}/players/assign-selected`, {
-      player_ids: playerIds,
-      team_id: teamId,
     })
   ).data
 export const removeSelectedPlayers = async ({ eventId, playerIds }: SelectionRequest) =>
@@ -95,6 +75,28 @@ export const updateParticipation = async ({
 }) =>
   (await apiClient.patch<Player>(`/events/${eventId}/players/${playerId}/participation`, payload))
     .data
+
+/** Feature 069: the admin's tier for the player; null goes back to the WOM suggestion. */
+export const setPlayerTier = async ({
+  eventId,
+  playerId,
+  tier,
+}: {
+  eventId: string
+  playerId: string
+  tier: ProgressionTier | null
+}) => (await apiClient.put<TierInfo>(`/events/${eventId}/players/${playerId}/tier`, { tier })).data
+
+/** Every draft-board change at once (feature 076); players changed meanwhile come back
+ * in `skipped`. */
+export const saveDraft = async ({
+  eventId,
+  assignments,
+}: {
+  eventId: string
+  assignments: DraftAssignment[]
+}) =>
+  (await apiClient.post<DraftSaveResult>(`/events/${eventId}/players/draft`, { assignments })).data
 
 export const fetchDraftPreview = async (eventId: string) =>
   (await apiClient.get<DraftPreview>(`/events/${eventId}/teams/draft-preview`)).data

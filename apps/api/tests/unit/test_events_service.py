@@ -8,9 +8,16 @@ from app.core.exceptions import ConflictError, NotFoundError
 from app.modules.boards.repository import BoardRepository
 from app.modules.events.models import EventDocument
 from app.modules.events.repository import EventRepository
-from app.modules.events.schemas import EventCreate, EventRules, EventStatus, EventUpdate
+from app.modules.events.schemas import (
+    EventCreate,
+    EventRules,
+    EventStatus,
+    EventUpdate,
+    ReadinessKey,
+)
 from app.modules.events.service import EventService
 from app.modules.players.repository import PlayerRepository
+from app.modules.teams.repository import TeamRepository
 
 NOW = datetime(2026, 8, 30, 12, tzinfo=UTC)
 
@@ -64,13 +71,21 @@ def players() -> AsyncMock:
 
 
 @pytest.fixture
-def service(repository: AsyncMock, boards: AsyncMock, players: AsyncMock) -> EventService:
-    return EventService(repository, boards, players)
+def teams() -> AsyncMock:
+    return AsyncMock(spec=TeamRepository)
+
+
+@pytest.fixture
+def service(
+    repository: AsyncMock, boards: AsyncMock, players: AsyncMock, teams: AsyncMock
+) -> EventService:
+    return EventService(repository, boards, players, teams)
 
 
 async def test_create_normalizes_and_returns_draft(
     repository: AsyncMock, service: EventService
 ) -> None:
+    repository.has_draft.return_value = False
     repository.create.return_value = event_document()
 
     created = await service.create(event_payload())
@@ -266,3 +281,65 @@ async def test_late_join_switches_before_and_during_the_event_only(
 
     repository.set_late_join.assert_awaited_once_with("event", True)
     assert response.late_join is True
+
+
+TEAM_A, TEAM_B = ObjectId(), ObjectId()
+
+
+async def test_readiness_lists_done_and_missing_items(
+    repository: AsyncMock,
+    boards: AsyncMock,
+    players: AsyncMock,
+    teams: AsyncMock,
+    service: EventService,
+) -> None:
+    repository.get.return_value = {**event_document(), "rules_text": "Be nice"}
+    teams.list.return_value = [{"_id": TEAM_A}, {"_id": TEAM_B}]
+    players.counts.return_value = {"pending": 2, "unassigned": 0, "assigned": 8}
+    players.captains.return_value = [{"team_id": TEAM_A}]
+
+    result = await service.readiness("66d000000000000000000001")
+
+    done = {item.key: item.done for item in result.items}
+    assert done == {
+        ReadinessKey.BOARD: True,
+        ReadinessKey.LINE_BONUSES: True,
+        ReadinessKey.RULES: True,
+        ReadinessKey.TEAMS: True,
+        ReadinessKey.PLAYERS_ASSIGNED: True,
+        ReadinessKey.CAPTAINS: False,
+        ReadinessKey.NO_PENDING: False,
+    }
+    assert {item.key for item in result.items if item.required} == {
+        ReadinessKey.BOARD,
+        ReadinessKey.LINE_BONUSES,
+    }
+    assert result.ready
+
+
+async def test_readiness_without_a_board_is_not_ready(
+    repository: AsyncMock,
+    boards: AsyncMock,
+    players: AsyncMock,
+    teams: AsyncMock,
+    service: EventService,
+) -> None:
+    repository.get.return_value = event_document()
+    boards.get_by_event.return_value = None
+    teams.list.return_value = []
+    players.counts.return_value = {"pending": 0, "unassigned": 3, "assigned": 0}
+    players.captains.return_value = []
+
+    result = await service.readiness("66d000000000000000000001")
+
+    done = {item.key: item.done for item in result.items}
+    assert not done[ReadinessKey.BOARD] and not done[ReadinessKey.LINE_BONUSES]
+    assert not done[ReadinessKey.CAPTAINS] and not done[ReadinessKey.PLAYERS_ASSIGNED]
+    assert done[ReadinessKey.NO_PENDING] and not result.ready
+
+
+async def test_only_one_draft_event_at_a_time(repository: AsyncMock, service: EventService) -> None:
+    repository.has_draft.return_value = True
+    with pytest.raises(ConflictError, match="Draft event limit reached"):
+        await service.create(event_payload())
+    repository.create.assert_not_awaited()

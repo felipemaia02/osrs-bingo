@@ -22,6 +22,7 @@ from app.modules.profiles.schemas import (
     WomStatus,
     normalize_rsn,
 )
+from app.modules.profiles.tier import tier_info
 from app.modules.profiles.wikisync import WikiSyncClient, WikiSyncUnavailableError
 from app.modules.profiles.wikisync import stored as wikisync_document
 from app.modules.profiles.wikisync import summary as wikisync_summary
@@ -232,6 +233,7 @@ class ProfileService:
         counted = [item for item in accounts if has_wom_stats(item)]
         split = [split_kc(item.get("bosses"), item.get("boss_kc"), excluded) for item in counted]
         return ProfileResponse(
+            **tier_info(accounts, document.get("tier_override")).model_dump(),
             discord_id=user.discord_id,
             username=user.username,
             timezone=document.get("timezone"),

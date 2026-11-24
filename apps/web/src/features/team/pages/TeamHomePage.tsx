@@ -1,14 +1,19 @@
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { InfoBanner } from '../../../components/ui/InfoBanner'
 import { useSession } from '../../auth/hooks/useSession'
+import { boardToTiles } from '../../bingo/boardTiles'
+import { useTeamActivity } from '../../bingo/hooks/useTileActivity'
+import { usePublicBoard } from '../../boards/hooks/useBoards'
 import { useEvents } from '../../events/hooks/useEvents'
 import { TeamScorePanel } from '../../scoring/components/TeamScorePanel'
 import { useOwnTeamScore } from '../../scoring/hooks/useScoring'
 import { TeamEmblem } from '../../teams/components/TeamEmblem'
 import { useOwnRegistration } from '../../teams/hooks/useTeams'
+import { BoardHeatmap } from '../components/BoardHeatmap'
+import { NextObjectives } from '../components/NextObjectives'
 import { RecentDrops } from '../components/RecentDrops'
 import { TeamLeaderboard } from '../components/TeamLeaderboard'
 import { TeamSheet } from '../components/TeamSheet'
@@ -27,6 +32,16 @@ export function TeamHomePage() {
   const onTeam = own?.status === 'approved' && Boolean(own.team_id)
   const home = useOwnTeamHome(event?.id ?? null, onTeam)
   const score = useOwnTeamScore(event?.id ?? null, onTeam, TEAM_HOME_REFRESH_MS)
+  // The board gives names, images and estimates; activity says who is on each tile (077).
+  const board = usePublicBoard(onTeam ? (event?.id ?? null) : null)
+  const activity = useTeamActivity(event?.id ?? null, onTeam)
+  const tiles = useMemo(
+    () =>
+      board.data ? boardToTiles(board.data, score.data ?? null, { activity: activity.data }) : [],
+    [board.data, score.data, activity.data],
+  )
+  const imageFor = (cardName: string) =>
+    tiles.find((tile) => tile.name === cardName)?.imageUrl ?? null
 
   const loading =
     session.isLoading ||
@@ -47,8 +62,8 @@ export function TeamHomePage() {
   ) : !onTeam ? (
     <>
       {t('teamHome.noTeam')}{' '}
-      <Link to="/events" className={LINK_CLASS}>
-        {t('navigation.events')}
+      <Link to="/" className={LINK_CLASS}>
+        {t('navigation.home')}
       </Link>
     </>
   ) : null
@@ -86,9 +101,20 @@ export function TeamHomePage() {
         ) : (
           <>
             {score.data && <TeamScorePanel score={score.data} />}
+            {score.data && tiles.length > 0 && (
+              <div className="grid gap-3 md:gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+                <BoardHeatmap
+                  tiles={tiles}
+                  size={board.data?.size ?? Math.round(Math.sqrt(score.data.tile_count))}
+                  completedRows={score.data.completed_rows}
+                  completedColumns={score.data.completed_columns}
+                />
+                <NextObjectives tiles={tiles} />
+              </div>
+            )}
             <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
               <TeamLeaderboard members={team.members} />
-              <RecentDrops drops={team.recent_drops} />
+              <RecentDrops drops={team.recent_drops} imageFor={imageFor} />
             </div>
             <TeamSheet members={team.members} />
           </>

@@ -16,6 +16,8 @@ vi.mock('../src/features/events/api/eventsApi', () => ({
   setLateJoin: vi.fn(),
   activateEvent: vi.fn(),
   finishEvent: vi.fn(),
+  // Default: a draft that can be activated (feature 073).
+  fetchEventReadiness: vi.fn().mockResolvedValue({ items: [], ready: true }),
 }))
 
 vi.mock('../src/features/auth/api/authApi', () => ({
@@ -38,16 +40,16 @@ vi.mock('../src/features/teams/api/teamsApi', () => ({
   createPlayer: vi.fn(),
   createTeam: vi.fn(),
   updateTeam: vi.fn(),
-  updatePlayer: vi.fn(),
   approvePlayer: vi.fn(),
   approveAllPlayers: vi.fn(),
   removePlayer: vi.fn(),
   approveSelectedPlayers: vi.fn(),
   removeSelectedPlayers: vi.fn(),
-  assignSelectedPlayers: vi.fn(),
   fetchTeamBalance: vi.fn().mockResolvedValue({ average_ehb: 0, teams: [] }),
   fetchDraftPreview: vi.fn().mockResolvedValue({ captains: [], players: [], members: [] }),
   updateParticipation: vi.fn(),
+  saveDraft: vi.fn(),
+  setPlayerTier: vi.fn(),
 }))
 
 vi.mock('../src/features/administration/api/administrationApi', () => ({
@@ -119,6 +121,8 @@ vi.mock('../src/features/scoring/api/scoringApi', () => ({
   fetchOwnTeamScore: vi.fn().mockRejectedValue(new Error('Not on a team')),
   fetchRanking: vi.fn(),
   fetchTeamScore: vi.fn(),
+  // Default: no event finished in the last 7 days (071).
+  fetchPodium: vi.fn().mockRejectedValue(new Error('No podium')),
 }))
 
 vi.mock('../src/features/profiles/api/profileApi', () => ({

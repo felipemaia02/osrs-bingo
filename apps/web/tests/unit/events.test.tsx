@@ -9,6 +9,7 @@ import {
   addRulesAddendum,
   createEvent,
   setLateJoin,
+  fetchEventReadiness,
   fetchEvents,
   updateEvent,
 } from '../../src/features/events/api/eventsApi'
@@ -176,6 +177,7 @@ describe('Events feature', () => {
 
     beforeEach(() => {
       vi.mocked(fetchEvents).mockResolvedValue([ACTIVE_EVENT, DRAFT, FINISHED])
+      vi.mocked(fetchEventReadiness).mockResolvedValue({ items: [], ready: true })
     })
 
     it('shows tabs with counts, the active notice and actions by status', async () => {
@@ -202,8 +204,57 @@ describe('Events feature', () => {
         screen.getByRole('button', { name: 'Activate event · Winter Bingo' }),
       ).toBeInTheDocument()
       expect(screen.getByText('Read-only')).toBeInTheDocument()
+      // One draft at a time (068 revision 1).
+      expect(screen.getByRole('button', { name: 'New event' })).toBeDisabled()
+      expect(
+        screen.getByText(
+          'Winter Bingo is the draft event. Only one draft at a time: activate it before creating another.',
+        ),
+      ).toBeInTheDocument()
       expect(screen.getByText('Cold drops')).toBeInTheDocument()
       expect(screen.getAllByText(/· 7 days/)).toHaveLength(3)
+    })
+
+    it('shows the preparation checklist and blocks activation while required items miss (073)', async () => {
+      vi.mocked(fetchEventReadiness).mockClear()
+      vi.mocked(fetchEventReadiness).mockResolvedValue({
+        ready: false,
+        items: [
+          { key: 'board', done: false, required: true },
+          { key: 'line_bonuses', done: true, required: true },
+          { key: 'rules', done: true, required: false },
+          { key: 'teams', done: false, required: false },
+        ],
+      })
+      const user = userEvent.setup()
+      renderApp(<AdminEventsPage />, '/admin/events')
+
+      const activate = await screen.findByRole('button', { name: 'Activate event · Winter Bingo' })
+      await waitFor(() => expect(activate).toBeDisabled())
+      expect(activate).toHaveAccessibleDescription(
+        'Missing to activate: Board published with every square filled',
+      )
+      await user.click(screen.getByText('Preparation checklist'))
+      const list = screen.getByRole('list', { name: 'Preparation of Winter Bingo' })
+      expect(screen.getByText('2 of 4 done')).toBeInTheDocument()
+      const board = within(list)
+        .getByText(/Board published/)
+        .closest('li')!
+      expect(board).toHaveTextContent('missing')
+      expect(within(board).getByText('Required')).toBeInTheDocument()
+      expect(within(board).getByRole('link', { name: 'Fix' })).toHaveAttribute(
+        'href',
+        '/admin/boards?event=draft-1',
+      )
+      const teams = within(list)
+        .getByText(/Teams created/)
+        .closest('li')!
+      expect(within(teams).getByRole('link', { name: 'Fix' })).toHaveAttribute(
+        'href',
+        '/admin/teams',
+      )
+      expect(fetchEventReadiness).toHaveBeenCalledWith('draft-1')
+      expect(fetchEventReadiness).not.toHaveBeenCalledWith('active-1')
     })
 
     it('filters by tab without a new request', async () => {

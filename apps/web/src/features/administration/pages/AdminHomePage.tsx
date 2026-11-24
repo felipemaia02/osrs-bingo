@@ -138,7 +138,7 @@ function useSections(overview: AdminOverview): Section[] {
     },
     {
       key: 'draft',
-      to: '/admin/draft',
+      to: '/admin/teams?tab=draft',
       titleKey: 'admin.draft',
       descriptionKey: 'admin.draftDescription',
       icon: <CoPresentOutlinedIcon sx={{ fontSize: 20 }} />,

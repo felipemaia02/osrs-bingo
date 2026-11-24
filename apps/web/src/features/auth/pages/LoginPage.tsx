@@ -20,7 +20,7 @@ export function LoginPage() {
   const [search] = useSearchParams()
   const loginError = search.get('login')
 
-  if (session.data) return <Navigate to={session.data.is_admin ? '/admin' : '/events'} replace />
+  if (session.data) return <Navigate to={session.data.is_admin ? '/admin' : '/'} replace />
 
   return (
     <div className="flex min-h-screen flex-col bg-rs-canvas text-rs-text">
@@ -81,7 +81,7 @@ export function LoginPage() {
           </InfoBanner>
         </section>
         <Link
-          to="/events"
+          to="/"
           className="inline-flex min-h-11 items-center gap-0.5 text-[13px] text-rs-gold-bright hover:text-rs-gold-hover"
         >
           <ChevronLeftOutlinedIcon sx={{ fontSize: 18 }} aria-hidden="true" />

@@ -40,11 +40,28 @@ async def test_login_uses_identify_and_persists_only_state_hash() -> None:
 
 async def test_callback_consumes_state_before_provider_and_hashes_session() -> None:
     service, repository, discord = auth_service()
-    token = await service.complete_login("code", "state", "state")
+    result = await service.complete_login("code", "state", "state")
     repository.consume_state.assert_awaited_once()
     discord.identity.assert_awaited_once_with("code")
-    assert repository.save_session.call_args.args[0] == token_hash(token)
-    assert repository.save_session.call_args.args[0] != token
+    assert repository.save_session.call_args.args[0] == token_hash(result.token)
+    assert repository.save_session.call_args.args[0] != result.token
+    # An existing account (created earlier) isn't new (feature 074).
+    assert not result.new_user
+
+
+async def test_first_login_reports_a_new_user() -> None:
+    service, repository, _ = auth_service()
+
+    async def created_now(discord_id: str, username: str, now: datetime) -> dict:
+        return {
+            "_id": ObjectId(),
+            "discord_id": discord_id,
+            "username": username,
+            "created_at": now,
+        }
+
+    repository.upsert_user.side_effect = created_now
+    assert (await service.complete_login("code", "state", "state")).new_user
 
 
 @pytest.mark.parametrize("state,browser", [("", ""), ("state", "wrong"), ("state", "")])

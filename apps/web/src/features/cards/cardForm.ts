@@ -44,6 +44,9 @@ export interface CardForm {
   /** WOM boss metric whose EHB rate filled kills per hour (feature 060). */
   ehbBoss: string
   killsPerHour: string
+  /** Feature 075: unchecked hides the fields and saves them empty. */
+  hasDropRates: boolean
+  hasTimeEstimate: boolean
   changeReason: string
 }
 
@@ -86,6 +89,8 @@ export function emptyForm(): CardForm {
     categories: [],
     ehbBoss: '',
     killsPerHour: '',
+    hasDropRates: false,
+    hasTimeEstimate: false,
     changeReason: '',
   }
 }
@@ -177,6 +182,8 @@ export function cardToForm(card: CardSummary): CardForm {
     categories: revision.categories ?? [],
     ehbBoss: revision.ehb_boss ?? '',
     killsPerHour: revision.kills_per_hour ? String(revision.kills_per_hour) : '',
+    hasDropRates: revision.drops.some((drop) => Boolean(drop.drop_rate)),
+    hasTimeEstimate: Boolean(revision.ehb_boss || revision.kills_per_hour),
     changeReason: '',
   }
 }
@@ -202,8 +209,19 @@ export function toAcceptedDrops(rows: DropRow[]): AcceptedDrop[] {
 }
 
 /** Revision payload, or null when a drop is invalid (no name, progress ≤ 0 or repeated). */
+/** Whether unchecking a 075 box would drop values the card has now. */
+export function hasRateValues(form: CardForm): boolean {
+  return form.drops.some((row) => row.dropRate.trim())
+}
+
+export function hasEstimateValues(form: CardForm): boolean {
+  return Boolean(form.ehbBoss || form.killsPerHour.trim())
+}
+
 export function toRevisionPayload(form: CardForm): CardRevisionPayload | null {
-  const drops = toAcceptedDrops(form.drops)
+  const drops = toAcceptedDrops(form.drops).map((drop) =>
+    form.hasDropRates ? drop : { ...drop, drop_rate: null },
+  )
   const names = new Set(drops.map((drop) => normalizeName(drop.name)))
   const keys = new Set(drops.map((drop) => drop.key))
   if (
@@ -226,8 +244,8 @@ export function toRevisionPayload(form: CardForm): CardRevisionPayload | null {
     rule_note: form.ruleNote || null,
     requires_preverification: form.requiresPreverification,
     categories: form.categories,
-    ehb_boss: form.ehbBoss || null,
-    kills_per_hour: positiveOrNull(form.killsPerHour),
+    ehb_boss: form.hasTimeEstimate ? form.ehbBoss || null : null,
+    kills_per_hour: form.hasTimeEstimate ? positiveOrNull(form.killsPerHour) : null,
     change_reason: form.changeReason,
   }
 }

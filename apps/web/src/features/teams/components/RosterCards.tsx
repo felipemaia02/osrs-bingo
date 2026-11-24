@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
-import type { Player, RosterGroup, Team } from '../types'
+import type { Player } from '../types'
 import { timezoneCity, useAccountsLine } from '../rosterFormat'
 import { useRequestedFormat } from '../hooks/useRequestedFormat'
 import {
@@ -11,29 +11,18 @@ import {
   StatusBadge,
   type RowHandlers,
 } from './RosterRowParts'
-import { TeamEmblem } from './TeamEmblem'
+import { TierWithSuggestion } from '../../profiles/components/TierBadge'
 
 interface RosterCardsProps {
+  /** Pending requests (076 revision 1). */
   players: Player[]
-  group: RosterGroup
-  teams: Team[]
   editable: boolean
-  /** Active event (feature 037). */
-  live?: boolean
   busy: boolean
   handlers: RowHandlers
 }
 
 /** Mobile registration cards (teams-a-mobile). No multi-select on mobile. */
-export function RosterCards({
-  players,
-  group,
-  teams,
-  editable,
-  live = false,
-  busy,
-  handlers,
-}: RosterCardsProps) {
+export function RosterCards({ players, editable, busy, handlers }: RosterCardsProps) {
   const { t } = useTranslation()
   const requested = useRequestedFormat()
   const accountsLine = useAccountsLine()
@@ -41,7 +30,6 @@ export function RosterCards({
   return (
     <div className="flex flex-col gap-3">
       {players.map((player) => {
-        const team = teams.find((candidate) => candidate.id === player.team_id)
         return (
           <div
             key={player.id}
@@ -53,17 +41,12 @@ export function RosterCards({
                 <br />
                 <span className="text-xs text-rs-muted">
                   {accountsLine(player)}
-                  {group === 'pending' && ` · ${requested(player)}`}
+                  {` · ${requested(player)}`}
                 </span>
-                {group === 'assigned' && team && (
-                  <span className="mt-1 flex items-center gap-1.5 text-xs">
-                    <TeamEmblem team={team} size="sm" />
-                    {team.name}
-                  </span>
-                )}
               </div>
               <StatusBadge player={player} />
             </div>
+            {player.account_id && <TierWithSuggestion info={player} />}
             {player.ehb_total !== null && player.ehb_total !== undefined && (
               <span className="text-[13px] tabular-nums">
                 {t('teams.roster.experienceLine', {
@@ -89,16 +72,7 @@ export function RosterCards({
                 <BuyInBadge player={player} />
               </span>
             )}
-            {editable && (
-              <RowActions
-                player={player}
-                group={group}
-                busy={busy}
-                mobile
-                live={live}
-                handlers={handlers}
-              />
-            )}
+            {editable && <RowActions player={player} busy={busy} mobile handlers={handlers} />}
           </div>
         )
       })}

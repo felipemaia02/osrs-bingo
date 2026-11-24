@@ -67,11 +67,11 @@ export function JoinEventPage() {
       <div className="mx-auto flex max-w-[820px] flex-col gap-4">
         <div className="flex flex-col gap-1">
           <Link
-            to="/events"
+            to="/"
             className="inline-flex min-h-9 items-center gap-0.5 self-start text-sm text-rs-gold-bright"
           >
             <ChevronLeftOutlinedIcon fontSize="small" aria-hidden="true" />
-            {t('navigation.events')}
+            {t('navigation.home')}
           </Link>
           <span className="text-[11px] font-semibold uppercase tracking-[.18em] text-rs-gold md:text-xs">
             {t('join.eyebrow')}
@@ -98,7 +98,7 @@ function Blocked({ text }: { text: string }) {
   return (
     <InfoBanner>
       {text}{' '}
-      <Link to="/events" className="font-semibold text-rs-gold-bright">
+      <Link to="/" className="font-semibold text-rs-gold-bright">
         {t('join.backToEvents')}
       </Link>
     </InfoBanner>
@@ -143,7 +143,7 @@ function JoinFlow({ event, profile }: { event: BingoEvent; profile: Profile }) {
         },
       },
       {
-        onSuccess: () => navigate('/events', { state: { [JOINED_STATE]: event.name } }),
+        onSuccess: () => navigate('/', { state: { [JOINED_STATE]: event.name } }),
         onError: (error) => setErrorKey(teamErrorKey(error)),
       },
     )
@@ -278,7 +278,7 @@ function JoinFlow({ event, profile }: { event: BingoEvent; profile: Profile }) {
         <div className="fixed inset-x-0 bottom-[68px] z-20 flex gap-2 border-t border-rs-border bg-rs-inset px-4 pb-4 pt-3">
           <Button
             className="flex-1"
-            onClick={() => (step === 0 ? navigate('/events') : setStep(step - 1))}
+            onClick={() => (step === 0 ? navigate('/') : setStep(step - 1))}
           >
             {t('join.back')}
           </Button>

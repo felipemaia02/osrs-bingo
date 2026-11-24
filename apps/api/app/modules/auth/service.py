@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from urllib.parse import urlencode
@@ -20,6 +21,13 @@ DISCORD_USER_URL = "https://discord.com/api/v10/users/@me"
 
 def token_hash(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
+
+
+@dataclass(frozen=True)
+class LoginResult:
+    token: str
+    # First login of this Discord account: the site sends it to the profile (feature 074).
+    new_user: bool
 
 
 class DiscordClient:
@@ -87,7 +95,7 @@ class AuthService:
         )
         return f"{DISCORD_AUTHORIZE_URL}?{query}", state
 
-    async def complete_login(self, code: str, state: str, browser_state: str) -> str:
+    async def complete_login(self, code: str, state: str, browser_state: str) -> LoginResult:
         if not state or not browser_state or not secrets.compare_digest(state, browser_state):
             raise AppException(400, "Invalid login state")
         now = datetime.now(UTC)
@@ -99,7 +107,8 @@ class AuthService:
         await self._repository.save_session(
             token_hash(token), user["_id"], now + timedelta(seconds=SESSION_MAX_AGE)
         )
-        return token
+        # The account was created by this login when its creation time is this login's.
+        return LoginResult(token=token, new_user=user.get("created_at") == now)
 
     async def current_user(self, token: str | None) -> CurrentUser:
         if not token:

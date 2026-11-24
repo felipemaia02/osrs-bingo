@@ -109,6 +109,7 @@ def services(monkeypatch: pytest.MonkeyPatch) -> Iterator[Services]:
         calculated_at=NOW,
     )
     found.submissions.submit.return_value = submission_response()
+    found.submissions.submit_item.return_value = submission_response()
     found.players.bot_roster.return_value = BotRosterResponse(
         items=[
             BotRosterEntry(
@@ -162,7 +163,7 @@ async def test_events_are_listed_with_the_events_scope(
     mine = await client.get("/events/mine", headers=bearer())
 
     assert listed.status_code == 200 and listed.json() == {"items": []}
-    assert services.events.list.await_args.args[0] == "active"
+    assert services.events.list.await_args.args[0] == ["active"]
     assert (one_event.status_code, mine.status_code) == (403, 403)
 
 
@@ -222,34 +223,84 @@ async def test_score_is_read_for_the_acting_player_and_ignores_cookies(
     assert user.discord_id == PLAYER_DISCORD_ID and not user.is_admin
 
 
-async def test_bot_sends_a_submission_without_origin(
+async def test_bot_sends_a_submission_by_item_without_origin(
     client: AsyncClient, services: Services, request_limiter_override: AsyncMock
 ) -> None:
+    result = await client.post(
+        f"/bot/events/{EVENT_ID}/submissions",
+        data={"item": "Skeletal visage", "note": "gg"},
+        files={"screenshot": ("proof.png", PNG, "image/png")},
+        headers=bearer(),
+    )
+
+    assert result.status_code == 201
+    args = services.submissions.submit_item.await_args.args
+    assert args[1].discord_id == PLAYER_DISCORD_ID
+    assert (args[2], args[3], args[4], args[-1]) == ("Skeletal visage", None, "gg", "clan-bot")
+    limits = [call.args[0] for call in request_limiter_override.check.await_args_list]
+    assert limits == ["bot", "mutation"]
+
+
+async def test_bot_gets_the_candidate_tiles_when_an_item_is_on_several(
+    client: AsyncClient, services: Services
+) -> None:
+    candidates = [{"position": 1, "card_name": "Vorkath", "drop_name": "Skeletal visage"}]
+    services.submissions.submit_item.side_effect = AppException(
+        409, "Item is on several tiles", extra={"candidates": candidates}
+    )
+    result = await client.post(
+        f"/bot/events/{EVENT_ID}/submissions",
+        data={"item": "Skeletal visage"},
+        files={"screenshot": ("proof.png", PNG, "image/png")},
+        headers=bearer(),
+    )
+    assert result.status_code == 409
+    assert result.json() == {"detail": "Item is on several tiles", "candidates": candidates}
+
+
+async def test_player_rules_still_apply_to_bot_submissions(
+    client: AsyncClient, services: Services
+) -> None:
+    services.submissions.submit_item.side_effect = AppException(403, "Not eligible")
+    result = await client.post(
+        f"/bot/events/{EVENT_ID}/submissions",
+        data={"item": "Skeletal visage"},
+        files={"screenshot": ("proof.png", PNG, "image/png")},
+        headers=bearer(),
+    )
+    assert result.status_code == 403
+
+
+async def test_the_site_submission_route_still_accepts_bot_keys(
+    client: AsyncClient, services: Services
+) -> None:
+    """072 keeps the 048 route open to bots: no forced migration."""
     result = await client.post(
         f"/events/{EVENT_ID}/submissions",
         data={"kind": "drop", "position": "1", "drop_key": "skeletal-visage"},
         files={"screenshot": ("proof.png", PNG, "image/png")},
         headers=bearer(),
     )
-
     assert result.status_code == 201
     args = services.submissions.submit.await_args.args
     assert args[1].discord_id == PLAYER_DISCORD_ID and args[-1] == "clan-bot"
-    limits = [call.args[0] for call in request_limiter_override.check.await_args_list]
-    assert limits == ["bot", "mutation"]
 
 
-async def test_player_rules_still_apply_to_bot_submissions(
+async def test_website_users_cannot_use_the_bot_submission_route(
     client: AsyncClient, services: Services
 ) -> None:
-    services.submissions.submit.side_effect = AppException(403, "Not eligible")
-    result = await client.post(
-        f"/events/{EVENT_ID}/submissions",
-        data={"kind": "drop", "position": "1"},
-        files={"screenshot": ("proof.png", PNG, "image/png")},
-        headers=bearer(),
-    )
-    assert result.status_code == 403
+    client.cookies.set(SESSION_COOKIE, "session")
+    try:
+        result = await client.post(
+            f"/bot/events/{EVENT_ID}/submissions",
+            data={"item": "Skeletal visage"},
+            files={"screenshot": ("proof.png", PNG, "image/png")},
+            headers={"Origin": settings.frontend_url.rstrip("/")},
+        )
+    finally:
+        client.cookies.clear()
+    assert result.status_code == 403 and result.json() == {"detail": "Bot key required"}
+    services.submissions.submit_item.assert_not_awaited()
 
 
 async def test_routes_outside_the_key_scopes_are_forbidden(

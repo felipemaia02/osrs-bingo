@@ -12,6 +12,8 @@ from app.modules.players.repository import PlayerRepository
 from app.modules.players.schemas import (
     ApprovalResponse,
     BotRosterResponse,
+    DraftSave,
+    DraftSaveResult,
     JoinRequest,
     ParticipationUpdate,
     PlayerListQuery,
@@ -24,6 +26,7 @@ from app.modules.players.schemas import (
 )
 from app.modules.players.service import PlayerService
 from app.modules.profiles.repository import ProfileRepository
+from app.modules.profiles.schemas import TierInfo, TierOverrideRequest
 from app.modules.teams.repository import TeamRepository
 
 router = APIRouter(prefix="/events/{event_id}/players", tags=["players"])
@@ -100,6 +103,15 @@ async def assign_selected(
     return await service.assign_selected(event_id, payload.player_ids, payload.team_id)
 
 
+@router.post("/draft", response_model=DraftSaveResult)
+@audited("team.draft_saved")
+async def save_draft(
+    event_id: str, payload: DraftSave, admin: AdminDependency, service: PlayerServiceDependency
+) -> DraftSaveResult:
+    """Saves the draft board's picks at once (feature 076)."""
+    return await service.save_draft(event_id, payload)
+
+
 @router.post("/remove-selected", response_model=SelectionResult)
 @audited("registration.removed_selected")
 async def remove_selected(
@@ -141,6 +153,19 @@ async def update_participation(
     service: PlayerServiceDependency,
 ) -> PlayerResponse:
     return await service.update_participation(event_id, player_id, payload)
+
+
+@router.put("/{player_id}/tier", response_model=TierInfo)
+@audited("profile.tier_overridden", resource_id="player_id")
+async def set_tier(
+    event_id: str,
+    player_id: str,
+    payload: TierOverrideRequest,
+    admin: AdminDependency,
+    service: PlayerServiceDependency,
+) -> TierInfo:
+    """Feature 069: the admin's tier; `null` goes back to the WOM suggestion."""
+    return await service.set_tier(event_id, player_id, payload, admin.id)
 
 
 @router.delete("/{player_id}", response_model=PlayerResponse)

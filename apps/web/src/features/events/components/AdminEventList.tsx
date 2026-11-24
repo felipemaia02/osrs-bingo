@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { BingoEvent } from '../types'
 import { EventActions, type EventTransition } from './EventActions'
 import { EventSchedule } from './EventSchedule'
+import { ReadinessChecklist } from './ReadinessChecklist'
 import { EventStatusBadge } from './EventStatusBadge'
 
 interface AdminEventListProps {
@@ -45,6 +46,9 @@ export function AdminEventTable({
                   {event.description}
                 </span>
               )}
+              <div className="mt-2">
+                <ReadinessChecklist event={event} />
+              </div>
             </td>
             <td className={CELL}>
               <EventStatusBadge status={event.status} />
@@ -92,6 +96,7 @@ export function AdminEventCards({
           {event.description && (
             <p className="m-0 line-clamp-2 text-[13px] text-rs-muted">{event.description}</p>
           )}
+          <ReadinessChecklist event={event} />
           <EventActions
             event={event}
             mobile

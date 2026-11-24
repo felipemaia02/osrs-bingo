@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BossKcBreakdown } from '../../balance/components/BossKcBreakdown'
-import type { Player, RosterGroup, Team } from '../types'
+import type { Player } from '../types'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
 import { timezoneCity, useAccountsLine } from '../rosterFormat'
 import { useRequestedFormat } from '../hooks/useRequestedFormat'
@@ -12,15 +12,12 @@ import {
   RowActions,
   type RowHandlers,
 } from './RosterRowParts'
-import { TeamEmblem } from './TeamEmblem'
+import { TierWithSuggestion } from '../../profiles/components/TierBadge'
 
 interface RosterTableProps {
+  /** Pending requests; teams are formed on the draft board (076 revision 1). */
   players: Player[]
-  group: RosterGroup
-  teams: Team[]
   editable: boolean
-  /** Active event (feature 037). */
-  live?: boolean
   /** Events without a buy-in hide the Buy-in column. */
   showBuyIn: boolean
   busy: boolean
@@ -37,10 +34,7 @@ const HEAD =
 /** Desktop registration table with selection (teams-a-desktop). */
 export function RosterTable({
   players,
-  group,
-  teams,
   editable,
-  live = false,
   showBuyIn,
   busy,
   selected,
@@ -77,8 +71,7 @@ export function RosterTable({
             </th>
           )}
           <th className={HEAD}>{t('teams.roster.player')}</th>
-          {group === 'assigned' && <th className={HEAD}>{t('teams.roster.team')}</th>}
-          {group === 'pending' && <th className={HEAD}>{t('teams.roster.requested')}</th>}
+          <th className={HEAD}>{t('teams.roster.requested')}</th>
           <th className={HEAD}>{t('teams.roster.timezone')}</th>
           <th className={HEAD}>{t('teams.roster.activity')}</th>
           <th className={`${HEAD} text-right`}>{t('teams.roster.bossKc')}</th>
@@ -93,7 +86,6 @@ export function RosterTable({
       <tbody>
         {players.map((player) => {
           const isSelected = selected.has(player.id)
-          const team = teams.find((candidate) => candidate.id === player.team_id)
           return (
             <tr key={player.id} className={isSelected ? 'bg-rs-raised' : ''}>
               {editable && (
@@ -112,19 +104,7 @@ export function RosterTable({
                 <br />
                 <span className="text-xs text-rs-muted">{accountsLine(player)}</span>
               </td>
-              {group === 'assigned' && (
-                <td className={CELL}>
-                  {team ? (
-                    <span className="inline-flex items-center gap-2">
-                      <TeamEmblem team={team} size="md" />
-                      {team.name}
-                    </span>
-                  ) : (
-                    '—'
-                  )}
-                </td>
-              )}
-              {group === 'pending' && <td className={CELL}>{requested(player)}</td>}
+              <td className={CELL}>{requested(player)}</td>
               <td className={CELL} title={player.timezone ?? undefined}>
                 {timezoneCity(player.timezone)}
               </td>
@@ -150,6 +130,11 @@ export function RosterTable({
               </td>
               <td className={`${CELL} text-right tabular-nums`}>
                 <strong>{format.hours(player.ehb_total ?? null)}</strong>
+                {player.account_id && (
+                  <span className="mt-1 flex justify-end">
+                    <TierWithSuggestion info={player} />
+                  </span>
+                )}
               </td>
               <td className={CELL}>
                 {player.teammates?.length ? (
@@ -168,14 +153,7 @@ export function RosterTable({
               )}
               {editable && (
                 <td className={`${CELL} text-right`}>
-                  <RowActions
-                    player={player}
-                    group={group}
-                    busy={busy}
-                    mobile={false}
-                    live={live}
-                    handlers={handlers}
-                  />
+                  <RowActions player={player} busy={busy} mobile={false} handlers={handlers} />
                 </td>
               )}
             </tr>

@@ -15,6 +15,8 @@ export interface BingoEvent {
   late_join?: boolean
   /** Free text such as "5M gp" (feature 022); null when the event has no buy-in. */
   buy_in?: string | null
+  /** When an admin finished the event (feature 071); null otherwise. */
+  finished_at?: string | null
   created_at: string
   updated_at: string
 }
@@ -38,4 +40,20 @@ export interface EventRules {
 export interface RulesAddendum {
   text: string
   added_at: string
+}
+
+/** Preparation checklist of a draft event (feature 073). */
+export type ReadinessKey =
+  'board' | 'line_bonuses' | 'rules' | 'teams' | 'players_assigned' | 'captains' | 'no_pending'
+
+export interface ReadinessItem {
+  key: ReadinessKey
+  done: boolean
+  /** Activation is refused while a required item is missing. */
+  required: boolean
+}
+
+export interface EventReadiness {
+  items: ReadinessItem[]
+  ready: boolean
 }

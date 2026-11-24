@@ -2,6 +2,7 @@ import { AxiosError } from 'axios'
 
 const ERROR_TRANSLATION: Record<string, string> = {
   'Active event limit reached': 'events.errors.activeLimit',
+  'Draft event limit reached': 'events.errors.draftLimit',
   'Only draft events can be edited': 'events.errors.readOnly',
   'Event status does not allow this transition': 'events.errors.invalidTransition',
   'Event not found': 'events.errors.notFound',

@@ -226,7 +226,8 @@
       "invalidTransition": "Este evento não permite essa mudança de status.",
       "notFound": "O evento não foi encontrado.",
       "boardRequired": "Preencha e salve todas as posições do tabuleiro antes de ativar o evento.",
-      "rulesRequired": "Defina os bônus de linha e coluna no montador do tabuleiro antes de ativar o evento."
+      "rulesRequired": "Defina os bônus de linha e coluna no montador do tabuleiro antes de ativar o evento.",
+      "draftLimit": "Já existe um evento em draft. Ative-o antes de criar outro."
     },
     "publicEyebrow": "Eventos da comunidade",
     "publicDescription": "Encontre eventos de Bingo e acompanhe sua inscrição.",
@@ -259,7 +260,28 @@
     "openBoard": "Abrir board",
     "search": "Buscar eventos",
     "noMatch": "Nenhum evento corresponde à busca.",
-    "noneMine": "Você ainda não entrou em nenhum evento."
+    "noneMine": "Você ainda não entrou em nenhum evento.",
+    "readiness": {
+      "title": "Checklist de preparação",
+      "count": "{{done}} de {{total}} feitos",
+      "listLabel": "Preparação de {{name}}",
+      "done": "feito",
+      "missing": "faltando",
+      "required": "Obrigatório",
+      "fix": "Resolver",
+      "blocked": "Falta para ativar: {{items}}",
+      "afterCreate": "Depois de salvar, um checklist mostra o que falta antes de ativar.",
+      "items": {
+        "board": "Board publicado com todas as casas preenchidas",
+        "line_bonuses": "Bônus de linha e coluna definidos",
+        "rules": "Regras escritas preenchidas",
+        "teams": "Times criados",
+        "players_assigned": "Todo player aprovado está em um time",
+        "captains": "Todo time tem captain",
+        "no_pending": "Nenhuma inscrição pendente"
+      }
+    },
+    "draftNotice": "{{name}} é o evento em draft. Só um draft por vez: ative-o antes de criar outro."
   },
   "teams": {
     "eyebrow": "Administração",
@@ -269,7 +291,6 @@
     "teams": "Times",
     "players": "Inscrições no evento",
     "teamName": "Nome do time",
-    "selectTeam": "Selecione um time",
     "create": "Criar",
     "description": "Aprove pedidos e distribua os jogadores aprovados entre os times.",
     "registrationHint": "Os jogadores solicitam inscrição na página de Eventos.",
@@ -287,12 +308,9 @@
     "removeTitle": "Remover inscrição?",
     "removeConfirmation": "Remover {{name}} do evento? O vínculo com o time também será removido.",
     "confirmRemoval": "Confirmar remoção",
-    "assignmentFor": "Time de {{name}}",
-    "saveAssignment": "Salvar time",
     "memberCount_one": "{{count}} membro",
     "memberCount_other": "{{count}} membros",
     "feedback": {
-      "assignmentUpdated": "Time atualizado.",
       "teamCreated": "Time criado.",
       "approved": "Inscrições aprovadas.",
       "removed": "Inscrição removida.",
@@ -302,9 +320,7 @@
       "selectedRemoved_other": "{{count}} removidos.",
       "skipped_one": "{{count}} ignorado porque já tinha mudado.",
       "skipped_other": "{{count}} ignorados porque já tinham mudado.",
-      "teamUpdated": "Time atualizado.",
-      "selectedAssigned_one": "{{count}} colocado no time.",
-      "selectedAssigned_other": "{{count}} colocados no time."
+      "teamUpdated": "Time atualizado."
     },
     "errors": {
       "duplicatePlayer": "Você ou este nome do OSRS já possui uma inscrição neste evento.",
@@ -327,25 +343,18 @@
     "roster": {
       "tabs": "Participantes e times",
       "pending": "Pendentes",
-      "unassigned": "Sem time",
-      "assigned": "Com time",
       "teams": "Times",
       "createTeam": "Criar time",
       "viewMembers": "Ver membros de {{name}}",
       "search": "Buscar nome OSRS ou do Discord",
-      "teamFilter": "Filtrar por time",
-      "allTeams": "Todos os times",
       "previous": "Anterior",
       "next": "Próxima",
       "actions": "Ações",
-      "assignPlayer": "Alterar time de {{name}}",
       "editable": "Editável: evento em rascunho",
       "readOnly": "Somente leitura: evento {{status}}",
       "requested": "Pedido em",
       "team": "Time",
       "members": "Membros",
-      "assignTeam": "Definir time",
-      "changeTeam": "Trocar time",
       "viewMembersShort": "Ver membros",
       "approveAllCount": "Aprovar todos ({{count}})…",
       "paginationPage": "{{start}}–{{end}} de {{total}} · {{size}} por página",
@@ -371,7 +380,8 @@
       "wantsWith": "quer {{names}}",
       "sorted": "Ordenado por EHB total ↓",
       "live": "Durante o evento: aprove, coloque em time e remova jogadores sem time; edite papéis e buy-ins. Quem já tem time fica travado.",
-      "raidsKc": "Raids Σ"
+      "raidsKc": "Raids Σ",
+      "draft": "Draft"
     },
     "status": {
       "pending": "Pendente",
@@ -387,13 +397,7 @@
       "select": "Selecionar {{name}}",
       "removeTitle": "Remover inscrições selecionadas?",
       "removeConfirmation_one": "Remover {{count}} inscrição selecionada? O time também será desfeito. O pedido é mantido e o jogador vê o status Removido.",
-      "removeConfirmation_other": "Remover {{count}} inscrições selecionadas? Os times também serão desfeitos. Os pedidos são mantidos e os jogadores veem o status Removido.",
-      "assign": "Colocar no time…",
-      "assignTitle_one": "Colocar {{count}} jogador em um time",
-      "assignTitle_other": "Colocar {{count}} jogadores em um time",
-      "assignConfirm_one": "Colocar {{count}} jogador",
-      "assignConfirm_other": "Colocar {{count}} jogadores",
-      "captainsLoseRole": "{{names}} deixa(m) de ser capitão (muda(m) de time)."
+      "removeConfirmation_other": "Remover {{count}} inscrições selecionadas? Os times também serão desfeitos. Os pedidos são mantidos e os jogadores veem o status Removido."
     },
     "balance": {
       "title": "Equilíbrio dos times",
@@ -444,7 +448,7 @@
     "adminRequired": "Somente administradores podem gerenciar participantes.",
     "requestRejected": "Não foi possível validar esta solicitação. Recarregue e tente novamente.",
     "loginFailed": "O login com Discord falhou ou expirou. Tente novamente.",
-    "backToEvents": "Explorar eventos",
+    "backToEvents": "Voltar ao início",
     "loginEyebrow": "Bingo OSRS",
     "loginTitle": "Entre na aventura",
     "loginDescription": "Entre para solicitar sua inscrição em um evento e acompanhar seu time.",
@@ -557,8 +561,8 @@
     "directoryCount_other": "{{count}} usuários registrados",
     "review": "Revisão de drops",
     "reviewDescription": "Aceite ou rejeite as submissões dos jogadores pelo screenshot.",
-    "draft": "Prévia do draft",
-    "draftDescription": "Jogadores disponíveis para a escolha dos capitães.",
+    "draft": "Quadro de draft",
+    "draftDescription": "Escolha os times rodada a rodada e salve tudo de uma vez.",
     "rsnLine": "RSN: {{rsn}}",
     "audit": "Log de auditoria",
     "auditDescription": "Quem mudou o quê, e quando."
@@ -734,6 +738,12 @@
     },
     "detail": {
       "card": "Card"
+    },
+    "optional": {
+      "title": "Este card tem",
+      "dropRates": "Drop rates (um por item, usados na estimativa de tempo)",
+      "timeEstimate": "Estimativa de tempo (boss do EHB / kills por hora)",
+      "removedOnSave": "Esses valores serão removidos ao salvar."
     }
   },
   "boards": {
@@ -1074,17 +1084,25 @@
     "tileProgress": "{{value}} / {{requirement}}",
     "panel": "Placar do seu time",
     "total": "Pontuação",
-    "completedTiles": "Tiles completos ({{count}} de {{total}})",
     "rows": "Linhas",
     "columns": "Colunas",
-    "lineBreakdown": "{{count}} × {{value}}",
-    "notConfigured": "bônus não configurado",
     "notConfiguredShort": "não definido",
     "labelComplete": "completo",
     "labelProgress": "progresso {{value}} de {{requirement}}",
     "detailProgress": "Progresso do time: {{value}} de {{requirement}} · vale {{points}} pts uma vez",
     "dropCount": "{{name}} × {{count}}",
-    "bonusCards": "Cards bônus ({{count}} de {{total}})"
+    "tiles": "Tiles",
+    "bonusShort": "Cards bônus",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "ofMax": "/ {{max}} pts",
+    "progress": "Parte da pontuação máxima",
+    "closest": "Bônus mais próximos",
+    "line": {
+      "row": "Linha {{line}}",
+      "column": "Coluna {{line}}"
+    },
+    "lineTiles": "{{done}}/{{total}} tiles"
   },
   "ranking": {
     "eyebrow": "Administração · privado",
@@ -1270,6 +1288,17 @@
       "timezone": "Escolha seu fuso horário para os admins balancearem os times por região.",
       "action": "Ir para meu perfil",
       "dismiss": "Ocultar este aviso"
+    },
+    "welcome": {
+      "title": "Bem-vindo ao OSRS Bingo!",
+      "text": "Sua conta está pronta. Preencha seu perfil para os admins balancearem os times:",
+      "steps": {
+        "main": "Adicione seu RSN main (ele joga o bingo por padrão).",
+        "alts": "Adicione suas alts (só contam para experiência).",
+        "timezone": "Escolha seu fuso horário.",
+        "activity": "Diga quanto pretende jogar."
+      },
+      "done": "Pronto — ir para o bingo"
     }
   },
   "join": {
@@ -1281,7 +1310,7 @@
     "nextNeedAccount": "Próximo · escolha uma conta",
     "nextNeedAgreements": "Próximo · confirme os 3",
     "progress": "Passo {{step}} de {{total}}",
-    "backToEvents": "Voltar aos eventos",
+    "backToEvents": "Voltar ao início",
     "changeIn": "altere em",
     "timezone": "Fuso horário:",
     "sent": "Pedido enviado para {{name}} — aguardando um admin.",
@@ -1374,12 +1403,6 @@
     "openLate": "entrada tardia aberta"
   },
   "draft": {
-    "eyebrow": "Administração · {{event}} · Rascunho",
-    "title": "Prévia do draft",
-    "description": "Só para admins. Compartilhe a tela com os capitães durante a escolha — os jogadores nunca abrem esta página. Arraste um jogador para um time ou use o seletor de time no card.",
-    "presentation": "Modo apresentação",
-    "exitPresentation": "Sair da apresentação",
-    "noDraft": "Não há evento em rascunho para mostrar.",
     "noCaptain": "Ainda sem capitão",
     "region": "Região",
     "activity": "Atividade",
@@ -1398,9 +1421,6 @@
       "kc": "KC de bosses total ↓",
       "name": "Nome A–Z"
     },
-    "count_one": "{{count}} jogador disponível · capitães não listados",
-    "count_other": "{{count}} jogadores disponíveis · capitães não listados",
-    "everyoneAssigned": "Todos os jogadores aprovados já têm time.",
     "ehb": "Σ EHB",
     "bossKc": "Σ KC de bosses",
     "alts_one": "{{count}} alt",
@@ -1421,27 +1441,50 @@
     "skill": "Habilidade",
     "anySkill": "Qualquer",
     "minLevel": "Nível mín.",
-    "countSkill_one": "{{count}} jogador disponível · {{skill}} ≥ {{level}}",
-    "countSkill_other": "{{count}} jogadores disponíveis · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} jogador ainda não tem dados de habilidades — precisa clicar em “Atualizar do WOM” em Meu perfil.",
     "noSkillData_other": "{{count}} jogadores ainda não têm dados de habilidades — precisam clicar em “Atualizar do WOM” em Meu perfil.",
-    "skillLevel": "{{skill}} {{level}}",
     "raidsKc": "Raids Σ",
     "pick": {
-      "moveTo": "Time de {{name}}",
-      "choose": "Time…",
-      "noTeam": "Sem time",
       "allDetails": "Todos os detalhes",
-      "available": "Jogadores disponíveis",
-      "rosters": "Times",
-      "rostersSummary_one": "{{count}} time",
-      "rostersSummary_other": "{{count}} times",
-      "totals_one": "{{count}} jogador · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
-      "totals_other": "{{count}} jogadores · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
-      "dropHere": "Solte um jogador aqui",
-      "empty": "Nenhum jogador ainda",
-      "noTeams": "Crie os times na página Times primeiro.",
-      "failed": "A escolha não foi salva: {{reason}}"
+      "empty": "Nenhum jogador ainda"
+    },
+    "board": {
+      "title": "Quadro de draft",
+      "round": "Rodada",
+      "pick": "Pick",
+      "onTheClock": "Da vez:",
+      "onTheClockBadge": "Da vez",
+      "undo": "Desfazer",
+      "save": "Salvar times",
+      "order": "Ordem do draft",
+      "moveEarlier": "Mover {{name}} para antes",
+      "moveLater": "Mover {{name}} para depois",
+      "prevTeam": "Time anterior",
+      "nextTeam": "Próximo time",
+      "pool": "Disponíveis ({{count}})",
+      "poolHint": "\"+ Draft\" escolhe para o time da vez",
+      "search": "Buscar players não escolhidos…",
+      "draft": "Draft",
+      "draftPlayer": "Escolher {{name}}",
+      "everyoneDrafted": "Todos já foram escolhidos.",
+      "picks_one": "{{count}} pick",
+      "picks_other": "{{count}} picks",
+      "captain": "Captain: {{name}}",
+      "remove": "Devolver {{name}} para os disponíveis",
+      "noTeams": "Crie os times primeiro, na aba Times.",
+      "restored": "Seu draft não salvo neste navegador foi restaurado.",
+      "discard": "Descartar draft",
+      "discardTitle": "Descartar este draft?",
+      "discardMessage": "Todos os picks ainda não salvos voltam para os disponíveis.",
+      "saved_one": "{{count}} player salvo no seu time.",
+      "saved_other": "{{count}} players salvos nos seus times.",
+      "skipped": "Mudaram nesse meio-tempo, não salvos: {{names}}. Confira na aba Times.",
+      "views": "Visões do draft",
+      "view": {
+        "pool": "Disponíveis",
+        "teams": "Times"
+      },
+      "liveHint": "Durante o evento só players sem time podem ser colocados; os times já formados ficam travados."
     }
   },
   "home": {
@@ -1574,10 +1617,11 @@
     "welcomeBack": "Bem-vindo de volta, {{name}}",
     "tagline": "O bingo do clã AstralStar: pegue drops com seu time, complete o board e faça pontos.",
     "event": {
-      "title": "Evento atual",
       "endsIn": "Termina em {{time}}",
       "openBoard": "Abrir board",
-      "none": "Nenhum evento acontecendo agora. Veja o que vem por aí em"
+      "none": "Nenhum evento aberto agora. Novos eventos aparecem aqui.",
+      "live": "{{name}} está ativo",
+      "liveBadge": "Ao vivo"
     },
     "team": {
       "title": "Meu time",
@@ -1603,7 +1647,7 @@
       },
       "join": {
         "title": "Inscreva-se no evento",
-        "text": "Escolha a conta com que vai jogar e aceite as regras em Eventos."
+        "text": "Clique em \"Entrar no bingo\" nesta página, escolha a conta que vai jogar e aceite as regras."
       },
       "teams": {
         "title": "Os times são escolhidos",
@@ -1613,6 +1657,17 @@
         "title": "Pegue drops, faça pontos",
         "text": "Envie os drops com print. Tiles, linhas e colunas completas dão pontos ao seu time."
       }
+    },
+    "join": {
+      "title": "Inscrições abertas: {{name}}",
+      "text": "Escolha sua conta, aceite as regras e pronto. Os admins aprovam e fazem o draft dos times.",
+      "loginText": "Entre com o Discord para participar do bingo.",
+      "action": "Entrar no bingo",
+      "login": "Entrar com Discord",
+      "registeredText": "Você está inscrito. Os admins aprovam os players e fazem o draft dos times antes do evento começar."
+    },
+    "rules": {
+      "readAll": "Ver todas as regras"
     }
   },
   "audit": {
@@ -1758,5 +1813,77 @@
       "pending": "Pré-verificação em análise",
       "accepted": "Pré-verificado"
     }
+  },
+  "rulesPage": {
+    "title": "Regras",
+    "description": "Como o bingo funciona, como os pontos somam e as regras deste evento.",
+    "basics": "O básico",
+    "scoring": {
+      "title": "Pontuação",
+      "row": "Por linha completa",
+      "column": "Por coluna completa",
+      "formula": "Pontos do time = tiles completos + linhas completas + colunas completas. Um tile conta uma vez, quando o progresso chega ao requisito."
+    }
+  },
+  "tier": {
+    "label": "Progressão",
+    "early": "Early game",
+    "mid": "Mid game",
+    "end": "End game",
+    "unknown": "Desconhecido",
+    "useSuggestion": "Usar sugestão do WOM ({{tier}})",
+    "womSuggests": "WOM sugere: {{tier}}",
+    "yours": "Sua progressão:"
+  },
+  "podium": {
+    "eyebrow": "Bingo encerrado",
+    "champion": "Campeão",
+    "tied": "Empate",
+    "points": "pts",
+    "tiles_one": "{{count}} tile",
+    "tiles_other": "{{count}} tiles",
+    "final": "Resultado final",
+    "provisional": "Resultados sendo confirmados",
+    "yourPlace": "Seu time {{team}} terminou em {{place}} com {{total}} pts.",
+    "yourTotal": "Seu time {{team}} terminou com {{total}} pts."
+  },
+  "dashboard": {
+    "mapTitle": "Mapa do board",
+    "mapLabel": "Tiles por progresso",
+    "squareDone": "{{name}}: completo",
+    "squareProgress": "{{name}}: {{value}} de {{requirement}}",
+    "legend": {
+      "none": "Não começado",
+      "partial": "Em progresso (mais escuro = mais perto)",
+      "complete": "Completo"
+    },
+    "objectivesTitle": "Próximos objetivos",
+    "objectivesHint": "Tiles começados mais perto de fechar.",
+    "objectiveProgress": "Progresso em {{name}}",
+    "remaining": "Falta:",
+    "workingOn": "Fazendo: {{names}}",
+    "noObjectives": "Nenhum tile começado ainda. Escolha um no board e marque que está fazendo.",
+    "drops_one": "{{count}} drop",
+    "drops_other": "{{count}} drops",
+    "memberLine_one": "{{name}}: {{points}} pts · {{count}} drop",
+    "memberLine_other": "{{name}}: {{points}} pts · {{count}} drops",
+    "vsLeader": "{{team}} comparado ao líder",
+    "behindLeader": "{{points}} pts atrás do líder",
+    "leading": "Na liderança",
+    "pendingReviews_one": "{{count}} submissão para revisar",
+    "pendingReviews_other": "{{count}} submissões para revisar",
+    "matrixTitle": "Tiles por time",
+    "matrixHint": "Quem completou cada tile. Passe o mouse na célula para ver o progresso.",
+    "nobodyYet": "Ninguém começou ainda:",
+    "tile": "Tile",
+    "doneBy": "Feito por",
+    "cell": {
+      "none": "{{team}}: não começado",
+      "partial": "{{team}}: {{value}} de {{requirement}}",
+      "complete": "{{team}}: completo"
+    },
+    "mvps": "Melhores players",
+    "matrixEmpty": "A matriz aparece quando o board do evento tiver os cards.",
+    "noPointsYet": "Sem pontos ainda"
   }
 }

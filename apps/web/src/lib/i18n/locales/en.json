@@ -226,7 +226,8 @@
       "invalidTransition": "This event cannot perform that status change.",
       "notFound": "The event was not found.",
       "boardRequired": "Complete and save every board position before activating the event.",
-      "rulesRequired": "Set the row and column bonuses in the board builder before activating the event."
+      "rulesRequired": "Set the row and column bonuses in the board builder before activating the event.",
+      "draftLimit": "A draft event already exists. Activate it before creating another."
     },
     "publicEyebrow": "Community events",
     "publicDescription": "Discover Bingo events and follow your registration.",
@@ -259,7 +260,28 @@
     "openBoard": "Open board",
     "search": "Search events",
     "noMatch": "No event matches the search.",
-    "noneMine": "You haven't joined any event yet."
+    "noneMine": "You haven't joined any event yet.",
+    "readiness": {
+      "title": "Preparation checklist",
+      "count": "{{done}} of {{total}} done",
+      "listLabel": "Preparation of {{name}}",
+      "done": "done",
+      "missing": "missing",
+      "required": "Required",
+      "fix": "Fix",
+      "blocked": "Missing to activate: {{items}}",
+      "afterCreate": "After saving, a checklist shows what is left before activating.",
+      "items": {
+        "board": "Board published with every square filled",
+        "line_bonuses": "Row and column bonuses set",
+        "rules": "Written rules filled in",
+        "teams": "Teams created",
+        "players_assigned": "Every approved player on a team",
+        "captains": "Every team has a captain",
+        "no_pending": "No pending registrations"
+      }
+    },
+    "draftNotice": "{{name}} is the draft event. Only one draft at a time: activate it before creating another."
   },
   "teams": {
     "eyebrow": "Administration",
@@ -269,7 +291,6 @@
     "teams": "Teams",
     "players": "Event registrations",
     "teamName": "Team name",
-    "selectTeam": "Select a team",
     "create": "Create",
     "description": "Approve requests and distribute approved players across teams.",
     "registrationHint": "Players request registration from the Events page.",
@@ -287,12 +308,9 @@
     "removeTitle": "Remove registration?",
     "removeConfirmation": "Remove {{name}} from the event? Their team assignment will also be cleared.",
     "confirmRemoval": "Confirm removal",
-    "assignmentFor": "Team for {{name}}",
-    "saveAssignment": "Save team assignment",
     "memberCount_one": "{{count}} member",
     "memberCount_other": "{{count}} members",
     "feedback": {
-      "assignmentUpdated": "Team assignment updated.",
       "teamCreated": "Team created.",
       "approved": "Registrations approved.",
       "removed": "Registration removed.",
@@ -302,9 +320,7 @@
       "selectedRemoved_other": "{{count}} removed.",
       "skipped_one": "{{count}} skipped because it had already changed.",
       "skipped_other": "{{count}} skipped because they had already changed.",
-      "teamUpdated": "Team updated.",
-      "selectedAssigned_one": "{{count}} assigned.",
-      "selectedAssigned_other": "{{count}} assigned."
+      "teamUpdated": "Team updated."
     },
     "errors": {
       "duplicatePlayer": "You or this OSRS name already have a registration in this event.",
@@ -327,25 +343,18 @@
     "roster": {
       "tabs": "Participants and teams",
       "pending": "Pending",
-      "unassigned": "Unassigned",
-      "assigned": "Assigned",
       "teams": "Teams",
       "createTeam": "Create team",
       "viewMembers": "View members of {{name}}",
       "search": "Search OSRS or Discord name",
-      "teamFilter": "Filter by team",
-      "allTeams": "All teams",
       "previous": "Previous",
       "next": "Next",
       "actions": "Actions",
-      "assignPlayer": "Change team for {{name}}",
       "editable": "Editable: draft event",
       "readOnly": "Read-only: {{status}} event",
       "requested": "Requested",
       "team": "Team",
       "members": "Members",
-      "assignTeam": "Assign team",
-      "changeTeam": "Change team",
       "viewMembersShort": "View members",
       "approveAllCount": "Approve all ({{count}})…",
       "paginationPage": "{{start}}–{{end}} of {{total}} · {{size}} per page",
@@ -371,7 +380,8 @@
       "wantsWith": "wants {{names}}",
       "sorted": "Sorted by EHB total ↓",
       "live": "During the event: approve, place and remove players without a team; edit roles and buy-ins. Players on a team stay locked.",
-      "raidsKc": "Raids Σ"
+      "raidsKc": "Raids Σ",
+      "draft": "Draft"
     },
     "status": {
       "pending": "Pending",
@@ -387,13 +397,7 @@
       "select": "Select {{name}}",
       "removeTitle": "Remove selected registrations?",
       "removeConfirmation_one": "Remove {{count}} selected registration? Its team assignment will also be cleared. The request is kept and the player sees their status as Removed.",
-      "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed.",
-      "assign": "Assign to team…",
-      "assignTitle_one": "Assign {{count}} player to a team",
-      "assignTitle_other": "Assign {{count}} players to a team",
-      "assignConfirm_one": "Assign {{count}} player",
-      "assignConfirm_other": "Assign {{count}} players",
-      "captainsLoseRole": "{{names}} will stop being captain (they move to another team)."
+      "removeConfirmation_other": "Remove {{count}} selected registrations? Their team assignments will also be cleared. The requests are kept and players see their status as Removed."
     },
     "balance": {
       "title": "Team balance",
@@ -444,7 +448,7 @@
     "adminRequired": "Only administrators can manage participants.",
     "requestRejected": "This request could not be verified. Reload and try again.",
     "loginFailed": "Discord login failed or expired. Please try again.",
-    "backToEvents": "Explore events",
+    "backToEvents": "Back to home",
     "loginEyebrow": "OSRS Bingo",
     "loginTitle": "Join the adventure",
     "loginDescription": "Sign in to request a place in an event and follow your team.",
@@ -557,8 +561,8 @@
     "directoryCount_other": "{{count}} registered users",
     "review": "Drop review",
     "reviewDescription": "Accept or reject players' submissions with the screenshot.",
-    "draft": "Draft preview",
-    "draftDescription": "Available players for the captains' pick session.",
+    "draft": "Draft board",
+    "draftDescription": "Pick the teams round by round, then save them at once.",
     "rsnLine": "RSN: {{rsn}}",
     "audit": "Audit log",
     "auditDescription": "Who changed what, and when."
@@ -734,6 +738,12 @@
     },
     "detail": {
       "card": "Card"
+    },
+    "optional": {
+      "title": "This card has",
+      "dropRates": "Drop rates (one per item, used for the time estimate)",
+      "timeEstimate": "A time estimate (EHB boss / kills per hour)",
+      "removedOnSave": "These values will be removed on save."
     }
   },
   "boards": {
@@ -1074,17 +1084,25 @@
     "tileProgress": "{{value}} / {{requirement}}",
     "panel": "Your team's score",
     "total": "Score",
-    "completedTiles": "Completed tiles ({{count}} of {{total}})",
     "rows": "Rows",
     "columns": "Columns",
-    "lineBreakdown": "{{count}} × {{value}}",
-    "notConfigured": "bonus not configured",
     "notConfiguredShort": "not set",
     "labelComplete": "complete",
     "labelProgress": "progress {{value}} of {{requirement}}",
     "detailProgress": "Team progress: {{value}} of {{requirement}} · worth {{points}} pts once",
     "dropCount": "{{name}} × {{count}}",
-    "bonusCards": "Bonus cards ({{count}} of {{total}})"
+    "tiles": "Tiles",
+    "bonusShort": "Bonus cards",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "ofMax": "/ {{max}} pts",
+    "progress": "Share of the maximum score",
+    "closest": "Closest bonuses",
+    "line": {
+      "row": "Row {{line}}",
+      "column": "Column {{line}}"
+    },
+    "lineTiles": "{{done}}/{{total}} tiles"
   },
   "ranking": {
     "eyebrow": "Administration · private",
@@ -1272,6 +1290,17 @@
       "timezone": "Choose your time zone so admins can balance teams by region.",
       "action": "Go to my profile",
       "dismiss": "Hide this notice"
+    },
+    "welcome": {
+      "title": "Welcome to OSRS Bingo!",
+      "text": "Your account is ready. Fill in your profile so admins can balance the teams:",
+      "steps": {
+        "main": "Add your main RSN (it plays the bingo by default).",
+        "alts": "Add any alts (they only count toward experience).",
+        "timezone": "Pick your time zone.",
+        "activity": "Say how much you expect to play."
+      },
+      "done": "Done — go to the bingo"
     }
   },
   "join": {
@@ -1283,7 +1312,7 @@
     "nextNeedAccount": "Next · choose an account",
     "nextNeedAgreements": "Next · confirm all 3",
     "progress": "Step {{step}} of {{total}}",
-    "backToEvents": "Back to events",
+    "backToEvents": "Back to home",
     "changeIn": "change it in",
     "timezone": "Time zone:",
     "sent": "Request sent for {{name}} — waiting for an admin.",
@@ -1376,12 +1405,6 @@
     "openLate": "late join open"
   },
   "draft": {
-    "eyebrow": "Administration · {{event}} · Draft",
-    "title": "Draft preview",
-    "description": "Admins only. Share your screen with the captains during the pick session — players never open this page. Drag a player onto a team or use the team dropdown on the card.",
-    "presentation": "Presentation mode",
-    "exitPresentation": "Exit presentation",
-    "noDraft": "There's no draft event to preview.",
     "noCaptain": "No captain yet",
     "region": "Region",
     "activity": "Activity",
@@ -1400,9 +1423,6 @@
       "kc": "Boss KC total ↓",
       "name": "Name A–Z"
     },
-    "count_one": "{{count}} player available · captains not listed",
-    "count_other": "{{count}} players available · captains not listed",
-    "everyoneAssigned": "Every approved player has a team.",
     "ehb": "EHB Σ",
     "bossKc": "Boss KC Σ",
     "alts_one": "{{count}} alt",
@@ -1423,27 +1443,50 @@
     "skill": "Skill",
     "anySkill": "Any",
     "minLevel": "Min level",
-    "countSkill_one": "{{count}} player available · {{skill}} ≥ {{level}}",
-    "countSkill_other": "{{count}} players available · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} player has no skill data yet — they need to “Update from WOM” on My profile.",
     "noSkillData_other": "{{count}} players have no skill data yet — they need to “Update from WOM” on My profile.",
-    "skillLevel": "{{skill}} {{level}}",
     "raidsKc": "Raids Σ",
     "pick": {
-      "moveTo": "Team for {{name}}",
-      "choose": "Team…",
-      "noTeam": "No team",
       "allDetails": "All details",
-      "available": "Available players",
-      "rosters": "Team rosters",
-      "rostersSummary_one": "{{count}} team roster",
-      "rostersSummary_other": "{{count}} team rosters",
-      "totals_one": "{{count}} player · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
-      "totals_other": "{{count}} players · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
-      "dropHere": "Drop a player here",
-      "empty": "No players yet",
-      "noTeams": "Create teams on the Teams page first.",
-      "failed": "The pick wasn't saved: {{reason}}"
+      "empty": "No players yet"
+    },
+    "board": {
+      "title": "Draft board",
+      "round": "Round",
+      "pick": "Pick",
+      "onTheClock": "On the clock:",
+      "onTheClockBadge": "On the clock",
+      "undo": "Undo",
+      "save": "Save teams",
+      "order": "Draft order",
+      "moveEarlier": "Move {{name}} earlier",
+      "moveLater": "Move {{name}} later",
+      "prevTeam": "Prev team",
+      "nextTeam": "Next team",
+      "pool": "Available pool ({{count}})",
+      "poolHint": "\"+ Draft\" picks for the team on the clock",
+      "search": "Search unpicked players…",
+      "draft": "Draft",
+      "draftPlayer": "Draft {{name}}",
+      "everyoneDrafted": "Everyone has been drafted.",
+      "picks_one": "{{count}} pick",
+      "picks_other": "{{count}} picks",
+      "captain": "Captain: {{name}}",
+      "remove": "Return {{name}} to the pool",
+      "noTeams": "Create teams first, on the Teams tab.",
+      "restored": "Your unsaved draft from this browser was restored.",
+      "discard": "Discard draft",
+      "discardTitle": "Discard this draft?",
+      "discardMessage": "Every pick not saved yet goes back to the pool.",
+      "saved_one": "{{count}} player saved to their team.",
+      "saved_other": "{{count}} players saved to their teams.",
+      "skipped": "Changed meanwhile, not saved: {{names}}. Check them on the Teams tab.",
+      "views": "Draft views",
+      "view": {
+        "pool": "Pool",
+        "teams": "Teams"
+      },
+      "liveHint": "During the event only players without a team can be placed; teams already formed stay locked."
     }
   },
   "home": {
@@ -1576,10 +1619,11 @@
     "welcomeBack": "Welcome back, {{name}}",
     "tagline": "The AstralStar clan bingo: get drops with your team, fill the board and score points.",
     "event": {
-      "title": "Current event",
       "endsIn": "Ends in {{time}}",
       "openBoard": "Open board",
-      "none": "No event is running right now. See what's coming on"
+      "none": "No event is open right now. New events show up here.",
+      "live": "{{name}} is live",
+      "liveBadge": "Live now"
     },
     "team": {
       "title": "My team",
@@ -1605,7 +1649,7 @@
       },
       "join": {
         "title": "Join the event",
-        "text": "Pick the account you'll play with and accept the rules on Events."
+        "text": "Press \"Join the bingo\" on this page, pick the account you'll play with and accept the rules."
       },
       "teams": {
         "title": "Teams are drafted",
@@ -1615,6 +1659,17 @@
         "title": "Get drops, score points",
         "text": "Submit drops with a screenshot. Tiles, full rows and columns give your team points."
       }
+    },
+    "join": {
+      "title": "Registration open: {{name}}",
+      "text": "Pick your account, accept the rules and you are in. Admins approve and draft the teams.",
+      "loginText": "Log in with Discord to join the bingo.",
+      "action": "Join the bingo",
+      "login": "Log in with Discord",
+      "registeredText": "You're registered. Admins approve the players and draft the teams before the event starts."
+    },
+    "rules": {
+      "readAll": "Read all rules"
     }
   },
   "audit": {
@@ -1760,5 +1815,77 @@
       "pending": "Pre-verification pending",
       "accepted": "Pre-verified"
     }
+  },
+  "rulesPage": {
+    "title": "Rules",
+    "description": "How the bingo works, how points add up and this event's own rules.",
+    "basics": "The basics",
+    "scoring": {
+      "title": "Scoring",
+      "row": "Per completed row",
+      "column": "Per completed column",
+      "formula": "Team score = completed tiles + full rows + full columns. A tile counts once, when its progress reaches the requirement."
+    }
+  },
+  "tier": {
+    "label": "Progression",
+    "early": "Early game",
+    "mid": "Mid game",
+    "end": "End game",
+    "unknown": "Unknown",
+    "useSuggestion": "Use WOM suggestion ({{tier}})",
+    "womSuggests": "WOM suggests: {{tier}}",
+    "yours": "Your progression:"
+  },
+  "podium": {
+    "eyebrow": "Bingo finished",
+    "champion": "Champion",
+    "tied": "Tied",
+    "points": "pts",
+    "tiles_one": "{{count}} tile",
+    "tiles_other": "{{count}} tiles",
+    "final": "Final results",
+    "provisional": "Results being confirmed",
+    "yourPlace": "Your team {{team}} finished {{place}} with {{total}} pts.",
+    "yourTotal": "Your team {{team}} finished with {{total}} pts."
+  },
+  "dashboard": {
+    "mapTitle": "Board map",
+    "mapLabel": "Tiles by progress",
+    "squareDone": "{{name}}: complete",
+    "squareProgress": "{{name}}: {{value}} of {{requirement}}",
+    "legend": {
+      "none": "Not started",
+      "partial": "In progress (darker = closer)",
+      "complete": "Complete"
+    },
+    "objectivesTitle": "Next objectives",
+    "objectivesHint": "Started tiles closest to done.",
+    "objectiveProgress": "Progress on {{name}}",
+    "remaining": "Left:",
+    "workingOn": "On it: {{names}}",
+    "noObjectives": "No tile started yet. Pick one on the board and mark that you are working on it.",
+    "drops_one": "{{count}} drop",
+    "drops_other": "{{count}} drops",
+    "memberLine_one": "{{name}}: {{points}} pts · {{count}} drop",
+    "memberLine_other": "{{name}}: {{points}} pts · {{count}} drops",
+    "vsLeader": "{{team}} compared with the leader",
+    "behindLeader": "{{points}} pts behind the leader",
+    "leading": "Leading",
+    "pendingReviews_one": "{{count}} submission to review",
+    "pendingReviews_other": "{{count}} submissions to review",
+    "matrixTitle": "Tiles by team",
+    "matrixHint": "Who completed each tile. Hover a cell for the progress.",
+    "nobodyYet": "Nobody started yet:",
+    "tile": "Tile",
+    "doneBy": "Done by",
+    "cell": {
+      "none": "{{team}}: not started",
+      "partial": "{{team}}: {{value}} of {{requirement}}",
+      "complete": "{{team}}: complete"
+    },
+    "mvps": "Top players",
+    "matrixEmpty": "The matrix appears once the event board has its cards.",
+    "noPointsYet": "No points yet"
   }
 }

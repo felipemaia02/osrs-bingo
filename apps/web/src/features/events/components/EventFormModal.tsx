@@ -8,6 +8,7 @@ import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { eventErrorKey } from '../errors'
 import type { BingoEvent, EventPayload } from '../types'
 import { EventScheduleFields } from './EventScheduleFields'
+import { ReadinessChecklist } from './ReadinessChecklist'
 
 const DEFAULT_DURATION_DAYS = 7
 const QUARTER_HOUR = 15
@@ -126,6 +127,11 @@ export function EventFormModal({ event, saving, onSave, onClose }: EventFormModa
           onStartChange={(startAt) => setForm({ ...form, startAt })}
           onEndChange={(endAt) => setForm({ ...form, endAt })}
         />
+        {event ? (
+          <ReadinessChecklist event={event} />
+        ) : (
+          <p className="m-0 text-xs text-rs-muted">{t('events.readiness.afterCreate')}</p>
+        )}
         {errorKey && (
           <p
             role="alert"

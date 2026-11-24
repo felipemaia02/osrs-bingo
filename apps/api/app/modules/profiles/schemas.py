@@ -129,7 +129,29 @@ class BalanceTotals(BaseModel):
     not_found: list[str]
 
 
-class ProfileResponse(BaseModel):
+class ProgressionTier(StrEnum):
+    EARLY = "early"
+    MID = "mid"
+    END = "end"
+
+
+class TierInfo(BaseModel):
+    """Effective tier (the admin's override, else the WOM suggestion) and the suggestion."""
+
+    tier: ProgressionTier | None = None
+    tier_suggested: ProgressionTier | None = None
+    tier_overridden: bool = False
+
+
+class TierOverrideRequest(BaseModel):
+    """An admin's tier for a player; null goes back to the WOM suggestion (feature 069)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    tier: ProgressionTier | None
+
+
+class ProfileResponse(TierInfo):
     discord_id: str
     username: str
     timezone: str | None

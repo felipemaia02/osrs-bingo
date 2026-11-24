@@ -24,9 +24,17 @@ export function AdminEventsPage() {
   const tabs = useEventTabs(all)
   const admin = useEventAdmin()
   const activeEvent = all.find((event) => event.status === 'active')
+  // One draft at a time (068 revision 1): activate it before creating the next.
+  const draftEvent = all.find((event) => event.status === 'draft')
 
   const createButton = (
-    <Button variant="primary" onClick={admin.openCreate} className={isDesktop ? '' : 'w-full'}>
+    <Button
+      variant="primary"
+      onClick={admin.openCreate}
+      disabled={Boolean(draftEvent)}
+      aria-describedby={draftEvent ? 'draft-limit-notice' : undefined}
+      className={isDesktop ? '' : 'w-full'}
+    >
       <AddOutlinedIcon fontSize="small" aria-hidden="true" />
       {t('events.actions.create')}
     </Button>
@@ -91,6 +99,11 @@ export function AdminEventsPage() {
         )}
         {activeEvent && (
           <InfoBanner>{t('events.activeNotice', { name: activeEvent.name })}</InfoBanner>
+        )}
+        {draftEvent && (
+          <span id="draft-limit-notice">
+            <InfoBanner>{t('events.draftNotice', { name: draftEvent.name })}</InfoBanner>
+          </span>
         )}
         {events.isLoading ? (
           <p role="status" className="text-rs-muted">

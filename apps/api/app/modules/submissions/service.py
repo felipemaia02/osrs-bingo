@@ -19,6 +19,7 @@ from app.modules.players.schemas import ParticipantRole, RegistrationStatus
 from app.modules.scoring.service import ScoringService
 from app.modules.submissions.duplicates import possible_duplicates
 from app.modules.submissions.images import EXTENSIONS, validate_screenshot
+from app.modules.submissions.item_match import match_item
 from app.modules.submissions.models import SubmissionDocument
 from app.modules.submissions.repository import SubmissionRepository, preverification_gate
 from app.modules.submissions.schemas import (
@@ -58,6 +59,9 @@ NOT_ACCEPTED = "Only accepted submissions can be reverted"
 DROP_REMOVED = "This item is no longer on this card"
 REVERT_CLOSED = "Accepted submissions can only be reverted while the event is active"
 SCREENSHOT_NOT_NEEDED = "This submission already has a screenshot"
+ITEM_NOT_ON_BOARD = "Item is not on the board"
+ITEM_NOT_ON_TILE = "Item is not accepted by that tile"
+ITEM_ON_SEVERAL_TILES = "Item is on several tiles: resend with one of the positions"
 # Leading hex digits of the file hash in its storage key: one key per file (057).
 SCREENSHOT_KEY_DIGEST_LENGTH = 16
 
@@ -170,6 +174,55 @@ class SubmissionService:
         if not await self._submissions.insert(document):
             raise AppException(409, PREVERIFICATION_EXISTS)
         return self._response(document)
+
+    async def submit_item(
+        self,
+        event_id: str,
+        user: CurrentUser,
+        item: str,
+        position: int | None,
+        note: str | None,
+        screenshot: bytes,
+        bot_key_name: str,
+    ) -> SubmissionResponse:
+        """Bot submissions (feature 072): the API finds the tile that accepts the item, then
+        applies every rule of a site submission."""
+        board = await self._boards.get_by_event(event_id)
+        if board is None or board["status"] != BoardStatus.PUBLISHED:
+            raise AppException(404, POSITION_NOT_FOUND)
+        matches = match_item(board["positions"], item)
+        if not matches:
+            raise AppException(422, ITEM_NOT_ON_BOARD)
+        if position is not None:
+            matches = [match for match in matches if match.position == position]
+            if not matches:
+                raise AppException(422, ITEM_NOT_ON_TILE)
+        if len(matches) > 1:
+            raise AppException(
+                409,
+                ITEM_ON_SEVERAL_TILES,
+                extra={
+                    "candidates": [
+                        {
+                            "position": match.position,
+                            "card_name": match.card_name,
+                            "drop_name": match.drop_name,
+                        }
+                        for match in matches
+                    ]
+                },
+            )
+        match = matches[0]
+        return await self.submit(
+            event_id,
+            user,
+            SubmissionKind.DROP,
+            match.position,
+            match.drop_key,
+            note,
+            screenshot,
+            bot_key_name,
+        )
 
     async def own(self, event_id: str, user: CurrentUser) -> OwnSubmissionsResponse:
         event = await self._require_event(event_id)

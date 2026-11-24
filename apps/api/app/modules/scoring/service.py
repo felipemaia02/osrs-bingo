@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from fractions import Fraction
 from typing import Any
@@ -10,7 +10,7 @@ from app.core.exceptions import AppException, NotFoundError
 from app.modules.auth.schemas import CurrentUser
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import DEFAULT_BOARD_SIZE
-from app.modules.events.models import EventDocument
+from app.modules.events.models import EventDocument, finished_at
 from app.modules.events.repository import EventRepository
 from app.modules.events.schemas import EventStatus
 from app.modules.players.models import PlayerDocument
@@ -22,16 +22,21 @@ from app.modules.scoring.engine import (
     LineBonuses,
     TeamScore,
     Tile,
+    closest_lines,
     competition_positions,
     contributions,
     decimal,
     drop_points,
+    max_total,
     score_team,
 )
 from app.modules.scoring.estimates import card_estimate
 from app.modules.scoring.schemas import (
     DropProgressResponse,
+    LineProgressResponse,
     PlayerContribution,
+    PodiumResponse,
+    PodiumTeam,
     RankingResponse,
     RankingTeam,
     TeamDrop,
@@ -52,6 +57,9 @@ NOT_ON_A_TEAM_PAGE = "Only approved players with a team have a team page"
 RECENT_DROPS_LIMIT = 10
 TEAM_MEMBERS_LIMIT = 500
 VISIBLE_STATUSES = {EventStatus.ACTIVE, EventStatus.FINISHED}
+PODIUM_WINDOW = timedelta(days=7)
+PODIUM_PLACES = 3
+PODIUM_NOT_AVAILABLE = "The podium shows for 7 days after an event finishes"
 
 
 @dataclass(frozen=True)
@@ -217,10 +225,11 @@ class ScoringService:
             return None
         return float(result.progress), float(result.tile.requirement), result.complete
 
-    async def ranking(self, event_id: str) -> RankingResponse:
-        inputs = await self._inputs(event_id)
+    async def _ranked(
+        self, inputs: ScoringInputs, event_id: str
+    ) -> list[tuple[TeamDocument, TeamScore, int, bool]]:
+        """Every team with its score and competition position, best first."""
         teams = await self._teams.list(event_id)
-        assigned = await self._players.list_assigned(event_id)
         scores = {
             str(team["_id"]): score_team(
                 str(team["_id"]), inputs.tiles, inputs.size, inputs.drops, inputs.bonuses
@@ -228,16 +237,54 @@ class ScoringService:
             for team in teams
         }
         positions = competition_positions([(key, score.total) for key, score in scores.items()])
+        ranked = sorted(teams, key=lambda team: positions[str(team["_id"])][0])
+        return [(team, scores[str(team["_id"])], *positions[str(team["_id"])]) for team in ranked]
+
+    async def podium(self, event_id: str, now: datetime | None = None) -> PodiumResponse:
+        """Top 3 of a finished event, public during PODIUM_WINDOW (071; revises 005)."""
+        inputs = await self._inputs(event_id)
+        ended = finished_at(inputs.event)
+        if ended is None or (now or datetime.now(UTC)) - ended.replace(tzinfo=UTC) > PODIUM_WINDOW:
+            raise AppException(404, PODIUM_NOT_AVAILABLE)
+        assigned = await self._players.list_assigned(event_id)
+        names: dict[str, list[str]] = {}
+        for player in sorted(assigned, key=lambda item: item["display_name"].lower()):
+            names.setdefault(str(player["team_id"]), []).append(player["display_name"])
+        pending = await self._submissions.pending_counts(inputs.event["_id"])
+        return PodiumResponse(
+            event_id=event_id,
+            event_name=inputs.event["name"],
+            start_at=inputs.event["start_at"],
+            end_at=inputs.event["end_at"],
+            finished_at=ended,
+            final=not any(pending.values()),
+            teams=[
+                PodiumTeam(
+                    position=position,
+                    tied=tied,
+                    team_id=str(team["_id"]),
+                    team_name=team["name"],
+                    team_color=team.get("color"),
+                    total=float(score.total),
+                    completed_tiles=score.completed_tiles,
+                    members=names.get(str(team["_id"]), []),
+                )
+                for team, score, position, tied in await self._ranked(inputs, event_id)
+                if position <= PODIUM_PLACES
+            ],
+        )
+
+    async def ranking(self, event_id: str) -> RankingResponse:
+        inputs = await self._inputs(event_id)
+        assigned = await self._players.list_assigned(event_id)
         members: dict[str, int] = {}
         for player in assigned:
             members[str(player["team_id"])] = members.get(str(player["team_id"]), 0) + 1
 
-        ranked = sorted(teams, key=lambda team: positions[str(team["_id"])][0])
+        pending = await self._submissions.pending_by_team(inputs.event["_id"])
         team_rows = []
-        for team in ranked:
+        for team, score, position, tied in await self._ranked(inputs, event_id):
             key = str(team["_id"])
-            score = scores[key]
-            position, tied = positions[key]
             team_rows.append(
                 RankingTeam(
                     position=position,
@@ -255,6 +302,7 @@ class ScoringService:
                     column_points=float(score.column_points),
                     bonus_points=float(score.bonus_points),
                     completed_bonus=score.completed_bonus,
+                    pending_submissions=pending.get(key, 0),
                 )
             )
         return RankingResponse(
@@ -389,6 +437,17 @@ class ScoringService:
                     ],
                 )
                 for result in sorted(score.tiles.values(), key=lambda item: item.tile.position)
+            ],
+            max_total=float(max_total(inputs.tiles, inputs.size, inputs.bonuses)),
+            closest_lines=[
+                LineProgressResponse(
+                    axis=line.axis,
+                    line=line.line,
+                    completed=line.completed,
+                    total=line.total,
+                    bonus=line.bonus,
+                )
+                for line in closest_lines(score, inputs.size, inputs.bonuses)
             ],
             calculated_at=datetime.now(UTC),
         )

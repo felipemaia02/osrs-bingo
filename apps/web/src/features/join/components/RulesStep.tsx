@@ -1,21 +1,8 @@
-import type { ReactNode } from 'react'
-import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined'
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
-import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined'
-import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined'
-import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined'
 import { Trans, useTranslation } from 'react-i18next'
+import { ruleSummary } from '../../events/ruleSummary'
 import { EventRulesText } from '../../events/components/EventRulesText'
 import type { RulesAddendum } from '../../events/types'
 import { AGREEMENTS, type Agreement } from '../state'
-
-const SUMMARY: Array<{ key: string; icon: ReactNode }> = [
-  { key: 'board', icon: <GridViewOutlinedIcon sx={{ fontSize: 18 }} /> },
-  { key: 'progress', icon: <TrendingUpOutlinedIcon sx={{ fontSize: 18 }} /> },
-  { key: 'screenshots', icon: <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 18 }} /> },
-  { key: 'teams', icon: <GroupsOutlinedIcon sx={{ fontSize: 18 }} /> },
-  { key: 'buyIn', icon: <PaymentsOutlinedIcon sx={{ fontSize: 18 }} /> },
-]
 
 /** Step 3: fixed summary, the event's written rules and the 3 agreements (FR-004). */
 export function RulesStep({
@@ -39,7 +26,7 @@ export function RulesStep({
   return (
     <>
       <ul className="m-0 flex list-none flex-col gap-2 p-0">
-        {SUMMARY.filter((item) => hasBuyIn || item.key !== 'buyIn').map((item) => (
+        {ruleSummary(hasBuyIn).map((item) => (
           <li key={item.key} className="flex gap-2.5 text-sm">
             <span className="mt-px text-rs-gold" aria-hidden="true">
               {item.icon}

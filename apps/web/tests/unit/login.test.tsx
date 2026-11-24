@@ -19,7 +19,7 @@ it('offers Discord login and public events without administrator controls', asyn
     'http://localhost:8000/auth/discord/login',
   )
   expect(screen.getByRole('heading', { name: 'Join the adventure' })).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: 'Explore events' })).toHaveAttribute('href', '/events')
+  expect(screen.getByRole('link', { name: 'Back to home' })).toHaveAttribute('href', '/')
   expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
   expect(screen.getByRole('group', { name: 'Language' })).toBeInTheDocument()
   expect(screen.getByText(/Discord identifies your account/).closest('div')).toHaveClass(
@@ -27,7 +27,7 @@ it('offers Discord login and public events without administrator controls', asyn
   )
 })
 
-it('continues to events for an existing session', async () => {
+it('continues to the home page for an existing session', async () => {
   vi.mocked(fetchSession).mockResolvedValue({
     id: 'user',
     discord_id: '123',
@@ -37,11 +37,11 @@ it('continues to events for an existing session', async () => {
   renderApp(
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/events" element={<p>Event destination</p>} />
+      <Route path="/" element={<p>Home destination</p>} />
     </Routes>,
     '/login',
   )
-  expect(await screen.findByText('Event destination')).toBeInTheDocument()
+  expect(await screen.findByText('Home destination')).toBeInTheDocument()
 })
 
 it.each([

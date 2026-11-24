@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { BoardPage } from '../../features/bingo/pages/BoardPage'
 import { HomePage } from '../../features/home/pages/HomePage'
 import { AdminEventsPage } from '../../features/events/pages/AdminEventsPage'
-import { PlayerEventsPage } from '../../features/events/pages/PlayerEventsPage'
 import { LoginPage } from '../../features/auth/pages/LoginPage'
 import { TeamsPage } from '../../features/teams/pages/TeamsPage'
 
@@ -15,7 +14,6 @@ import { RankingPage } from '../../features/scoring/pages/RankingPage'
 import { BoardBuilderPage } from '../../features/boards/pages/BoardBuilderPage'
 import { CardCatalogPage } from '../../features/cards/pages/CardCatalogPage'
 import { MySubmissionsPage } from '../../features/submissions/pages/MySubmissionsPage'
-import { DraftPreviewPage } from '../../features/draft/pages/DraftPreviewPage'
 import { JoinEventPage } from '../../features/join/pages/JoinEventPage'
 import { ProfilePage } from '../../features/profiles/pages/ProfilePage'
 import { ReviewPage } from '../../features/submissions/pages/ReviewPage'
@@ -27,7 +25,8 @@ export function AppRouter() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/board" element={<BoardPage />} />
-      <Route path="/events" element={<PlayerEventsPage />} />
+      <Route path="/events" element={<Navigate to="/" replace />} />
+      <Route path="/rules" element={<Navigate to="/" replace />} />
       <Route path="/events/:eventId/join" element={<JoinEventPage />} />
       <Route path="/submissions" element={<MySubmissionsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
@@ -38,7 +37,7 @@ export function AppRouter() {
         <Route path="review" element={<ReviewPage />} />
         <Route path="events" element={<AdminEventsPage />} />
         <Route path="teams" element={<TeamsPage />} />
-        <Route path="draft" element={<DraftPreviewPage />} />
+        <Route path="draft" element={<Navigate to="/admin/teams?tab=draft" replace />} />
         <Route path="cards" element={<CardCatalogPage />} />
         <Route path="boards" element={<BoardBuilderPage />} />
         <Route path="administrators" element={<AdministratorsPage />} />

@@ -34,6 +34,8 @@ interface DropListEditorProps {
   points: string
   /** The card's name: the wiki's drop sources are matched against it (060 rev 2). */
   cardName: string
+  /** Feature 075: the rate column and the wiki import only show when the card has rates. */
+  showRates: boolean
 }
 
 /** Accepted drops as rows picked from OSRS items (feature 033). */
@@ -43,6 +45,7 @@ export function DropListEditor({
   requirement,
   points,
   cardName,
+  showRates,
 }: DropListEditorProps) {
   const { t } = useTranslation()
   const [pasting, setPasting] = useState(false)
@@ -124,7 +127,7 @@ export function DropListEditor({
       <div className="flex items-center justify-between gap-2">
         <span className="text-[13px] font-semibold">{t('cards.drops.title')}</span>
         <span className="flex flex-wrap justify-end gap-2">
-          <WikiRatesButton wiki={wiki} />
+          {showRates && <WikiRatesButton wiki={wiki} />}
           <Button size="sm" onClick={() => setPasting(!pasting)} aria-expanded={pasting}>
             <ContentPasteOutlinedIcon sx={{ fontSize: 16 }} aria-hidden="true" />
             {t('cards.drops.paste')}
@@ -155,7 +158,7 @@ export function DropListEditor({
           </span>
         </div>
       )}
-      <WikiRatesResult wiki={wiki} />
+      {showRates && <WikiRatesResult wiki={wiki} />}
       {pasteNote && (
         <p role="status" className="m-0 text-xs text-rs-gold-bright">
           {pasteNote}
@@ -172,7 +175,7 @@ export function DropListEditor({
             }
             onPick={(option) => pick(row.uid, option)}
             onWeight={(weight) => update(row.uid, { weight })}
-            onRate={(dropRate) => update(row.uid, { dropRate })}
+            onRate={showRates ? (dropRate) => update(row.uid, { dropRate }) : null}
             onRemove={() => remove(row.uid)}
           />
         ))}
@@ -212,7 +215,8 @@ function DropRowItem({
   onType: (name: string) => void
   onPick: (option: ItemOption) => void
   onWeight: (weight: string) => void
-  onRate: (dropRate: string) => void
+  /** null hides the rate input (card without drop rates, 075). */
+  onRate: ((dropRate: string) => void) | null
   onRemove: () => void
 }) {
   const { t } = useTranslation()
@@ -259,19 +263,21 @@ function DropRowItem({
             className="min-h-9 w-20 rounded-[3px] border border-rs-border bg-rs-inset px-2 text-sm text-rs-text outline-none focus:border-rs-gold"
           />
         </label>
-        <label className="flex items-center gap-1 whitespace-nowrap text-xs text-rs-muted">
-          {t('cards.drops.rate')}
-          <input
-            type="text"
-            inputMode="text"
-            maxLength={40}
-            placeholder="1/128"
-            aria-label={t('cards.drops.rateFor', { name: label })}
-            value={row.dropRate}
-            onChange={(event) => onRate(event.target.value)}
-            className="min-h-9 w-20 rounded-[3px] border border-rs-border bg-rs-inset px-2 text-sm text-rs-text outline-none focus:border-rs-gold"
-          />
-        </label>
+        {onRate && (
+          <label className="flex items-center gap-1 whitespace-nowrap text-xs text-rs-muted">
+            {t('cards.drops.rate')}
+            <input
+              type="text"
+              inputMode="text"
+              maxLength={40}
+              placeholder="1/128"
+              aria-label={t('cards.drops.rateFor', { name: label })}
+              value={row.dropRate}
+              onChange={(event) => onRate(event.target.value)}
+              className="min-h-9 w-20 rounded-[3px] border border-rs-border bg-rs-inset px-2 text-sm text-rs-text outline-none focus:border-rs-gold"
+            />
+          </label>
+        )}
         <button
           type="button"
           onClick={onRemove}

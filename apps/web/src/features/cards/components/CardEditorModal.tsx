@@ -18,6 +18,7 @@ import {
 import { cardImageUrl } from '../artwork'
 import { ArtworkField } from './ArtworkField'
 import { DropListEditor } from './DropListEditor'
+import { OptionalDataChecklist } from './OptionalDataChecklist'
 import { TimeEstimateEditor } from './TimeEstimateEditor'
 import { useCardMutations } from '../hooks/useCards'
 import {
@@ -211,17 +212,24 @@ export function CardEditorModal({ card, onSaved, onClose }: CardEditorModalProps
               })}
             </span>
           </fieldset>
+          <OptionalDataChecklist
+            form={form}
+            onChange={(changes) => setForm((current) => ({ ...current, ...changes }))}
+          />
           <DropListEditor
             rows={form.drops}
             onChange={(drops) => update('drops', drops)}
             requirement={form.requirement}
             points={form.tileScore}
             cardName={form.name}
+            showRates={form.hasDropRates}
           />
-          <TimeEstimateEditor
-            form={form}
-            onChange={(changes) => setForm((current) => ({ ...current, ...changes }))}
-          />
+          {form.hasTimeEstimate && (
+            <TimeEstimateEditor
+              form={form}
+              onChange={(changes) => setForm((current) => ({ ...current, ...changes }))}
+            />
+          )}
           <div className="flex flex-col gap-2 md:col-span-2">
             <Field label={t('cards.form.wikiArticle')}>
               <span className="flex gap-2">

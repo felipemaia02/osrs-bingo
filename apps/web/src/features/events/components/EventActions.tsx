@@ -8,6 +8,7 @@ import RuleOutlinedIcon from '@mui/icons-material/RuleOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Button } from '../../../components/ui/Button'
+import { useEventReadiness } from '../hooks/useEvents'
 import type { BingoEvent } from '../types'
 
 export type EventTransition = 'activate' | 'finish'
@@ -37,6 +38,9 @@ export function EventActions({
   const size = mobile ? 'md' : 'sm'
   const grow = mobile ? 'flex-1' : ''
   const named = (label: string) => t(label) + ' · ' + event.name
+  const readiness = useEventReadiness(event.status === 'draft' ? event.id : null)
+  const missing = (readiness.data?.items ?? []).filter((item) => item.required && !item.done)
+  const blocked = missing.length > 0
 
   if (event.status === 'finished')
     return (
@@ -119,11 +123,23 @@ export function EventActions({
         size={size}
         className={grow}
         aria-label={named('events.actions.activate')}
+        aria-describedby={blocked ? `activate-blocked-${event.id}` : undefined}
+        disabled={blocked}
         onClick={() => onTransition(event, 'activate')}
       >
         <PlayArrowIcon sx={ICON} aria-hidden="true" />
         {t('events.actions.activateShort')}
       </Button>
+      {blocked && (
+        <span
+          id={`activate-blocked-${event.id}`}
+          className="basis-full text-xs text-rs-danger-text"
+        >
+          {t('events.readiness.blocked', {
+            items: missing.map((item) => t(`events.readiness.items.${item.key}`)).join(', '),
+          })}
+        </span>
+      )}
     </div>
   )
 }

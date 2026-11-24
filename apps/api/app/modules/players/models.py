@@ -54,6 +54,7 @@ class RosterDocument(PlayerDocument, total=False):
     account_count: int | None
     profile_accounts: list[dict[str, Any]]
     timezone: str | None
+    tier_override: dict[str, Any] | None
     mate_users: list[dict[str, object]]
     mate_profiles: list[dict[str, object]]
     buy_in_admin: list[dict[str, object]]

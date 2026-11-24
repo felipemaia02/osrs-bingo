@@ -83,7 +83,9 @@ export function TileCard({ tile, match, selected, onSelect }: TileCardProps) {
           <span className="text-rs-muted">
             {t('board.requirementShort', { count: tile.requirement })}
           </span>
-          <strong>{t('tile.points', { count: tile.points })}</strong>
+          <strong className="text-rs-gold-bright">
+            {t('tile.points', { count: tile.points })}
+          </strong>
         </span>
       )}
     </button>

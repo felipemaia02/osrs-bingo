@@ -15,7 +15,7 @@ import type { Skill } from '../../profiles/skills'
 import { LateJoinBadge } from '../../teams/components/RosterRowParts'
 import type { Player } from '../../teams/types'
 import { skillLevel } from '../filters'
-import { DRAG_TYPE } from '../rosters'
+import { TierBadge } from '../../profiles/components/TierBadge'
 
 /** Reviewer first, then the buy-in; none for nickname registrations (FR-003). */
 function PlayerBadge({ player }: { player: Player }) {
@@ -46,7 +46,6 @@ export function DraftPlayerCard({
   onOpen,
   skill,
   picker,
-  draggable,
 }: {
   player: Player
   large: boolean
@@ -57,10 +56,8 @@ export function DraftPlayerCard({
   onOpen: () => void
   /** The skill chosen in the filter (032), shown with this player's level. */
   skill: Skill | null
-  /** Team dropdown (049, FR-004); absent when nobody can be picked. */
+  /** The "+ Draft" action (076); absent when nobody can be picked. */
   picker?: ReactNode
-  /** Drag to a team on desktop (049, FR-003). */
-  draggable: boolean
 }) {
   const { t } = useTranslation()
   const format = useStatFormat()
@@ -68,17 +65,11 @@ export function DraftPlayerCard({
   return (
     <article
       aria-label={player.display_name}
-      draggable={draggable}
-      onDragStart={(drag) => {
-        drag.dataTransfer.setData(DRAG_TYPE, player.id)
-        drag.dataTransfer.effectAllowed = 'move'
-      }}
       // A click anywhere on the card toggles it (mouse); the name button is the keyboard path.
-      // No overlay button: Firefox can't start a drag from a button.
       onClick={onToggle}
       className={`relative flex flex-col gap-2.5 rounded border bg-rs-surface p-3 shadow-rs-panel cursor-pointer hover:border-rs-border-strong ${
         expanded ? 'border-rs-border-strong' : 'border-rs-border/70'
-      } ${draggable ? 'cursor-grab active:cursor-grabbing' : ''}`}
+      }`}
     >
       <div className="flex items-start justify-between gap-2">
         <button
@@ -102,6 +93,7 @@ export function DraftPlayerCard({
         </button>
         <span className="flex flex-wrap justify-end gap-1">
           <LateJoinBadge player={player} />
+          {player.account_id && <TierBadge tier={player.tier} />}
           <PlayerBadge player={player} />
         </span>
       </div>

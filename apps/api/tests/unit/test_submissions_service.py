@@ -556,3 +556,57 @@ async def test_players_without_a_review_role_are_refused(
     assert caught.value.status_code == 403
     with pytest.raises(NotFoundError):
         await deps["service"].screenshot("id", REVIEWER)
+
+
+async def bot_submit(deps: dict[str, Any], item: str, position: int | None = None) -> Any:
+    return await deps["service"].submit_item(
+        str(EVENT_ID), USER, item, position, None, PNG, "clan-bot"
+    )
+
+
+async def test_bot_submission_finds_the_tile_from_the_item_name(deps: dict[str, Any]) -> None:
+    """072: the item is on Vorkath and Theatre of Blood; `position` picks one."""
+    with pytest.raises(AppException) as several:
+        await bot_submit(deps, "  skeletal VISAGE ")
+    assert several.value.status_code == 409
+    assert several.value.extra["candidates"] == [
+        {"position": 1, "card_name": "Vorkath", "drop_name": "Skeletal Visage"},
+        {"position": 2, "card_name": "Theatre of Blood", "drop_name": "Skeletal Visage"},
+    ]
+    deps["submissions"].insert.assert_not_awaited()
+
+    result = await bot_submit(deps, "skeletal visage", position=1)
+
+    document = deps["submissions"].insert.await_args.args[0]
+    assert (result.position, result.card_name, result.drop_name) == (
+        1,
+        "Vorkath",
+        "Skeletal Visage",
+    )
+    assert document["source"] == "bot" and document["bot_key_name"] == "clan-bot"
+
+
+async def test_bot_submission_of_an_item_on_one_tile_needs_no_position(
+    deps: dict[str, Any],
+) -> None:
+    only_vorkath = board()
+    only_vorkath["positions"][1]["card"] = {**card("Theatre of Blood", True), "drops": []}
+    deps["service"]._boards.get_by_event.return_value = only_vorkath
+    result = await bot_submit(deps, "Vorkath's head")
+    assert (result.position, result.drop_key) == (1, "vorkaths-head")
+
+
+@pytest.mark.parametrize(("item", "position"), [("Twisted bow", None), ("Skeletal visage", 9)])
+async def test_bot_submission_of_an_item_not_on_the_board_or_tile(
+    deps: dict[str, Any], item: str, position: int | None
+) -> None:
+    with pytest.raises(AppException) as error:
+        await bot_submit(deps, item, position)
+    assert error.value.status_code == 422
+
+
+async def test_bot_submission_keeps_the_site_rules(deps: dict[str, Any]) -> None:
+    deps["events"].get.return_value = event("finished")
+    with pytest.raises(AppException) as error:
+        await bot_submit(deps, "Skeletal visage", position=1)
+    assert error.value.status_code == 409

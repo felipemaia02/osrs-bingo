@@ -18,6 +18,8 @@ from app.modules.security.dependencies import limit_authentication
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
+NEW_USER_PATH = "/profile?welcome=1"
+
 
 def state_cookie_path() -> str:
     """The public callback path, which includes any proxy prefix (``/api`` on Railway).
@@ -69,13 +71,15 @@ async def callback(
     try:
         if error or not code:
             raise AppException(400, "Discord login failed")
-        token = await service.complete_login(code, state, request.cookies.get(STATE_COOKIE, ""))
+        result = await service.complete_login(code, state, request.cookies.get(STATE_COOKIE, ""))
     except AppException:
         response = RedirectResponse(f"{settings.frontend_url.rstrip('/')}/login?login=failed", 303)
     else:
         await service.logout(request.cookies.get(SESSION_COOKIE))
-        response = RedirectResponse(f"{settings.frontend_url.rstrip('/')}/login", 303)
-        set_auth_cookie(response, SESSION_COOKIE, token, SESSION_MAX_AGE)
+        # New accounts complete their profile first (feature 074).
+        target = NEW_USER_PATH if result.new_user else "/login"
+        response = RedirectResponse(f"{settings.frontend_url.rstrip('/')}{target}", 303)
+        set_auth_cookie(response, SESSION_COOKIE, result.token, SESSION_MAX_AGE)
     response.delete_cookie(STATE_COOKIE, path=state_cookie_path())
     response.headers["Cache-Control"] = "no-store"
     response.headers["Referrer-Policy"] = "no-referrer"

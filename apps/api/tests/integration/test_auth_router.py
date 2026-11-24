@@ -9,13 +9,14 @@ from app.core.exceptions import AppException
 from app.main import app
 from app.modules.auth.dependencies import get_auth_service
 from app.modules.auth.schemas import CurrentUser
+from app.modules.auth.service import LoginResult
 
 
 @pytest.fixture
 def auth() -> Iterator[AsyncMock]:
     service = AsyncMock()
     service.start_login.return_value = ("https://discord.com/oauth2/authorize?state=test", "test")
-    service.complete_login.return_value = "opaque-token"
+    service.complete_login.return_value = LoginResult(token="opaque-token", new_user=False)
     service.current_user.return_value = CurrentUser(
         id="user", discord_id="123", username="Crab", is_admin=False
     )
@@ -53,6 +54,15 @@ async def test_login_callback_and_logout_cookie_contract(
     assert response.status_code == 204
     auth.logout.assert_awaited_with("opaque-token")
     assert "Max-Age=0" in response.headers["set-cookie"]
+
+
+async def test_first_login_goes_to_the_profile(client: AsyncClient, auth: AsyncMock) -> None:
+    """Feature 074: a new account completes its profile first."""
+    auth.complete_login.return_value = LoginResult(token="opaque-token", new_user=True)
+    await client.get("/auth/discord/login")
+    response = await client.get("/auth/discord/callback?code=code&state=test")
+    assert response.status_code == 303
+    assert response.headers["location"] == "http://localhost:5173/profile?welcome=1"
 
 
 async def test_bad_callback_does_not_set_session(client: AsyncClient, auth: AsyncMock) -> None:

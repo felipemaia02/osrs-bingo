@@ -4,7 +4,9 @@ import { Button } from '../../../components/ui/Button'
 import { FormModal } from '../../../components/ui/FormModal'
 import { FIELD_CLASS } from '../../../components/ui/fieldClass'
 import { useSession } from '../../auth/hooks/useSession'
+import { TierBadge } from '../../profiles/components/TierBadge'
 import { useStatFormat } from '../../profiles/hooks/useStatFormat'
+import { PROGRESSION_TIERS, type ProgressionTier } from '../../profiles/tier'
 import { useAccountsLine } from '../rosterFormat'
 import { teamErrorKey } from '../errors'
 import { useAdministrators, useTeamMutations } from '../hooks/useTeams'
@@ -33,10 +35,13 @@ export function ParticipantModal({
   const format = useStatFormat()
   const accountsLine = useAccountsLine()
   const admins = useAdministrators(true)
-  const { updateParticipation } = useTeamMutations()
+  const { updateParticipation, setTier } = useTeamMutations()
   const [role, setRole] = useState<ParticipantRole | ''>(player.role ?? '')
   const [status, setStatus] = useState<BuyInStatus>(player.buy_in_status ?? 'pending')
   const [receivedBy, setReceivedBy] = useState<string>('')
+  // '' = use the WOM suggestion (feature 069).
+  const initialTier = player.tier_overridden ? (player.tier ?? '') : ''
+  const [tier, setTierChoice] = useState<ProgressionTier | ''>(initialTier)
   const [errorKey, setErrorKey] = useState<string | null>(null)
   // Paid defaults to the admin making the change (they usually received it).
   const receiver =
@@ -44,15 +49,15 @@ export function ParticipantModal({
     admins.data?.find((admin) => admin.username === player.buy_in_admin_name)?.id ||
     session.data?.id ||
     ''
-  const busy = updateParticipation.isPending
+  const busy = updateParticipation.isPending || setTier.isPending
   // Events without a buy-in report no status (the API hides it); keep the stored one untouched.
   const hasBuyIn = player.buy_in_status !== null && player.buy_in_status !== undefined
 
   const submit = (event: FormEvent) => {
     event.preventDefault()
     setErrorKey(null)
-    updateParticipation.mutate(
-      {
+    const save = async () => {
+      await updateParticipation.mutateAsync({
         eventId,
         playerId: player.id,
         payload: {
@@ -60,11 +65,13 @@ export function ParticipantModal({
           buy_in_status: status,
           buy_in_admin_id: status === 'paid' ? receiver : null,
         },
-      },
-      {
-        onSuccess: () => onSaved(t('teams.participant.saved', { name: player.display_name })),
-        onError: (error) => setErrorKey(teamErrorKey(error)),
-      },
+      })
+      if (tier !== initialTier)
+        await setTier.mutateAsync({ eventId, playerId: player.id, tier: tier || null })
+    }
+    save().then(
+      () => onSaved(t('teams.participant.saved', { name: player.display_name })),
+      (error: unknown) => setErrorKey(teamErrorKey(error)),
     )
   }
 
@@ -90,6 +97,30 @@ export function ParticipantModal({
             </>
           )}
         </div>
+        {player.account_id && (
+          <label className="flex flex-col gap-1 text-[13px] font-semibold">
+            <span className="flex flex-wrap items-center gap-2">
+              {t('tier.label')}
+              <TierBadge tier={player.tier} />
+            </span>
+            <select
+              value={tier}
+              onChange={(event) => setTierChoice(event.target.value as ProgressionTier | '')}
+              className={`${FIELD_CLASS} font-normal`}
+            >
+              <option value="">
+                {t('tier.useSuggestion', {
+                  tier: t(`tier.${player.tier_suggested ?? 'unknown'}`),
+                })}
+              </option>
+              {PROGRESSION_TIERS.map((option) => (
+                <option key={option} value={option}>
+                  {t(`tier.${option}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="flex flex-col gap-1 text-[13px] font-semibold">
           {t('teams.roster.role')}
           <select

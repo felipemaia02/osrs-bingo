@@ -38,6 +38,10 @@ class EventRepository:
         log_event(self._logger, 20, "event_document_inserted", event_id=str(document["_id"]))
         return document
 
+    async def has_draft(self) -> bool:
+        """Whether a draft event exists (one draft at a time, feature 068 revision 1)."""
+        return bool(await self._collection.count_documents({"status": EventStatus.DRAFT}, limit=1))
+
     async def get(self, event_id: str) -> EventDocument | None:
         object_id = self._object_id(event_id)
         if object_id is None:
@@ -53,15 +57,19 @@ class EventRepository:
         cursor = self._collection.find({"_id": {"$in": event_ids}}).sort("created_at", -1)
         return [document async for document in cursor]
 
-    async def list(self, status: EventStatus | None = None) -> list[EventDocument]:
-        query = {"status": status} if status is not None else {}
+    async def list(
+        self, status: EventStatus | builtin_list[EventStatus] | None = None
+    ) -> builtin_list[EventDocument]:
+        """One status, several (feature 068) or all events when None/empty."""
+        statuses = [status] if isinstance(status, EventStatus) else status or []
+        query: dict[str, object] = {"status": {"$in": statuses}} if statuses else {}
         cursor = self._collection.find(query).sort("created_at", -1)
         documents = [document async for document in cursor]
         log_event(
             self._logger,
             20,
             "event_documents_listed",
-            status=status.value if status else "all",
+            status=",".join(statuses) if statuses else "all",
             count=len(documents),
         )
         return documents
@@ -151,10 +159,16 @@ class EventRepository:
                 self._logger, 30, "event_finish_rejected", event_id=event_id, reason="invalid_id"
             )
             return None
+        now = datetime.now(UTC)
         document = await self._collection.find_one_and_update(
             {"_id": object_id, "status": EventStatus.ACTIVE},
             {
-                "$set": {"status": EventStatus.FINISHED, "updated_at": datetime.now(UTC)},
+                "$set": {
+                    "status": EventStatus.FINISHED,
+                    "updated_at": now,
+                    # When the podium window starts (feature 071).
+                    "finished_at": now,
+                },
                 "$unset": {"active_slot": ""},
             },
             return_document=ReturnDocument.AFTER,

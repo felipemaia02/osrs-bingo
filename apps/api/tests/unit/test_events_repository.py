@@ -71,7 +71,9 @@ async def test_overlapping_activation_and_capacity_after_finish() -> None:
     assert sum(limit for _, limit in results) == 1
     active = next(item for item in documents if item["status"] == EventStatus.ACTIVE)
     draft = next(item for item in documents if item["status"] == EventStatus.DRAFT)
-    await repository.finish(str(active["_id"]))
+    finished = await repository.finish(str(active["_id"]))
+    # The podium window starts when the event is finished (feature 071).
+    assert finished is not None and finished["finished_at"] == finished["updated_at"]
     result, limit = await repository.activate(str(draft["_id"]))
     assert result is not None and not limit
     assert sum(item["status"] == EventStatus.ACTIVE for item in documents) == 1

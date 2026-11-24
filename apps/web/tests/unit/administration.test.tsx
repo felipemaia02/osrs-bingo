@@ -80,10 +80,10 @@ it('makes every overview card a complete navigation link', async () => {
   expect(await screen.findByRole('button', { name: 'New event' })).toBeInTheDocument()
 })
 
-it('keeps event management out of the public event listing even for admins', async () => {
+it('sends the former events page home and keeps event management in the portal', async () => {
   const user = userEvent.setup()
   renderApp(<AppRouter />, '/events')
-  await screen.findByText('No events found.')
+  await screen.findByRole('heading', { level: 1, name: /Welcome/ })
   expect(screen.queryByRole('button', { name: 'New event' })).not.toBeInTheDocument()
   const adminEvents = (await screen.findAllByRole('link', { name: 'Events' })).find(
     (link) => link.getAttribute('href') === '/admin/events',

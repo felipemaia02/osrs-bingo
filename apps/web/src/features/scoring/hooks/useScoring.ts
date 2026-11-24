@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { fetchOwnTeamScore, fetchRanking, fetchTeamScore } from '../api/scoringApi'
+import { useQueries, useQuery } from '@tanstack/react-query'
+import { fetchOwnTeamScore, fetchPodium, fetchRanking, fetchTeamScore } from '../api/scoringApi'
 
 const SCORING_KEY = ['scoring'] as const
 
@@ -19,6 +19,25 @@ export function useTeamScore(eventId: string, teamId: string) {
   return useQuery({
     queryKey: [...SCORING_KEY, 'team', eventId, teamId],
     queryFn: () => fetchTeamScore(eventId, teamId),
+  })
+}
+
+export function usePodium(eventId: string | null) {
+  return useQuery({
+    queryKey: [...SCORING_KEY, 'podium', eventId],
+    queryFn: () => fetchPodium(eventId!),
+    enabled: Boolean(eventId),
+    retry: false,
+  })
+}
+
+/** Every team's board progress at once, for the admin tiles × teams matrix (077). */
+export function useTeamScores(eventId: string, teamIds: string[]) {
+  return useQueries({
+    queries: teamIds.map((teamId) => ({
+      queryKey: [...SCORING_KEY, 'team', eventId, teamId],
+      queryFn: () => fetchTeamScore(eventId, teamId),
+    })),
   })
 }
 

@@ -1,11 +1,19 @@
 import { useTranslation } from 'react-i18next'
+import { CardImage } from '../../../components/ui/CardImage'
 import { Panel } from '../../../components/ui/Panel'
 import { useSubmissionTime } from '../../submissions/hooks/useSubmissionTime'
 import { usePointsFormat } from '../hooks/usePointsFormat'
 import type { TeamDrop } from '../types'
 
 /** The team's newest accepted drops: who got what and the points it gave them (FR-004). */
-export function RecentDrops({ drops }: { drops: TeamDrop[] }) {
+export function RecentDrops({
+  drops,
+  imageFor = () => null,
+}: {
+  drops: TeamDrop[]
+  /** Card image by card name, from the published board (077 FR-004). */
+  imageFor?: (cardName: string) => string | null
+}) {
   const { t } = useTranslation()
   const { when } = useSubmissionTime()
   const points = usePointsFormat()
@@ -19,9 +27,14 @@ export function RecentDrops({ drops }: { drops: TeamDrop[] }) {
           {drops.map((drop) => (
             <li
               key={drop.submission_id}
-              className="flex items-start justify-between gap-3 border-b border-rs-border/45 py-2.5 last:border-b-0"
+              className="flex items-center justify-between gap-3 border-b border-rs-border/45 py-2.5 last:border-b-0"
             >
-              <span className="flex min-w-0 flex-col gap-0.5">
+              <CardImage
+                name={drop.card_name}
+                imageUrl={imageFor(drop.card_name)}
+                className="size-9 shrink-0"
+              />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <strong className="text-[13px] text-rs-text">
                   {drop.drop_name ?? drop.card_name}
                   {drop.quantity > 1 && ` ×${drop.quantity}`}

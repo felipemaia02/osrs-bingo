@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -29,6 +30,14 @@ class TileProgressResponse(BaseModel):
     drops: list[DropProgressResponse]
 
 
+class LineProgressResponse(BaseModel):
+    axis: Literal["row", "column"]
+    line: int
+    completed: int
+    total: int
+    bonus: int | None
+
+
 class TeamScoreResponse(BaseModel):
     event_id: str
     team_id: str
@@ -48,6 +57,9 @@ class TeamScoreResponse(BaseModel):
     row_bonus: int | None
     column_bonus: int | None
     tiles: list[TileProgressResponse]
+    # Feature 070: the most the board can give, and the rows/columns closest to their bonus.
+    max_total: float = 0
+    closest_lines: list[LineProgressResponse] = []
     calculated_at: datetime
 
 
@@ -67,6 +79,34 @@ class RankingTeam(BaseModel):
     column_points: float
     bonus_points: float
     completed_bonus: int
+    # Submissions of this team waiting for review (feature 077).
+    pending_submissions: int = 0
+
+
+class PodiumTeam(BaseModel):
+    """One of the top 3 teams of a finished event (feature 071)."""
+
+    position: int
+    tied: bool
+    team_id: str
+    team_name: str
+    team_color: str | None
+    total: float
+    completed_tiles: int
+    members: list[str]
+
+
+class PodiumResponse(BaseModel):
+    """Public for 7 days after the event finishes (071 BR-001): the top 3 only."""
+
+    event_id: str
+    event_name: str
+    start_at: datetime
+    end_at: datetime
+    finished_at: datetime
+    # False while submissions still wait for review (071 FR-004).
+    final: bool
+    teams: list[PodiumTeam]
 
 
 class PlayerContribution(BaseModel):

@@ -69,7 +69,7 @@ function renderJoin() {
   return renderApp(
     <Routes>
       <Route path="/events/:eventId/join" element={<JoinEventPage />} />
-      <Route path="/events" element={<p>Events list</p>} />
+      <Route path="/" element={<p>Home page</p>} />
     </Routes>,
     `/events/${EVENT.id}/join`,
   )
@@ -141,7 +141,7 @@ describe('Join event', () => {
     await user.click(screen.getByRole('checkbox', { name: /I accept the team/ }))
     await user.click(send)
 
-    expect(await screen.findByText('Events list')).toBeInTheDocument()
+    expect(await screen.findByText('Home page')).toBeInTheDocument()
     expect(vi.mocked(teamsApi.createPlayer).mock.calls[0][0]).toEqual({
       eventId: EVENT.id,
       payload: {

@@ -1,3 +1,4 @@
+import type { TierInfo } from '../profiles/tier'
 import type { WikiSync } from '../profiles/types'
 import type { Skill } from '../profiles/skills'
 import type { CombatSkill } from '../profiles/types'
@@ -12,7 +13,7 @@ export interface Team {
   member_count: number
 }
 
-export interface Player {
+export interface Player extends TierInfo {
   id: string
   event_id: string
   team_id: string | null
@@ -114,10 +115,6 @@ export interface JoinPayload {
   accept_team: true
 }
 
-export interface PlayerAssignmentPayload {
-  team_id: string | null
-}
-
 export type RosterGroup = 'pending' | 'unassigned' | 'assigned'
 export interface PlayerFilters {
   group: RosterGroup
@@ -155,4 +152,10 @@ export interface DraftPreview {
   players: Player[]
   /** Approved players already on a team, for the pinned rosters (feature 049). */
   members: Player[]
+}
+
+/** Result of saving the draft board (feature 076). */
+export interface DraftSaveResult {
+  changed: number
+  skipped: string[]
 }

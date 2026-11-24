@@ -1,3 +1,5 @@
+from typing import Any
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
@@ -8,11 +10,17 @@ logger = get_logger(__name__)
 
 class AppException(Exception):
     def __init__(
-        self, status_code: int, detail: str, headers: dict[str, str] | None = None
+        self,
+        status_code: int,
+        detail: str,
+        headers: dict[str, str] | None = None,
+        extra: dict[str, Any] | None = None,
     ) -> None:
         self.headers = headers
         self.status_code = status_code
         self.detail = detail
+        # More fields for the error body, e.g. the tiles a bot can choose from (feature 072).
+        self.extra = extra or {}
         super().__init__(detail)
 
 
@@ -41,5 +49,7 @@ async def app_exception_handler(request: Request, exc: AppException) -> JSONResp
         detail=exc.detail,
     )
     return JSONResponse(
-        status_code=exc.status_code, content={"detail": exc.detail}, headers=exc.headers
+        status_code=exc.status_code,
+        content={**exc.extra, "detail": exc.detail},
+        headers=exc.headers,
     )

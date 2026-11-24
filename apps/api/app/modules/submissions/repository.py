@@ -154,6 +154,14 @@ class SubmissionRepository:
         ]
         return {row["_id"]: row["count"] async for row in self._collection.aggregate(pipeline)}
 
+    async def pending_by_team(self, event_id: ObjectId) -> dict[str, int]:
+        """Submissions waiting for review per team id (feature 077)."""
+        pipeline: list[dict[str, Any]] = [
+            {"$match": {"event_id": event_id, "status": SubmissionStatus.PENDING}},
+            {"$group": {"_id": "$team_id", "count": {"$sum": 1}}},
+        ]
+        return {str(row["_id"]): row["count"] async for row in self._collection.aggregate(pipeline)}
+
     async def preverification_statuses(
         self, event_id: ObjectId, keys: set[tuple[ObjectId, int]]
     ) -> dict[tuple[ObjectId, int], str]:

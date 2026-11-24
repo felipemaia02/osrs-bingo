@@ -24,8 +24,17 @@ class LinkedAccount(TypedDict):
     checked_at: NotRequired[datetime | None]
 
 
+class TierOverride(TypedDict):
+    """An admin's progression tier for the player (feature 069)."""
+
+    tier: str
+    admin_id: ObjectId
+    set_at: datetime
+
+
 class ProfileDocument(TypedDict):
     _id: ObjectId
+    tier_override: NotRequired[TierOverride | None]
     timezone: NotRequired[str | None]
     activity: NotRequired[str | None]
     accounts: list[LinkedAccount]

@@ -10,7 +10,7 @@ from app.modules.audit.decorator import audited
 from app.modules.auth.dependencies import AdminDependency, UserDependency
 from app.modules.boards.repository import BoardRepository
 from app.modules.boards.schemas import MAX_BOARD_POSITIONS
-from app.modules.bots.dependencies import BotCallerDependency
+from app.modules.bots.dependencies import BotCallerDependency, RequiredBotDependency
 from app.modules.events.repository import EventRepository
 from app.modules.players.repository import PlayerRepository
 from app.modules.submissions.repository import SubmissionRepository
@@ -29,11 +29,13 @@ from app.modules.teams.repository import TeamRepository
 
 # Matched by RequestSafetyMiddleware to allow screenshot-sized bodies on this route only.
 UPLOAD_PATH_PATTERN = re.compile(
-    r"/events/[^/]+/submissions|/submissions/[^/]+/screenshot|/admin/cards/artwork"
+    r"(/bot)?/events/[^/]+/submissions|/submissions/[^/]+/screenshot|/admin/cards/artwork"
 )
 MULTIPART_OVERHEAD_BYTES = 64 * 1024
+ITEM_NAME_MAX_LENGTH = 120
 
 player_router = APIRouter(tags=["submissions"])
+bot_router = APIRouter(prefix="/bot", tags=["submissions"])
 admin_router = APIRouter(prefix="/admin", tags=["submissions"])
 
 
@@ -71,9 +73,33 @@ async def submit(
     drop_key: Annotated[str | None, Form(max_length=120)] = None,
     note: Annotated[str | None, Form(max_length=NOTE_MAX_LENGTH)] = None,
 ) -> SubmissionResponse:
+    """Site and bots (048); bots can also send just the item name to the bot route (072)."""
     data = await screenshot.read(settings.max_screenshot_bytes + 1)
     bot_key_name = bot.key.name if bot else None
     return await service.submit(event_id, user, kind, position, drop_key, note, data, bot_key_name)
+
+
+@bot_router.post(
+    "/events/{event_id}/submissions",
+    response_model=SubmissionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+@audited("submission.created")
+async def bot_submit(
+    event_id: str,
+    bot: RequiredBotDependency,
+    user: UserDependency,
+    service: SubmissionServiceDependency,
+    item: Annotated[str, Form(min_length=1, max_length=ITEM_NAME_MAX_LENGTH)],
+    screenshot: Annotated[UploadFile, File()],
+    position: Annotated[int | None, Form(ge=1, le=MAX_BOARD_POSITIONS)] = None,
+    note: Annotated[str | None, Form(max_length=NOTE_MAX_LENGTH)] = None,
+) -> SubmissionResponse:
+    """Bot keys with `submissions:write` only, acting for `X-Acting-User` (feature 072).
+
+    The API finds the tile from the item name; `position` only picks between several."""
+    data = await screenshot.read(settings.max_screenshot_bytes + 1)
+    return await service.submit_item(event_id, user, item, position, note, data, bot.key.name)
 
 
 @player_router.get("/events/{event_id}/submissions/me", response_model=OwnSubmissionsResponse)

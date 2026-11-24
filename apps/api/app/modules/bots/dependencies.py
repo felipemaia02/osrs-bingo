@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, Request
 
+from app.core.exceptions import AppException
 from app.modules.bots.repository import BotKeyRepository
 from app.modules.bots.schemas import BotCaller
 from app.modules.bots.service import BotKeyService
@@ -20,3 +21,16 @@ def current_bot(request: Request) -> BotCaller | None:
 
 
 BotCallerDependency = Annotated[BotCaller | None, Depends(current_bot)]
+
+BOT_KEY_REQUIRED = "Bot key required"
+
+
+def require_bot(request: Request) -> BotCaller:
+    """Bot-only routes (feature 072): website users get 403."""
+    caller = current_bot(request)
+    if caller is None:
+        raise AppException(403, BOT_KEY_REQUIRED)
+    return caller
+
+
+RequiredBotDependency = Annotated[BotCaller, Depends(require_bot)]

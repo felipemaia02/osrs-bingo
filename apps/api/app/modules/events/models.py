@@ -22,3 +22,12 @@ class EventDocument(TypedDict):
     # Clarifications added while the event is active (feature 036).
     rules_addenda: NotRequired[list[dict[str, Any]]]
     buy_in: NotRequired[str | None]
+    # Set when an admin finishes the event (feature 071).
+    finished_at: NotRequired[datetime]
+
+
+def finished_at(event: EventDocument) -> datetime | None:
+    """When a finished event ended; events finished before feature 071 use updated_at."""
+    if event["status"] != EventStatus.FINISHED:
+        return None
+    return event.get("finished_at") or event["updated_at"]

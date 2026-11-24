@@ -122,6 +122,8 @@ const SCORE: TeamScore = {
   column_points: 0,
   row_bonus: 25,
   column_bonus: 30,
+  max_total: 255,
+  closest_lines: [{ axis: 'column', line: 2, completed: 2, total: 3, bonus: 30 }],
   tiles: [
     ...[1, 2, 3].map((position) => ({
       position,
@@ -184,11 +186,18 @@ describe('team progress on the board', () => {
     // The name isn't repeated by an initials emblem.
     expect(within(panel).queryByText('SA')).toBeNull()
     expect(screen.queryByText('Your team')).toBeNull()
-    expect(panel).toHaveTextContent('Completed tiles (3 of 9)30')
-    expect(panel).toHaveTextContent('Rows · 1 × 2525')
+    // Feature 070: total against the maximum, stat blocks and the closest bonus.
+    expect(panel).toHaveTextContent('55/ 255 pts')
+    expect(within(panel).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '22')
+    expect(panel).toHaveTextContent('Tiles3/930 pts')
+    expect(panel).toHaveTextContent('Rows1/325 pts')
+    expect(panel).toHaveTextContent('Columns0/30 pts')
+    expect(within(panel).getByRole('listitem')).toHaveTextContent('Column 2 — 2/3 tiles+30')
     expect(screen.queryByText(/Progress unavailable/)).toBeNull()
 
     const grid = screen.getByRole('region', { name: '3 by 3 board' })
+    // Row 1's bonus is earned: its axis label turns into a check (070 FR-005).
+    expect(within(grid).getAllByText('✓')).toHaveLength(1)
     expect(within(grid).getAllByText('Complete +10')).toHaveLength(3)
     const hydra = within(grid).getByRole('button', { name: /^Hydra,/ })
     expect(hydra).toHaveAccessibleName(/progress 6 of 8/)
@@ -423,7 +432,7 @@ describe('bonus row on the board', () => {
     const grid = screen.getByRole('region', { name: '3 by 3 board' })
     expect(within(grid).getAllByRole('button')).toHaveLength(10)
     expect(screen.getByRole('region', { name: "Your team's score" })).toHaveTextContent(
-      'Bonus cards (1 of 1)20',
+      'Bonus cards1/120 pts',
     )
   })
 })
@@ -448,6 +457,7 @@ describe('private ranking', () => {
         team_color: null,
         member_count: 2,
         total: 167,
+        pending_submissions: 2,
         tile_points: 125,
         completed_tiles: 12,
         completed_rows: 1,
@@ -527,25 +537,29 @@ describe('private ranking', () => {
     const user = userEvent.setup()
     renderApp(<RankingPage />, '/admin/ranking')
 
-    const [table] = await screen.findAllByRole('table')
-    const rows = within(table).getAllByRole('row').slice(1)
-    expect(rows.map((row) => within(row).getAllByRole('cell')[0].textContent)).toEqual([
-      '1st',
-      '2nd (tie)',
-      '2nd (tie)',
-      '4th',
-    ])
-    expect(rows[0]).toHaveTextContent('12/9 tiles')
+    // Feature 077: one card per team with its place, gap to the leader and pending reviews.
+    const sara = await screen.findByRole('listitem', { name: 'Saradomin' })
+    expect(sara).toHaveTextContent('1st')
+    expect(sara).toHaveTextContent('Leading')
+    expect(sara).toHaveTextContent('2 submissions to review')
+    expect(within(sara).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
+    const zamorak = screen.getByRole('listitem', { name: 'Zamorak' })
+    expect(zamorak).toHaveTextContent('2nd (tie)')
+    expect(zamorak).toHaveTextContent('25 pts behind the leader')
+    expect(zamorak).toHaveTextContent('Tiles11/9')
+    expect(screen.getByRole('listitem', { name: 'Bandos' })).toHaveTextContent('4th')
     expect(screen.getByText(/Line bonuses: row 25 · column 30/)).toBeInTheDocument()
 
     const contribution = screen.getByRole('region', { name: 'Individual contribution' })
     expect(contribution).toHaveTextContent('Holy Hal3.33')
+    // Top players of the event as bars (077 FR-007).
+    expect(within(contribution).getByText('Top players')).toBeInTheDocument()
     expect(contribution).toHaveTextContent('felps_3.25')
     await user.click(within(contribution).getByRole('button', { name: 'Zamorak' }))
     expect(contribution).toHaveTextContent('Chaos Caio0.00')
   })
 
-  it("opens a team's board from its row and switches teams (058)", async () => {
+  it("opens a team's board from its card and switches teams (058)", async () => {
     vi.mocked(fetchSession).mockResolvedValue({
       id: 'a',
       discord_id: '2',
@@ -562,11 +576,10 @@ describe('private ranking', () => {
     const user = userEvent.setup()
     renderApp(<RankingPage />, '/admin/ranking')
 
-    const [table] = await screen.findAllByRole('table')
-    await user.click(within(table).getByText('Saradomin'))
+    await user.click(await screen.findByRole('button', { name: 'View Saradomin board' }))
     const dialog = await screen.findByRole('dialog', { name: 'Saradomin board' })
     expect(fetchTeamScore).toHaveBeenCalledWith(EVENT.id, 'sa')
-    expect(await within(dialog).findByText('Completed tiles (3 of 9)')).toBeInTheDocument()
+    expect(await within(dialog).findByText('3/9')).toBeInTheDocument()
     const grid = within(dialog).getByRole('region', { name: '3 by 3 board' })
     await user.click(within(grid).getByRole('button', { name: /^Hydra,/ }))
     expect(within(dialog).getByRole('complementary', { name: 'Tile detail' })).toHaveTextContent(
@@ -578,7 +591,7 @@ describe('private ranking', () => {
     expect(fetchTeamScore).toHaveBeenLastCalledWith(EVENT.id, 'za')
     await user.keyboard('{Escape}')
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
-    await user.click(within(table).getByRole('button', { name: 'View Guthix board' }))
+    await user.click(screen.getByRole('button', { name: 'View Guthix board' }))
     expect(await screen.findByRole('dialog', { name: 'Guthix board' })).toBeInTheDocument()
   })
 })
@@ -634,5 +647,108 @@ describe('event rules', () => {
       rules: { rules_text: 'Be nice.' },
     })
     expect(await screen.findByText('Rules saved.')).toBeInTheDocument()
+  })
+})
+
+describe('tiles × teams matrix (077)', () => {
+  it('shows who completed each tile and what nobody started', async () => {
+    vi.mocked(fetchSession).mockResolvedValue({
+      id: 'a',
+      discord_id: '2',
+      username: 'felps_',
+      is_admin: true,
+    })
+    const team = (team_id: string, team_name: string, position: number) => ({
+      position,
+      tied: false,
+      team_id,
+      team_name,
+      team_color: null,
+      member_count: 1,
+      total: 0,
+      tile_points: 0,
+      completed_tiles: 0,
+      completed_rows: 0,
+      row_points: 0,
+      completed_columns: 0,
+      column_points: 0,
+      bonus_points: 0,
+      completed_bonus: 0,
+    })
+    vi.mocked(fetchRanking).mockResolvedValue({
+      event_id: EVENT.id,
+      event_name: EVENT.name,
+      event_status: 'active',
+      size: 3,
+      tile_count: 9,
+      bonus_count: 0,
+      row_bonus: 25,
+      column_bonus: 30,
+      calculated_at: '2026-10-23T12:00:00Z',
+      teams: [team('sa', 'Saradomin', 1), team('za', 'Zamorak', 2)],
+      players: [],
+    })
+    vi.mocked(fetchAdminBoard).mockResolvedValue(BOARD)
+    vi.mocked(fetchTeamScore).mockImplementation(async (_event, teamId) =>
+      teamId === 'za' ? { ...SCORE, team_id: 'za', team_name: 'Zamorak', tiles: [] } : SCORE,
+    )
+    renderApp(<RankingPage />, '/admin/ranking')
+
+    const matrix = await screen.findByRole('region', { name: 'Tiles by team' })
+    const hydra = within(matrix).getByRole('rowheader', { name: 'Hydra' }).closest('tr')!
+    expect(hydra).toHaveTextContent('6/8')
+    expect(within(hydra).getByText('Saradomin: 6 of 8')).toBeInTheDocument()
+    expect(within(hydra).getByText('Zamorak: not started')).toBeInTheDocument()
+    expect(within(matrix).getByText(/Nobody started yet:/).parentElement).not.toHaveTextContent(
+      'Hydra',
+    )
+  })
+
+  it('explains an empty matrix and a ranking with no points yet', async () => {
+    vi.mocked(fetchSession).mockResolvedValue({
+      id: 'a',
+      discord_id: '2',
+      username: 'felps_',
+      is_admin: true,
+    })
+    const zero = {
+      position: 1,
+      tied: false,
+      team_id: 'sa',
+      team_name: 'Saradomin',
+      team_color: null,
+      member_count: 0,
+      total: 0,
+      tile_points: 0,
+      completed_tiles: 0,
+      completed_rows: 0,
+      row_points: 0,
+      completed_columns: 0,
+      column_points: 0,
+      bonus_points: 0,
+      completed_bonus: 0,
+    }
+    vi.mocked(fetchRanking).mockResolvedValue({
+      event_id: EVENT.id,
+      event_name: EVENT.name,
+      event_status: 'draft',
+      size: 6,
+      tile_count: 0,
+      bonus_count: 0,
+      row_bonus: null,
+      column_bonus: null,
+      calculated_at: '2026-10-23T12:00:00Z',
+      teams: [zero],
+      players: [],
+    })
+    vi.mocked(fetchAdminBoard).mockResolvedValue({ ...BOARD, positions: [] })
+    renderApp(<RankingPage />, '/admin/ranking')
+
+    expect(await screen.findByRole('listitem', { name: 'Saradomin' })).toHaveTextContent(
+      'No points yet',
+    )
+    expect(
+      await screen.findByText('The matrix appears once the event board has its cards.'),
+    ).toBeInTheDocument()
   })
 })

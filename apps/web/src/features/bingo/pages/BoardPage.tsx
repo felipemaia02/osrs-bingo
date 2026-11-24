@@ -199,6 +199,8 @@ function DesktopBoard({ event, state }: { event: BingoEvent; state: BoardState }
             matches={state.matches}
             selectedId={state.selected?.id ?? null}
             onSelect={select}
+            completedRows={state.score?.completed_rows}
+            completedColumns={state.score?.completed_columns}
           />
         ) : (
           <div className="min-w-0 flex-1">

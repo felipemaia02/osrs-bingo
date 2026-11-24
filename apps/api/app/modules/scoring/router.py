@@ -13,7 +13,12 @@ from app.modules.scoring.estimate_service import (
     WikiDropRate,
 )
 from app.modules.scoring.estimates import Estimate
-from app.modules.scoring.schemas import RankingResponse, TeamHomeResponse, TeamScoreResponse
+from app.modules.scoring.schemas import (
+    PodiumResponse,
+    RankingResponse,
+    TeamHomeResponse,
+    TeamScoreResponse,
+)
 from app.modules.scoring.service import ScoringService
 from app.modules.submissions.repository import SubmissionRepository
 from app.modules.teams.repository import TeamRepository
@@ -41,6 +46,12 @@ async def own_team_score(
     event_id: str, user: UserDependency, service: ScoringServiceDependency
 ) -> TeamScoreResponse:
     return await service.own_team(event_id, user)
+
+
+@player_router.get("/events/{event_id}/podium", response_model=PodiumResponse)
+async def podium(event_id: str, service: ScoringServiceDependency) -> PodiumResponse:
+    """Public, no login: top 3 for 7 days after the event finishes (feature 071)."""
+    return await service.podium(event_id)
 
 
 @player_router.get("/events/{event_id}/team/me", response_model=TeamHomeResponse)

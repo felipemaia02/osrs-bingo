@@ -226,7 +226,8 @@
       "invalidTransition": "Este evento no permite ese cambio de estado.",
       "notFound": "No se encontró el evento.",
       "boardRequired": "Completa y guarda todas las posiciones del tablero antes de activar el evento.",
-      "rulesRequired": "Define los bonos de fila y columna en el constructor del tablero antes de activar el evento."
+      "rulesRequired": "Define los bonos de fila y columna en el constructor del tablero antes de activar el evento.",
+      "draftLimit": "Ya existe un evento en borrador. Actívalo antes de crear otro."
     },
     "publicEyebrow": "Eventos de la comunidad",
     "publicDescription": "Descubre eventos de Bingo y consulta tu inscripción.",
@@ -259,7 +260,28 @@
     "openBoard": "Abrir tablero",
     "search": "Buscar eventos",
     "noMatch": "Ningún evento coincide con la búsqueda.",
-    "noneMine": "Aún no te has unido a ningún evento."
+    "noneMine": "Aún no te has unido a ningún evento.",
+    "readiness": {
+      "title": "Checklist de preparación",
+      "count": "{{done}} de {{total}} hechos",
+      "listLabel": "Preparación de {{name}}",
+      "done": "hecho",
+      "missing": "falta",
+      "required": "Obligatorio",
+      "fix": "Resolver",
+      "blocked": "Falta para activar: {{items}}",
+      "afterCreate": "Después de guardar, un checklist muestra lo que falta antes de activar.",
+      "items": {
+        "board": "Tablero publicado con todas las casillas llenas",
+        "line_bonuses": "Bonus de fila y columna definidos",
+        "rules": "Reglas escritas completas",
+        "teams": "Equipos creados",
+        "players_assigned": "Todo jugador aprobado está en un equipo",
+        "captains": "Todo equipo tiene capitán",
+        "no_pending": "Ninguna inscripción pendiente"
+      }
+    },
+    "draftNotice": "{{name}} es el evento en borrador. Solo un borrador a la vez: actívalo antes de crear otro."
   },
   "teams": {
     "eyebrow": "Administración",
@@ -269,7 +291,6 @@
     "teams": "Equipos",
     "players": "Inscripciones al evento",
     "teamName": "Nombre del equipo",
-    "selectTeam": "Selecciona un equipo",
     "create": "Crear",
     "description": "Aprueba solicitudes y reparte a los jugadores aprobados entre los equipos.",
     "registrationHint": "Los jugadores solicitan inscripción desde la página de Eventos.",
@@ -287,12 +308,9 @@
     "removeTitle": "¿Eliminar inscripción?",
     "removeConfirmation": "¿Eliminar a {{name}} del evento? También se eliminará su asignación de equipo.",
     "confirmRemoval": "Confirmar eliminación",
-    "assignmentFor": "Equipo de {{name}}",
-    "saveAssignment": "Guardar equipo",
     "memberCount_one": "{{count}} miembro",
     "memberCount_other": "{{count}} miembros",
     "feedback": {
-      "assignmentUpdated": "Equipo actualizado.",
       "teamCreated": "Equipo creado.",
       "approved": "Inscripciones aprobadas.",
       "removed": "Inscripción eliminada.",
@@ -302,9 +320,7 @@
       "selectedRemoved_other": "{{count}} eliminados.",
       "skipped_one": "{{count}} omitido porque ya había cambiado.",
       "skipped_other": "{{count}} omitidos porque ya habían cambiado.",
-      "teamUpdated": "Equipo actualizado.",
-      "selectedAssigned_one": "{{count}} asignado.",
-      "selectedAssigned_other": "{{count}} asignados."
+      "teamUpdated": "Equipo actualizado."
     },
     "errors": {
       "duplicatePlayer": "Tú o este nombre de OSRS ya tenéis una inscripción en este evento.",
@@ -327,25 +343,18 @@
     "roster": {
       "tabs": "Participantes y equipos",
       "pending": "Pendientes",
-      "unassigned": "Sin equipo",
-      "assigned": "Con equipo",
       "teams": "Equipos",
       "createTeam": "Crear equipo",
       "viewMembers": "Ver miembros de {{name}}",
       "search": "Buscar nombre OSRS o de Discord",
-      "teamFilter": "Filtrar por equipo",
-      "allTeams": "Todos los equipos",
       "previous": "Anterior",
       "next": "Siguiente",
       "actions": "Acciones",
-      "assignPlayer": "Cambiar equipo de {{name}}",
       "editable": "Editable: evento en borrador",
       "readOnly": "Solo lectura: evento {{status}}",
       "requested": "Solicitado",
       "team": "Equipo",
       "members": "Miembros",
-      "assignTeam": "Asignar equipo",
-      "changeTeam": "Cambiar equipo",
       "viewMembersShort": "Ver miembros",
       "approveAllCount": "Aprobar todos ({{count}})…",
       "paginationPage": "{{start}}–{{end}} de {{total}} · {{size}} por página",
@@ -371,7 +380,8 @@
       "wantsWith": "quiere {{names}}",
       "sorted": "Ordenado por EHB total ↓",
       "live": "Durante el evento: aprueba, asigna y quita jugadores sin equipo; edita roles y buy-ins. Quien ya tiene equipo queda bloqueado.",
-      "raidsKc": "Raids Σ"
+      "raidsKc": "Raids Σ",
+      "draft": "Draft"
     },
     "status": {
       "pending": "Pendiente",
@@ -387,13 +397,7 @@
       "select": "Seleccionar {{name}}",
       "removeTitle": "¿Eliminar inscripciones seleccionadas?",
       "removeConfirmation_one": "¿Eliminar {{count}} inscripción seleccionada? También se quitará su equipo. La solicitud se conserva y el jugador ve su estado como Eliminado.",
-      "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado.",
-      "assign": "Asignar a un equipo…",
-      "assignTitle_one": "Asignar {{count}} jugador a un equipo",
-      "assignTitle_other": "Asignar {{count}} jugadores a un equipo",
-      "assignConfirm_one": "Asignar {{count}} jugador",
-      "assignConfirm_other": "Asignar {{count}} jugadores",
-      "captainsLoseRole": "{{names}} dejará(n) de ser capitán (cambia(n) de equipo)."
+      "removeConfirmation_other": "¿Eliminar {{count}} inscripciones seleccionadas? También se quitarán sus equipos. Las solicitudes se conservan y los jugadores ven su estado como Eliminado."
     },
     "balance": {
       "title": "Equilibrio de equipos",
@@ -444,7 +448,7 @@
     "adminRequired": "Solo los administradores pueden gestionar participantes.",
     "requestRejected": "No se pudo verificar esta solicitud. Recarga e inténtalo de nuevo.",
     "loginFailed": "El inicio de sesión con Discord falló o caducó. Inténtalo de nuevo.",
-    "backToEvents": "Explorar eventos",
+    "backToEvents": "Volver al inicio",
     "loginEyebrow": "Bingo OSRS",
     "loginTitle": "Únete a la aventura",
     "loginDescription": "Inicia sesión para solicitar tu inscripción en un evento y seguir a tu equipo.",
@@ -557,8 +561,8 @@
     "directoryCount_other": "{{count}} usuarios registrados",
     "review": "Revisión de drops",
     "reviewDescription": "Acepta o rechaza los envíos de los jugadores con la captura.",
-    "draft": "Vista previa del draft",
-    "draftDescription": "Jugadores disponibles para la elección de los capitanes.",
+    "draft": "Tablero de draft",
+    "draftDescription": "Elige los equipos ronda a ronda y guárdalos de una vez.",
     "rsnLine": "RSN: {{rsn}}",
     "audit": "Registro de auditoría",
     "auditDescription": "Quién cambió qué, y cuándo."
@@ -734,6 +738,12 @@
     },
     "detail": {
       "card": "Carta"
+    },
+    "optional": {
+      "title": "Esta carta tiene",
+      "dropRates": "Tasas de drop (una por ítem, usadas en la estimación de tiempo)",
+      "timeEstimate": "Estimación de tiempo (jefe de EHB / kills por hora)",
+      "removedOnSave": "Estos valores se eliminarán al guardar."
     }
   },
   "boards": {
@@ -1074,17 +1084,25 @@
     "tileProgress": "{{value}} / {{requirement}}",
     "panel": "Puntuación de tu equipo",
     "total": "Puntuación",
-    "completedTiles": "Casillas completas ({{count}} de {{total}})",
     "rows": "Filas",
     "columns": "Columnas",
-    "lineBreakdown": "{{count}} × {{value}}",
-    "notConfigured": "bono no configurado",
     "notConfiguredShort": "sin definir",
     "labelComplete": "completa",
     "labelProgress": "progreso {{value}} de {{requirement}}",
     "detailProgress": "Progreso del equipo: {{value}} de {{requirement}} · vale {{points}} pts una vez",
     "dropCount": "{{name}} × {{count}}",
-    "bonusCards": "Cartas bonus ({{count}} de {{total}})"
+    "tiles": "Casillas",
+    "bonusShort": "Cartas bonus",
+    "points_one": "{{count}} pt",
+    "points_other": "{{count}} pts",
+    "ofMax": "/ {{max}} pts",
+    "progress": "Parte de la puntuación máxima",
+    "closest": "Bonus más cercanos",
+    "line": {
+      "row": "Fila {{line}}",
+      "column": "Columna {{line}}"
+    },
+    "lineTiles": "{{done}}/{{total}} casillas"
   },
   "ranking": {
     "eyebrow": "Administración · privado",
@@ -1270,6 +1288,17 @@
       "timezone": "Elige tu zona horaria para que los admins equilibren los equipos por región.",
       "action": "Ir a mi perfil",
       "dismiss": "Ocultar este aviso"
+    },
+    "welcome": {
+      "title": "¡Bienvenido a OSRS Bingo!",
+      "text": "Tu cuenta está lista. Completa tu perfil para que los admins equilibren los equipos:",
+      "steps": {
+        "main": "Agrega tu RSN principal (juega el bingo por defecto).",
+        "alts": "Agrega tus alts (solo cuentan para la experiencia).",
+        "timezone": "Elige tu zona horaria.",
+        "activity": "Di cuánto piensas jugar."
+      },
+      "done": "Listo — ir al bingo"
     }
   },
   "join": {
@@ -1281,7 +1310,7 @@
     "nextNeedAccount": "Siguiente · elige una cuenta",
     "nextNeedAgreements": "Siguiente · confirma los 3",
     "progress": "Paso {{step}} de {{total}}",
-    "backToEvents": "Volver a eventos",
+    "backToEvents": "Volver al inicio",
     "changeIn": "cámbiala en",
     "timezone": "Zona horaria:",
     "sent": "Solicitud enviada para {{name}} — esperando a un admin.",
@@ -1374,12 +1403,6 @@
     "openLate": "entrada tardía abierta"
   },
   "draft": {
-    "eyebrow": "Administración · {{event}} · Borrador",
-    "title": "Vista previa del draft",
-    "description": "Solo para admins. Comparte la pantalla con los capitanes durante la elección — los jugadores nunca abren esta página. Arrastra un jugador a un equipo o usa el selector de equipo de la tarjeta.",
-    "presentation": "Modo presentación",
-    "exitPresentation": "Salir de la presentación",
-    "noDraft": "No hay ningún evento en borrador para mostrar.",
     "noCaptain": "Aún sin capitán",
     "region": "Región",
     "activity": "Actividad",
@@ -1398,9 +1421,6 @@
       "kc": "KC de jefes total ↓",
       "name": "Nombre A–Z"
     },
-    "count_one": "{{count}} jugador disponible · capitanes no listados",
-    "count_other": "{{count}} jugadores disponibles · capitanes no listados",
-    "everyoneAssigned": "Todos los jugadores aprobados ya tienen equipo.",
     "ehb": "Σ EHB",
     "bossKc": "Σ KC de jefes",
     "alts_one": "{{count}} alt",
@@ -1421,27 +1441,50 @@
     "skill": "Habilidad",
     "anySkill": "Cualquiera",
     "minLevel": "Nivel mín.",
-    "countSkill_one": "{{count}} jugador disponible · {{skill}} ≥ {{level}}",
-    "countSkill_other": "{{count}} jugadores disponibles · {{skill}} ≥ {{level}}",
     "noSkillData_one": "{{count}} jugador aún no tiene datos de habilidades — debe pulsar “Actualizar desde WOM” en Mi perfil.",
     "noSkillData_other": "{{count}} jugadores aún no tienen datos de habilidades — deben pulsar “Actualizar desde WOM” en Mi perfil.",
-    "skillLevel": "{{skill}} {{level}}",
     "raidsKc": "Raids Σ",
     "pick": {
-      "moveTo": "Equipo de {{name}}",
-      "choose": "Equipo…",
-      "noTeam": "Sin equipo",
       "allDetails": "Todos los detalles",
-      "available": "Jugadores disponibles",
-      "rosters": "Equipos",
-      "rostersSummary_one": "{{count}} equipo",
-      "rostersSummary_other": "{{count}} equipos",
-      "totals_one": "{{count}} jugador · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
-      "totals_other": "{{count}} jugadores · EHB Σ {{ehb}} · Boss KC Σ {{kc}}",
-      "dropHere": "Suelta un jugador aquí",
-      "empty": "Aún no hay jugadores",
-      "noTeams": "Crea los equipos en la página Equipos primero.",
-      "failed": "La elección no se guardó: {{reason}}"
+      "empty": "Aún no hay jugadores"
+    },
+    "board": {
+      "title": "Tablero de draft",
+      "round": "Ronda",
+      "pick": "Pick",
+      "onTheClock": "Le toca:",
+      "onTheClockBadge": "Le toca",
+      "undo": "Deshacer",
+      "save": "Guardar equipos",
+      "order": "Orden del draft",
+      "moveEarlier": "Mover {{name}} antes",
+      "moveLater": "Mover {{name}} después",
+      "prevTeam": "Equipo anterior",
+      "nextTeam": "Equipo siguiente",
+      "pool": "Disponibles ({{count}})",
+      "poolHint": "\"+ Draft\" elige para el equipo al que le toca",
+      "search": "Buscar jugadores sin elegir…",
+      "draft": "Draft",
+      "draftPlayer": "Elegir a {{name}}",
+      "everyoneDrafted": "Ya se eligió a todos.",
+      "picks_one": "{{count}} pick",
+      "picks_other": "{{count}} picks",
+      "captain": "Capitán: {{name}}",
+      "remove": "Devolver a {{name}} a disponibles",
+      "noTeams": "Crea los equipos primero, en la pestaña Equipos.",
+      "restored": "Se restauró tu draft sin guardar de este navegador.",
+      "discard": "Descartar draft",
+      "discardTitle": "¿Descartar este draft?",
+      "discardMessage": "Todos los picks sin guardar vuelven a disponibles.",
+      "saved_one": "{{count}} jugador guardado en su equipo.",
+      "saved_other": "{{count}} jugadores guardados en sus equipos.",
+      "skipped": "Cambiaron mientras tanto, no guardados: {{names}}. Revísalos en la pestaña Equipos.",
+      "views": "Vistas del draft",
+      "view": {
+        "pool": "Disponibles",
+        "teams": "Equipos"
+      },
+      "liveHint": "Durante el evento solo se pueden colocar jugadores sin equipo; los equipos ya formados quedan bloqueados."
     }
   },
   "home": {
@@ -1574,10 +1617,11 @@
     "welcomeBack": "Bienvenido de nuevo, {{name}}",
     "tagline": "El bingo del clan AstralStar: consigue drops con tu equipo, completa el tablero y suma puntos.",
     "event": {
-      "title": "Evento actual",
       "endsIn": "Termina en {{time}}",
       "openBoard": "Abrir tablero",
-      "none": "No hay ningún evento en curso. Mira lo que viene en"
+      "none": "No hay ningún evento abierto ahora. Los nuevos eventos aparecen aquí.",
+      "live": "{{name}} está en curso",
+      "liveBadge": "En curso"
     },
     "team": {
       "title": "Mi equipo",
@@ -1603,7 +1647,7 @@
       },
       "join": {
         "title": "Inscríbete en el evento",
-        "text": "Elige la cuenta con la que jugarás y acepta las reglas en Eventos."
+        "text": "Pulsa \"Unirse al bingo\" en esta página, elige la cuenta con la que jugarás y acepta las reglas."
       },
       "teams": {
         "title": "Se eligen los equipos",
@@ -1613,6 +1657,17 @@
         "title": "Consigue drops, suma puntos",
         "text": "Envía los drops con captura. Casillas, filas y columnas completas dan puntos a tu equipo."
       }
+    },
+    "join": {
+      "title": "Inscripciones abiertas: {{name}}",
+      "text": "Elige tu cuenta, acepta las reglas y listo. Los admins aprueban y hacen el draft de los equipos.",
+      "loginText": "Inicia sesión con Discord para unirte al bingo.",
+      "action": "Unirse al bingo",
+      "login": "Iniciar sesión con Discord",
+      "registeredText": "Estás inscrito. Los admins aprueban a los jugadores y hacen el draft de los equipos antes de que empiece el evento."
+    },
+    "rules": {
+      "readAll": "Ver todas las reglas"
     }
   },
   "audit": {
@@ -1758,5 +1813,77 @@
       "pending": "Preverificación en revisión",
       "accepted": "Preverificado"
     }
+  },
+  "rulesPage": {
+    "title": "Reglas",
+    "description": "Cómo funciona el bingo, cómo se suman los puntos y las reglas de este evento.",
+    "basics": "Lo básico",
+    "scoring": {
+      "title": "Puntuación",
+      "row": "Por fila completa",
+      "column": "Por columna completa",
+      "formula": "Puntos del equipo = casillas completas + filas completas + columnas completas. Una casilla cuenta una vez, cuando su progreso llega al requisito."
+    }
+  },
+  "tier": {
+    "label": "Progresión",
+    "early": "Early game",
+    "mid": "Mid game",
+    "end": "End game",
+    "unknown": "Desconocido",
+    "useSuggestion": "Usar sugerencia de WOM ({{tier}})",
+    "womSuggests": "WOM sugiere: {{tier}}",
+    "yours": "Tu progresión:"
+  },
+  "podium": {
+    "eyebrow": "Bingo terminado",
+    "champion": "Campeón",
+    "tied": "Empate",
+    "points": "pts",
+    "tiles_one": "{{count}} casilla",
+    "tiles_other": "{{count}} casillas",
+    "final": "Resultados finales",
+    "provisional": "Resultados en confirmación",
+    "yourPlace": "Tu equipo {{team}} terminó en {{place}} con {{total}} pts.",
+    "yourTotal": "Tu equipo {{team}} terminó con {{total}} pts."
+  },
+  "dashboard": {
+    "mapTitle": "Mapa del tablero",
+    "mapLabel": "Casillas por progreso",
+    "squareDone": "{{name}}: completa",
+    "squareProgress": "{{name}}: {{value}} de {{requirement}}",
+    "legend": {
+      "none": "Sin empezar",
+      "partial": "En progreso (más oscuro = más cerca)",
+      "complete": "Completa"
+    },
+    "objectivesTitle": "Próximos objetivos",
+    "objectivesHint": "Casillas empezadas más cerca de completarse.",
+    "objectiveProgress": "Progreso en {{name}}",
+    "remaining": "Falta:",
+    "workingOn": "En ello: {{names}}",
+    "noObjectives": "Ninguna casilla empezada todavía. Elige una en el tablero y marca que estás en ella.",
+    "drops_one": "{{count}} drop",
+    "drops_other": "{{count}} drops",
+    "memberLine_one": "{{name}}: {{points}} pts · {{count}} drop",
+    "memberLine_other": "{{name}}: {{points}} pts · {{count}} drops",
+    "vsLeader": "{{team}} comparado con el líder",
+    "behindLeader": "{{points}} pts detrás del líder",
+    "leading": "En cabeza",
+    "pendingReviews_one": "{{count}} envío por revisar",
+    "pendingReviews_other": "{{count}} envíos por revisar",
+    "matrixTitle": "Casillas por equipo",
+    "matrixHint": "Quién completó cada casilla. Pasa el ratón por la celda para ver el progreso.",
+    "nobodyYet": "Nadie empezó todavía:",
+    "tile": "Casilla",
+    "doneBy": "Hecha por",
+    "cell": {
+      "none": "{{team}}: sin empezar",
+      "partial": "{{team}}: {{value}} de {{requirement}}",
+      "complete": "{{team}}: completa"
+    },
+    "mvps": "Mejores jugadores",
+    "matrixEmpty": "La matriz aparece cuando el tablero del evento tenga sus cartas.",
+    "noPointsYet": "Sin puntos todavía"
   }
 }

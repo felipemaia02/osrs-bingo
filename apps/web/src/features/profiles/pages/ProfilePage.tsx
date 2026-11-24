@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
 import { Button } from '../../../components/ui/Button'
 import { InfoBanner } from '../../../components/ui/InfoBanner'
@@ -14,10 +14,16 @@ import { DiscordIdentity } from '../components/DiscordIdentity'
 import { profileErrorKey } from '../errors'
 import { useAccountAction, useProfile } from '../hooks/useProfile'
 import { MAX_ACCOUNTS, type AccountAction } from '../types'
+import { TierBadge } from '../components/TierBadge'
+import { WelcomeBanner } from '../components/WelcomeBanner'
+
+const WELCOME_PARAM = 'welcome'
 
 /** My profile: Discord identity, linked OSRS accounts and clan preferences (feature 021). */
 export function ProfilePage() {
   const { t } = useTranslation()
+  const [params] = useSearchParams()
+  const welcome = params.has(WELCOME_PARAM)
   const session = useSession()
   const profile = useProfile(Boolean(session.data))
   const action = useAccountAction()
@@ -47,7 +53,15 @@ export function ProfilePage() {
             {t('profile.title')}
           </h1>
           <span className="text-[13px] text-rs-muted md:text-sm">{t('profile.description')}</span>
+          {profile.data && (
+            <span className="mt-1 flex items-center gap-2 text-[13px]">
+              {t('tier.yours')}
+              <TierBadge tier={profile.data.tier} />
+            </span>
+          )}
         </div>
+
+        {welcome && session.data && <WelcomeBanner />}
 
         {session.isLoading || (session.data && profile.isLoading) ? (
           <p role="status" className="text-rs-muted">

@@ -1,172 +1,25 @@
 import { useState } from 'react'
 import ChevronLeftOutlinedIcon from '@mui/icons-material/ChevronLeftOutlined'
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined'
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../../../components/common/AppShell'
-import { Badge } from '../../../components/ui/Badge'
-import { Button } from '../../../components/ui/Button'
 import { SegmentedControl } from '../../../components/ui/SegmentedControl'
 import { useIsDesktop } from '../../../hooks/useIsDesktop'
 import { useEvents } from '../../events/hooks/useEvents'
-import { TeamEmblem } from '../../teams/components/TeamEmblem'
 import { TeamBoardModal } from '../components/TeamBoardModal'
+import { TeamStandings } from '../components/TeamStandings'
+import { TilesMatrix } from '../components/TilesMatrix'
 import { useRanking } from '../hooks/useScoring'
-import type { Ranking, RankingTeam } from '../types'
+import type { Ranking } from '../types'
 
+const MVP_COUNT = 5
+const PERCENT = 100
 const CELL = 'border-b border-rs-border/45 px-3 py-2.5 align-middle'
 const HEAD =
   'whitespace-nowrap border-b border-rs-border bg-rs-inset px-3 py-2.5 text-left text-xs font-semibold text-rs-muted'
-
-function usePlace() {
-  const { t } = useTranslation()
-  return (team: RankingTeam) =>
-    `${t('ranking.place', { count: team.position, ordinal: true })}${
-      team.tied ? ` ${t('ranking.tie')}` : ''
-    }`
-}
-
-function TeamName({ team }: { team: RankingTeam }) {
-  const { t } = useTranslation()
-  return (
-    <span className="flex items-center gap-2">
-      <TeamEmblem team={{ name: team.team_name, color: team.team_color }} size="md" />
-      <span className="flex flex-col">
-        <strong>{team.team_name}</strong>
-        <span className="text-xs text-rs-muted">
-          {t('ranking.members', { count: team.member_count })}
-        </span>
-      </span>
-    </span>
-  )
-}
-
-interface TeamListProps {
-  ranking: Ranking
-  /** Opens the team's board (feature 058). */
-  onOpenBoard: (teamId: string) => void
-}
-
-function BoardButton({ team, onOpenBoard }: { team: RankingTeam; onOpenBoard: () => void }) {
-  const { t } = useTranslation()
-  return (
-    <Button
-      size="sm"
-      onClick={onOpenBoard}
-      aria-label={t('ranking.board.openFor', { team: team.team_name })}
-    >
-      <GridViewOutlinedIcon fontSize="small" aria-hidden="true" />
-      {t('ranking.board.open')}
-    </Button>
-  )
-}
-
-function TeamTable({ ranking, onOpenBoard }: TeamListProps) {
-  const { t } = useTranslation()
-  const place = usePlace()
-  return (
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className={HEAD}>{t('ranking.position')}</th>
-          <th className={HEAD}>{t('ranking.team')}</th>
-          <th className={`${HEAD} text-right`}>{t('ranking.tiles')}</th>
-          <th className={`${HEAD} text-right`}>{t('ranking.rows')}</th>
-          <th className={`${HEAD} text-right`}>{t('ranking.columns')}</th>
-          {ranking.bonus_count > 0 && (
-            <th className={`${HEAD} text-right`}>{t('ranking.bonus')}</th>
-          )}
-          <th className={`${HEAD} text-right`}>{t('ranking.total')}</th>
-          <th className={HEAD}>{t('ranking.board.column')}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {ranking.teams.map((team) => (
-          <tr
-            key={team.team_id}
-            onClick={() => onOpenBoard(team.team_id)}
-            className="cursor-pointer hover:bg-rs-raised"
-          >
-            <td className={`${CELL} whitespace-nowrap font-semibold`}>
-              {team.tied ? <Badge tone="gold">{place(team)}</Badge> : place(team)}
-            </td>
-            <td className={CELL}>
-              <TeamName team={team} />
-            </td>
-            <td className={`${CELL} text-right tabular-nums`}>
-              {team.tile_points}
-              <span className="block text-xs text-rs-muted">
-                {t('ranking.tilesDone', { count: team.completed_tiles, total: ranking.tile_count })}
-              </span>
-            </td>
-            <td className={`${CELL} text-right tabular-nums`}>
-              {team.row_points}
-              <span className="block text-xs text-rs-muted">×{team.completed_rows}</span>
-            </td>
-            <td className={`${CELL} text-right tabular-nums`}>
-              {team.column_points}
-              <span className="block text-xs text-rs-muted">×{team.completed_columns}</span>
-            </td>
-            {ranking.bonus_count > 0 && (
-              <td className={`${CELL} text-right tabular-nums`}>
-                {team.bonus_points}
-                <span className="block text-xs text-rs-muted">
-                  {team.completed_bonus}/{ranking.bonus_count}
-                </span>
-              </td>
-            )}
-            <td className={`${CELL} text-right font-display text-xl font-bold text-rs-gold-bright`}>
-              {team.total}
-            </td>
-            <td className={CELL}>
-              <BoardButton team={team} onOpenBoard={() => onOpenBoard(team.team_id)} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
-}
-
-function TeamCards({ ranking, onOpenBoard }: TeamListProps) {
-  const { t } = useTranslation()
-  const place = usePlace()
-  return (
-    <ul className="m-0 flex list-none flex-col gap-3 p-0">
-      {ranking.teams.map((team) => (
-        <li
-          key={team.team_id}
-          className="flex flex-col gap-2 rounded border border-rs-border bg-rs-surface p-3"
-        >
-          <div className="flex items-center justify-between gap-2">
-            <TeamName team={team} />
-            <span className="flex flex-col items-end">
-              <span className="text-xs font-semibold">{place(team)}</span>
-              <strong className="font-display text-xl text-rs-gold-bright">{team.total}</strong>
-            </span>
-          </div>
-          <span className="text-xs text-rs-muted">
-            {t('ranking.breakdown', {
-              tiles: team.tile_points,
-              done: team.completed_tiles,
-              total: ranking.tile_count,
-              rows: team.row_points,
-              columns: team.column_points,
-            })}
-            {ranking.bonus_count > 0 &&
-              ` · ${t('ranking.bonusShort', { points: team.bonus_points })}`}
-          </span>
-          <span className="self-start">
-            <BoardButton team={team} onOpenBoard={() => onOpenBoard(team.team_id)} />
-          </span>
-        </li>
-      ))}
-    </ul>
-  )
-}
 
 function Contributions({ ranking }: { ranking: Ranking }) {
   const { t, i18n } = useTranslation()
@@ -176,10 +29,16 @@ function Contributions({ ranking }: { ranking: Ranking }) {
     maximumFractionDigits: 2,
   })
   const players = ranking.players.filter((player) => player.team_id === teamId)
+  const teamOf = new Map(ranking.teams.map((team) => [team.team_id, team]))
+  const mvps = [...ranking.players]
+    .sort((a, b) => b.contribution - a.contribution)
+    .slice(0, MVP_COUNT)
+    .filter((player) => player.contribution > 0)
+  const top = mvps[0]?.contribution ?? 0
   return (
     <section
       aria-label={t('ranking.contribution')}
-      className="flex w-full flex-col gap-3 rounded border border-rs-border bg-rs-surface p-3.5 md:w-[380px] md:shrink-0"
+      className="flex w-full flex-col gap-3 rounded border border-rs-border bg-rs-surface p-3.5"
     >
       <div>
         <h2 className="m-0 font-display text-lg text-rs-gold-bright">
@@ -187,6 +46,47 @@ function Contributions({ ranking }: { ranking: Ranking }) {
         </h2>
         <span className="text-xs text-rs-muted">{t('ranking.contributionHint')}</span>
       </div>
+      {mvps.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <h3 className="m-0 text-xs font-semibold uppercase tracking-[.12em] text-rs-gold">
+            {t('dashboard.mvps')}
+          </h3>
+          <ol className="m-0 flex list-none flex-col gap-1.5 p-0">
+            {mvps.map((player) => {
+              const team = player.team_id ? teamOf.get(player.team_id) : undefined
+              return (
+                <li
+                  key={player.player_id}
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 text-[13px]"
+                >
+                  <span className="flex min-w-0 flex-col gap-1">
+                    <span className="flex min-w-0 items-center gap-1.5">
+                      <span
+                        aria-hidden="true"
+                        className="size-2.5 shrink-0 rounded-full border border-rs-border-strong"
+                        style={{ backgroundColor: team?.team_color ?? undefined }}
+                      />
+                      <strong className="truncate">{player.display_name}</strong>
+                      {team && (
+                        <span className="truncate text-xs text-rs-muted">{team.team_name}</span>
+                      )}
+                    </span>
+                    <span className="h-2 overflow-hidden rounded-r-[4px] bg-rs-inset">
+                      <span
+                        className="block h-full rounded-r-[4px] bg-rs-gold"
+                        style={{ width: `${top > 0 ? (player.contribution / top) * PERCENT : 0}%` }}
+                      />
+                    </span>
+                  </span>
+                  <strong className="tabular-nums text-rs-gold-bright">
+                    {format.format(player.contribution)}
+                  </strong>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+      )}
       {ranking.teams.length > 0 && (
         <SegmentedControl<string>
           label={t('ranking.team')}
@@ -309,26 +209,26 @@ export function RankingPage() {
                 time: time.format(Date.parse(ranking.data.calculated_at)),
               })}
             </span>
-            <div className="flex flex-col items-start gap-4 md:flex-row">
-              <div className="flex w-full min-w-0 flex-1 flex-col gap-2">
-                <h2 className="m-0 font-display text-lg text-rs-gold-bright">
-                  {t('ranking.official')}
-                </h2>
-                {ranking.data.teams.length === 0 ? (
-                  <p className="m-0 rounded border border-rs-border bg-rs-surface p-8 text-center text-rs-muted">
-                    {t('ranking.noTeams')}
-                  </p>
-                ) : isDesktop ? (
-                  <div className="overflow-hidden rounded border border-rs-border bg-rs-surface">
-                    <TeamTable ranking={ranking.data} onOpenBoard={setBoardTeamId} />
-                  </div>
-                ) : (
-                  <TeamCards ranking={ranking.data} onOpenBoard={setBoardTeamId} />
-                )}
-                <span className="flex items-center gap-1.5 text-xs text-rs-muted">
-                  <InfoOutlinedIcon sx={{ fontSize: 15 }} aria-hidden="true" />
-                  {t('ranking.tiesNote')}
-                </span>
+            {/* Teams and matrix on the left, contribution beside them from the top (077). */}
+            <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+              <div className="flex min-w-0 flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                  <h2 className="m-0 font-display text-lg text-rs-gold-bright">
+                    {t('ranking.official')}
+                  </h2>
+                  {ranking.data.teams.length === 0 ? (
+                    <p className="m-0 rounded border border-rs-border bg-rs-surface p-8 text-center text-rs-muted">
+                      {t('ranking.noTeams')}
+                    </p>
+                  ) : (
+                    <TeamStandings ranking={ranking.data} onOpenBoard={setBoardTeamId} />
+                  )}
+                  <span className="flex items-center gap-1.5 text-xs text-rs-muted">
+                    <InfoOutlinedIcon sx={{ fontSize: 15 }} aria-hidden="true" />
+                    {t('ranking.tiesNote')}
+                  </span>
+                </div>
+                {ranking.data.teams.length > 0 && <TilesMatrix ranking={ranking.data} />}
               </div>
               <Contributions key={ranking.data.event_id} ranking={ranking.data} />
             </div>

@@ -4,8 +4,7 @@ import { AxiosError } from 'axios'
 import i18n from '../../src/lib/i18n'
 import { fetchAdministrators } from '../../src/features/administration/api/administrationApi'
 import { fetchSession, logout } from '../../src/features/auth/api/authApi'
-import { fetchEvents, fetchMyEvents } from '../../src/features/events/api/eventsApi'
-import { PlayerEventsPage } from '../../src/features/events/pages/PlayerEventsPage'
+import { fetchEvents } from '../../src/features/events/api/eventsApi'
 import type { BingoEvent } from '../../src/features/events/types'
 import * as api from '../../src/features/teams/api/teamsApi'
 import { TeamsPage } from '../../src/features/teams/pages/TeamsPage'
@@ -80,89 +79,6 @@ async function openAdministration() {
   return user
 }
 
-it('links unregistered players to the join page instead of a nickname form', async () => {
-  renderApp(<PlayerEventsPage />, '/events')
-
-  const join = await screen.findByRole('link', { name: 'Join Summer Bingo' })
-  expect(join).toHaveAttribute('href', `/events/${EVENT.id}/join`)
-  expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: 'Remove registration' })).not.toBeInTheDocument()
-})
-
-it('offers joining an active event only when late join is on (037)', async () => {
-  vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active', late_join: true }])
-  renderApp(<PlayerEventsPage />, '/events')
-
-  expect(await screen.findByRole('link', { name: 'Join Summer Bingo' })).toHaveAttribute(
-    'href',
-    `/events/${EVENT.id}/join`,
-  )
-})
-
-it('filters my events and searches by name', async () => {
-  const other = { ...EVENT, id: 'winter', name: 'Winter Bingo' }
-  vi.mocked(fetchEvents).mockImplementation(async (status) =>
-    status === 'active' ? [] : [EVENT, other],
-  )
-  vi.mocked(fetchMyEvents).mockResolvedValue([EVENT])
-  const user = userEvent.setup()
-  renderApp(<PlayerEventsPage />, '/events')
-
-  await user.click(await screen.findByRole('tab', { name: /Mine 1/ }))
-  expect(screen.getByRole('heading', { name: 'Summer Bingo' })).toBeInTheDocument()
-  expect(screen.queryByRole('heading', { name: 'Winter Bingo' })).toBeNull()
-
-  await user.click(screen.getByRole('tab', { name: /All 2/ }))
-  await user.type(screen.getByRole('searchbox', { name: 'Search events' }), 'wínter')
-  expect(screen.getByRole('heading', { name: 'Winter Bingo' })).toBeInTheDocument()
-  expect(screen.queryByRole('heading', { name: 'Summer Bingo' })).toBeNull()
-})
-
-it('makes event cards lead to the board or the join page', async () => {
-  const active = { ...EVENT, id: 'live', name: 'Cyber Event', status: 'active' as const }
-  vi.mocked(fetchEvents).mockImplementation(async (status) =>
-    status === 'active' ? [active] : [active, EVENT],
-  )
-  renderApp(<PlayerEventsPage />, '/events')
-
-  const board = await screen.findByRole('link', { name: /Cyber Event.*Open board/ })
-  expect(board).toHaveAttribute('href', '/board')
-  expect(await screen.findByRole('link', { name: /Summer Bingo.*Join event/ })).toHaveAttribute(
-    'href',
-    `/events/${EVENT.id}/join`,
-  )
-})
-
-it('shows the account and buy-in status of a joined registration', async () => {
-  vi.mocked(api.fetchOwnRegistration).mockResolvedValue({
-    ...PLAYER,
-    account_id: 'acc-1',
-    activity: 'over_3h',
-    buy_in_status: 'pending',
-  })
-  renderApp(<PlayerEventsPage />, '/events')
-
-  expect(await screen.findByText('Registration pending approval')).toBeInTheDocument()
-  expect(screen.getByText('Playing as')).toBeInTheDocument()
-  expect(screen.getByText('Thunder Crab')).toBeInTheDocument()
-  expect(screen.getByText('Buy-in not paid yet')).toBeInTheDocument()
-})
-
-it('lets a removed player join an open event again (047)', async () => {
-  const closed = { ...EVENT, id: 'closed', name: 'Old Bingo', status: 'finished' as const }
-  vi.mocked(fetchEvents).mockResolvedValue([EVENT, closed])
-  vi.mocked(api.fetchOwnRegistration).mockResolvedValue({ ...PLAYER, status: 'removed' })
-  renderApp(<PlayerEventsPage />, '/events')
-
-  expect(await screen.findByRole('link', { name: 'Join Summer Bingo' })).toHaveAttribute(
-    'href',
-    `/events/${EVENT.id}/join`,
-  )
-  expect(await screen.findByRole('link', { name: /Summer Bingo.*Join event/ })).toBeInTheDocument()
-  expect(screen.getAllByText('Registration removed by an administrator')).toHaveLength(2)
-  expect(screen.queryByRole('link', { name: 'Join Old Bingo' })).toBeNull()
-})
-
 it('requires login and prevents participant administration', async () => {
   vi.mocked(fetchSession).mockResolvedValue(null)
   renderApp(<TeamsPage />, '/teams')
@@ -173,27 +89,6 @@ it('requires login and prevents participant administration', async () => {
     expect(link).toHaveAttribute('href', '/login')
   }
   expect(api.fetchPlayers).not.toHaveBeenCalled()
-})
-
-it('only provides assignment after individual approval', async () => {
-  setPlayers([PLAYER])
-  vi.mocked(api.approvePlayer).mockImplementation(async () => {
-    const approved = { ...PLAYER, status: 'approved' as const }
-    setPlayers([approved])
-    return approved
-  })
-  const user = await openAdministration()
-  await screen.findByText('Thunder Crab')
-  expect(screen.queryByLabelText('Team for Thunder Crab')).not.toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Approve Thunder Crab' }))
-  await user.click(await screen.findByRole('tab', { name: /Unassigned/ }))
-  await user.click(await screen.findByRole('button', { name: 'Change team for Thunder Crab' }))
-  expect(await screen.findByLabelText('Team for Thunder Crab')).toBeInTheDocument()
-  expect(vi.mocked(api.approvePlayer).mock.calls[0][0]).toEqual({
-    eventId: EVENT.id,
-    playerId: PLAYER.id,
-  })
-  expect(api.updatePlayer).not.toHaveBeenCalled()
 })
 
 it('approves all pending requests only in the selected event', async () => {
@@ -209,27 +104,6 @@ it('approves all pending requests only in the selected event', async () => {
   await user.click(within(dialog).getByRole('button', { name: 'Approve 1' }))
   expect(vi.mocked(api.approveAllPlayers).mock.calls[0][0]).toEqual({ eventId: EVENT.id })
   expect(await screen.findByText('No pending requests.')).toBeInTheDocument()
-})
-
-it('assigns an approved registration without creating a new one', async () => {
-  setPlayers([{ ...PLAYER, status: 'approved' }])
-  vi.mocked(api.updatePlayer).mockImplementation(async ({ payload }) => {
-    const updated = { ...PLAYER, status: 'approved' as const, team_id: payload.team_id }
-    setPlayers([updated])
-    return updated
-  })
-  const user = await openAdministration()
-  await user.click(await screen.findByRole('tab', { name: /Unassigned/ }))
-  await user.click(await screen.findByRole('button', { name: 'Change team for Thunder Crab' }))
-  await user.selectOptions(await screen.findByLabelText('Team for Thunder Crab'), TEAM.id)
-  await user.click(screen.getByRole('button', { name: 'Save team assignment' }))
-  expect(await screen.findByText('Team assignment updated.')).toBeInTheDocument()
-  expect(vi.mocked(api.updatePlayer).mock.calls[0][0]).toEqual({
-    eventId: EVENT.id,
-    playerId: PLAYER.id,
-    payload: { team_id: TEAM.id },
-  })
-  expect(api.createPlayer).not.toHaveBeenCalled()
 })
 
 it('confirms removal and refreshes the participant list', async () => {
@@ -276,16 +150,6 @@ it('clears privileged UI after logout', async () => {
   expect(screen.queryByLabelText('Event')).not.toBeInTheDocument()
 })
 
-it.each([
-  ['pt', 'Inscrição aguardando aprovação'],
-  ['es', 'Inscripción pendiente de aprobación'],
-])('localizes registration in %s', async (language, text) => {
-  await i18n.changeLanguage(language)
-  vi.mocked(api.fetchOwnRegistration).mockResolvedValue(PLAYER)
-  renderApp(<PlayerEventsPage />, '/events')
-  expect(await screen.findByText(text)).toBeInTheDocument()
-})
-
 it('opens the oldest draft, hides finished events and keeps queries scoped', async () => {
   const other = {
     ...EVENT,
@@ -327,28 +191,6 @@ it('opens the active event before any draft', async () => {
   await waitFor(() => expect(screen.getByLabelText('Event')).toHaveValue(active.id))
 })
 
-it('during the event handles players without a team and locks teamed ones (037)', async () => {
-  vi.mocked(fetchSession).mockResolvedValue({ ...USER, is_admin: true })
-  vi.mocked(fetchEvents).mockResolvedValue([{ ...EVENT, status: 'active' }])
-  setPlayers([{ ...PLAYER, status: 'approved', joined_late: true }])
-  const user = userEvent.setup()
-  renderApp(<TeamsPage />, '/teams')
-  await screen.findByLabelText('Event')
-  await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-  await user.click(await screen.findByRole('tab', { name: /Unassigned/ }))
-  expect(await screen.findByText('Thunder Crab')).toBeInTheDocument()
-  expect(screen.getByText('Late join')).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Change team for Thunder Crab' })).toBeInTheDocument()
-  expect(screen.getByRole('button', { name: 'Remove Thunder Crab' })).toBeInTheDocument()
-  expect(screen.getAllByText(/During the event/).length).toBeGreaterThan(0)
-
-  setPlayers([{ ...PLAYER, status: 'approved', team_id: 'team-1' }])
-  await user.click(screen.getByRole('tab', { name: /Assigned/ }))
-  expect(await screen.findByRole('button', { name: 'Edit Thunder Crab' })).toBeInTheDocument()
-  expect(screen.queryByRole('button', { name: 'Change team for Thunder Crab' })).toBeNull()
-  expect(screen.queryByRole('button', { name: 'Remove Thunder Crab' })).toBeNull()
-})
-
 it('paginates on the API and resets the page when searching', async () => {
   setPlayers(
     Array.from({ length: 30 }, (_, index) => ({
@@ -375,7 +217,7 @@ it('paginates on the API and resets the page when searching', async () => {
   expect(screen.getByRole('tab', { name: 'Pending 30' })).toBeInTheDocument()
 })
 
-it('creates a team in a modal and opens its filtered member list', async () => {
+it('creates a team in a modal and sends "View members" to the draft board', async () => {
   setPlayers([{ ...PLAYER, status: 'approved', team_id: TEAM.id }])
   vi.mocked(api.createTeam).mockResolvedValue(TEAM)
   const user = await openAdministration()
@@ -388,10 +230,11 @@ it('creates a team in a modal and opens its filtered member list', async () => {
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
   expect(api.createTeam).toHaveBeenCalled()
   await user.click(screen.getByRole('button', { name: 'View members of Crabs' }))
-  expect(await screen.findByText('Thunder Crab')).toBeInTheDocument()
+  expect(screen.getByRole('tab', { name: /Draft/ })).toHaveAttribute('aria-selected', 'true')
+  // Teams are formed on the draft board; the list only holds pending requests (076 rev 1).
   expect(api.fetchPlayers).toHaveBeenLastCalledWith(
     EVENT.id,
-    expect.objectContaining({ group: 'assigned', team_id: TEAM.id, offset: 0 }),
+    expect.objectContaining({ group: 'pending' }),
   )
 })
 
@@ -495,43 +338,6 @@ describe('teams v2 selection and columns', () => {
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
     expect(vi.mocked(api.removeSelectedPlayers).mock.calls[0][0].playerIds).toEqual(['p1', 'p2'])
     expect(await screen.findByText('2 removed.')).toBeInTheDocument()
-  })
-
-  it('assigns several unassigned players to one team at once (038)', async () => {
-    setPlayers([pending(1, { status: 'approved' }), pending(2, { status: 'approved' })])
-    vi.mocked(api.assignSelectedPlayers).mockResolvedValue({ changed: 2, skipped: 0 })
-    const user = await openAdministration()
-    await user.click(await screen.findByRole('tab', { name: /Unassigned/ }))
-
-    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 1' }))
-    await user.click(screen.getByRole('checkbox', { name: 'Select Player 2' }))
-    await user.click(screen.getByRole('button', { name: 'Assign to team…' }))
-    const dialog = screen.getByRole('dialog', { name: 'Assign 2 players to a team' })
-    expect(dialog).toHaveTextContent('Player 1 and Player 2')
-    const confirm = within(dialog).getByRole('button', { name: 'Assign 2 players' })
-    expect(confirm).toBeDisabled()
-    await user.click(within(dialog).getByRole('radio', { name: /Crabs/ }))
-    await user.click(confirm)
-
-    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
-    expect(vi.mocked(api.assignSelectedPlayers).mock.calls[0][0]).toEqual({
-      eventId: EVENT.id,
-      playerIds: ['p1', 'p2'],
-      teamId: TEAM.id,
-    })
-    expect(await screen.findByText('2 assigned.')).toBeInTheDocument()
-  })
-
-  it('clears the selection when switching tabs and offers only removal outside Pending', async () => {
-    setPlayers([pending(1), pending(2, { status: 'approved' })])
-    const user = await openAdministration()
-    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 1' }))
-    await user.click(screen.getByRole('tab', { name: /Unassigned/ }))
-    await user.click(await screen.findByRole('checkbox', { name: 'Select Player 2' }))
-    const bar = screen.getByRole('region', { name: 'Bulk actions' })
-    expect(bar).toHaveTextContent('1 selected')
-    expect(within(bar).queryByRole('button', { name: 'Approve selected' })).not.toBeInTheDocument()
-    expect(within(bar).getByRole('button', { name: 'Remove selected' })).toBeInTheDocument()
   })
 
   it('lets admins approve pending requests during the event (037)', async () => {
@@ -646,21 +452,22 @@ describe('participants and team balance (feature 023)', () => {
   })
 
   it('lists experience, wishes, role and buy-in for each participant', async () => {
-    setPlayers([
-      approved(1, {
-        alt_count: 2,
-        boss_kc_total: 17950,
-        ehb_total: 845.2,
-        timezone: 'America/Sao_Paulo',
-        teammates: ['Druid Duda'],
-        role: 'reviewer',
-        buy_in_status: 'paid',
-        buy_in_admin_name: 'felps_',
-      }),
-      approved(2, { account_id: null, buy_in_status: null, activity: null }),
-    ])
-    const user = await openAdministration()
-    await user.click(screen.getByRole('tab', { name: /Unassigned/ }))
+    setPlayers(
+      [
+        approved(1, {
+          alt_count: 2,
+          boss_kc_total: 17950,
+          ehb_total: 845.2,
+          timezone: 'America/Sao_Paulo',
+          teammates: ['Druid Duda'],
+          role: 'reviewer',
+          buy_in_status: 'paid',
+          buy_in_admin_name: 'felps_',
+        }),
+        approved(2, { account_id: null, buy_in_status: null, activity: null }),
+      ].map((player) => ({ ...player, status: 'pending' as const })),
+    )
+    await openAdministration()
 
     const row = (await screen.findByText('Player 1')).closest('tr')!
     expect(row).toHaveTextContent('discord1 · main + 2 alts')
@@ -676,7 +483,7 @@ describe('participants and team balance (feature 023)', () => {
   })
 
   it('edits role and buy-in, recording who received the payment', async () => {
-    setPlayers([approved(1, { team_id: TEAM.id })])
+    setPlayers([approved(1, { status: 'pending' })])
     vi.mocked(fetchSession).mockResolvedValue(ADMIN)
     vi.mocked(api.updateParticipation)
       .mockRejectedValueOnce(
@@ -690,7 +497,6 @@ describe('participants and team balance (feature 023)', () => {
     const user = userEvent.setup()
     await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
     await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
-    await user.click(await screen.findByRole('tab', { name: /Assigned/ }))
     await user.click(await screen.findByRole('button', { name: 'Edit Player 1' }))
 
     const dialog = screen.getByRole('dialog', { name: 'Edit Player 1' })
@@ -709,5 +515,40 @@ describe('participants and team balance (feature 023)', () => {
       playerId: 'a1',
       payload: { role: 'captain', buy_in_status: 'paid', buy_in_admin_id: 'admin-2' },
     })
+  })
+
+  it('shows the WOM tier and lets an admin override it (069)', async () => {
+    setPlayers([
+      approved(1, {
+        status: 'pending',
+        tier: 'end',
+        tier_suggested: 'mid',
+        tier_overridden: true,
+      }),
+    ])
+    vi.mocked(fetchSession).mockResolvedValue(ADMIN)
+    vi.mocked(api.updateParticipation).mockResolvedValue(approved(1))
+    vi.mocked(api.setPlayerTier).mockResolvedValue({ tier: 'mid', tier_overridden: false })
+    renderApp(<TeamsPage />, '/teams')
+    const user = userEvent.setup()
+    await screen.findByRole('option', { name: 'Summer Bingo · Draft' })
+    await user.selectOptions(screen.getByLabelText('Event'), EVENT.id)
+
+    const row = (await screen.findByText('Player 1')).closest('tr')!
+    expect(within(row).getByText('End game')).toBeInTheDocument()
+    expect(within(row).getByText('WOM suggests: Mid game')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Edit Player 1' }))
+    const dialog = screen.getByRole('dialog', { name: 'Edit Player 1' })
+    const tier = within(dialog).getByLabelText(/Progression/)
+    expect(tier).toHaveValue('end')
+    await user.selectOptions(tier, '')
+    await user.click(within(dialog).getByRole('button', { name: 'Save' }))
+
+    expect(await screen.findByText('Player 1 updated.')).toBeInTheDocument()
+    expect(api.setPlayerTier).toHaveBeenCalledWith(
+      { eventId: EVENT.id, playerId: 'a1', tier: null },
+      expect.anything(),
+    )
   })
 })

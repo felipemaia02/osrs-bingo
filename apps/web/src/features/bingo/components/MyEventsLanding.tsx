@@ -68,7 +68,7 @@ export function MyEventsLanding({
       ) : (
         <p className="m-0 rounded border border-rs-border bg-rs-surface p-6 text-center text-rs-muted">
           {t('home.none')}{' '}
-          <Link to="/events" className="font-semibold text-rs-gold-bright">
+          <Link to="/" className="font-semibold text-rs-gold-bright">
             {t('home.browseEvents')}
           </Link>
         </p>
